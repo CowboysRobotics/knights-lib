@@ -77,6 +77,15 @@ void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 	pros::Motor left_mtr(1);
 	pros::Motor right_mtr(2);
+	pros::Rotation right_odom(3);
+	pros::Rotation left_odom(4);
+	pros::IMU imu(6);
+
+	knights::Robot_Chassis(
+		&knights::Drivetrain(&pros::Motor_Group({right_mtr}), &pros::Motor_Group({left_mtr}), 10.0, 600.0, 3.25),
+		&knights::Position_Tracker_Group(&knights::Position_Tracker(&right_odom, 1.0, 1, 2.5), &knights::Position_Tracker(&left_odom, 1.0, 1, 2.5)),
+		&imu
+	);
 
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
