@@ -32,10 +32,11 @@ namespace knights {
             void set_position(float x, float y, float heading);
 
             // @brief update the position of a chassis using its tracking wheels
-            // @param odomEnabled ability to turn it off
-            void update_position_loop(bool &odomEnabled);
+            void update_position_loop();
 
     };
+
+    extern int startOdomTracking(Robot_Chassis *chassis);
 
 }
 

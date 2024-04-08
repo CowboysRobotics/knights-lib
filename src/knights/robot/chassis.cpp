@@ -17,7 +17,7 @@ void knights::Robot_Chassis::set_position(float x, float y, float heading) {
     this->curr_position.heading = heading;
 }
 
-void knights::Robot_Chassis::update_position_loop(bool &odomEnabled) {
+void knights::Robot_Chassis::update_position_loop() {
 
     float deltaRight, deltaLeft, deltaFront, deltaBack;
 
@@ -30,7 +30,7 @@ void knights::Robot_Chassis::update_position_loop(bool &odomEnabled) {
 
     float deltaX, deltaY, localX, localY;
 
-    while (odomEnabled) {
+    while (true) {
         
         if (this->pos_trackers->right_tracker != nullptr) {
             deltaRight = this->pos_trackers->right_tracker->get_distance_travelled() - prevRight;
@@ -78,3 +78,8 @@ void knights::Robot_Chassis::update_position_loop(bool &odomEnabled) {
         pros::delay(10);
     }
 }
+
+int knights::startOdomTracking(Robot_Chassis *chassis) {
+    chassis->update_position_loop();
+    return 0;
+};
