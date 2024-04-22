@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef _API_H
-#define _API_H
+#ifndef _KNIGHTS_API_H
+#define _KNIGHTS_API_H
 
 #include "knights/robot/chassis.h"
 #include "knights/robot/drivetrain.h"
