@@ -1,20 +1,26 @@
 #include "main.h"
 
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
-}
+pros::Controller master(pros::E_CONTROLLER_MASTER);
+pros::Motor left_mtr(1);
+pros::Motor right_mtr(2);
+pros::Motor_Group right_mtrs({right_mtr});
+pros::Motor_Group left_mtrs({left_mtr});
+pros::Rotation right_odom(3);
+pros::Rotation left_odom(4);
+pros::IMU imu(6);
+
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.0, 600.0, 3.25);
+knights::Position_Tracker rightOdom(&right_odom, 1.0, 1, 2.5);
+knights::Position_Tracker leftOdom(&left_odom, 1.0, 1, 2.5);
+knights::Position_Tracker_Group odomTrackers(&rightOdom, &leftOdom);
+
+knights::Robot_Chassis chassis(
+	&drivetrain,
+	&odomTrackers,
+	&imu
+);
+
+pros::Task *odomTask = nullptr;
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -23,10 +29,13 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
-
-	pros::lcd::register_btn1_cb(on_center_button);
+	if (odomTask == nullptr)
+		pros::Task *odomTask = new pros::Task {[=] {
+			while (true) {
+				chassis.update_position();
+				pros::delay(10);
+			}
+		}};
 }
 
 /**
@@ -74,40 +83,9 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::Motor left_mtr(1);
-	pros::Motor right_mtr(2);
-	pros::Motor_Group right_mtrs({right_mtr});
-	pros::Motor_Group left_mtrs({left_mtr});
-	pros::Rotation right_odom(3);
-	pros::Rotation left_odom(4);
-	pros::IMU imu(6);
-
-	knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.0, 600.0, 3.25);
-	knights::Position_Tracker rightOdom(&right_odom, 1.0, 1, 2.5);
-	knights::Position_Tracker leftOdom(&left_odom, 1.0, 1, 2.5);
-	knights::Position_Tracker_Group odomTrackers(&rightOdom, &leftOdom);
-
-	knights::Robot_Chassis chassis(
-		&drivetrain,
-		&odomTrackers,
-		&imu
-	);
-
-	pros::Task odometry{[=] {
-		knights::startOdomTracking(*chassis);
-    }};
-
-
 	while (true) {
-		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
-		int left = master.get_analog(ANALOG_LEFT_Y);
-		int right = master.get_analog(ANALOG_RIGHT_Y);
-
-		left_mtr = left;
-		right_mtr = right;
+		left_mtr = master.get_analog(ANALOG_LEFT_Y);
+		right_mtr = master.get_analog(ANALOG_RIGHT_Y);
 
 		pros::delay(20);
 	}

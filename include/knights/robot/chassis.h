@@ -17,7 +17,7 @@ namespace knights {
             Drivetrain *drivetrain; // the drivetrain to use for the chassis
             Position_Tracker_Group *pos_trackers; // the sensors to use for location tracking
             pros::IMU *inertial; // the inertial sensor to use for heading tracking
-            pos curr_position; // the current position of the robot
+            Pos curr_position; // the current position of the robot
         public:
             // @brief create a robot chassis with provided parameters
             // @param drivetrain the drivetrain to use for the chassis
@@ -32,12 +32,9 @@ namespace knights {
             void set_position(float x, float y, float heading);
 
             // @brief update the position of a chassis using its tracking wheels
-            void update_position_loop();
+            void update_position();
 
     };
-
-    extern int startOdomTracking(Robot_Chassis *chassis);
-
 }
 
 #endif

@@ -3,8 +3,6 @@
 #ifndef _API_H
 #define _API_H
 
-#include "knights/autonomous/odometry.h"
-
 #include "knights/robot/chassis.h"
 #include "knights/robot/drivetrain.h"
 #include "knights/robot/position_tracker.h"
