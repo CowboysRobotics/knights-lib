@@ -14,10 +14,10 @@ namespace knights {
         @brief create a new position with provided values
         @param x x value of the position
         @param y y value of the position
-        @param heading the heading for the position, 
-            provided heading if less than 2*pi and converts to radians if greater than 2*pi
+        @param heading the heading for the position
+        @param deg whether or not the provided heading is in degrees
         */
-        Pos(float x, float y, float heading);
+        Pos(float x, float y, float heading, bool deg = false);
 
         /*
         @brief create a new position with values (0.0, 0.0, 0.0)
@@ -71,8 +71,18 @@ namespace knights {
     */
     Point operator-(const Point &pt1, const Point &pt2);
 
+    /*
+    @brief get the distance between two positions
+    @param pt1,pt2 the points
+    @return the distance between the points
+    */
     float distance_btwn(const Pos &pt1, const Pos &pt2);
 
+    /*
+    @brief get the distance between two positions
+    @param pt1,pt2 the points
+    @return the distance between the points
+    */
     float distance_btwn(const Point &pt1, const Point &pt2);
 }
 

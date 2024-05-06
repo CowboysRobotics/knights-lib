@@ -18,6 +18,12 @@ namespace knights {
             Position_Tracker_Group *pos_trackers; // the sensors to use for location tracking
             pros::IMU *inertial; // the inertial sensor to use for heading tracking
             Pos curr_position; // the current position of the robot
+
+            // previous values of the sensors for odometry control
+            float prevRight = 0;
+            float prevLeft = 0;
+            float prevFront = 0;
+            float prevBack = 0;
         public:
             // @brief create a robot chassis with provided parameters
             // @param drivetrain the drivetrain to use for the chassis

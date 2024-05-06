@@ -14,6 +14,13 @@ knights::Position_Tracker rightOdom(&right_odom, 1.0, 1, 2.5);
 knights::Position_Tracker leftOdom(&left_odom, 1.0, 1, 2.5);
 knights::Position_Tracker_Group odomTrackers(&rightOdom, &leftOdom);
 
+pros::Motor right_front(1);
+pros::Motor right_back(1);
+pros::Motor left_front(1);
+pros::Motor left_back(1);
+
+knights::Holonomic holonomic(&right_front, &left_front, &right_back, &left_back, 10.0, 600.0, 3.25);
+
 knights::Robot_Chassis chassis(
 	&drivetrain,
 	&odomTrackers,
@@ -83,10 +90,19 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+	float lF, rF, lB, rB;
 	while (true) {
-		left_mtr = master.get_analog(ANALOG_LEFT_Y);
-		right_mtr = master.get_analog(ANALOG_RIGHT_Y);
+		// left_mtr = master.get_analog(ANALOG_LEFT_Y);
+		// right_mtr = master.get_analog(ANALOG_RIGHT_Y);
 
-		pros::delay(20);
+		lF = master.get_analog(ANALOG_RIGHT_Y) + master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
+		lB = master.get_analog(ANALOG_RIGHT_Y) - master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
+
+		rF = -master.get_analog(ANALOG_RIGHT_Y) + master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
+		rB = -master.get_analog(ANALOG_RIGHT_Y) - master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
+
+		holonomic.velocity_command(rF,lF,rB,lB);
+
+		pros::delay(10);
 	}
 }

@@ -8,5 +8,6 @@
 #include "knights/robot/position_tracker.h"
 
 #include "knights/util/position.h"
+#include "knights/util/calculation.h"
 
 #endif

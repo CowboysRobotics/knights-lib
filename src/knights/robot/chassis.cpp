@@ -20,27 +20,27 @@ void knights::Robot_Chassis::update_position() {
 
     float deltaRight, deltaLeft, deltaFront, deltaBack;
 
-    float prevRight = this->pos_trackers->right_tracker->get_distance_travelled(); 
-    float prevLeft = this->pos_trackers->left_tracker->get_distance_travelled(); 
-    float prevFront = this->pos_trackers->front_tracker->get_distance_travelled(); 
-    float prevBack = this->pos_trackers->back_tracker->get_distance_travelled();
-
     float newHeading, averageHeading;
 
     float deltaX, deltaY, localX, localY;
 
     if (this->pos_trackers->right_tracker != nullptr) {
-        deltaRight = this->pos_trackers->right_tracker->get_distance_travelled() - prevRight;
+        deltaRight = this->pos_trackers->right_tracker->get_distance_travelled() - this->prevRight;
     }
     if (this->pos_trackers->left_tracker != nullptr) {
-        deltaLeft = this->pos_trackers->left_tracker->get_distance_travelled() - prevLeft;
+        deltaLeft = this->pos_trackers->left_tracker->get_distance_travelled() - this->prevLeft;
     }
     if (this->pos_trackers->front_tracker != nullptr) {
-        deltaFront = this->pos_trackers->front_tracker->get_distance_travelled() - prevFront;
+        deltaFront = this->pos_trackers->front_tracker->get_distance_travelled() - this->prevFront;
     }
     if (this->pos_trackers->back_tracker != nullptr) {
-        deltaBack = this->pos_trackers->back_tracker->get_distance_travelled() - prevBack;
+        deltaBack = this->pos_trackers->back_tracker->get_distance_travelled() - this->prevBack;
     }
+
+    this->prevRight = this->pos_trackers->right_tracker->get_distance_travelled(); 
+    this->prevLeft = this->pos_trackers->left_tracker->get_distance_travelled(); 
+    this->prevFront = this->pos_trackers->front_tracker->get_distance_travelled(); 
+    this->prevBack = this->pos_trackers->back_tracker->get_distance_travelled();
 
     newHeading = curr_position.heading - ((deltaLeft - deltaRight)/(this->pos_trackers->right_tracker->get_offset() + this->pos_trackers->left_tracker->get_offset()));
     averageHeading = fmod(curr_position.heading + ((newHeading - curr_position.heading) / 2), 2.0 * M_PI);

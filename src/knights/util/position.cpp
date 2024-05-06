@@ -1,15 +1,15 @@
-#include "knights/util/Position.h"
-#include "position.h"
+#include "knights/util/position.h"
+#include "knights/util/calculation.h"
 
 using namespace knights;
 
-Pos::Pos(float x, float y, float heading) {
+Pos::Pos(float x, float y, float heading, bool deg) {
     this->x = x;
     this->y = y;
-    if (heading <= 2*M_PI)
-        this->heading = heading;
-    else
-        this->heading = heading * 180.0 / M_PI;
+    this->heading = heading;
+
+    if (deg)
+        this->heading = to_rad(heading);
 }
 
 Pos::Pos() {
