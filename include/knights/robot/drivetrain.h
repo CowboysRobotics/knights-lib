@@ -22,6 +22,10 @@ namespace knights {
             // @param rpm max rpm of the drivetrain (ie 450rpm, 600 rpm, etc)
             // @param wheel_diameter diameters of the largest wheels on the drivetrain
             Drivetrain(pros::Motor_Group *right_mtrs, pros::Motor_Group *left_mtrs, float track_width, float rpm, float wheel_diameter);
+
+            // @brief update the velocities of the drivetrain
+            // @param rightMtrs,leftMtrs the desired velocity
+            void velocity_command(int rightMtrs, int leftMtrs);
     };
 
     class Holonomic {

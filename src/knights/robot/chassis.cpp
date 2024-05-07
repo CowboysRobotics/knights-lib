@@ -10,6 +10,12 @@ knights::Robot_Chassis::Robot_Chassis(Drivetrain *drivetrain, Position_Tracker_G
     this->inertial = inertial;
 }
 
+knights::Robot_Chassis::Robot_Chassis(Holonomic *drivetrain, Position_Tracker_Group *pos_trackers, pros::IMU *inertial) {
+    this->holonomic = drivetrain;
+    this->pos_trackers = pos_trackers;
+    this->inertial = inertial;
+}
+
 void knights::Robot_Chassis::set_position(float x, float y, float heading) {
     this->curr_position.x = x;
     this->curr_position.y = y;

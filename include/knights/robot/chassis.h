@@ -15,6 +15,7 @@ namespace knights {
     class Robot_Chassis {
         private:
             Drivetrain *drivetrain; // the drivetrain to use for the chassis
+            Holonomic *holonomic; // the drivetrain to use for the chassis
             Position_Tracker_Group *pos_trackers; // the sensors to use for location tracking
             pros::IMU *inertial; // the inertial sensor to use for heading tracking
             Pos curr_position; // the current position of the robot
@@ -30,6 +31,12 @@ namespace knights {
             // @param pos_trackers the sensors to use for location tracking
             // @param inertial the inertial sensor to use for heading tracking
             Robot_Chassis(Drivetrain *drivetrain, Position_Tracker_Group *pos_trackers, pros::IMU *inertial);
+
+            // @brief create a robot chassis with provided parameters
+            // @param drivetrain the drivetrain to use for the chassis
+            // @param pos_trackers the sensors to use for location tracking
+            // @param inertial the inertial sensor to use for heading tracking
+            Robot_Chassis(Holonomic *drivetrain, Position_Tracker_Group *pos_trackers, pros::IMU *inertial);
 
             // @brief set the position of the chassis
             // @param x the desired x

@@ -11,6 +11,11 @@ knights::Drivetrain::Drivetrain(pros::Motor_Group *right_mtrs, pros::Motor_Group
     this->wheel_diameter = wheel_diameter;
 }
 
+void knights::Drivetrain::velocity_command(int rightMtrs, int leftMtrs) {
+    this->right_mtrs->move(rightMtrs);
+    this->left_mtrs->move(leftMtrs);
+}
+
 knights::Holonomic::Holonomic(pros::Motor *frontRight, pros::Motor *frontLeft, pros::Motor *backRight, pros::Motor *backLeft, float track_width, float rpm, float wheel_diameter) {
     this->frontRight = frontRight;
     this->frontLeft = frontLeft;
