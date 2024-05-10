@@ -37,11 +37,17 @@ namespace knights {
     float min_angle(float angle1, float angle2, bool rad = false);
 
     /*
-    @brief basic signum function, evaluates whether or not a number is above,below, or at zero
+    @brief basic signum function, evaluates whether or not a number is above, below, or at zero
     @param num the number to evaulate
     @return 1 if num > 0, 0 if num = 0, -1 if num < 0
     */
     float signum(float num);
+
+    /*
+    @brief basic signum function, evaluates whether or not a number is above, below, or at zero
+    @param num the number to evaulate
+    @return 1 if num > 0, 0 if num = 0, -1 if num < 0
+    */
     int signum(int num);
 
     /*
@@ -50,6 +56,12 @@ namespace knights {
     @return the average
     */
     float avg(std::vector<float>arr);
+
+    /*
+    @brief get the average of a vector of values
+    @param arr the vector (array) of values
+    @return the average
+    */
     int avg(std::vector<int>arr);
 
 }

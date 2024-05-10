@@ -58,29 +58,29 @@ namespace knights {
 
     /*
     @brief adds the two points together
-    @param pt1,pt2 points to add
+    @param pt1,pt2 point to add
     @return a points containing the combination of both points
     */
     Point operator+(const Point &pt1, const Point &pt2);
 
     /*
     @brief subtracts a points from another
-    @param pt1 points to subtract from
-    @param pt2 points to subtract
+    @param pt1 point to subtract from
+    @param pt2 point to subtract
     @return a points containing pt2 subtracted from pt1
     */
     Point operator-(const Point &pt1, const Point &pt2);
 
     /*
     @brief get the distance between two positions
-    @param pt1,pt2 the points
+    @param pt1,pt2 point
     @return the distance between the points
     */
     float distance_btwn(const Pos &pt1, const Pos &pt2);
 
     /*
     @brief get the distance between two positions
-    @param pt1,pt2 the points
+    @param pt1,pt2 point
     @return the distance between the points
     */
     float distance_btwn(const Point &pt1, const Point &pt2);

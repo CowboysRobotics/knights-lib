@@ -30,10 +30,10 @@ namespace knights {
 
     class Holonomic {
         private:
-            pros::Motor *frontRight;
-            pros::Motor *frontLeft;
-            pros::Motor *backRight;
-            pros::Motor *backLeft;
+            pros::Motor *frontRight; // front right motor
+            pros::Motor *frontLeft; // front left motor
+            pros::Motor *backRight; // back right motor
+            pros::Motor *backLeft; // back left motor
             float track_width; // width of the drivetrain
             float rpm; // max rpm of the drivetrain (ie 450rpm, 600 rpm, etc)
             float wheel_diameter; // diameters of the largest wheels on the drivetrain
