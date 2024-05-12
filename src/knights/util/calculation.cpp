@@ -43,3 +43,11 @@ float knights::avg(std::vector<float>arr) {
 int knights::avg(std::vector<int>arr) {
     return std::accumulate(arr.begin(), arr.end(), 0) / arr.size();
 }
+
+float knights::clamp(float num, float min, float max) {
+    return std::fmax(min, std::fmin(num, max));
+}
+
+int knights::clamp(int num, int min, int max) {
+    return std::max(min, std::min(num, max));
+}

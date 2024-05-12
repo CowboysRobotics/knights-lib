@@ -64,6 +64,24 @@ namespace knights {
     */
     int avg(std::vector<int>arr);
 
+    /*
+    @brief restrict a number to a range of [min, max]
+    @param num number to restrict
+    @param max maximum limit
+    @param min minimum limit
+    @return min if num < min, max if num > max, num if else
+    */
+    float clamp(float num, float min, float max);
+
+    /*
+    @brief restrict a number to a range of [min, max]
+    @param num number to restrict
+    @param max maximum limit
+    @param min minimum limit
+    @return min if num < min, max if num > max, num if else
+    */
+    int clamp(int num, int min, int max);
+
 }
 
 #endif
