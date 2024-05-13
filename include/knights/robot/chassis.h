@@ -5,8 +5,11 @@
 
 #include "api.h"
 
+#include "knights/autonomous/controller.h"
+
 #include "knights/robot/drivetrain.h"
 #include "knights/robot/position_tracker.h"
+
 #include "knights/util/position.h"
 
 
@@ -14,10 +17,10 @@ namespace knights {
 
     class Robot_Chassis {
         private:
-            Drivetrain *drivetrain; // the drivetrain to use for the chassis
-            Holonomic *holonomic; // the drivetrain to use for the chassis
-            Position_Tracker_Group *pos_trackers; // the sensors to use for location tracking
-            pros::IMU *inertial; // the inertial sensor to use for heading tracking
+            Drivetrain *drivetrain = nullptr; // the drivetrain to use for the chassis
+            Holonomic *holonomic = nullptr; // the drivetrain to use for the chassis
+            Position_Tracker_Group *pos_trackers = nullptr; // the sensors to use for location tracking
+            pros::IMU *inertial = nullptr; // the inertial sensor to use for heading tracking
             Pos curr_position; // the current position of the robot
 
             // previous values of the sensors for odometry control
@@ -25,6 +28,9 @@ namespace knights {
             float prevLeft = 0;
             float prevFront = 0;
             float prevBack = 0;
+
+            // declare the robot chassis class as a friend class, allows access into private objects
+            friend class Robot_Controller;
         public:
             // @brief create a robot chassis with provided parameters
             // @param drivetrain the drivetrain to use for the chassis

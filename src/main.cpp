@@ -9,7 +9,7 @@ pros::Rotation right_odom(3);
 pros::Rotation left_odom(4);
 pros::IMU imu(6);
 
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.0, 600.0, 3.25);
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.0, 600.0, 3.25, 3/4);
 knights::Position_Tracker rightOdom(&right_odom, 1.0, 1, 2.5);
 knights::Position_Tracker leftOdom(&left_odom, 1.0, 1, 2.5);
 knights::Position_Tracker_Group odomTrackers(&rightOdom, &leftOdom);

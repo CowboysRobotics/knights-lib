@@ -62,6 +62,13 @@ namespace knights {
     @param arr the vector (array) of values
     @return the average
     */
+    double avg(std::vector<double>arr);
+
+    /*
+    @brief get the average of a vector of values
+    @param arr the vector (array) of values
+    @return the average
+    */
     int avg(std::vector<int>arr);
 
     /*

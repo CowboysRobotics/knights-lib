@@ -14,6 +14,10 @@ namespace knights {
             float track_width; // width of the drivetrain
             float rpm; // max rpm of the drivetrain (ie 450rpm, 600 rpm, etc)
             float wheel_diameter; // diameters of the largest wheels on the drivetrain
+            float gear_ratio; // gear ratio of the drivetrain
+
+            friend class Robot_Chassis;
+            friend class Robot_Controller;
         public:
             // @brief create a differential drivetrain object
             // @param right_mtrs motors of right side of drivetrain
@@ -21,11 +25,22 @@ namespace knights {
             // @param track_width width of the drivetrain
             // @param rpm max rpm of the drivetrain (ie 450rpm, 600 rpm, etc)
             // @param wheel_diameter diameters of the largest wheels on the drivetrain
-            Drivetrain(pros::Motor_Group *right_mtrs, pros::Motor_Group *left_mtrs, float track_width, float rpm, float wheel_diameter);
+            // @param gear_ratio gear ratio of the drivetrain
+            Drivetrain(pros::Motor_Group *right_mtrs, pros::Motor_Group *left_mtrs, float track_width, float rpm, float wheel_diameter, float gear_ratio);
 
             // @brief update the velocities of the drivetrain
             // @param rightMtrs,leftMtrs the desired velocity
             void velocity_command(int rightMtrs, int leftMtrs);
+
+            // @brief convert the distance to position for this drivetrain
+            // @param distance distance to convert
+            // @return required position for the motors
+            float distance_to_position(float distance);
+
+            // @brief convert the position to distance for this drivetrain
+            // @param position position to conver to distance
+            // @return distance that will result from moving that position
+            float position_to_distance(float position);
     };
 
     class Holonomic {
