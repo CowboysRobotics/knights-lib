@@ -14,6 +14,8 @@ knights::Position_Tracker rightOdom(&right_odom, 1.0, 1, 2.5);
 knights::Position_Tracker leftOdom(&left_odom, 1.0, 1, 2.5);
 knights::Position_Tracker_Group odomTrackers(&rightOdom, &leftOdom);
 
+knights::PID_Controller pidController(0.4, 0.0001, 0.085, 0, 127);
+
 pros::Motor right_front(1);
 pros::Motor right_back(1);
 pros::Motor left_front(1);
@@ -26,6 +28,9 @@ knights::Robot_Chassis chassis(
 	&odomTrackers,
 	&imu
 );
+
+knights::Robot_Controller botController(&chassis, &pidController, false);
+
 
 pros::Task *odomTask = nullptr;
 
@@ -74,7 +79,9 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	botController.lateral_move(10.0);
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
