@@ -5,8 +5,6 @@
 
 #include "api.h"
 
-#include "knights/autonomous/controller.h"
-
 #include "knights/robot/drivetrain.h"
 #include "knights/robot/position_tracker.h"
 

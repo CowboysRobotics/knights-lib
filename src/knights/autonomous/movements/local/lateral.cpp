@@ -2,6 +2,7 @@
 #include "knights/autonomous/pid.h"
 
 #include "knights/robot/chassis.h"
+#include "knights/robot/drivetrain.h"
 
 #include "knights/util/calculation.h"
 
