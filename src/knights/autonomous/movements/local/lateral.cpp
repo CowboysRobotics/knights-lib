@@ -85,15 +85,15 @@ void knights::Robot_Controller::lateral_move(const float distance, const float e
 
         }
 
+        this->chassis->drivetrain->right_mtrs->set_brake_modes(pros::motor_brake_mode_e_t::E_MOTOR_BRAKE_BRAKE);
+        this->chassis->drivetrain->left_mtrs->set_brake_modes(pros::motor_brake_mode_e_t::E_MOTOR_BRAKE_BRAKE);
+
+        this->chassis->drivetrain->right_mtrs->brake();
+        this->chassis->drivetrain->left_mtrs->brake();
+
     } else {
         // holomic lateral movement code
     }
-
-    this->chassis->drivetrain->right_mtrs->set_brake_modes(pros::motor_brake_mode_e_t::E_MOTOR_BRAKE_BRAKE);
-    this->chassis->drivetrain->left_mtrs->set_brake_modes(pros::motor_brake_mode_e_t::E_MOTOR_BRAKE_BRAKE);
-
-    this->chassis->drivetrain->right_mtrs->brake();
-    this->chassis->drivetrain->left_mtrs->brake();
 
     return;
 }
