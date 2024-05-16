@@ -17,4 +17,4 @@ temp.errors
 .d/
 
 # User Files - delete when not uploading to library
-main.cpp
+src/main.cpp
