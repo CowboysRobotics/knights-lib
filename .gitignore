@@ -16,5 +16,5 @@ temp.errors
 *.ini
 .d/
 
-# User Files - delete when not uploading to library
-src/main.cpp
+# # User Files - delete when not uploading to library
+# src/main.cpp

@@ -69,7 +69,7 @@ namespace knights {
             /*
             * @brief 
             */
-            void field_centric_drive(int vert_axis, int hori_axis, int rot_axis);
+            void field_centric_drive(int vert_axis, int hori_axis, int rot_axis, pros::Imu* inertial);
     };
 }
 

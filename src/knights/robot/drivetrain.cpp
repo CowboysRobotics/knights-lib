@@ -1,6 +1,5 @@
-#include "api.h"
-
-#include "knights/robot/chassis.h"
+#include "pros/imu.hpp"
+#include <cmath>
 #include "knights/robot/drivetrain.h"
 
 knights::Drivetrain::Drivetrain(pros::Motor_Group *right_mtrs, pros::Motor_Group *left_mtrs, float track_width, float rpm, float wheel_diameter, float gear_ratio) 
@@ -31,19 +30,26 @@ void knights::Holonomic::velocity_command(int frontRight, int frontLeft, int bac
     this->backLeft->move(backLeft);
 }
 
-void knights::Holonomic::field_centric_drive(int vert_axis, int hori_axis, int rot_axis) {
+void knights::Holonomic::field_centric_drive(int vert_axis, int hori_axis, int rot_axis, pros::Imu* inertial) {
     
     // need to convert vertical and horizontal vector to positional control of the bot
     // arccosine arcsine
 
-    int l_vert_axis = ;
-    int l_hori_axis = ;
+    float power_magnitude = std::hypotf(vert_axis, hori_axis);
+
+    float theta = atan2(vert_axis,hori_axis);
+    float theta2 = theta - inertial->get_heading();
+
+    int l_vert_axis = power_magnitude * std::sin(theta);
+    int l_hori_axis = power_magnitude * std::cos(theta);
 
     float lF, rF, lB, rB;
 
-    lF = master.get_analog(ANALOG_RIGHT_Y) + master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
-    lB = master.get_analog(ANALOG_RIGHT_Y) - master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
+    lF = l_vert_axis + l_hori_axis + float(rot_axis) / 2;
+    lB = l_vert_axis - l_hori_axis + float(rot_axis) / 2;
 
-    rF = -master.get_analog(ANALOG_RIGHT_Y) + master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
-    rB = -master.get_analog(ANALOG_RIGHT_Y) - master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
+    rF = -l_vert_axis + l_hori_axis + float(rot_axis) / 2;
+    rB = -l_vert_axis - l_hori_axis + float(rot_axis) / 2;
+
+    this->velocity_command(rF, lF, rB, lB);
 }
