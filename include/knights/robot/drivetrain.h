@@ -65,6 +65,11 @@ namespace knights {
             // @brief update the velocities of the motors
             // @param frontRight,frontLeft,backRight,backLeft the desired velocities for each motor
             void velocity_command(int frontRight, int frontLeft, int backRight, int backLeft);
+
+            /*
+            * @brief 
+            */
+            void field_centric_drive(int vert_axis, int hori_axis, int rot_axis);
     };
 }
 

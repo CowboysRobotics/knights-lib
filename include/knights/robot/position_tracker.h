@@ -84,10 +84,10 @@ namespace knights {
             Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *left);
 
             // @brief create a new group of position trackers
-            // @param right the rightmost tracker
+            // @param middle tracking wheel in middle of bot
             // @param back the backmost tracker
             // @param inertial inertial sensor to use for angle
-            Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *back, pros::IMU *inertial);
+            Position_Tracker_Group(knights::Position_Tracker *middle, knights::Position_Tracker *back, pros::IMU *inertial);
     };
 
 }

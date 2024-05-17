@@ -18,6 +18,8 @@ void knights::Robot_Controller::turn_for(const float angle, const float end_tole
         } else {
             float desired_angle = normalize_angle(this->chassis->curr_position.heading + to_rad(angle), true);
 
+            // edge case; person is not turning optimally, min angle will not be right
+
             while(min_angle(this->chassis->curr_position.heading, desired_angle, true) > end_tolerance) {
                 error = min_angle(this->chassis->curr_position.heading, desired_angle, true);
 

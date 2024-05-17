@@ -30,3 +30,20 @@ void knights::Holonomic::velocity_command(int frontRight, int frontLeft, int bac
     this->backRight->move(backRight);
     this->backLeft->move(backLeft);
 }
+
+void knights::Holonomic::field_centric_drive(int vert_axis, int hori_axis, int rot_axis) {
+    
+    // need to convert vertical and horizontal vector to positional control of the bot
+    // arccosine arcsine
+
+    int l_vert_axis = ;
+    int l_hori_axis = ;
+
+    float lF, rF, lB, rB;
+
+    lF = master.get_analog(ANALOG_RIGHT_Y) + master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
+    lB = master.get_analog(ANALOG_RIGHT_Y) - master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
+
+    rF = -master.get_analog(ANALOG_RIGHT_Y) + master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
+    rB = -master.get_analog(ANALOG_RIGHT_Y) - master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
+}

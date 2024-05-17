@@ -38,8 +38,8 @@ Position_Tracker_Group::Position_Tracker_Group(knights::Position_Tracker *right,
     : right_tracker(right), left_tracker(left) {
 }
 
-Position_Tracker_Group::Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *back, pros::IMU *inertial)
-    : right_tracker(right), back_tracker(back), inertial(inertial) {
+Position_Tracker_Group::Position_Tracker_Group(knights::Position_Tracker *middle, knights::Position_Tracker *back, pros::IMU *inertial)
+    : right_tracker(middle), back_tracker(back), inertial(inertial) {
 }
 
 void Position_Tracker::reset() {
