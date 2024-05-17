@@ -2,25 +2,16 @@
 
 using namespace knights;
 
-Position_Tracker::Position_Tracker(pros::Rotation *rotation, float wheel_diameter, float gear_ratio, float offset) {
-    this->rotation = rotation;
-    this->wheel_diameter = wheel_diameter;
-    this->gear_ratio = gear_ratio;
-    this->offset = offset;
+Position_Tracker::Position_Tracker(pros::Rotation *rotation, float wheel_diameter, float gear_ratio, float offset) 
+    : rotation(rotation), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio), offset(offset) {
 };
 
-Position_Tracker::Position_Tracker(pros::ADIEncoder *adi_encoder, float wheel_diameter, float gear_ratio, float offset) {
-    this->adi_encoder = adi_encoder;
-    this->wheel_diameter = wheel_diameter;
-    this->gear_ratio = gear_ratio;
-    this->offset = offset;
+Position_Tracker::Position_Tracker(pros::ADIEncoder *adi_encoder, float wheel_diameter, float gear_ratio, float offset) 
+    : adi_encoder(adi_encoder), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio), offset(offset) {
 };
 
-Position_Tracker::Position_Tracker(pros::Motor *motor, float wheel_diameter, float gear_ratio, float offset) {
-    this->motor = motor;
-    this->wheel_diameter = wheel_diameter;
-    this->gear_ratio = gear_ratio;
-    this->offset = offset;
+Position_Tracker::Position_Tracker(pros::Motor *motor, float wheel_diameter, float gear_ratio, float offset) 
+    : motor(motor), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio), offset(offset) {
 };
 
 float Position_Tracker::get_distance_travelled() {
@@ -35,23 +26,21 @@ float Position_Tracker::get_distance_travelled() {
     }
 }
 
-Position_Tracker_Group::Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *left, knights::Position_Tracker *front, knights::Position_Tracker *back) {
-    this->right_tracker = right;
-    this->left_tracker = left;
-    this->front_tracker = front;
-    this->back_tracker = back;
-};
+Position_Tracker_Group::Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *left, knights::Position_Tracker *front, knights::Position_Tracker *back)
+    : right_tracker(right), left_tracker(left), front_tracker(front), back_tracker(back) {
+}
 
-Position_Tracker_Group::Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *left, knights::Position_Tracker *back) {
-    this->right_tracker = right;
-    this->left_tracker = left;
-    this->back_tracker = back;
-};
+Position_Tracker_Group::Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *left, knights::Position_Tracker *back)
+    : right_tracker(right), left_tracker(left), back_tracker(back) {
+}
 
-Position_Tracker_Group::Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *left) {
-    this->right_tracker = right;
-    this->left_tracker = left;
-};
+Position_Tracker_Group::Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *left)
+    : right_tracker(right), left_tracker(left) {
+}
+
+Position_Tracker_Group::Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *back, pros::IMU *inertial)
+    : right_tracker(right), back_tracker(back), inertial(inertial) {
+}
 
 void Position_Tracker::reset() {
     if (this->rotation != NULL) {

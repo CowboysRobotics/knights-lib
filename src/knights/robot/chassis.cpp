@@ -4,16 +4,12 @@
 #include "knights/robot/drivetrain.h"
 #include "knights/robot/position_tracker.h"
 
-knights::Robot_Chassis::Robot_Chassis(Drivetrain *drivetrain, Position_Tracker_Group *pos_trackers, pros::IMU *inertial) {
-    this->drivetrain = drivetrain;
-    this->pos_trackers = pos_trackers;
-    this->inertial = inertial;
+knights::Robot_Chassis::Robot_Chassis(Drivetrain *drivetrain, Position_Tracker_Group *pos_trackers)
+    : drivetrain(drivetrain), pos_trackers(pos_trackers) {
 }
 
-knights::Robot_Chassis::Robot_Chassis(Holonomic *drivetrain, Position_Tracker_Group *pos_trackers, pros::IMU *inertial) {
-    this->holonomic = drivetrain;
-    this->pos_trackers = pos_trackers;
-    this->inertial = inertial;
+knights::Robot_Chassis::Robot_Chassis(Holonomic *drivetrain, Position_Tracker_Group *pos_trackers)
+    : holonomic(drivetrain), pos_trackers(pos_trackers) {
 }
 
 void knights::Robot_Chassis::set_position(float x, float y, float heading) {
@@ -48,7 +44,12 @@ void knights::Robot_Chassis::update_position() {
     this->prevFront = this->pos_trackers->front_tracker->get_distance_travelled(); 
     this->prevBack = this->pos_trackers->back_tracker->get_distance_travelled();
 
-    newHeading = curr_position.heading - ((deltaLeft - deltaRight)/(this->pos_trackers->right_tracker->get_offset() + this->pos_trackers->left_tracker->get_offset()));
+    if (deltaRight && deltaLeft) {
+        newHeading = curr_position.heading - ((deltaLeft - deltaRight)/(this->pos_trackers->right_tracker->get_offset() + this->pos_trackers->left_tracker->get_offset()));
+    } else if (this->pos_trackers->inertial != nullptr) {
+        newHeading = this->pos_trackers->inertial->get_heading();
+    }
+
     averageHeading = fmod(curr_position.heading + ((newHeading - curr_position.heading) / 2), 2.0 * M_PI);
 
     // calculate change in x and y

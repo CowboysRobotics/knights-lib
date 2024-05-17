@@ -18,7 +18,6 @@ namespace knights {
             Drivetrain *drivetrain = nullptr; // the drivetrain to use for the chassis
             Holonomic *holonomic = nullptr; // the drivetrain to use for the chassis
             Position_Tracker_Group *pos_trackers = nullptr; // the sensors to use for location tracking
-            pros::IMU *inertial = nullptr; // the inertial sensor to use for heading tracking
             Pos curr_position; // the current position of the robot
 
             // previous values of the sensors for odometry control
@@ -33,14 +32,12 @@ namespace knights {
             // @brief create a robot chassis with provided parameters
             // @param drivetrain the drivetrain to use for the chassis
             // @param pos_trackers the sensors to use for location tracking
-            // @param inertial the inertial sensor to use for heading tracking
-            Robot_Chassis(Drivetrain *drivetrain, Position_Tracker_Group *pos_trackers, pros::IMU *inertial);
+            Robot_Chassis(Drivetrain *drivetrain, Position_Tracker_Group *pos_trackers);
 
             // @brief create a robot chassis with provided parameters
             // @param drivetrain the drivetrain to use for the chassis
             // @param pos_trackers the sensors to use for location tracking
-            // @param inertial the inertial sensor to use for heading tracking
-            Robot_Chassis(Holonomic *drivetrain, Position_Tracker_Group *pos_trackers, pros::IMU *inertial);
+            Robot_Chassis(Holonomic *drivetrain, Position_Tracker_Group *pos_trackers);
 
             // @brief set the position of the chassis
             // @param x the desired x
@@ -48,7 +45,7 @@ namespace knights {
             // @param heading the desired heading
             void set_position(float x, float y, float heading);
 
-            // @brief update the position of a chassis using its tracking wheels
+            // @brief update the position of a chassis using its tracking system
             void update_position();
 
     };

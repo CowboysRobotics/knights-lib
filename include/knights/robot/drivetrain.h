@@ -52,6 +52,7 @@ namespace knights {
             float track_width; // width of the drivetrain
             float rpm; // max rpm of the drivetrain (ie 450rpm, 600 rpm, etc)
             float wheel_diameter; // diameters of the largest wheels on the drivetrain
+            float gear_ratio; // gear ratio of the drivetrain
         public:
             // @brief create a differential drivetrain object
             // @param frontRight,frontLeft,backRight,backLeft the motors on the drivetrain
@@ -59,7 +60,7 @@ namespace knights {
             // @param rpm max rpm of the drivetrain (ie 450rpm, 600 rpm, etc)
             // @param wheel_diameter diameters of the largest wheels on the drivetrain
             Holonomic(pros::Motor *frontRight, pros::Motor *frontLeft, pros::Motor *backRight, pros::Motor *backLeft, 
-                float track_width, float rpm, float wheel_diameter);
+                float track_width, float rpm, float wheel_diameter, float gear_ratio = 1);
 
             // @brief update the velocities of the motors
             // @param frontRight,frontLeft,backRight,backLeft the desired velocities for each motor

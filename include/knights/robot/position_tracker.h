@@ -63,6 +63,7 @@ namespace knights {
             knights::Position_Tracker *left_tracker = nullptr; // the leftmost tracker
             knights::Position_Tracker *front_tracker = nullptr; // the frontmost tracker
             knights::Position_Tracker *back_tracker = nullptr; // the backmost tracker
+            pros::IMU *inertial = nullptr; // inertial sensor to use instead of tracking wheels
 
             // @brief create a new group of position trackers
             // @param right the rightmost tracker
@@ -81,6 +82,12 @@ namespace knights {
             // @param right the rightmost tracker
             // @param left the leftmost tracker
             Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *left);
+
+            // @brief create a new group of position trackers
+            // @param right the rightmost tracker
+            // @param back the backmost tracker
+            // @param inertial inertial sensor to use for angle
+            Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *back, pros::IMU *inertial);
     };
 
 }
