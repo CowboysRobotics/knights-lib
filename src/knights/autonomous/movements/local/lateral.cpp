@@ -24,8 +24,8 @@ void knights::Robot_Controller::lateral_move(const float distance, const float e
             float desired_position = this->chassis->drivetrain->distance_to_position(distance);
 
             // get position of both sets of motors
-            float right_pos = knights::avg(this->chassis->drivetrain->right_mtrs->get_positions());
-            float left_pos = knights::avg(this->chassis->drivetrain->left_mtrs->get_positions());
+            float right_pos = knights::avg(this->chassis->drivetrain->right_mtrs->get_position_all());
+            float left_pos = knights::avg(this->chassis->drivetrain->left_mtrs->get_position_all());
 
             while(fabsf((right_pos + left_pos)/2) < fabsf(desired_position)) {
                 // decrease timeout and break if went over
@@ -45,8 +45,8 @@ void knights::Robot_Controller::lateral_move(const float distance, const float e
                 prev_error = error;
 
                 // update positions of motors
-                right_pos = knights::avg(this->chassis->drivetrain->right_mtrs->get_positions());
-                left_pos = knights::avg(this->chassis->drivetrain->left_mtrs->get_positions());
+                right_pos = knights::avg(this->chassis->drivetrain->right_mtrs->get_position_all());
+                left_pos = knights::avg(this->chassis->drivetrain->left_mtrs->get_position_all());
 
                 // send command to drivetrain
                 this->chassis->drivetrain->velocity_command(speed,speed);
@@ -85,8 +85,8 @@ void knights::Robot_Controller::lateral_move(const float distance, const float e
 
         }
 
-        this->chassis->drivetrain->right_mtrs->set_brake_modes(pros::motor_brake_mode_e_t::E_MOTOR_BRAKE_BRAKE);
-        this->chassis->drivetrain->left_mtrs->set_brake_modes(pros::motor_brake_mode_e_t::E_MOTOR_BRAKE_BRAKE);
+        this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::MotorBrake::brake);
+        this->chassis->drivetrain->left_mtrs->set_brake_mode_all(pros::MotorBrake::brake);
 
         this->chassis->drivetrain->right_mtrs->brake();
         this->chassis->drivetrain->left_mtrs->brake();

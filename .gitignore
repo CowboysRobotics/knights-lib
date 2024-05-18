@@ -15,6 +15,3 @@ temp.log
 temp.errors
 *.ini
 .d/
-
-# # User Files - delete when not uploading to library
-# src/main.cpp

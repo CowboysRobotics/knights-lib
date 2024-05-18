@@ -9,8 +9,8 @@ namespace knights {
 
     class Drivetrain {
         private:
-            pros::Motor_Group *right_mtrs; // motors of right side of drivetrain
-            pros::Motor_Group *left_mtrs;  // motors of left side of drivetrain
+            pros::MotorGroup *right_mtrs; // motors of right side of drivetrain
+            pros::MotorGroup *left_mtrs;  // motors of left side of drivetrain
             float track_width; // width of the drivetrain
             float rpm; // max rpm of the drivetrain (ie 450rpm, 600 rpm, etc)
             float wheel_diameter; // diameters of the largest wheels on the drivetrain
@@ -26,7 +26,7 @@ namespace knights {
             // @param rpm max rpm of the drivetrain (ie 450rpm, 600 rpm, etc)
             // @param wheel_diameter diameters of the largest wheels on the drivetrain
             // @param gear_ratio gear ratio of the drivetrain
-            Drivetrain(pros::Motor_Group *right_mtrs, pros::Motor_Group *left_mtrs, float track_width, float rpm, float wheel_diameter, float gear_ratio);
+            Drivetrain(pros::MotorGroup *right_mtrs, pros::MotorGroup *left_mtrs, float track_width, float rpm, float wheel_diameter, float gear_ratio);
 
             // @brief update the velocities of the drivetrain
             // @param rightMtrs,leftMtrs the desired velocity
