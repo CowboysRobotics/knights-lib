@@ -13,6 +13,8 @@ namespace knights {
             PID_Controller *pid_controller;
             Robot_Chassis *chassis;
             bool use_motor_encoders = false;
+
+            bool in_motion = false;
         public:
 
             Robot_Controller(Robot_Chassis *chassis, PID_Controller *pid_controller, bool use_motor_encoders = false);

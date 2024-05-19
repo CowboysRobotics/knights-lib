@@ -7,5 +7,11 @@
 
 void knights::Robot_Controller::follow_route(std::string route_name, const float &lookahead_distance, const float max_speed, const bool forwards, 
     const float end_tolerance, float timeout) {
+    if (this->in_motion) return;
+    this->in_motion = true;
+
     // follow a pure pursuit route  
+
+    this->in_motion = false;
+    return;
 }

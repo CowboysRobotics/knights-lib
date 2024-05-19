@@ -6,5 +6,11 @@
 #include "knights/util/calculation.h"
 
 void knights::Robot_Controller::move_to_point(const Pos point, const float &end_tolerance, float timeout, const float &num_pts) {
+    if (this->in_motion) return;
+    this->in_motion = true;
+
     // move to a point using boomerang and a pure pursuit route
+
+    this->in_motion = false;
+    return;
 }

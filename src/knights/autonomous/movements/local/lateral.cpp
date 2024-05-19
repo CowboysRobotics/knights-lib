@@ -7,6 +7,9 @@
 #include "knights/util/calculation.h"
 
 void knights::Robot_Controller::lateral_move(const float distance, const float end_tolerance, float timeout) {
+    if (this->in_motion) return;
+    this->in_motion = true;
+
     // lateral move the chassis of a robot
     if (this->chassis->drivetrain != nullptr) {
         // move function for differential drive
@@ -95,5 +98,6 @@ void knights::Robot_Controller::lateral_move(const float distance, const float e
         // holomic lateral movement code
     }
 
+    this->in_motion = false;
     return;
 }

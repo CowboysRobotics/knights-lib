@@ -6,5 +6,11 @@
 #include "knights/util/calculation.h"
 
 void knights::Robot_Controller::turn_to_angle(const float angle, const float end_tolerance, float timeout) {
+    if (this->in_motion) return;
+    this->in_motion = true;
+
     // turn to an angle provided in degrees
+
+    this->in_motion = false;
+    return;
 }
