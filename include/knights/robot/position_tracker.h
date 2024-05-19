@@ -13,7 +13,7 @@ namespace knights {
             pros::Rotation *rotation = NULL;
 
             // the triwire port sensor attached to the odom wheel
-            pros::ADIEncoder *adi_encoder = NULL;
+            pros::adi::Encoder *adi_encoder = NULL;
 
             // the motor that is for tracking
             pros::Motor *motor = NULL;
@@ -37,7 +37,7 @@ namespace knights {
             // @param adi_encoder the threewire encoder for the wheel
             // @param wheel_diameter the diameter of the wheel
             // @param gear_ratio the gear ratio of the wheel
-            Position_Tracker(pros::ADIEncoder *adi_encoder, float wheel_diameter, float gear_ratio, float offset);
+            Position_Tracker(pros::adi::Encoder *adi_encoder, float wheel_diameter, float gear_ratio, float offset);
 
             // @brief creates a new position tracking wheel
             // @param motor the motor encoder for the wheel

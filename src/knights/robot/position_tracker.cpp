@@ -6,7 +6,7 @@ Position_Tracker::Position_Tracker(pros::Rotation *rotation, float wheel_diamete
     : rotation(rotation), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio), offset(offset) {
 };
 
-Position_Tracker::Position_Tracker(pros::ADIEncoder *adi_encoder, float wheel_diameter, float gear_ratio, float offset) 
+Position_Tracker::Position_Tracker(pros::adi::Encoder *adi_encoder, float wheel_diameter, float gear_ratio, float offset) 
     : adi_encoder(adi_encoder), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio), offset(offset) {
 };
 
