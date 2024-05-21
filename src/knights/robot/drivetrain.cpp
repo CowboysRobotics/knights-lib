@@ -40,8 +40,8 @@ void knights::Holonomic::field_centric_drive(int vert_axis, int hori_axis, int r
     float theta = atan2(vert_axis,hori_axis);
     float theta2 = theta - inertial->get_heading();
 
-    int l_vert_axis = power_magnitude * std::sin(theta);
-    int l_hori_axis = power_magnitude * std::cos(theta);
+    int l_vert_axis = power_magnitude * std::cos(theta);
+    int l_hori_axis = power_magnitude * std::sin(theta);
 
     float lF, rF, lB, rB;
 

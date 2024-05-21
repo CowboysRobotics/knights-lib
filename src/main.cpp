@@ -5,25 +5,25 @@
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 // pros::Motor left_mtr(1);
 // pros::Motor right_mtr(2);
-// pros::Motor_Group right_mtrs({right_mtr});
-// pros::Motor_Group left_mtrs({left_mtr});
+pros::MotorGroup right_mtrs({1,2,3});
+pros::MotorGroup left_mtrs({8,9,10});
 // pros::Rotation right_odom(3);
 // pros::Rotation left_odom(4);
 pros::IMU imu(18);
 
-// knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.0, 600.0, 3.25, 0.75);
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.0, 600.0, 3.25, 0.75);
 // knights::Position_Tracker rightOdom(&right_odom, 1.0, 1, 2.5);
 // knights::Position_Tracker leftOdom(&left_odom, 1.0, 1, 2.5);
 // knights::Position_Tracker_Group odomTrackers(&rightOdom, &leftOdom, &imu);
 
 // knights::PID_Controller pidController(0.4, 0.0001, 0.085, 0, 127);
 
-pros::Motor right_front(4);
-pros::Motor right_back(3);
-pros::Motor left_front(2);
-pros::Motor left_back(1);
+// pros::Motor right_front(4);
+// pros::Motor right_back(3);
+// pros::Motor left_front(2);
+// pros::Motor left_back(1);
 
-knights::Holonomic holonomic(&right_front, &left_front, &right_back, &left_back, 10.0, 600.0, 3.25);
+// knights::Holonomic holonomic(&right_front, &left_front, &right_back, &left_back, 10.0, 600.0, 3.25);
 
 // knights::Robot_Chassis chassis(
 // 	&drivetrain,
@@ -100,9 +100,12 @@ void opcontrol() {
 	float lF, rF, lB, rB;
     long long reps = 0;
 
+	// right_mtrs.set_reversed_all(true);
+
 	while (true) {
 		// // left_mtr = master.get_analog(ANALOG_LEFT_Y);
 		// // right_mtr = master.get_analog(ANALOG_RIGHT_Y);
+		drivetrain.velocity_command(-master.get_analog(ANALOG_RIGHT_Y), master.get_analog(ANALOG_LEFT_Y));
 
 		// lF = master.get_analog(ANALOG_RIGHT_Y) + master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
 		// lB = master.get_analog(ANALOG_RIGHT_Y) - master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
@@ -112,11 +115,11 @@ void opcontrol() {
 
 		// holonomic.velocity_command(rF,lF,rB,lB);
 
-        holonomic.field_centric_drive(master.get_analog(ANALOG_RIGHT_Y), master.get_analog(ANALOG_RIGHT_X), 
-            master.get_analog(ANALOG_LEFT_X), &imu);
+        // holonomic.field_centric_drive(master.get_analog(ANALOG_RIGHT_Y), master.get_analog(ANALOG_RIGHT_X), 
+        //     master.get_analog(ANALOG_LEFT_X), &imu);
 
-        if (reps % 1000 == 0) 
-            printf("imu reading: %f\n", imu.get_heading());
+        // if (reps % 1000 == 0) 
+        //     printf("imu reading: %f\n", imu.get_heading());
 
 		pros::delay(10);
 	}
