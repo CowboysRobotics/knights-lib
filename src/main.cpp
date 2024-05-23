@@ -1,10 +1,6 @@
 #include "main.h"
 
-// run (pros c upgrade -ea) to upgrade to PROS 4
-
-pros::Controller master(pros::E_CONTROLLER_MASTER);
-// pros::Motor left_mtr(1);
-// pros::Motor right_mtr(2);
+pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 pros::MotorGroup right_mtrs({1,2,3});
 pros::MotorGroup left_mtrs({8,9,10});
 // pros::Rotation right_odom(3);
@@ -96,30 +92,16 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() {
-	float lF, rF, lB, rB;
-    long long reps = 0;
+#define velocity_formula(x) 81*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20
 
-	// right_mtrs.set_reversed_all(true);
+void opcontrol() {
+	float right_velocity, left_velocity;
 
 	while (true) {
-		// // left_mtr = master.get_analog(ANALOG_LEFT_Y);
-		// // right_mtr = master.get_analog(ANALOG_RIGHT_Y);
-		drivetrain.velocity_command(-master.get_analog(ANALOG_RIGHT_Y), master.get_analog(ANALOG_LEFT_Y));
+		right_velocity = velocity_formula(master_controller.get_analog(ANALOG_RIGHT_Y));
+		left_velocity = velocity_formula(master_controller.get_analog(ANALOG_LEFT_Y));
 
-		// lF = master.get_analog(ANALOG_RIGHT_Y) + master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
-		// lB = master.get_analog(ANALOG_RIGHT_Y) - master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
-
-		// rF = -master.get_analog(ANALOG_RIGHT_Y) + master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
-		// rB = -master.get_analog(ANALOG_RIGHT_Y) - master.get_analog(ANALOG_RIGHT_X) + master.get_analog(ANALOG_LEFT_X);
-
-		// holonomic.velocity_command(rF,lF,rB,lB);
-
-        // holonomic.field_centric_drive(master.get_analog(ANALOG_RIGHT_Y), master.get_analog(ANALOG_RIGHT_X), 
-        //     master.get_analog(ANALOG_LEFT_X), &imu);
-
-        // if (reps % 1000 == 0) 
-        //     printf("imu reading: %f\n", imu.get_heading());
+		drivetrain.velocity_command(right_velocity, left_velocity);
 
 		pros::delay(10);
 	}
