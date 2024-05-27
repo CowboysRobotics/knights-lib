@@ -1,30 +1,25 @@
 #include "main.h"
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
-pros::MotorGroup right_mtrs({1,2,3});
-pros::MotorGroup left_mtrs({8,9,10});
-// pros::Rotation right_odom(3);
-// pros::Rotation left_odom(4);
-pros::IMU imu(18);
+pros::MotorGroup right_mtrs({1,7,3});
+pros::MotorGroup left_mtrs({4,5,6});
+pros::Rotation mid_odom(18);
+pros::Rotation back_odom(14);
+
+// make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
+pros::IMU imu(15);
 
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.0, 600.0, 3.25, 0.75);
-// knights::Position_Tracker rightOdom(&right_odom, 1.0, 1, 2.5);
-// knights::Position_Tracker leftOdom(&left_odom, 1.0, 1, 2.5);
-// knights::Position_Tracker_Group odomTrackers(&rightOdom, &leftOdom, &imu);
+knights::Position_Tracker midOdom(&mid_odom, 1.0, 2.75, 0);
+knights::Position_Tracker backOdom(&back_odom, 1.0, 2.75, 2);
+knights::Position_Tracker_Group odomTrackers(&midOdom, &backOdom, &imu);
 
 // knights::PID_Controller pidController(0.4, 0.0001, 0.085, 0, 127);
 
-// pros::Motor right_front(4);
-// pros::Motor right_back(3);
-// pros::Motor left_front(2);
-// pros::Motor left_back(1);
-
-// knights::Holonomic holonomic(&right_front, &left_front, &right_back, &left_back, 10.0, 600.0, 3.25);
-
-// knights::Robot_Chassis chassis(
-// 	&drivetrain,
-// 	&odomTrackers
-// );
+knights::Robot_Chassis chassis(
+	&drivetrain,
+	&odomTrackers
+);
 
 // knights::Robot_Controller botController(&chassis, &pidController, false);
 
@@ -38,13 +33,42 @@ pros::Task *odomTask = nullptr;
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	// if (odomTask == nullptr)
-	// 	pros::Task *odomTask = new pros::Task {[=] {
-	// 		while (true) {
-	// 			chassis.update_position();
-	// 			pros::delay(10);
-	// 		}
-	// 	}};
+	while(imu.is_calibrating()) {
+		pros::delay(10);
+	}
+
+	printf("init new\n");
+
+	pros::lcd::initialize();
+
+	// wait until IMU is fully calibrated
+	pros::delay(2000);
+
+	knights::Pos starting_position(0,0,M_PI/2);
+
+	chassis.set_position(starting_position);
+	chassis.set_prev_position(starting_position);
+
+	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false));
+	midOdom.reset();
+	backOdom.reset();
+
+	left_mtrs.set_reversed(true, 0);
+	left_mtrs.set_reversed(true, 1);
+	left_mtrs.set_reversed(true, 2);
+
+	printf("inertial now: %lf\n", imu.get_heading());
+	printf("right odom: %lf\n", midOdom.get_distance_travelled());
+	printf("back odom: %lf\n", backOdom.get_distance_travelled());
+
+	if (odomTask == nullptr)
+		pros::Task *odomTask = new pros::Task {[=] {
+			while (true) {
+				chassis.update_position();
+				pros::lcd::print(1, "pos: %lf %lf %lf\n", chassis.get_position().x, chassis.get_position().y, knights::to_deg(chassis.get_position().heading));
+				pros::delay(20);
+			}
+		}};
 }
 
 /**
@@ -77,6 +101,16 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+	knights::PID_Controller pidController(2, 0.0, 0.0, 0.0, 127.0);
+	knights::Robot_Controller botController(&chassis, &pidController, false);
+
+	knights::Pos startPos(chassis.get_position());
+
+	botController.lateral_move(12.0, 0.3, 3000);
+
+	pros::lcd::print(2, "start: %lf %lf %lf\n", startPos.x, startPos.y, startPos.heading);
+	pros::lcd::print(3, "error: %lf\n", knights::distance_btwn(startPos, chassis.get_position()));
+
 }
 
 /**
@@ -95,14 +129,27 @@ void autonomous() {
 #define velocity_formula(x) 81*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20
 
 void opcontrol() {
-	float right_velocity, left_velocity;
+	float right_velocity = 0; float left_velocity = 0;
+
+	long reps = 0;
 
 	while (true) {
-		right_velocity = velocity_formula(master_controller.get_analog(ANALOG_RIGHT_Y));
-		left_velocity = velocity_formula(master_controller.get_analog(ANALOG_LEFT_Y));
+		if (abs(master_controller.get_analog(ANALOG_RIGHT_Y)) > 2)
+			right_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_RIGHT_Y)));
+		else
+			right_velocity = 0;
 
-		drivetrain.velocity_command(right_velocity, left_velocity);
+		if (abs(master_controller.get_analog(ANALOG_LEFT_Y)) > 2)
+			left_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_LEFT_Y)));
+		else
+			left_velocity = 0;
+
+		drivetrain.velocity_command(right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
+			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
+
+		printf("r %d, l %d\n", right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
 
 		pros::delay(10);
+		reps++;
 	}
 }

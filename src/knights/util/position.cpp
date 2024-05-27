@@ -45,9 +45,9 @@ Point knights::operator-(const Point &pt1, const Point &pt2) {
 };
 
 float knights::distance_btwn(const Pos &pt1, const Pos &pt2) {
-    return std::hypot(pt2.x - pt1.x, pt2.y - pt2.x);
+    return std::sqrt(std::pow((pt2.x - pt1.x), 2) + std::pow((pt2.y - pt2.x), 2));
 };
 
 float knights::distance_btwn(const Point &pt1, const Point &pt2) {
-    return std::hypot(pt2.x - pt1.x, pt2.y - pt2.x);
+    return std::sqrt(std::pow((pt2.x - pt1.x), 2) + std::pow((pt2.y - pt2.x), 2));
 };

@@ -61,6 +61,8 @@ void knights::Robot_Controller::lateral_move(const float distance, const float e
             // create a variable representing the desired position
             Pos desired_position(cos(this->chassis->curr_position.heading) * distance + this->chassis->curr_position.x, 
                 sin(this->chassis->curr_position.heading) * -distance + this->chassis->curr_position.y, this->chassis->curr_position.heading);
+
+            pros::lcd::print(6, "des pos: %lf %lf %lf\n", desired_position.x, desired_position.y, knights::to_deg(desired_position.heading));
             
             while(knights::distance_btwn(this->chassis->curr_position, desired_position) > end_tolerance) {
                 // decrease timeout and break if went over
@@ -75,6 +77,8 @@ void knights::Robot_Controller::lateral_move(const float distance, const float e
 
                 // use pid formula to calculate speed
                 speed = this->pid_controller->update(error, total_error, prev_error) * knights::signum(distance);
+
+                printf("speed: %lf\n", speed);
 
                 // save previous error
                 prev_error = error;
@@ -91,8 +95,8 @@ void knights::Robot_Controller::lateral_move(const float distance, const float e
         this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::MotorBrake::brake);
         this->chassis->drivetrain->left_mtrs->set_brake_mode_all(pros::MotorBrake::brake);
 
-        this->chassis->drivetrain->right_mtrs->brake();
-        this->chassis->drivetrain->left_mtrs->brake();
+        this->chassis->drivetrain->right_mtrs->move(0);
+        this->chassis->drivetrain->left_mtrs->move(0);
 
     } else {
         // holomic lateral movement code

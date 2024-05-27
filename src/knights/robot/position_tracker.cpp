@@ -16,7 +16,7 @@ Position_Tracker::Position_Tracker(pros::Motor *motor, float wheel_diameter, flo
 
 float Position_Tracker::get_distance_travelled() {
     if (this->rotation != NULL) {
-        return this->rotation->get_position() * ((this->wheel_diameter * this->gear_ratio * M_PI) / 360);
+        return this->rotation->get_position() * ((this->wheel_diameter * this->gear_ratio * M_PI) / 36000); // this works in centidegrees
     } else if (this->adi_encoder != NULL) {
         return this->adi_encoder->get_value() * ((this->wheel_diameter * this->gear_ratio * M_PI) / 360);
     } else if (this->motor != NULL) {

@@ -19,6 +19,7 @@ namespace knights {
             Holonomic *holonomic = nullptr; // the drivetrain to use for the chassis
             Position_Tracker_Group *pos_trackers = nullptr; // the sensors to use for location tracking
             Pos curr_position; // the current position of the robot
+            Pos prev_position;
 
             // previous values of the sensors for odometry control
             float prevRight = 0;
@@ -45,8 +46,28 @@ namespace knights {
             // @param heading the desired heading
             void set_position(float x, float y, float heading);
 
+            // @brief set the position of the chassis
+            // @param position the position to set it to
+            void set_position(Pos position);
+
             // @brief update the position of a chassis using its tracking system
             void update_position();
+
+            // @brief Get the current position of the chassis
+            Pos get_position();
+
+            // @brief set the position of the chassis
+            // @param x the desired x
+            // @param y the desired y
+            // @param heading the desired heading
+            void set_prev_position(float x, float y, float heading);
+
+            // @brief set the position of the chassis
+            // @param position the position to set it to
+            void set_prev_position(Pos position);
+
+            // @brief Get the current position of the chassis
+            Pos get_prev_position();
 
     };
 }
