@@ -5,7 +5,7 @@
 
 #include "knights/util/calculation.h"
 
-void knights::Robot_Controller::turn_for(const float angle, const float end_tolerance, float timeout) {
+void knights::Robot_Controller::turn_for(const float angle, float end_tolerance, float timeout, bool rad) {
     // turn the robot a certain amount of degrees, positive is left, negative is right
 
     if (this->in_motion) return;
@@ -61,9 +61,17 @@ void knights::Robot_Controller::turn_for(const float angle, const float end_tole
             }
 
         } else {
-            float desired_angle = normalize_angle(this->chassis->curr_position.heading + to_rad(angle), true);
+            float desired_angle;
+
+            if (rad) // inputs provided in rads
+                desired_angle = normalize_angle(this->chassis->curr_position.heading + angle, true);
+            else // inputs provided in degrees
+                end_tolerance = to_rad(end_tolerance);
+                desired_angle = normalize_angle(this->chassis->curr_position.heading + to_rad(angle), true);
 
             // TODO: edge case; person is not turning optimally, min angle will not be right - figure this out
+
+            pros::lcd::print(6, "des angle: %lf, min a: %lf\n", desired_angle, min_angle(this->chassis->curr_position.heading, desired_angle));
 
             while(min_angle(this->chassis->curr_position.heading, desired_angle, true) > end_tolerance) {
 
@@ -77,6 +85,8 @@ void knights::Robot_Controller::turn_for(const float angle, const float end_tole
                 speed = this->pid_controller->update(error, total_error, prev_error);
 
                 prev_error = error;
+
+                pros::lcd::print(7, "e: %lf, s: %lf, t: %lf\n", error, speed, timeout);
 
                 this->chassis->drivetrain->velocity_command(signum(angle) * speed, -signum(angle) * speed);
 

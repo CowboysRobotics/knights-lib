@@ -57,7 +57,18 @@ void initialize() {
 	left_mtrs.set_reversed(true, 1);
 	left_mtrs.set_reversed(true, 2);
 
-	printf("inertial now: %lf\n", imu.get_heading());
+	// printf("0 : %lf\n", knights::distance_btwn(knights::Point(0, 12), knights::Point(0, 12)));
+
+	// printf("24 : %lf\n", knights::distance_btwn(knights::Point(0, 12), knights::Point(0, -12)));
+
+	// printf("12 : %lf\n", knights::distance_btwn(knights::Point(0, 12), knights::Point(0, 0)));
+
+	// printf("0x : %lf\n", knights::distance_btwn(knights::Point(12, 12), knights::Point(12, 12)));
+
+	// printf("24x : %lf\n", knights::distance_btwn(knights::Point(-12, 12), knights::Point(12, 12)));
+
+	// printf("12x : %lf\n", knights::distance_btwn(knights::Point(12, 12), knights::Point(0, 12)));
+
 	printf("right odom: %lf\n", midOdom.get_distance_travelled());
 	printf("back odom: %lf\n", backOdom.get_distance_travelled());
 
@@ -101,15 +112,16 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	knights::PID_Controller pidController(2, 0.0, 0.0, 0.0, 127.0);
-	knights::Robot_Controller botController(&chassis, &pidController, false);
+	knights::PID_Controller lateralPID(4, 0.0, 0.0, 0.0, 127.0);
+	knights::Robot_Controller lateralController(&chassis, &lateralPID, false);
+
+	knights::PID_Controller turnPID(40, 0.0, 0.0, 0.0, 127.0);
+	knights::Robot_Controller turnController(&chassis, &turnPID, false);
 
 	knights::Pos startPos(chassis.get_position());
 
-	botController.lateral_move(12.0, 0.3, 3000);
-
-	pros::lcd::print(2, "start: %lf %lf %lf\n", startPos.x, startPos.y, startPos.heading);
-	pros::lcd::print(3, "error: %lf\n", knights::distance_btwn(startPos, chassis.get_position()));
+	// botController.lateral_move(24.0, 1, 3000);
+	turnController.turn_for(90, 2.0, 2000);
 
 }
 
@@ -146,8 +158,6 @@ void opcontrol() {
 
 		drivetrain.velocity_command(right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
 			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
-
-		printf("r %d, l %d\n", right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
 
 		pros::delay(10);
 		reps++;

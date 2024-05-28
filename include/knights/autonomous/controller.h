@@ -23,11 +23,11 @@ namespace knights {
 
             void move_to_point(const Pos point, const float &end_tolerance, float timeout = 3000, const float &num_pts = 10);
 
-            void turn_to_angle(const float angle, const float end_tolerance = 3.0, float timeout = 1000); // DEGREES
+            void turn_to_angle(const float angle, const float end_tolerance = 3.0, float timeout = 2000, bool rad = false); // DEGREES
 
-            void lateral_move(const float distance, const float end_tolerance = 3.0, float timeout = 1000);
+            void lateral_move(const float distance, float end_tolerance = 3.0, float timeout = 2000);
 
-            void turn_for(const float angle, const float end_tolerance = 2.0, float timeout= 1000); // DEGREES
+            void turn_for(const float angle, const float end_tolerance = 2.0, float timeout= 2000, bool rad = false); // DEGREES
 
 
     };

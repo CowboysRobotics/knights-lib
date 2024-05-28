@@ -64,12 +64,14 @@ void knights::Robot_Controller::lateral_move(const float distance, const float e
 
             pros::lcd::print(6, "des pos: %lf %lf %lf\n", desired_position.x, desired_position.y, knights::to_deg(desired_position.heading));
             
-            while(knights::distance_btwn(this->chassis->curr_position, desired_position) > end_tolerance) {
+            while (knights::distance_btwn(this->chassis->curr_position, desired_position) > end_tolerance || 
+                knights::distance_btwn(this->chassis->prev_position, desired_position) < knights::distance_btwn(this->chassis->curr_position, desired_position)) {
                 // decrease timeout and break if went over
                 timeout -= 10;
                 if (timeout < 0) break;
 
                 // calculate error
+                // error = std::sqrt(std::pow(desired_position.x - this->chassis->curr_position.x, 2) + std::pow(desired_position.y - this->chassis->curr_position.x, 2));
                 error = knights::distance_btwn(this->chassis->curr_position, desired_position);
 
                 // integrate error
@@ -77,8 +79,6 @@ void knights::Robot_Controller::lateral_move(const float distance, const float e
 
                 // use pid formula to calculate speed
                 speed = this->pid_controller->update(error, total_error, prev_error) * knights::signum(distance);
-
-                printf("speed: %lf\n", speed);
 
                 // save previous error
                 prev_error = error;
@@ -90,6 +90,7 @@ void knights::Robot_Controller::lateral_move(const float distance, const float e
                 pros::delay(10);
             }
 
+            pros::lcd::print(7, "end err: %lf\n", knights::distance_btwn(this->chassis->curr_position, desired_position));
         }
 
         this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::MotorBrake::brake);
