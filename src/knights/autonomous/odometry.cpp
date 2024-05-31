@@ -10,7 +10,7 @@ void knights::Robot_Chassis::update_position() {
 
     float deltaRight, deltaLeft, deltaFront, deltaBack;
 
-    float newHeading, averageHeading, deltaHeading;
+    float newHeading, averageHeading, deltaHeading, deltaYOffset;
 
     float deltaX, deltaY, localX, localY;
 
@@ -31,6 +31,7 @@ void knights::Robot_Chassis::update_position() {
         this->prevBack = this->pos_trackers->back_tracker->get_distance_travelled();
     }
 
+    // add kalman here
     if (deltaRight && deltaLeft) {
         deltaHeading = ((deltaLeft - deltaRight)/(this->pos_trackers->right_tracker->get_offset() + this->pos_trackers->left_tracker->get_offset()));
         newHeading = curr_position.heading - deltaHeading;
@@ -45,8 +46,19 @@ void knights::Robot_Chassis::update_position() {
     averageHeading = normalize_angle(newHeading - (deltaHeading / 2), true);
 
     // calculate change in x and y
+    if (this->pos_trackers->right_tracker != nullptr && this->pos_trackers->left_tracker != nullptr) {
+        deltaY = (deltaRight+deltaLeft)/2;
+        deltaYOffset = (this->pos_trackers->right_tracker->get_offset()+ this->pos_trackers->left_tracker->get_offset())/2;
+    } else if (this->pos_trackers->right_tracker != nullptr) {
+        deltaY = deltaRight;
+        deltaYOffset = this->pos_trackers->right_tracker->get_offset();
+    } else if (this->pos_trackers->left_tracker != nullptr) {
+        deltaY = deltaLeft;
+        deltaYOffset = this->pos_trackers->left_tracker->get_offset();
+    }
+
     deltaX = deltaBack;
-    deltaY = deltaRight; // using right wheel for the vertical tracking wheel
+    // deltaY = deltaRight; // using right wheel for the vertical tracking wheel
 
     this->prev_position = curr_position;
 
