@@ -4,6 +4,8 @@
 #define _CONTROLLER_H
 
 #include "knights/autonomous/pid.h"
+#include "knights/autonomous/path.h"
+
 #include "knights/robot/chassis.h"
 
 namespace knights {
@@ -16,10 +18,26 @@ namespace knights {
 
             bool in_motion = false;
         public:
-
+            /**
+             * @brief Construct a new Robot Controller object
+             * 
+             * @param chassis 
+             * @param pid_controller 
+             * @param use_motor_encoders 
+             */
             Robot_Controller(Robot_Chassis *chassis, PID_Controller *pid_controller, bool use_motor_encoders = false);
 
-            void follow_route(std::string route_name, const float &lookahead_distance = 15.0, const float max_speed = 127.0, const bool forwards = true, const float end_tolerance = 8.0, float timeout = 5000);
+            /**
+             * @brief Follow a route that has been read into the 
+             * 
+             * @param route 
+             * @param lookahead_distance 
+             * @param max_speed 
+             * @param forwards 
+             * @param end_tolerance 
+             * @param timeout 
+             */
+            void follow_route(knights::Route &route, const float &lookahead_distance = 15.0, const float max_speed = 127.0, const bool forwards = true, const float end_tolerance = 8.0, float timeout = 5000);
 
             void move_to_point(const Pos point, const float &end_tolerance, float timeout = 3000, const float &num_pts = 10);
 
