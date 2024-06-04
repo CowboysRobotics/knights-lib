@@ -16,7 +16,7 @@ namespace knights {
         /**
          * @brief Construct a new Route object
          * 
-         * @param positions A vector of positions for the route, this can be read off the SD card or inputted manually
+         * @param positions A vector of positions for the route, this can be read out of a file or inputted manually
          */
         Route(std::vector<Pos> positions);
 
@@ -25,7 +25,35 @@ namespace knights {
          * 
          */
         Route();
+
     };
+
+    /**
+     * @brief Append one route to another
+     * 
+     * @param r1 the route to append to
+     * @param r2 the route to append
+     * @return Route 
+     */
+    Route operator+(const Route &r1, const Route &r2);
+
+    /**
+     * @brief Add a position to a route
+     * 
+     * @param r1 the route to add to
+     * @param p1 the position to add
+     * @return Route 
+     */
+    Route operator+(Route r1, const Pos &p1);
+
+    /**
+     * @brief Remove a number of positions from the end of a route
+     * 
+     * @param r1 the route to remove positions from
+     * @param amt the amount of poitions to remove
+     * @return Route 
+     */
+    Route operator-(Route r1, const int &amt);
 
     /**
      * @brief Read a route from an SD card file

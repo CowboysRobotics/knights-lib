@@ -1,0 +1,1 @@
+#include "knights/autonomous/path.h"
