@@ -6,7 +6,7 @@
 
 #include "knights/util/calculation.h"
 
-void knights::Robot_Chassis::update_position() {
+void knights::RobotChassis::update_position() {
 
     float deltaRight, deltaLeft, deltaFront, deltaBack;
 

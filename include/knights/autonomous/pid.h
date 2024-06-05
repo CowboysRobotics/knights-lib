@@ -5,7 +5,7 @@
 
 namespace knights {
 
-    class PID_Controller {
+    class PIDController {
         private:
             // tuner values for the PID calculation
             float kP,kI,kD;
@@ -20,7 +20,7 @@ namespace knights {
              * @param kI integral tuner value
              * @param kD derivative tuner value
              */
-            PID_Controller(float kP, float kI, float kD);
+            PIDController(float kP, float kI, float kD);
 
             /**
              * @brief Construct a new PID controller object
@@ -31,12 +31,12 @@ namespace knights {
              * @param min_velocity minimum value that the system will return
              * @param max_velocity maximum value that the system will return
              */
-            PID_Controller(float kP, float kI, float kD, float min_velocity, float max_velocity);
+            PIDController(float kP, float kI, float kD, float min_velocity, float max_velocity);
 
             /**
              * @brief Construct a new pid controller object with 0.0 for each tuning value
              */
-            PID_Controller();
+            PIDController();
 
             /**
              * @brief Use the PID formula with the given tuner values in order to calculate a value that is adjusted for error

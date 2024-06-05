@@ -10,10 +10,10 @@
 
 namespace knights {
 
-    class Robot_Controller {
+    class RobotController {
         private:
-            PID_Controller *pid_controller;
-            Robot_Chassis *chassis;
+            PIDController *pid_controller;
+            RobotChassis *chassis;
             bool use_motor_encoders = false;
 
             bool in_motion = false;
@@ -25,7 +25,7 @@ namespace knights {
              * @param pid_controller 
              * @param use_motor_encoders 
              */
-            Robot_Controller(Robot_Chassis *chassis, PID_Controller *pid_controller, bool use_motor_encoders = false);
+            RobotController(RobotChassis *chassis, PIDController *pid_controller, bool use_motor_encoders = false);
 
             /**
              * @brief Follow a route that has been read into the 

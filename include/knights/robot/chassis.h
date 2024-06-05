@@ -13,11 +13,11 @@
 
 namespace knights {
 
-    class Robot_Chassis {
+    class RobotChassis {
         private:
             Drivetrain *drivetrain = nullptr; // the drivetrain to use for the chassis
             Holonomic *holonomic = nullptr; // the drivetrain to use for the chassis
-            Position_Tracker_Group *pos_trackers = nullptr; // the sensors to use for location tracking
+            PositionTrackerGroup *pos_trackers = nullptr; // the sensors to use for location tracking
             Pos curr_position; // the current position of the robot
             Pos prev_position;
 
@@ -28,7 +28,7 @@ namespace knights {
             float prevBack = 0;
 
             // declare the robot chassis class as a friend class, allows access into private objects
-            friend class Robot_Controller;
+            friend class RobotController;
         public:
             /**
              * @brief Construct a new Robot Chassis object
@@ -36,7 +36,7 @@ namespace knights {
              * @param drivetrain a pointer to the drivetrain to use for the chassis
              * @param pos_trackers a pointer to the sensors to use for location tracking
              */
-            Robot_Chassis(Drivetrain *drivetrain, Position_Tracker_Group *pos_trackers);
+            RobotChassis(Drivetrain *drivetrain, PositionTrackerGroup *pos_trackers);
 
 
             /**
@@ -45,7 +45,7 @@ namespace knights {
              * @param drivetrain a pointer to the drivetrain to use for the chassis
              * @param pos_trackers a pointer to the sensors to use for location tracking
              */
-            Robot_Chassis(Holonomic *drivetrain, Position_Tracker_Group *pos_trackers);
+            RobotChassis(Holonomic *drivetrain, PositionTrackerGroup *pos_trackers);
 
             /**
              * @brief Set the position of the chassis

@@ -10,13 +10,13 @@ pros::Rotation back_odom(14);
 pros::IMU imu(15);
 
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.0, 600.0, 3.25, 0.75);
-knights::Position_Tracker midOdom(&mid_odom, 1.0, 2.75, 0);
-knights::Position_Tracker backOdom(&back_odom, 1.0, 2.75, 2);
-knights::Position_Tracker_Group odomTrackers(&midOdom, &backOdom, &imu);
+knights::PositionTracker midOdom(&mid_odom, 1.0, 2.75, 0);
+knights::PositionTracker backOdom(&back_odom, 1.0, 2.75, 2);
+knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
 
 // knights::PID_Controller pidController(0.4, 0.0001, 0.085, 0, 127);
 
-knights::Robot_Chassis chassis(
+knights::RobotChassis chassis(
 	&drivetrain,
 	&odomTrackers
 );
@@ -112,11 +112,11 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	knights::PID_Controller lateralPID(4, 0.0, 0.0, 0.0, 127.0);
-	knights::Robot_Controller lateralController(&chassis, &lateralPID, false);
+	knights::PIDController lateralPID(4, 0.0, 0.0, 0.0, 127.0);
+	knights::RobotController lateralController(&chassis, &lateralPID, false);
 
-	knights::PID_Controller turnPID(40, 0.0, 0.0, 0.0, 127.0);
-	knights::Robot_Controller turnController(&chassis, &turnPID, false);
+	knights::PIDController turnPID(40, 0.0, 0.0, 0.0, 127.0);
+	knights::RobotController turnController(&chassis, &turnPID, false);
 
 	knights::Pos startPos(chassis.get_position());
 

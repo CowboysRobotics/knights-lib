@@ -7,7 +7,7 @@
 
 namespace knights {
 
-    class Position_Tracker {
+    class PositionTracker {
         private:
             // the rotation sensor attached to the odom wheel
             pros::Rotation *rotation = NULL;
@@ -31,19 +31,19 @@ namespace knights {
             // @param rotation the rotation sensor for the wheel
             // @param wheel_diameter the diameter of the wheel
             // @param gear_ratio the gear ratio of the wheel
-            Position_Tracker(pros::Rotation *rotation, float wheel_diameter, float gear_ratio, float offset);
+            PositionTracker(pros::Rotation *rotation, float wheel_diameter, float gear_ratio, float offset);
 
             // @brief creates a new position tracking wheel
             // @param adi_encoder the threewire encoder for the wheel
             // @param wheel_diameter the diameter of the wheel
             // @param gear_ratio the gear ratio of the wheel
-            Position_Tracker(pros::adi::Encoder *adi_encoder, float wheel_diameter, float gear_ratio, float offset);
+            PositionTracker(pros::adi::Encoder *adi_encoder, float wheel_diameter, float gear_ratio, float offset);
 
             // @brief creates a new position tracking wheel
             // @param motor the motor encoder for the wheel
             // @param wheel_diameter the diameter of the wheel
             // @param gear_ratio the gear ratio of the wheel
-            Position_Tracker(pros::Motor *motor, float wheel_diameter, float gear_ratio, float offset);
+            PositionTracker(pros::Motor *motor, float wheel_diameter, float gear_ratio, float offset);
 
             // @brief track the total distance the tracker has travelled
             // @return the position converted to inches
@@ -57,12 +57,12 @@ namespace knights {
             void reset();
     };
 
-    class Position_Tracker_Group {
+    class PositionTrackerGroup {
         public:
-            knights::Position_Tracker *right_tracker = nullptr; // the rightmost tracker
-            knights::Position_Tracker *left_tracker = nullptr; // the leftmost tracker
-            knights::Position_Tracker *front_tracker = nullptr; // the frontmost tracker
-            knights::Position_Tracker *back_tracker = nullptr; // the backmost tracker
+            knights::PositionTracker *right_tracker = nullptr; // the rightmost tracker
+            knights::PositionTracker *left_tracker = nullptr; // the leftmost tracker
+            knights::PositionTracker *front_tracker = nullptr; // the frontmost tracker
+            knights::PositionTracker *back_tracker = nullptr; // the backmost tracker
             pros::IMU *inertial = nullptr; // inertial sensor to use instead of tracking wheels
 
             // @brief create a new group of position trackers
@@ -70,24 +70,24 @@ namespace knights {
             // @param left the leftmost tracker
             // @param front the frontmost tracker
             // @param back the backmost tracker
-            Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *left, knights::Position_Tracker *front, knights::Position_Tracker *back);
+            PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, knights::PositionTracker *front, knights::PositionTracker *back);
 
             // @brief create a new group of position trackers
             // @param right the rightmost tracker
             // @param left the leftmost tracker
             // @param back the backmost tracker
-            Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *left, knights::Position_Tracker *back);
+            PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, knights::PositionTracker *back);
 
             // @brief create a new group of position trackers
             // @param right the rightmost tracker
             // @param left the leftmost tracker
-            Position_Tracker_Group(knights::Position_Tracker *right, knights::Position_Tracker *left);
+            PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left);
 
             // @brief create a new group of position trackers
             // @param middle tracking wheel in middle of bot
             // @param back the backmost tracker
             // @param inertial inertial sensor to use for angle
-            Position_Tracker_Group(knights::Position_Tracker *middle, knights::Position_Tracker *back, pros::IMU *inertial);
+            PositionTrackerGroup(knights::PositionTracker *middle, knights::PositionTracker *back, pros::IMU *inertial);
     };
 
 }

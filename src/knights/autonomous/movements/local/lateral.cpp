@@ -6,7 +6,7 @@
 
 #include "knights/util/calculation.h"
 
-void knights::Robot_Controller::lateral_move(const float distance, const float end_tolerance, float timeout) {
+void knights::RobotController::lateral_move(const float distance, const float end_tolerance, float timeout) {
     if (this->in_motion) return;
     this->in_motion = true;
 

@@ -5,7 +5,7 @@
 
 #include "knights/util/calculation.h"
 
-void knights::Robot_Controller::turn_for(const float angle, float end_tolerance, float timeout, bool rad) {
+void knights::RobotController::turn_for(const float angle, float end_tolerance, float timeout, bool rad) {
     // turn the robot a certain amount of degrees, positive is left, negative is right
 
     if (this->in_motion) return;

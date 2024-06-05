@@ -16,8 +16,8 @@ namespace knights {
             float wheel_diameter; // diameters of the largest wheels on the drivetrain
             float gear_ratio; // gear ratio of the drivetrain
 
-            friend class Robot_Chassis;
-            friend class Robot_Controller;
+            friend class RobotChassis;
+            friend class RobotController;
         public:
             // @brief create a differential drivetrain object
             // @param right_mtrs motors of right side of drivetrain

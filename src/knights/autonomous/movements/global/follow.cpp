@@ -10,7 +10,7 @@ void knights::init_route_from_sd(std::string route_name) {
 
 }
 
-void knights::Robot_Controller::follow_route_pursuit(knights::Route &route, const float &lookahead_distance, const float max_speed, const bool forwards, 
+void knights::RobotController::follow_route_pursuit(knights::Route &route, const float &lookahead_distance, const float max_speed, const bool forwards, 
     const float end_tolerance, float timeout) {
     if (this->in_motion) return;
     this->in_motion = true;
