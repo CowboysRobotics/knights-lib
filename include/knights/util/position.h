@@ -84,6 +84,35 @@ namespace knights {
     @return the distance between the points
     */
     float distance_btwn(const Point &pt1, const Point &pt2);
+
+    /**
+     * @brief Get the curvature of a circle intersecting a provided amount of points
+     * 
+     * @param pt1 start point
+     * @param pt2 middle point
+     * @param pt3 end point
+     * @return 1 / radius of the circle (curvature)
+     */
+    float curvature(const Pos &pt1, const Pos &pt2, const Pos &pt3);
+
+    /**
+     * @brief Get the curvature of a circle intersecting a provided amount of points
+     * 
+     * @param pt1 start point
+     * @param pt2 middle point
+     * @param pt3 end point
+     * @return 1 / radius of the circle (curvature)
+     */
+    float curvature(const Point &pt1, const Point &pt2, const Point &pt3);
+
+    /**
+     * @brief Get the curvature of a parabola intersecting two points
+     * 
+     * @param start the point to start at, this would represent a zero of the parabola
+     * @param end the point to end at, this would represent the vertex of the parabola
+     * @return float 
+     */
+    float curvature(const Pos &start, const Pos &end);
 }
 
 #endif
