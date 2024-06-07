@@ -8,14 +8,23 @@ namespace knights {
     struct Timer {
         long double start_time = 0;
 
-        // @brief Create a new timer, the start time is when it is created in milliseconds
+        /**
+         * @brief Create a new timer object with the start time being the time of creation
+         * 
+         */
         Timer();
 
-        // @brief Reset the timer to 0, sets the start_time variable to the current time in milliseconds
+        /**
+         * @brief Reset the start time on the timer object to the current time
+         * 
+         */
         void reset();
 
-        // @brief Get the current time of the timer based on the defined start_time variable
-        // @return Time elapsed since the creation or reset of the timer, in milliseconds
+        /**
+         * @brief Get the current time elapsed since the creation or reset of the timer
+         * 
+         * @return Time in milliseconds
+         */
         long double get();
     };
 }

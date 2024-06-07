@@ -27,33 +27,54 @@ namespace knights {
             // the distance from the wheel to the tracking center
             float offset = 0;
         public:
-            // @brief creates a new position tracking wheel
-            // @param rotation the rotation sensor for the wheel
-            // @param wheel_diameter the diameter of the wheel
-            // @param gear_ratio the gear ratio of the wheel
+            /**
+             * @brief Construct a new position tracking wheel
+             * 
+             * @param rotation rotation sensor for the wheel
+             * @param wheel_diameter diameter of the wheel
+             * @param gear_ratio gear ratio of the wheel
+             * @param offset vertical or horizontal distance from the tracking wheel to the trackign center
+             */
             PositionTracker(pros::Rotation *rotation, float wheel_diameter, float gear_ratio, float offset);
 
-            // @brief creates a new position tracking wheel
-            // @param adi_encoder the threewire encoder for the wheel
-            // @param wheel_diameter the diameter of the wheel
-            // @param gear_ratio the gear ratio of the wheel
+            /**
+             * @brief Construct a new position tracking wheel
+             * 
+             * @param adi_encoder rotation encoder for the wheel
+             * @param wheel_diameter diameter of the wheel
+             * @param gear_ratio gear ratio of the wheel
+             * @param offset vertical or horizontal distance from the tracking wheel to the trackign center
+             */
             PositionTracker(pros::adi::Encoder *adi_encoder, float wheel_diameter, float gear_ratio, float offset);
 
-            // @brief creates a new position tracking wheel
-            // @param motor the motor encoder for the wheel
-            // @param wheel_diameter the diameter of the wheel
-            // @param gear_ratio the gear ratio of the wheel
+            /**
+             * @brief Construct a new position tracking wheel
+             * 
+             * @param motor motor for the wheel
+             * @param wheel_diameter diameter of the wheel
+             * @param gear_ratio gear ratio of the wheel
+             * @param offset vertical or horizontal distance from the tracking wheel to the trackign center
+             */
             PositionTracker(pros::Motor *motor, float wheel_diameter, float gear_ratio, float offset);
 
-            // @brief track the total distance the tracker has travelled
-            // @return the position converted to inches
+            /**
+             * @brief Get the total distance the wheel has travelled
+             * 
+             * @return The position converted to inches
+             */
             float get_distance_travelled();
 
-            // @brief get the offset of the wheel from the tracking center
-            // @return the offset of the wheel from the tracking center
+            /**
+             * @brief Get the offset of the wheel to the tracking center
+             * 
+             * @return The distance in inches
+             */
             float get_offset();
 
-            // @brief resets the value of the encoder to zero
+            /**
+             * @brief Reset the value of the attached encoder to 0
+             * 
+             */
             void reset();
     };
 
@@ -65,28 +86,40 @@ namespace knights {
             knights::PositionTracker *back_tracker = nullptr; // the backmost tracker
             pros::IMU *inertial = nullptr; // inertial sensor to use instead of tracking wheels
 
-            // @brief create a new group of position trackers
-            // @param right the rightmost tracker
-            // @param left the leftmost tracker
-            // @param front the frontmost tracker
-            // @param back the backmost tracker
+            /**
+             * @brief Construct a new Position Tracker Group object
+             * 
+             * @param right right tracker, should be parallel to the drivetrain
+             * @param left left tracker, should be parallel to the drivetrain
+             * @param front front tracker, should be perpendicular to the drivetrain
+             * @param back back tracker, should be perpendicular to the drivetrain
+             */
             PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, knights::PositionTracker *front, knights::PositionTracker *back);
 
-            // @brief create a new group of position trackers
-            // @param right the rightmost tracker
-            // @param left the leftmost tracker
-            // @param back the backmost tracker
+            /**
+             * @brief Construct a new Position Tracker Group object
+             * 
+             * @param right right tracker, should be parallel to the drivetrain
+             * @param left left tracker, should be parallel to the drivetrain
+             * @param back back tracker, should be perpendicular to the drivetrain
+             */
             PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, knights::PositionTracker *back);
 
-            // @brief create a new group of position trackers
-            // @param right the rightmost tracker
-            // @param left the leftmost tracker
+            /**
+             * @brief Construct a new Position Tracker Group object
+             * 
+             * @param right right tracker, should be parallel to the drivetrain
+             * @param left left tracker, should be parallel to the drivetrain
+             */
             PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left);
 
-            // @brief create a new group of position trackers
-            // @param middle tracking wheel in middle of bot
-            // @param back the backmost tracker
-            // @param inertial inertial sensor to use for angle
+            /**
+             * @brief Construct a new Position Tracker Group object
+             * 
+             * @param middle middle tracker, should be parallel to the drivetrain
+             * @param back back tracker, should be perpendicular to the drivetrain
+             * @param inertial inertial sensor (IMU) to use for the heading
+             */
             PositionTrackerGroup(knights::PositionTracker *middle, knights::PositionTracker *back, pros::IMU *inertial);
     };
 
