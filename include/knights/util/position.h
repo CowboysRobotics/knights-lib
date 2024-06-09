@@ -86,6 +86,26 @@ namespace knights {
     float distance_btwn(const Point &pt1, const Point &pt2);
 
     /**
+     * @brief Get whichever point is closer to a certain point
+     * 
+     * @param start point to measure from
+     * @param pt1 point to consider
+     * @param pt2 point to consider
+     * @return The closet point out of point 1 and 2 to the start point
+     */
+    Pos closest_point(const Pos &start, const Pos &pt1, const Pos &pt2);
+
+    /**
+     * @brief Get whichever point is closer to a certain point
+     * 
+     * @param start point to measure from
+     * @param pt1 point to consider
+     * @param pt2 point to consider
+     * @return The closet point out of point 1 and 2 to the start point
+     */
+    Point closest_point(const Point &start, const Point &pt1, const Point &pt2);
+
+    /**
      * @brief Get the curvature of a circle intersecting a provided amount of points
      * 
      * @param pt1 start point

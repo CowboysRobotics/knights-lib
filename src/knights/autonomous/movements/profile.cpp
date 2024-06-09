@@ -16,4 +16,10 @@ std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate_profi
     std::vector<knights::ProfileTimestamp> output;
 
     knights::Timer timer;
+
+    knights::Pos curr = start;
+
+    while (distance_btwn(curr, route.positions[route.positions.size()-1])) {
+        // route
+    }
 }
