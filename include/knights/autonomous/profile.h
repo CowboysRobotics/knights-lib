@@ -33,7 +33,8 @@ namespace knights {
 
             ProfileGenerator(float rpm, float wheel_diameter);
 
-            std::vector<ProfileTimestamp> generate_profile(knights::Route route, knights::Pos start);
+            std::vector<ProfileTimestamp> generate_profile(knights::Route route, knights::Pos start, knights::Drivetrain* drivetrain, 
+                float lookahead, float speed_max, float speed_min, float interval);
     };
 
 }

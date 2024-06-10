@@ -18,6 +18,7 @@ namespace knights {
 
             friend class RobotChassis;
             friend class RobotController;
+            friend class ProfileGenerator;
         public:
             /**
              * @brief Construct a new differential drivetrain object
