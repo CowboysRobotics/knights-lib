@@ -1,5 +1,6 @@
 #include "knights/autonomous/path.h"
 #include "knights/autonomous/profile.h"
+#include "knights/util/calculation.h"
 #include "knights/util/timer.h"
 
 knights::ProfileTimestamp::ProfileTimestamp(knights::Pos position, float expected_velocity, float time,
@@ -60,6 +61,10 @@ std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate_profi
         curr.y += linear_speed * std::sin(curr.heading) * interval; // interval in ms
         curr.heading += angular_omega * interval;
 
+        curr.heading = normalize_angle(curr.heading);
+
         pros::delay(interval);
     }
+
+    return output;
 }

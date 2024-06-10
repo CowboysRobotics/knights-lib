@@ -6,6 +6,7 @@
 #include "knights/autonomous/controller.h"
 #include "knights/autonomous/pid.h"
 #include "knights/autonomous/path.h"
+#include "knights/autonomous/profile.h"
 
 #include "knights/robot/chassis.h"
 #include "knights/robot/drivetrain.h"

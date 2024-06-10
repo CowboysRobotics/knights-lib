@@ -57,18 +57,6 @@ void initialize() {
 	left_mtrs.set_reversed(true, 1);
 	left_mtrs.set_reversed(true, 2);
 
-	// printf("0 : %lf\n", knights::distance_btwn(knights::Point(0, 12), knights::Point(0, 12)));
-
-	// printf("24 : %lf\n", knights::distance_btwn(knights::Point(0, 12), knights::Point(0, -12)));
-
-	// printf("12 : %lf\n", knights::distance_btwn(knights::Point(0, 12), knights::Point(0, 0)));
-
-	// printf("0x : %lf\n", knights::distance_btwn(knights::Point(12, 12), knights::Point(12, 12)));
-
-	// printf("24x : %lf\n", knights::distance_btwn(knights::Point(-12, 12), knights::Point(12, 12)));
-
-	// printf("12x : %lf\n", knights::distance_btwn(knights::Point(12, 12), knights::Point(0, 12)));
-
 	printf("right odom: %lf\n", midOdom.get_distance_travelled());
 	printf("back odom: %lf\n", backOdom.get_distance_travelled());
 
