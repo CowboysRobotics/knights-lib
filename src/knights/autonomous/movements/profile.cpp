@@ -44,6 +44,13 @@ std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate_profi
         float r_speed = curr_speed * (2 - angular_curvature * drivetrain->track_width) / 2;
         float l_speed = curr_speed * (2 + angular_curvature * drivetrain->track_width) / 2;
 
+        // normalize on ratio - maybe remove
+        float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / 127.0; // might just be maxSpeed but 12.0 is max volts
+        if (max_curr_speed > 1) {
+            r_speed /= max_curr_speed;
+            l_speed /= max_curr_speed;
+        }
+
         output.emplace_back(curr, curr_speed, timer.get(), r_speed, l_speed);
 
         float linear_speed = (r_speed + l_speed) / 2; // TODO: convert to inches per millisecond 
