@@ -60,7 +60,7 @@ namespace knights {
      * 
      * @param route_name The name and extension of the file to look for (ex. "file.txt")
      */
-    void init_route_from_sd(std::string route_name);
+    Route init_route_from_sd(std::string route_name);
 }
 
 #endif
