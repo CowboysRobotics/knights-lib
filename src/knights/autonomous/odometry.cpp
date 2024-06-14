@@ -69,7 +69,7 @@ void knights::RobotChassis::update_position() {
         localY = deltaY;
     }
     else {
-        float cnst = 2 * sin(deltaHeading / 2);
+        const float cnst = 2 * sin(deltaHeading / 2);
         // curved
         localX = cnst * (deltaX / deltaHeading + this->pos_trackers->back_tracker->get_offset());
         localY = cnst * (deltaY / deltaHeading + this->pos_trackers->right_tracker->get_offset()); // using right wheel for vertical tracking
