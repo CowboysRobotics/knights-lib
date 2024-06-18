@@ -36,6 +36,32 @@ Pos knights::operator-(const Pos &pt1, const Pos &pt2) {
     return Pos(pt1.x-pt2.x, pt1.x-pt2.x, std::fmod(pt1.heading-pt2.heading + 8*M_PI, 2*M_PI));
 };
 
+// TODO: Make sure these four below are correct logic
+bool knights::operator!=(const Pos &pt1, const Pos &pt2) {
+    return (distance_btwn(pt1, pt2) != 0);
+}
+
+bool knights::operator==(const Pos &pt1, const Pos &pt2) {
+    return (distance_btwn(pt1, pt2) == 0);
+}
+
+bool knights::operator!=(const Point &pt1, const Point &pt2) {
+    return (distance_btwn(pt1, pt2) != 0);
+}
+
+bool knights::operator==(const Point &pt1, const Point &pt2) {
+    return (distance_btwn(pt1, pt2) == 0);
+}
+// ---- END TODO ----
+
+float operator*(const Pos &pt1, const Pos &pt2) {
+    return (pt1.x * pt2.x + pt1.y * pt2.y);
+};
+
+float operator*(const Point &pt1, const Point &pt2) {
+    return (pt1.x * pt2.x + pt1.y * pt2.y);
+};
+
 Point knights::operator+(const Point &pt1, const Point &pt2) {
     return Point(pt1.x+pt2.x, pt1.x+pt2.x);
 };

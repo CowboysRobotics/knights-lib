@@ -37,10 +37,10 @@ knights::Route init_route_from_sd(std::string route_name) {
         if (read_file) {
             std::vector<knights::Pos> positions;
 
-            float x,y,heading;
+            float x,y;
 
-            while (read_file >> x && read_file >> y && read_file >> heading) {
-                positions.emplace_back(x,y,heading);
+            while (read_file >> x && read_file >> y) {
+                positions.emplace_back(x,y);
             }
 
             return knights::Route(positions);

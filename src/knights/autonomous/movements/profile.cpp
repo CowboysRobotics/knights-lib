@@ -3,6 +3,8 @@
 #include "knights/util/calculation.h"
 #include "knights/util/timer.h"
 
+// MIGHT NOT BE USEFUL
+
 knights::ProfileTimestamp::ProfileTimestamp(knights::Pos position, float expected_velocity, float time,
     float right_speed, float left_speed) :
     position(position), expected_velocity(expected_velocity), time(time), right_speed(right_speed), left_speed(left_speed) {}
@@ -18,14 +20,14 @@ std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate_profi
 
     std::vector<knights::ProfileTimestamp> output;
 
-    knights::Timer timer;
+    int time = 0;
 
     knights::Pos curr = start;
 
     int i = 0;
     knights::Pos target = route.positions[i];
 
-    while (distance_btwn(curr, route.positions[route.positions.size()-1])) {
+    while (distance_btwn(curr, route.positions[route.positions.size()-1]) > 10.0) { // TODO: make new var for end tolerance
         // route
 
         while (knights::distance_btwn(curr, route.positions[i]) < lookahead && i < route.positions.size()-1) {
@@ -46,24 +48,24 @@ std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate_profi
         float l_speed = curr_speed * (2 + angular_curvature * drivetrain->track_width) / 2;
 
         // normalize on ratio - maybe remove
-        float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / 127.0; // might just be maxSpeed but 12.0 is max volts
+        float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / 127.0;
         if (max_curr_speed > 1) {
             r_speed /= max_curr_speed;
             l_speed /= max_curr_speed;
         }
 
-        output.emplace_back(curr, curr_speed, timer.get(), r_speed, l_speed);
+        output.emplace_back(curr, curr_speed, time, r_speed, l_speed);
 
-        float linear_speed = (r_speed + l_speed) / 2; // TODO: convert to inches per millisecond 
-        float angular_omega = (r_speed - l_speed) / drivetrain->track_width;
+        float linear_speed = ((r_speed + l_speed) / 2) * ((drivetrain->rpm * drivetrain->wheel_diameter / 60000) / 127.0); // TODO: convert to inches per millisecond 
+        float angular_omega = (r_speed - l_speed) * ((drivetrain->rpm * drivetrain->wheel_diameter / 60000) / 127.0) / drivetrain->track_width;
 
-        curr.x += linear_speed * std::cos(curr.heading) * interval; // interval in ms
-        curr.y += linear_speed * std::sin(curr.heading) * interval; // interval in ms
+        curr.x += linear_speed * cosf(curr.heading) * interval; // interval in ms
+        curr.y += linear_speed * sinf(curr.heading) * interval; // interval in ms
         curr.heading += angular_omega * interval;
 
         curr.heading = normalize_angle(curr.heading);
 
-        pros::delay(interval);
+        time += interval;
     }
 
     return output;

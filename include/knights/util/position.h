@@ -57,6 +57,24 @@ namespace knights {
     Pos operator-(const Pos &pt1, const Pos &pt2);
 
     /**
+     * @brief Compare whether two points are equal
+     * 
+     * @param pt1 first point
+     * @param pt2 second point
+     * @return Pos 
+     */
+    bool operator!=(const Pos &pt1, const Pos &pt2);
+
+    /**
+     * @brief Compare whether two points are equal
+     * 
+     * @param pt1 first point
+     * @param pt2 second point
+     * @return Pos 
+     */
+    bool operator==(const Pos &pt1, const Pos &pt2);
+
+    /**
     @brief adds the two points together
     @param pt1,pt2 point to add
     @return a points containing the combination of both points
@@ -70,6 +88,42 @@ namespace knights {
     @return a points containing pt2 subtracted from pt1
     */
     Point operator-(const Point &pt1, const Point &pt2);
+
+    /**
+     * @brief Compare whether two points are equal
+     * 
+     * @param pt1 first point
+     * @param pt2 second point
+     * @return Pos 
+     */
+    bool operator!=(const Point &pt1, const Point &pt2);
+
+    /**
+     * @brief Compare whether two points are equal
+     * 
+     * @param pt1 first point
+     * @param pt2 second point
+     * @return Pos 
+     */
+    bool operator==(const Point &pt1, const Point &pt2);
+
+    /**
+     * @brief Dot product of two points
+     * 
+     * @param pt1 point one
+     * @param pt2 point two
+     * @return float 
+     */
+    float operator*(const Point &pt1, const Point &pt2);
+
+    /**
+     * @brief Dot product of two points
+     * 
+     * @param pt1 point one
+     * @param pt2 point two
+     * @return float 
+     */
+    float operator*(const Pos &pt1, const Pos &pt2);
 
     /**
     @brief get the distance between two positions
