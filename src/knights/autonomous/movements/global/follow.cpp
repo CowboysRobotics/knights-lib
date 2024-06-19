@@ -14,7 +14,6 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
     // follow a pure pursuit route  
 
     // declare essential values
-    float speedCurvature, moveCurvature, maxSpeed, prevTargetVelocity, currTargetVelocity, rightSpeed, leftSpeed, maxCurrentSpeed;
     knights::Pos targetPoint = route.positions[0];
     int i = 0;
 
@@ -53,8 +52,30 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
                 t = -1;
         } else 
             t = -1;
-        
+
+        // TODO: above, determine a correct value of t and extrapolate the target point value from that
+
+        // determine the speed and angular curvature to use for calculating ratio of motor velocities
+        float target_speed = std::fmin(5/curvature(this->chassis->curr_position, targetPoint, route.positions[i+1]), max_speed);
+        float angular_curve = curvature(this->chassis->curr_position, targetPoint);
+
+        // calculate right and left speed based on curvature
+        float r_speed = target_speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;
+        float l_speed = target_speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2;
+
+        // calculate if one is over max alloted speed (might need to be 127.0 - max speed in pros)
+        float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / max_speed; 
+        if (max_curr_speed > 1) {
+            r_speed /= max_curr_speed;
+            l_speed /= max_curr_speed;
+        }
+
+        // apply calculated velocities to motors
+        this->chassis->drivetrain->velocity_command(r_speed, l_speed);
     }
+
+    // stop motors after route over
+    this->chassis->drivetrain->velocity_command(0,0);
 
     this->in_motion = false;
     return;
