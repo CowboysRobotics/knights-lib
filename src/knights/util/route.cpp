@@ -27,7 +27,7 @@ knights::Route knights::operator-(knights::Route r1, const int &amt) {
     return r1;
 }
 
-knights::Route init_route_from_sd(std::string route_name) {
+knights::Route knights::init_route_from_sd(std::string route_name) {
 
     if (pros::usd::is_installed) {
         route_name.insert(0, "/usd/");
@@ -40,7 +40,7 @@ knights::Route init_route_from_sd(std::string route_name) {
             float x,y;
 
             while (read_file >> x && read_file >> y) {
-                positions.emplace_back(x,y);
+                positions.emplace_back(x,y,0);
             }
 
             return knights::Route(positions);

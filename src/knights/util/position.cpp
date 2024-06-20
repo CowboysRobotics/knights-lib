@@ -54,11 +54,11 @@ bool knights::operator==(const Point &pt1, const Point &pt2) {
 }
 // ---- END TODO ----
 
-float operator*(const Pos &pt1, const Pos &pt2) {
+float knights::operator*(const Pos &pt1, const Pos &pt2) {
     return (pt1.x * pt2.x + pt1.y * pt2.y);
 };
 
-float operator*(const Point &pt1, const Point &pt2) {
+float knights::operator*(const Point &pt1, const Point &pt2) {
     return (pt1.x * pt2.x + pt1.y * pt2.y);
 };
 
@@ -187,4 +187,8 @@ float knights::curvature(const Pos &start, const Pos &end) {
 
     // return the curvature
     return side * ((2 * x) / (lookaheadDistance * lookaheadDistance));
+}
+
+knights::Pos knights::lerp(const Pos &pt1, const Pos &pt2, const float t) {
+    return knights::Pos(pt1.x + (pt2.x - pt1.x) * t, pt1.y + (pt2.y - pt1.y) * t, pt1.heading);
 }

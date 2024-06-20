@@ -89,6 +89,16 @@ namespace knights {
     */
     int clamp(int num, int min, int max);
 
+    /**
+     * @brief Get the solution for a circle centered at curr with a radius of lookahead with an intersection of the line segment prev and nxt
+     * 
+     * @param nxt end of line segment
+     * @param prev start of line segment
+     * @param curr center of the circle
+     * @param lookahead_distance radius of the circle
+     * @return The 't' parameter 
+     */
+    float circle_intersection(knights::Pos nxt, knights::Pos prev, knights::Pos curr, float lookahead_distance);
 }
 
 #endif

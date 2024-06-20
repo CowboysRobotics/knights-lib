@@ -187,6 +187,16 @@ namespace knights {
      * @return float 
      */
     float curvature(const Pos &start, const Pos &end);
+
+    /**
+     * @brief Linear interpolation between two points
+     * 
+     * @param pt1 start point
+     * @param pt2 end point
+     * @param t percent of distance between the points [0,1]
+     * @return Pos at the specified t value between the two
+     */
+    Pos lerp(const Pos &pt1, const Pos &pt2, const float t);
 }
 
 #endif

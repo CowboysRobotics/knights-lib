@@ -41,6 +41,12 @@ void initialize() {
 
 	pros::lcd::initialize();
 
+	knights::Route test = knights::init_route_from_sd("tst.txt");
+
+	for (knights::Pos Position : test.positions) {
+		printf("Read: %lf %lf %lf\n", Position.x, Position.y, Position.heading);
+	}
+
 	// wait until IMU is fully calibrated
 	pros::delay(2000);
 
@@ -56,9 +62,6 @@ void initialize() {
 	left_mtrs.set_reversed(true, 0);
 	left_mtrs.set_reversed(true, 1);
 	left_mtrs.set_reversed(true, 2);
-
-	printf("right odom: %lf\n", midOdom.get_distance_travelled());
-	printf("back odom: %lf\n", backOdom.get_distance_travelled());
 
 	if (odomTask == nullptr)
 		pros::Task *odomTask = new pros::Task {[=] {
