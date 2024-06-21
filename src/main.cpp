@@ -9,7 +9,7 @@ pros::Rotation back_odom(14);
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
 pros::IMU imu(15);
 
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.0, 600.0, 3.25, 0.75);
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 18.0, 600.0, 3.25, 0.75);
 knights::PositionTracker midOdom(&mid_odom, 1.0, 2.75, 0);
 knights::PositionTracker backOdom(&back_odom, 1.0, 2.75, 2);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
@@ -41,16 +41,10 @@ void initialize() {
 
 	pros::lcd::initialize();
 
-	knights::Route test = knights::init_route_from_sd("tst.txt");
-
-	for (knights::Pos Position : test.positions) {
-		printf("Read: %lf %lf %lf\n", Position.x, Position.y, Position.heading);
-	}
-
 	// wait until IMU is fully calibrated
 	pros::delay(2000);
 
-	knights::Pos starting_position(0,0,M_PI/2);
+	knights::Pos starting_position(-36,60,M_PI/2); // used to be 0,0
 
 	chassis.set_position(starting_position);
 	chassis.set_prev_position(starting_position);
@@ -111,8 +105,13 @@ void autonomous() {
 
 	knights::Pos startPos(chassis.get_position());
 
-	// botController.lateral_move(24.0, 1, 3000);
-	turnController.turn_for(90, 2.0, 2000);
+	knights::Route test = knights::init_route_from_sd("tst.txt");
+
+	for (knights::Pos Position : test.positions) {
+		printf("Read: %lf %lf %lf\n", Position.x, Position.y, Position.heading);
+	}
+
+	lateralController.follow_route_pursuit(test, 18.0, 80.0, true, 8.0, 2000);
 
 }
 

@@ -45,7 +45,7 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
     float closest_dist = 1e10;
 
     // While the robot has not reached the desired point and is not at the end of the route
-    while (distance_btwn(this->chassis->curr_position, route.positions[route.positions.size()-1]) < end_tolerance || target_point != route.positions[route.positions.size()-1]) {
+    while (distance_btwn(this->chassis->curr_position, route.positions[route.positions.size()-1]) > end_tolerance && closest_i != route.positions.size()-1) {
 
         // find nearest point
         for (int i = 0; i < route.positions.size(); i++) {
@@ -79,8 +79,19 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
             l_speed /= max_curr_speed;
         }
 
+        printf("target: %lf %lf curr: %lf %lf %lf , speed: %lf , angular: %lf , side speed: %lf %lf\n", 
+            target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
+            target_speed, angular_curve, r_speed, l_speed
+        );
+
         // apply calculated velocities to motors
         this->chassis->drivetrain->velocity_command(r_speed, l_speed);
+
+        // wait for next iteration of loop
+        pros::delay(10);
+        timeout -= 10;
+
+        if (timeout < 0) break;
     }
 
     // stop motors after route over
@@ -88,6 +99,7 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
 
     this->in_motion = false;
     return;
+    
 }
 
 void knights::RobotController::follow_route_ramsete(knights::Route &route, float timeout) {
