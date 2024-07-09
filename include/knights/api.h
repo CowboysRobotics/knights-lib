@@ -16,4 +16,6 @@
 #include "knights/util/calculation.h"
 #include "knights/util/timer.h"
 
+#include "knights/display.h"
+
 #endif

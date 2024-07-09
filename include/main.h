@@ -34,7 +34,10 @@
  */
 #define PROS_USE_LITERALS
 
+// PROS include
 #include "api.h"
+
+// Knights Lib Include
 #include "knights/api.h"
 
 /**

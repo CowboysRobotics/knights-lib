@@ -37,9 +37,8 @@ void initialize() {
 		pros::delay(10);
 	}
 
-	printf("init new\n");
-
-	pros::lcd::initialize();
+	// pros::lcd::initialize();
+	knights::lv_display();
 
 	// wait until IMU is fully calibrated
 	pros::delay(2000);
@@ -61,7 +60,8 @@ void initialize() {
 		pros::Task *odomTask = new pros::Task {[=] {
 			while (true) {
 				chassis.update_position();
-				pros::lcd::print(1, "pos: %lf %lf %lf\n", chassis.get_position().x, chassis.get_position().y, knights::to_deg(chassis.get_position().heading));
+				// pros::lcd::print(1, "pos: %lf %lf %lf\n", chassis.get_position().x, chassis.get_position().y, knights::to_deg(chassis.get_position().heading));
+				knights::set_pos_label(chassis.get_position());
 				pros::delay(20);
 			}
 		}};
@@ -107,11 +107,13 @@ void autonomous() {
 
 	knights::Route test = knights::init_route_from_sd("tst.txt");
 
+	printf("Route of size %i loaded to memory\n", test.positions.size());
+
 	for (knights::Pos Position : test.positions) {
 		printf("Read: %lf %lf %lf\n", Position.x, Position.y, Position.heading);
 	}
 
-	lateralController.follow_route_pursuit(test, 18.0, 80.0, true, 8.0, 2000);
+	lateralController.follow_route_pursuit(test, 12.0, 80.0, true, 8.0, 5000);
 
 }
 
