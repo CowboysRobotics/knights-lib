@@ -22,4 +22,6 @@ namespace knights {
 
 }
 
+const uint8_t pix_art_his_field_map[];
+
 #endif

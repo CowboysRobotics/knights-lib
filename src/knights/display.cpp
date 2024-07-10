@@ -65,11 +65,14 @@ void knights::lv_display(void)
     lv_obj_set_width(pos_label, 210);
 
     // Display field setup
-    lv_obj_t* bkgd = lv_obj_create(lv_scr_act());
+    // lv_obj_t* bkgd = lv_obj_create(lv_scr_act());
+    // lv_obj_set_style_bg_color(bkgd, lv_palette_lighten(LV_PALETTE_GREY,3), LV_STATE_ANY);
+    LV_IMG_DECLARE(pix_art_his_field_map);
+    lv_obj_t* bkgd = lv_img_create(lv_scr_act());
+    lv_img_set_src(bkgd, &pix_art_his_field_map);
     lv_obj_align(bkgd, LV_ALIGN_BOTTOM_RIGHT, -40,-20);
     lv_obj_set_width(bkgd, 180);
     lv_obj_set_height(bkgd, 180);
-    lv_obj_set_style_bg_color(bkgd, lv_palette_lighten(LV_PALETTE_GREY,3), LV_STATE_ANY);
 }  
 
 void knights::set_pos_label(std::string str) {
