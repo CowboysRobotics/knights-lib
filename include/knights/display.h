@@ -18,7 +18,7 @@ namespace knights {
 
     AutonSelectionPackage get_selected_auton();
 
-    void set_pos_label(knights::Pos curr_pos);
+    void set_pos_label(std::string str);
 
 }
 

@@ -29,8 +29,7 @@ static void event_handler(lv_event_t * e)
 
 static const char* type_map[] = {"Red", "Blue", ""};
 
-static const char* num_map[] = {"1", "2", "3", "4", "\n",
-                                "5", "6", "7", "8", ""};
+static const char* num_map[] = {"1", "2", "3", "4", ""};
 
 void knights::lv_display(void)
 {
@@ -42,7 +41,7 @@ void knights::lv_display(void)
     lv_btnmatrix_set_btn_ctrl_all(btnm1, LV_BTNMATRIX_CTRL_CHECKABLE);
     lv_btnmatrix_set_one_checked(btnm1, true);
 
-    lv_obj_align(btnm1, LV_ALIGN_TOP_LEFT, 10, 10);
+    lv_obj_align(btnm1, LV_ALIGN_TOP_LEFT, 10, 30);
     lv_obj_add_event_cb(btnm1, event_handler, LV_EVENT_ALL, NULL);
     lv_obj_set_content_width(btnm1, 200);
     lv_obj_set_content_height(btnm1, 50);
@@ -53,19 +52,26 @@ void knights::lv_display(void)
     lv_btnmatrix_set_btn_ctrl_all(btnm2, LV_BTNMATRIX_CTRL_CHECKABLE);
     lv_btnmatrix_set_one_checked(btnm2, true);
 
-    lv_obj_align(btnm2, LV_ALIGN_BOTTOM_LEFT, 10, 0);
+    lv_obj_align(btnm2, LV_ALIGN_BOTTOM_LEFT, 10, -30);
     lv_obj_add_event_cb(btnm2, event_handler, LV_EVENT_ALL, NULL);
     lv_obj_set_content_width(btnm2, 200);
-    lv_obj_set_content_height(btnm2, 100);
+    lv_obj_set_content_height(btnm2, 50);
 
     // Display User Label - use for odom etc
     pos_label = lv_label_create(lv_scr_act());
-    lv_label_set_text(pos_label, "Curr Pos: ? ? ?");
+    lv_label_set_text(pos_label, "Curr Pos: 0.00 0.00 0.00");
+    lv_label_set_long_mode(pos_label , LV_LABEL_LONG_WRAP);
     lv_obj_align(pos_label, LV_ALIGN_TOP_RIGHT, -10,20);
+    lv_obj_set_width(pos_label, 210);
+
+    // Display field setup
+    lv_obj_t* bkgd = lv_obj_create(lv_scr_act());
+    lv_obj_align(bkgd, LV_ALIGN_BOTTOM_RIGHT, -40,-20);
+    lv_obj_set_width(bkgd, 180);
+    lv_obj_set_height(bkgd, 180);
+    lv_obj_set_style_bg_color(bkgd, lv_palette_lighten(LV_PALETTE_GREY,3), LV_STATE_ANY);
 }  
 
-void knights::set_pos_label(knights::Pos curr_pos) {
-    // BUG: Printing f instead of data
-    lv_label_set_text_fmt(pos_label, "Curr Pos: %f %f %f", 
-		curr_pos.x, curr_pos.y, knights::to_deg(curr_pos.heading));
+void knights::set_pos_label(std::string str) {
+    lv_label_set_text(pos_label, str.c_str());
 }

@@ -4,6 +4,8 @@
 #ifndef _CALCULATION_H
 #define _CALCULATION_H
 
+#include "knights/util/position.h"
+
 namespace knights {
 
     /**

@@ -40,6 +40,10 @@
 // Knights Lib Include
 #include "knights/api.h"
 
+// C++ STL
+#include <iomanip>
+#include <sstream>
+
 /**
  * You should add more #includes here
  */

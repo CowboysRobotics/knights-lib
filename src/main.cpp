@@ -60,8 +60,15 @@ void initialize() {
 		pros::Task *odomTask = new pros::Task {[=] {
 			while (true) {
 				chassis.update_position();
-				// pros::lcd::print(1, "pos: %lf %lf %lf\n", chassis.get_position().x, chassis.get_position().y, knights::to_deg(chassis.get_position().heading));
-				knights::set_pos_label(chassis.get_position());
+				
+				std::stringstream stream;
+				stream << "Curr Pos: ";
+				stream << std::fixed << std::setprecision(2) << chassis.get_position().x << " ";
+				stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
+				stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
+				std::string s = stream.str();
+
+				knights::set_pos_label(s);
 				pros::delay(20);
 			}
 		}};
