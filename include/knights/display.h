@@ -11,6 +11,16 @@ extern void lv_display(void);
 
 namespace knights::display {
 
+    struct MapDot {
+        int width,height;
+        lv_color_t color;
+        lv_obj_t* dot;
+
+        void init(int width,int height,int field_x,int field_y,lv_color_t color);
+
+        void set_field_pos(knights::Pos pos);
+    }
+
     struct AutonSelectionPackage {
         std::string type; // red or blue
         int number; // number of auton

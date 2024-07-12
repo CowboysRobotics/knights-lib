@@ -14,6 +14,17 @@ static lv_obj_t * pos_label;
 static lv_obj_t * target_pos_label;
 static lv_obj_t * curr_pos_dot;
 
+void knights::display::MapDot::init(int width,int height,lv_color_t color) {
+    this->dot = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(this->dot, width, height);
+    lv_obj_set_style_bg_color(this->dot, color, LV_STATE_ANY);
+    lv_obj_move_foreground(this->dot);
+}
+
+void knights::display::MapDot::set_field_pos(knights::Pos pos) {
+    lv_obj_set_pos(this->dot, (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2), (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2));
+}
+
 static void event_handler(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
@@ -100,10 +111,8 @@ void knights::display::set_pos_label(std::string str) {
 
 void knights::display::update_pos(knights::Pos pos) {
     lv_obj_set_pos(curr_pos_dot, (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2), (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2));
-    // printf("printed at %lf %lf\n", (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2), (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2));
 }
 
 void knights::display::update_target_pos(knights::Pos pos) {
     lv_obj_set_pos(target_pos_label, (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2), (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2));
-    // printf("printed at %lf %lf\n", (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2), (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2));
 }
