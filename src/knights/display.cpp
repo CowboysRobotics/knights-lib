@@ -1,10 +1,11 @@
 #include "knights/display.h"
 #include "knights/api.h"
 #include "api.h"
+#include "display.h"
 
 #define TILE 180/6
-#define X_MARGIN 257
-#define Y_MARGIN 36
+#define X_MARGIN 270
+#define Y_MARGIN 40
 #define BG_SIZE 180
 
 knights::display::AutonSelectionPackage curr_package;
@@ -16,11 +17,34 @@ knights::display::AutonSelectionPackage knights::display::get_selected_auton(voi
 }
 
 static lv_obj_t * pos_label;
-static lv_obj_t * target_pos_label;
-static lv_obj_t * curr_pos_dot;
 
-void knights::display::MapDot(int width,int height,lv_color_t color) : 
-this->width(width), this->height(height), this->color(color) {
+knights::display::MapDot::MapDot(int width, int height, lv_color_t color) {
+    this->width = width;
+    this->height = height;
+    this->color = color;
+
+    this->dot = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(this->dot, this->width, this->height);
+    lv_obj_set_style_bg_color(this->dot, this->color, LV_STATE_ANY);
+    lv_obj_move_foreground(this->dot);
+}
+
+knights::display::MapDot::MapDot() {
+    this->width = 5;
+    this->height = 5;
+    this->color = lv_palette_lighten(LV_PALETTE_GREY, 0);
+
+    this->dot = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(this->dot, this->width, this->height);
+    lv_obj_set_style_bg_color(this->dot, this->color, LV_STATE_ANY);
+    lv_obj_move_foreground(this->dot);
+}
+
+void knights::display::MapDot::init(int width, int height, lv_color_t color) {
+    this->width = width;
+    this->height = height;
+    this->color = color;
+
     this->dot = lv_obj_create(lv_scr_act());
     lv_obj_set_size(this->dot, this->width, this->height);
     lv_obj_set_style_bg_color(this->dot, this->color, LV_STATE_ANY);
@@ -28,7 +52,13 @@ this->width(width), this->height(height), this->color(color) {
 }
 
 void knights::display::MapDot::set_field_pos(knights::Pos pos) {
-    lv_obj_set_pos(this->dot, (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2), (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2));
+    lv_obj_set_pos(this->dot, (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2) - this->width/2, (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2) - this->height/2);
+}
+
+knights::display::MapDot curr_position_dot;
+
+void knights::display::change_curr_pos_dot(Pos pos) {
+    curr_position_dot.set_field_pos(pos);
 }
 
 static void event_handler(lv_event_t * e) {
@@ -90,6 +120,8 @@ void lv_display(void) {
     lv_obj_set_width(bkgd, 180);
     lv_obj_set_height(bkgd, 180);
     lv_obj_move_background(bkgd);
+
+    curr_position_dot.init(20,20,lv_palette_lighten(LV_PALETTE_BLUE,0));
 }  
 
 void knights::display::set_pos_label(std::string str) {

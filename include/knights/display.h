@@ -26,12 +26,26 @@ namespace knights::display {
         MapDot(int width, int height, lv_color_t color);
 
         /**
+         * @brief Construct a new dot on the brain display map
+         */
+        MapDot();
+
+        /**
+        * @brief Initialize the dot
+        * 
+        * @param width Width of the dot
+        * @param height Height of the dot
+        * @param color Color to set the dot to
+        */
+        void init(int width, int height, lv_color_t color);
+
+        /**
         * @brief Set the position of the dot with respect to the field
         * 
         * @param pos Position to set the dot to, in field positions
         */
         void set_field_pos(knights::Pos pos);
-    }
+    };
 
     struct AutonSelectionPackage {
         std::string type; // red or blue
@@ -51,6 +65,8 @@ namespace knights::display {
      * @param str String to set the label to
      */
     void set_pos_label(std::string str);
+
+    void change_curr_pos_dot(Pos pos);
 
 }
 

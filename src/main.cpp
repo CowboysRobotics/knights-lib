@@ -56,7 +56,8 @@ void initialize() {
 	left_mtrs.set_reversed(true, 1);
 	left_mtrs.set_reversed(true, 2);
 
-	knights::display::MapDot curr_position_dot(5,5,lv_palette_lighten(LV_PALETTE_INDIGO, 0))
+	knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREEN, 3));
+	target_position_dot.set_field_pos(knights::Pos(0,0,0));
 
 	if (odomTask == nullptr)
 		pros::Task *odomTask = new pros::Task {[=] {
@@ -69,10 +70,10 @@ void initialize() {
 				stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
 				stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
 				std::string s = stream.str();
+				knights::display::set_pos_label(s);
 
-				curr_position_dot.set_field_pos(chassis.get_position());
+				knights::display::change_curr_pos_dot(chassis.get_position());
 
-				knights::set_pos_label(s);
 				pros::delay(20);
 			}
 		}};
