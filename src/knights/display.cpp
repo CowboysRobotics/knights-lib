@@ -2,15 +2,16 @@
 #include "knights/api.h"
 #include "api.h"
 
-knights::AutonSelectionPackage curr_package;
+knights::display::AutonSelectionPackage curr_package;
 
 LV_IMG_DECLARE(pix_art_his_field);
 
-knights::AutonSelectionPackage knights::get_selected_auton(void) {
+knights::display::AutonSelectionPackage knights::display::get_selected_auton(void) {
     return curr_package;
 }
 
 static lv_obj_t * pos_label;
+static lv_obj_t * target_pos_label;
 static lv_obj_t * curr_pos_dot;
 
 static void event_handler(lv_event_t * e)
@@ -80,9 +81,15 @@ void lv_display(void)
     lv_obj_set_size(curr_pos_dot, 10, 10);
     lv_obj_set_style_bg_color(curr_pos_dot, lv_palette_lighten(LV_PALETTE_GREY,0), LV_STATE_ANY);
     lv_obj_move_foreground(curr_pos_dot);
+
+    // Target position dot
+    target_pos_label = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(target_pos_label, 10, 10);
+    lv_obj_set_style_bg_color(target_pos_label, lv_palette_lighten(LV_PALETTE_CYAN,0), LV_STATE_ANY);
+    lv_obj_move_foreground(target_pos_label);
 }  
 
-void knights::set_pos_label(std::string str) {
+void knights::display::set_pos_label(std::string str) {
     lv_label_set_text(pos_label, str.c_str());
 }
 
@@ -91,7 +98,12 @@ void knights::set_pos_label(std::string str) {
 #define Y_MARGIN 36
 #define BG_SIZE 180
 
-void knights::update_pos(knights::Pos pos) {
+void knights::display::update_pos(knights::Pos pos) {
     lv_obj_set_pos(curr_pos_dot, (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2), (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2));
+    // printf("printed at %lf %lf\n", (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2), (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2));
+}
+
+void knights::display::update_target_pos(knights::Pos pos) {
+    lv_obj_set_pos(target_pos_label, (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2), (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2));
     // printf("printed at %lf %lf\n", (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2), (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2));
 }

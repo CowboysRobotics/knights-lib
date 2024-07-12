@@ -9,17 +9,39 @@
 
 extern void lv_display(void);
 
-namespace knights {
+namespace knights::display {
 
     struct AutonSelectionPackage {
-        std::string type; // attacker or defender
+        std::string type; // red or blue
         int number; // number of auton
     };
 
+    /**
+     * @brief Update the current position dot on the brain GUI
+     * 
+     * @param curr_pos Current position of the robot
+     */
     void update_pos(knights::Pos curr_pos);
 
+    /**
+     * @brief Update the target position dot on the brain GUI (for pure pursuit or other pathfinding)
+     * 
+     * @param pos Target position of the bot
+     */
+    void update_target_pos(knights::Pos pos);
+
+    /**
+     * @brief Get the currently selection combination of auton
+     * 
+     * @return An auton package that has a type (red or blue) and a number (1-4)
+     */
     AutonSelectionPackage get_selected_auton(void);
 
+    /**
+     * @brief Set the current position label to a string
+     * 
+     * @param str String to set the label to
+     */
     void set_pos_label(std::string str);
 
 }
