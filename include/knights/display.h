@@ -16,8 +16,20 @@ namespace knights::display {
         lv_color_t color;
         lv_obj_t* dot;
 
-        void init(int width,int height,int field_x,int field_y,lv_color_t color);
+        /**
+        * @brief Construct a new dot on the brain display map
+        * 
+        * @param width Width of the dot
+        * @param height Height of the dot
+        * @param color Color to set the dot to
+        */
+        MapDot(int width, int height, lv_color_t color);
 
+        /**
+        * @brief Set the position of the dot with respect to the field
+        * 
+        * @param pos Position to set the dot to, in field positions
+        */
         void set_field_pos(knights::Pos pos);
     }
 
@@ -25,20 +37,6 @@ namespace knights::display {
         std::string type; // red or blue
         int number; // number of auton
     };
-
-    /**
-     * @brief Update the current position dot on the brain GUI
-     * 
-     * @param curr_pos Current position of the robot
-     */
-    void update_pos(knights::Pos curr_pos);
-
-    /**
-     * @brief Update the target position dot on the brain GUI (for pure pursuit or other pathfinding)
-     * 
-     * @param pos Target position of the bot
-     */
-    void update_target_pos(knights::Pos pos);
 
     /**
      * @brief Get the currently selection combination of auton
