@@ -4,11 +4,14 @@
 
 knights::AutonSelectionPackage curr_package;
 
-knights::AutonSelectionPackage knights::get_selected_auton() {
+LV_IMG_DECLARE(pix_art_his_field);
+
+knights::AutonSelectionPackage knights::get_selected_auton(void) {
     return curr_package;
 }
 
 static lv_obj_t * pos_label;
+static lv_obj_t * curr_pos_dot;
 
 static void event_handler(lv_event_t * e)
 {
@@ -31,7 +34,7 @@ static const char* type_map[] = {"Red", "Blue", ""};
 
 static const char* num_map[] = {"1", "2", "3", "4", ""};
 
-void knights::lv_display(void)
+void lv_display(void)
 {
     // Auton Type Selector
     lv_obj_t* btnm1 = lv_btnmatrix_create(lv_scr_act());
@@ -65,16 +68,30 @@ void knights::lv_display(void)
     lv_obj_set_width(pos_label, 210);
 
     // Display field setup
-    // lv_obj_t* bkgd = lv_obj_create(lv_scr_act());
-    // lv_obj_set_style_bg_color(bkgd, lv_palette_lighten(LV_PALETTE_GREY,3), LV_STATE_ANY);
-    LV_IMG_DECLARE(pix_art_his_field_map);
     lv_obj_t* bkgd = lv_img_create(lv_scr_act());
-    lv_img_set_src(bkgd, &pix_art_his_field_map);
+    lv_img_set_src(bkgd, &pix_art_his_field);
     lv_obj_align(bkgd, LV_ALIGN_BOTTOM_RIGHT, -40,-20);
     lv_obj_set_width(bkgd, 180);
     lv_obj_set_height(bkgd, 180);
+    lv_obj_move_background(bkgd);
+
+    // Current position dot
+    curr_pos_dot = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(curr_pos_dot, 10, 10);
+    lv_obj_set_style_bg_color(curr_pos_dot, lv_palette_lighten(LV_PALETTE_GREY,0), LV_STATE_ANY);
+    lv_obj_move_foreground(curr_pos_dot);
 }  
 
 void knights::set_pos_label(std::string str) {
     lv_label_set_text(pos_label, str.c_str());
+}
+
+#define TILE 180/6
+#define X_MARGIN 257
+#define Y_MARGIN 36
+#define BG_SIZE 180
+
+void knights::update_pos(knights::Pos pos) {
+    lv_obj_set_pos(curr_pos_dot, (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2), (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2));
+    // printf("printed at %lf %lf\n", (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2), (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2));
 }

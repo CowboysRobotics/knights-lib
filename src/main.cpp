@@ -38,12 +38,12 @@ void initialize() {
 	}
 
 	// pros::lcd::initialize();
-	knights::lv_display();
+	lv_display();
 
 	// wait until IMU is fully calibrated
 	pros::delay(2000);
 
-	knights::Pos starting_position(-36,60,M_PI/2); // used to be 0,0
+	knights::Pos starting_position(-36,-60,M_PI/2); // used to be 0,0
 
 	chassis.set_position(starting_position);
 	chassis.set_prev_position(starting_position);
@@ -67,6 +67,8 @@ void initialize() {
 				stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
 				stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
 				std::string s = stream.str();
+
+				knights::update_pos(chassis.get_position());
 
 				knights::set_pos_label(s);
 				pros::delay(20);

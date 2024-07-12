@@ -7,6 +7,8 @@
 #include "knights/api.h"
 #include <string>
 
+extern void lv_display(void);
+
 namespace knights {
 
     struct AutonSelectionPackage {
@@ -14,14 +16,12 @@ namespace knights {
         int number; // number of auton
     };
 
-    void lv_display(void);
+    void update_pos(knights::Pos curr_pos);
 
-    AutonSelectionPackage get_selected_auton();
+    AutonSelectionPackage get_selected_auton(void);
 
     void set_pos_label(std::string str);
 
 }
-
-const uint8_t pix_art_his_field_map[];
 
 #endif

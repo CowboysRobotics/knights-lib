@@ -79,7 +79,7 @@ void knights::RobotChassis::update_position() {
     // printf("updatepos\n");
 
     // calculate global x
-    curr_position.y += localX * cos(averageHeading) - localY * sin(averageHeading); // old was x
+    curr_position.y += localX * -cos(averageHeading) + localY * sin(averageHeading); // old was x
 
     // calculate global y
     curr_position.x += localX * sin(averageHeading) + localY * cos(averageHeading); // old was y
