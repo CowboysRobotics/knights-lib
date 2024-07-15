@@ -59,7 +59,7 @@ void initialize() {
 	// knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREEN, 3));
 	// target_position_dot.set_field_pos(knights::Pos(0,0,0));
 
-	knights::Route to_center = knights::generate_path_to_pos(starting_position, knights::Pos(0,0,0),8);
+	knights::Route to_center = knights::generate_path_to_pos(starting_position, knights::Pos(0,0,M_PI/4),8);
 
 	for (knights::Pos position : to_center.positions) {
 		knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREEN, 3));

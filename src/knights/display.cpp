@@ -52,6 +52,8 @@ void knights::display::MapDot::init(int width, int height, lv_color_t color) {
 }
 
 void knights::display::MapDot::set_field_pos(knights::Pos pos) {
+    pos.x = knights::clamp(pos.x, -72.0, 72.0);
+    pos.y = knights::clamp(pos.y, -72.0, 72.0);
     lv_obj_set_pos(this->dot, (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2) - this->width/2, (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2) - this->height/2);
 }
 
