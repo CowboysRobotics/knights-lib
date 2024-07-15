@@ -56,8 +56,16 @@ void initialize() {
 	left_mtrs.set_reversed(true, 1);
 	left_mtrs.set_reversed(true, 2);
 
-	knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREEN, 3));
-	target_position_dot.set_field_pos(knights::Pos(0,0,0));
+	// knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREEN, 3));
+	// target_position_dot.set_field_pos(knights::Pos(0,0,0));
+
+	knights::Route to_center = knights::generate_path_to_pos(starting_position, knights::Pos(0,0,0),8);
+
+	for (knights::Pos position : to_center.positions) {
+		knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREEN, 3));
+		target_position_dot.set_field_pos(position);
+		printf("pos: %lf %lf %lf\n", position.x, position.y, position.heading);
+	}
 
 	if (odomTask == nullptr)
 		pros::Task *odomTask = new pros::Task {[=] {
