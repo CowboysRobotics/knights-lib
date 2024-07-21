@@ -9,7 +9,7 @@ void knights::RobotController::move_to_point(const Pos point, const float &end_t
     if (this->in_motion) return;
     this->in_motion = true;
 
-    // move to a point using boomerang and a pure pursuit route
+    // move to a point using pathgen and a pure pursuit route
 
     this->in_motion = false;
     return;

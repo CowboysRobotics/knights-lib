@@ -18,14 +18,10 @@ float knights::normalize_angle(float angle, bool rad) {
         return std::fmod(std::fmod(angle, 360) + 4*360, 360);
 };
 
-float knights::min_angle(float angle1, float angle2, bool rad) {
-    if (!rad) {
-        float diff = fmod((angle2 - angle1 + 180.0), 360.0 - 180.0);
-        return diff < -180 ? diff + 360 : diff;
-    } else {
-        float diff = fmod((angle2 - angle1 + M_PI), (2*M_PI) - M_PI);
-        return diff < -M_PI ? diff + (2*M_PI) : diff;
-    }
+float knights::min_angle(float start, float target, bool rad) {
+    float max = rad ? M_PI*2 : 360.0;
+    float error = knights::normalize_angle(knights::normalize_angle(target, rad), rad);
+    return std::remainder(error,max);
 };
 
 float knights::signum(float num) {

@@ -32,11 +32,11 @@ namespace knights {
 
     /**
     @brief obtain the minimum angle between two angles
-    @param angle1,angle2 the two angles
+    @param start,target the two angles
     @param rad whether or not the angle is in radians (if false, it is in degrees)
     @return the minimum angle between two angles
     */
-    float min_angle(float angle1, float angle2, bool rad = false);
+    float min_angle(float start, float target, bool rad);
 
     /**
     @brief basic signum function, evaluates whether or not a number is above, below, or at zero
