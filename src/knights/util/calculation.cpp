@@ -20,9 +20,13 @@ float knights::normalize_angle(float angle, bool rad) {
 
 float knights::min_angle(float start, float target, bool rad) {
     float max = rad ? M_PI*2 : 360.0;
-    float error = knights::normalize_angle(knights::normalize_angle(target, rad), rad);
+    float error = normalize_angle(normalize_angle(target, rad), rad) - start;
     return std::remainder(error,max);
 };
+
+float knights::angular_error(float start, float target, int dir, bool rad = true) {
+    // unimplmented yet
+}
 
 float knights::signum(float num) {
     return (float)(num > 0) - (num < 0);

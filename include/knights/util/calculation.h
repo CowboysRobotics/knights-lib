@@ -36,7 +36,18 @@ namespace knights {
     @param rad whether or not the angle is in radians (if false, it is in degrees)
     @return the minimum angle between two angles
     */
-    float min_angle(float start, float target, bool rad);
+    float min_angle(float start, float target, bool rad = true);
+
+    /**
+     * @brief Get angular error between two angles
+     * 
+     * @param start Angle to start at
+     * @param target Angle to calculate error from
+     * @param dir Right or Left, positive for left, negative for right
+     * @param rad Whether provided angles are in radians
+     * @return Angular error from the start angle to the target angle 
+     */
+    float angular_error(float start, float target, int dir, bool rad = true);
 
     /**
     @brief basic signum function, evaluates whether or not a number is above, below, or at zero
