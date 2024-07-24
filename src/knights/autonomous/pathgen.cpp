@@ -2,36 +2,26 @@
 #include "knights/autonomous/path.h"
 
 #include "knights/autonomous/pathgen.h"
+#include "squiggles/constraints.hpp"
+#include "squiggles/physicalmodel/tankmodel.hpp"
+#include "squiggles/spline.hpp"
 
-knights::Route knights::generate_path_to_pos(knights::Pos start, knights::Pos end, const int NUM_PTS) {
-  float deltaX = end.x - start.x;
-  float deltaY = end.y - start.y;
-  float deltaHeading = (end.heading + 0.001 ) - start.heading;
-  // constants
-  float ci = start.heading;
-  float a0 = cosf(-ci) * deltaX - sinf(-ci) * deltaY;
-  float b0 = sinf(-ci) * deltaX + cosf(-ci) * deltaY;
-  float t0 = asinf(1.0 / (1 - (a0 / b0) * tanf(deltaHeading)));
-//   printf("t-value: %lf\n", t0);
-  float t = ((t0 + (M_PI / 2)) / NUM_PTS);
+knights::Route knights::generate_path_to_pos(knights::Pos start, knights::Pos end, const float MAX_VELOCITY, const float MAX_ACCELERATION, const float MAX_JERK, const float DRIVETRAIN_WIDTH) {
+  
+  squiggles::Constraints path_constraints = squiggles::Constraints(MAX_VELOCITY, MAX_ACCELERATION, MAX_JERK);
 
-  // not constant
-  float x0;
-  float y0;
+  squiggles::SplineGenerator path_generator = squiggles::SplineGenerator(
+    path_constraints, 
+    std::make_shared<squiggles::TankModel>(DRIVETRAIN_WIDTH, path_constraints));
+
+  std::vector<squiggles::ProfilePoint> path = path_generator.generate({
+    squiggles::Pose(start.x, start.y, start.heading),
+    squiggles::Pose(end.x, end.y, end.heading)});
 
   std::vector<knights::Pos> positions;
 
-  for (int i = 1; i <= NUM_PTS; i++) {
-    x0 = (a0 / cosf(t0)) * cosf((-M_PI / 2) + (i * t));
-    y0 = (b0 / (sinf(t0) + 1)) * (sinf((-M_PI /2) + (i * t)) + 1);
-
-    // printf("coordinates: %lf %lf\n", x0, y0);
-
-    positions.emplace_back(
-      start.x + ((x0 * cosf(ci)) - y0 * sinf(ci)), 
-      start.y + ((x0 * sinf(ci)) + y0 * cosf(ci)),
-      0.0
-    );
+  for (squiggles::ProfilePoint point : path) {
+    positions.emplace_back(point.vector.pose.x, point.vector.pose.y, point.vector.pose.yaw);
   }
 
   return knights::Route(positions);

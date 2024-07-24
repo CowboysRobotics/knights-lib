@@ -7,8 +7,9 @@
 #ifndef _PHYSICAL_MODEL_PHYSICAL_MODEL_HPP_
 #define _PHYSICAL_MODEL_PHYSICAL_MODEL_HPP_
 
-#include "constraints.hpp"
-#include "geometry/pose.hpp"
+#include "squiggles/constraints.hpp"
+#include "squiggles/geometry/pose.hpp"
+#include <vector>
 
 namespace squiggles {
 class PhysicalModel {

@@ -10,7 +10,7 @@
 #include <tuple>
 #include <vector>
 
-#include "physicalmodel/physicalmodel.hpp"
+#include "squiggles/physicalmodel/physicalmodel.hpp"
 
 namespace squiggles {
 class TankModel : public PhysicalModel {

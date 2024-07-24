@@ -7,7 +7,7 @@
 #ifndef _PHYSICAL_MODEL_PASSTHROUGH_MODEL_HPP_
 #define _PHYSICAL_MODEL_PASSTHROUGH_MODEL_HPP_
 
-#include "physicalmodel/physicalmodel.hpp"
+#include "squiggles/physicalmodel/physicalmodel.hpp"
 
 namespace squiggles {
 class PassthroughModel : public PhysicalModel {

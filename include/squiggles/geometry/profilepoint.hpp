@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "controlvector.hpp"
-#include "math/utils.hpp"
+#include "squiggles/geometry/controlvector.hpp"
+#include "squiggles/math/utils.hpp"
 
 namespace squiggles {
 struct ProfilePoint {

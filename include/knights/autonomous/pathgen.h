@@ -13,10 +13,12 @@ namespace knights {
      * 
      * @param start Start point of the route, usually current position of the bot
      * @param end End point of the route, make sure to add a heading value
-     * @param NUM_PTS Amount of points to generate on the route
+     * @param MAX_VELOCITY Max velocity for the route
+     * @param MAX_ACCELERATION Max acceleration for the route
+     * @param MAX_JERK Max jerk for the route
      * @return Route containing position to get to target
      */
-    Route generate_path_to_pos(Pos start, Pos end, const int NUM_PTS = 10);
+    Route generate_path_to_pos(knights::Pos start, knights::Pos end, const float MAX_VELOCITY, const float MAX_ACCELERATION, const float MAX_JERK, const float DRIVETRAIN_WIDTH);
 
 }
 
