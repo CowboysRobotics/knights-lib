@@ -9,7 +9,7 @@ pros::Rotation back_odom(14);
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
 pros::IMU imu(15);
 
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 18.0, 600.0, 3.25, 0.75);
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 18, 450.0, 3.25, 0.75);
 knights::PositionTracker midOdom(&mid_odom, 1.0, 2.75, 0);
 knights::PositionTracker backOdom(&back_odom, 1.0, 2.75, 2);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
@@ -82,7 +82,7 @@ void initialize() {
 
 				knights::display::change_curr_pos_dot(chassis.get_position());
 
-				pros::delay(20);
+				pros::delay(10);
 			}
 		}};
 }
@@ -131,9 +131,9 @@ void autonomous() {
 
 	for (knights::Pos Position : test.positions) {
 		printf("Read: %lf %lf %lf\n", Position.x, Position.y, Position.heading);
-	}
+	}	
 
-	lateralController.follow_route_pursuit(test, 12.0, 80.0, true, 8.0, 5000);
+	lateralController.follow_route_pursuit(test, 32.0, 80.0, true, 8.0, 5000);
 
 }
 

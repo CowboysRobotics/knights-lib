@@ -24,8 +24,9 @@ float knights::min_angle(float start, float target, bool rad) {
     return std::remainder(error,max);
 };
 
-float knights::angular_error(float start, float target, int dir, bool rad = true) {
+float knights::angular_error(float start, float target, int dir, bool rad) {
     // unimplmented yet
+    return target-start;
 }
 
 float knights::signum(float num) {
