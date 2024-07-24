@@ -29,17 +29,20 @@ We will list our features with the format: `feature | completeness`
 ### Docs & Tutorials
 Work in progress, if you have questions, please message me on discord. (Username: nrgking)
 
+### Used Libraries
+We currently use [Squiggles](https://github.com/baylessj/robotsquiggles) for path generation, however we would like to implement our own soon.
+
 ### Contribution
 > **Legal Note About Contributing**
 > If you contribute to this library, you agree that you have created 100% of your content and have rights to it, and that you understand that your content will be provided under the license of the project.
 
 If you would like to contribute, please fork the project and propose your changes. Eventually we will release a style guide and a contribution guide, but here are a few general guidelines:
 
-_**1. New Features**_
+####_**1. New Features**_
 	If you have any ideas or requests for features, please create an enhancement request in the GitHub repository. If you would like to implement this, you are welcome to. However, even if you can't, we will still consider feature requests. This does mean that we might have to reject some features that don't fit with the project.
-_**2. Bugs**_
+####_**2. Bugs**_
 If you find any bugs with the library, please open an issue on GitHub.
-_**3.  Commenting**_
+####_**3.  Commenting**_
 	Please comment all functions in header files with doxygen comments. Code should also be readable without comments. For a more detailed guide, follow one such as [this](https://stackoverflow.blog/2021/12/23/best-practices-for-writing-code-comments/). 
 
 Thank you for considering contributing to our library! Most of the current work has been done by a single team, so any help is appreciated.
