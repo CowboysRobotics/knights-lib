@@ -55,6 +55,23 @@ namespace knights {
              * @return The given position converted to distance travelled 
              */
             float position_to_distance(float position);
+
+            /**
+             * @brief Calculate the max acceleration of the drivetrain
+             * 
+             * @param mass Mass of the robot
+             * @param motor_amt Amount of motors on the drivetrain
+             * @param stall_torque Stall torque of the motors
+             * @return Max acceleration of the drivetrain
+             */
+            float max_acceleration(float mass, float motor_amt, float stall_torque = 0.5);
+
+            /**
+             * @brief Calculate the maximum velocity of the drivetrain
+             * 
+             * @return Maximum velocity of the drivetrain 
+             */
+            float max_velocity();
     };
 
     class Holonomic {
@@ -97,6 +114,7 @@ namespace knights {
             * @brief 
             */
             void field_centric_drive(int vert_axis, int hori_axis, int rot_axis, pros::Imu* inertial);
+            
     };
 }
 

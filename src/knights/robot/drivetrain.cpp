@@ -19,6 +19,15 @@ float knights::Drivetrain::position_to_distance(float position) {
     return ((this->gear_ratio * this->wheel_diameter * M_PI) / 360) * position;
 };
 
+float knights::Drivetrain::max_acceleration(float mass, float motor_amt, float stall_torque) {
+    return ((stall_torque / (this->wheel_diameter/2))*motor_amt) / mass;
+}
+
+float knights::Drivetrain::max_velocity() {
+    // v = circumfrence * rotation rate
+    return M_PI * this->wheel_diameter * (this->rpm / 60.0);
+}
+
 knights::Holonomic::Holonomic(pros::Motor *frontRight, pros::Motor *frontLeft, pros::Motor *backRight, pros::Motor *backLeft, float track_width, float rpm, float wheel_diameter, float gear_ratio)
     : frontRight(frontRight), frontLeft(frontLeft), backRight(backRight), backLeft(backLeft), track_width(track_width), rpm(rpm), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio) {
 }
