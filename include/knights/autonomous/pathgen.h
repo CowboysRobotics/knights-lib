@@ -5,6 +5,7 @@
 
 #include "knights/autonomous/path.h"
 #include "knights/util/position.h"
+#include "squiggles/squiggles.hpp"
 
 namespace knights {
 

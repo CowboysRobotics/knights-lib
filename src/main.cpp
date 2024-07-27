@@ -36,8 +36,8 @@ void initialize() {
 	while(imu.is_calibrating()) {
 		pros::delay(10);
 	}
+	printf("init\n");
 
-	// pros::lcd::initialize();
 	lv_display();
 
 	// wait until IMU is fully calibrated
@@ -56,13 +56,12 @@ void initialize() {
 	left_mtrs.set_reversed(true, 1);
 	left_mtrs.set_reversed(true, 2);
 
-	// knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREEN, 3));
-	// target_position_dot.set_field_pos(knights::Pos(0,0,0));
+	knights::Route to_center = knights::generate_path_to_pos(starting_position, knights::Pos(20,20,M_PI/2), 1.0, 2.0, 75.0, 14.0);
 
-	knights::Route to_center = knights::generate_path_to_pos(starting_position, knights::Pos(0,0,M_PI/4), 4.0, 2.0, 2.0, 14.0);
-
-	for (knights::Pos position : to_center.positions) {
-		knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREEN, 3));
+	//for (knights::Pos position : to_center.positions) {
+	for (int i = 0; i < (int)to_center.positions.size(); i+=((int)to_center.positions.size()/40)) {
+		knights::Pos position = to_center.positions[i];
+		knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREY, 0));
 		target_position_dot.set_field_pos(position);
 		printf("pos: %lf %lf %lf\n", position.x, position.y, position.heading);
 	}

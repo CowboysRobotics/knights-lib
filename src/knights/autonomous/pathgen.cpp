@@ -8,6 +8,8 @@
 
 knights::Route knights::generate_path_to_pos(knights::Pos start, knights::Pos end, const float MAX_VELOCITY, const float MAX_ACCELERATION, const float MAX_JERK, const float DRIVETRAIN_WIDTH) {
   
+  printf("gen started\n");
+
   squiggles::Constraints path_constraints = squiggles::Constraints(MAX_VELOCITY, MAX_ACCELERATION, MAX_JERK);
 
   squiggles::SplineGenerator path_generator = squiggles::SplineGenerator(
