@@ -102,9 +102,72 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
     
 }
 
-void knights::RobotController::follow_route_ramsete(knights::Route &route, float timeout) {
+void knights::RobotController::follow_route_ramsete(std::vector<squiggles::ProfilePoint> profile, const float &lookahead_distance, const float &end_tolerance ,float timeout) {
     if (this->in_motion) return;
     this->in_motion = true;
+
+    squiggles::ProfilePoint end_point = profile[profile.size()-1];
+
+    // declare essential values
+    knights::Pos target_point = knights::Pos(profile[0]);
+    int closest_i = 0;
+    float closest_dist = 1e10;
+
+    // While the robot has not reached the desired point and is not at the end of the route
+    while (distance_btwn(this->chassis->curr_position, knights::Pos(end_point)) > end_tolerance && closest_i != profile.size()-1) {
+
+        // find nearest point
+        for (int i = 0; i < profile.size(); i++) {
+            if (distance_btwn(this->chassis->curr_position,  knights::Pos(profile[i])) < closest_dist) {
+                closest_dist = distance_btwn(this->chassis->curr_position,  knights::Pos(profile[i]));
+                closest_i = i;
+            }
+        }
+
+        // find lookahead point
+        for (int i = closest_i; i < profile.size() - 1; i++) {
+            float t = circle_intersection(knights::Pos(profile[i+1]), knights::Pos(profile[i]), this->chassis->curr_position, lookahead_distance);
+            if (t != -1) {
+                target_point = lerp(knights::Pos(profile[i]), knights::Pos(profile[i+1]), t);
+            }
+        }
+
+        // Global error matrix
+        knights::Pos global_error(
+            target_point.x - this->chassis->curr_position.x, 
+            target_point.y - this->chassis->curr_position.y, 
+            target_point.heading - this->chassis->curr_position.heading
+        );
+        
+        // Local Error Matrix
+        knights::Pos local_error(
+            cosf(this->chassis->curr_position.heading) * global_error.x + sinf(this->chassis->curr_position.heading) * global_error.y,
+            -sinf(this->chassis->curr_position.heading) * global_error.x + cosf(this->chassis->curr_position.heading) * global_error.y,
+            global_error.heading
+        );
+
+        float path_angular_velocity = profile[closest_i].vector.vel * profile[closest_i].curvature;
+
+        // Using gain formula
+        float gain = 2 * this->ramsete_constants->damping * std::sqrt(std::pow(path_angular_velocity, 2) 
+            + this->ramsete_constants->proportional * std::pow(profile[closest_i].vector.vel, 2));
+
+        // Applying gain to motion profile
+        float computed_linear_velocity = (profile[closest_i].vector.vel * cosf(local_error.heading) + gain * local_error.x) / 
+            (this->chassis->drivetrain->wheel_diameter * M_PI);
+        float computed_angular_velocity = path_angular_velocity + gain * local_error.heading + 
+            (this->ramsete_constants->proportional * profile[closest_i].vector.vel * sinf(local_error.heading) * local_error.y)/(local_error.heading);
+        
+
+        // apply calculated velocities to motors
+        this->chassis->drivetrain->velocity_command(computed_linear_velocity - computed_angular_velocity, computed_linear_velocity + computed_angular_velocity);
+
+        // wait for next iteration of loop
+        pros::delay(10);
+        timeout -= 10;
+
+        if (timeout < 0) break;
+    }
 
     this->in_motion = false;
     return;

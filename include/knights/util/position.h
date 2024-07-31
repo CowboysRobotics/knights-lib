@@ -4,6 +4,7 @@
 #define _POS_H
 
 #include <cmath>
+#include "squiggles/squiggles.hpp"
 
 namespace knights {
 
@@ -23,6 +24,13 @@ namespace knights {
         @brief create a new position with values (0.0, 0.0, 0.0)
         */
         Pos();
+
+        /**
+         * @brief Construct a new Pos object from a squiggles point
+         * 
+         * @param pt Squiggles profile point to generate the point from
+         */
+        Pos(squiggles::ProfilePoint pt);
     };
 
     struct Point {

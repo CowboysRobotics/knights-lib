@@ -116,11 +116,14 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+	knights::RamseteConstants ramsete_constants(1, 0.5);
+
 	knights::PIDController lateralPID(4, 0.0, 0.0, 0.0, 127.0);
-	knights::RobotController lateralController(&chassis, &lateralPID, false);
+	knights::RobotController lateralController(&chassis, &lateralPID, &ramsete_constants, false);
 
 	knights::PIDController turnPID(40, 0.0, 0.0, 0.0, 127.0);
-	knights::RobotController turnController(&chassis, &turnPID, false);
+	knights::RobotController turnController(&chassis, &turnPID, &ramsete_constants, false);
+
 
 	knights::Pos startPos(chassis.get_position());
 

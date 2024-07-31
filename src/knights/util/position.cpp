@@ -1,6 +1,8 @@
 #include "knights/util/position.h"
 #include "knights/util/calculation.h"
 
+#include "squiggles/squiggles.hpp"
+
 using namespace knights;
 
 Pos::Pos(float x, float y, float heading, bool deg) {
@@ -10,6 +12,10 @@ Pos::Pos(float x, float y, float heading, bool deg) {
 
     if (deg)
         this->heading = to_rad(heading);
+}
+
+Pos::Pos(squiggles::ProfilePoint pt) 
+    : x(pt.vector.pose.x), y(pt.vector.pose.y), heading(pt.vector.pose.yaw) {
 }
 
 Pos::Pos() {

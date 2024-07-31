@@ -4,15 +4,19 @@
 #define _CONTROLLER_H
 
 #include "knights/autonomous/pid.h"
+#include "knights/autonomous/ramsete.h"
 #include "knights/autonomous/path.h"
 
 #include "knights/robot/chassis.h"
+
+#include "squiggles/squiggles.hpp"
 
 namespace knights {
 
     class RobotController {
         private:
             PIDController *pid_controller;
+            RamseteConstants *ramsete_constants;
             RobotChassis *chassis;
             bool use_motor_encoders = false;
 
@@ -23,9 +27,10 @@ namespace knights {
              * 
              * @param chassis 
              * @param pid_controller 
+             * @param ramsete_constants 
              * @param use_motor_encoders 
              */
-            RobotController(RobotChassis *chassis, PIDController *pid_controller, bool use_motor_encoders = false);
+            RobotController(RobotChassis *chassis, PIDController *pid_controller, RamseteConstants *ramsete_constants, bool use_motor_encoders = false);
 
             /**
              * @brief Follow a route that has been read into the route memory of the robot
@@ -39,7 +44,7 @@ namespace knights {
              */
             void follow_route_pursuit(knights::Route &route, const float &lookahead_distance = 15.0, const float max_speed = 127.0, const bool forwards = true, const float end_tolerance = 8.0, float timeout = 5000);
 
-            void follow_route_ramsete(knights::Route &route, float timeout = 6000);
+            void follow_route_ramsete(std::vector<squiggles::ProfilePoint> profile, const float &lookahead_distance = 15.0, const float &end_tolerance = 8.0, float timeout = 5000);
 
             void move_to_point(const Pos point, const float &end_tolerance, float timeout = 3000, const float &num_pts = 10);
 
