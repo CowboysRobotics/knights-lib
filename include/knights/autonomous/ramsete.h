@@ -5,9 +5,8 @@
 
 namespace knights {
     class RamseteConstants {
-        private:
-            float damping, proportional;
         public:
+            float damping, proportional;
             /**
              * @brief Construct a new Ramsete Constants object
              * 
