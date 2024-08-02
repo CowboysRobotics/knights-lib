@@ -148,6 +148,8 @@ void knights::RobotController::follow_route_ramsete(std::vector<squiggles::Profi
 
         float path_angular_velocity = profile[closest_i].vector.vel * profile[closest_i].curvature;
 
+        printf("path next %lf %lf pt: %lf %lf %lf\n", profile[closest_i].vector.vel, path_angular_velocity, target_point.x, target_point.y, target_point.heading);
+
         // Using gain formula
         float gain = 2 * this->ramsete_constants->damping * std::sqrt(std::pow(path_angular_velocity, 2) 
             + this->ramsete_constants->proportional * std::pow(profile[closest_i].vector.vel, 2));

@@ -9,6 +9,9 @@
 #include "squiggles/squiggles.hpp"
 
 void knights::RobotController::move_to_point(const Pos point, squiggles::Constraints path_constraints, const float &lookahead_distance, const float &end_tolerance, float timeout) {
+    
+    printf("m2 started\n");
+
     std::vector<squiggles::ProfilePoint> motion_profile = knights::generate_motion_profile(
         this->chassis->curr_position, 
         point,
