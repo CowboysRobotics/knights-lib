@@ -43,7 +43,7 @@ void initialize() {
 	// wait until IMU is fully calibrated
 	pros::delay(2000);
 
-	knights::Pos starting_position(36,-60,M_PI/2); // used to be -36,60
+	knights::Pos starting_position(-36,-60,M_PI/2); // used to be -36,60
 
 	chassis.set_position(starting_position);
 	chassis.set_prev_position(starting_position);
@@ -56,15 +56,15 @@ void initialize() {
 	left_mtrs.set_reversed(true, 1);
 	left_mtrs.set_reversed(true, 2);
 
-	knights::Route to_center = knights::generate_path_to_pos(starting_position, knights::Pos(0,0,M_PI/2), 1.0, 2.0, 75.0, 14.0);
+	// knights::Route to_center = knights::generate_path_to_pos(starting_position, knights::Pos(0,0,M_PI/2), 1.0, 2.0, 75.0, 14.0);
 
-	//for (knights::Pos position : to_center.positions) {
-	for (int i = 0; i < (int)to_center.positions.size(); i+=((int)to_center.positions.size()/40)) {
-		knights::Pos position = to_center.positions[i];
-		knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREY, 0));
-		target_position_dot.set_field_pos(position);
-		// printf("pos: %lf %lf %lf\n", position.x, position.y, position.heading);
-	}
+	// //for (knights::Pos position : to_center.positions) {
+	// for (int i = 0; i < (int)to_center.positions.size(); i+=((int)to_center.positions.size()/40)) {
+	// 	knights::Pos position = to_center.positions[i];
+	// 	knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREY, 0));
+	// 	target_position_dot.set_field_pos(position);
+	// 	// printf("pos: %lf %lf %lf\n", position.x, position.y, position.heading);
+	// }
 
 	if (odomTask == nullptr)
 		pros::Task *odomTask = new pros::Task {[=] {
@@ -127,17 +127,21 @@ void autonomous() {
 
 	knights::Pos startPos(chassis.get_position());
 
-	// knights::Route test = knights::init_route_from_sd("tst.txt");
+	knights::Route test = knights::init_route_from_sd("tst.txt");
 
-	// printf("Route of size %i loaded to memory\n", test.positions.size());
 
-	// for (knights::Pos Position : test.positions) {
-	// 	printf("Read: %lf %lf %lf\n", Position.x, Position.y, Position.heading);
-	// }	
+	printf("Route of size %i loaded to memory\n", test.positions.size());
+
+	for (int i = 0; i < (int)test.positions.size(); i+=((int)test.positions.size()/40)) {
+		knights::Pos position = test.positions[i];
+		knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREY, 0));
+		target_position_dot.set_field_pos(position);
+		printf("pos: %lf %lf %lf\n", position.x, position.y, position.heading);
+	}
+
+	lateralController.follow_route_pursuit(test, 18.0, 80.0, true, 8.0, 20000);
 
 	// knights::Route to_center = knights::generate_path_to_pos(chassis.get_position(), knights::Pos(0,0,M_PI/2), 1.0, 2.0, 75.0, 14.0);
-
-	lateralController.move_to_point(knights::Pos(0,0,M_PI/2), squiggles::Constraints(1.0, 4.0, 75.0));
 }
 
 /**
