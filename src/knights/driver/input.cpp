@@ -1,0 +1,25 @@
+#include "knights/driver/input.h"
+
+#include "api.h"
+
+knights::input::InputAction::InputAction(pros::controller_digital_e_t button, int (*bound_function)(), bool hold) 
+    : button(button), bound_function(bound_function), hold(hold) {
+}
+
+void knights::input::InputAction::run_function() {
+    bound_function();
+}
+
+void knights::input::InputMap::bind_action(pros::controller_digital_e_t button, int (*bound_function)(), bool hold) {
+    this->action_list.emplace_back(button, bound_function, hold);
+}
+
+void knights::input::InputMap::execute_actions(pros::Controller controller) {
+    for (InputAction action : this->action_list) {
+        if (controller.get_digital_new_press(action.button)) {
+            action.run_function();
+        } else if (controller.get_digital(action.button) && action.hold) {
+            action.run_function();
+        }
+    }
+}
