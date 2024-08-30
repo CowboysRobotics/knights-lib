@@ -19,4 +19,6 @@
 
 #include "knights/display.h"
 
+#include "knights/driver/input.h"
+
 #endif

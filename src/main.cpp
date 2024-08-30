@@ -159,10 +159,16 @@ void autonomous() {
  */
 #define velocity_formula(x) 81*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20
 
+void raise_hood() {
+	printf("hood raised\n");
+}
+
 void opcontrol() {
 	float right_velocity = 0; float left_velocity = 0;
 
-	long reps = 0;
+	knights::input::InputMap input;
+
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, raise_hood(), false);
 
 	while (true) {
 		if (abs(master_controller.get_analog(ANALOG_RIGHT_Y)) > 2)
@@ -179,6 +185,5 @@ void opcontrol() {
 			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
 
 		pros::delay(10);
-		reps++;
 	}
 }
