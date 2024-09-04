@@ -48,8 +48,8 @@ namespace knights::display {
     };
 
     struct AutonSelectionPackage {
-        std::string type; // red or blue
-        int number; // number of auton
+        std::string type = "n"; // red or blue
+        int number = 0; // number of auton
     };
 
     /**

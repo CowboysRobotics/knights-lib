@@ -1,4 +1,10 @@
 #include "main.h"
+#include <cstddef>
+#include <cstdio>
+#include <cstring>
+#include <functional>
+#include <string>
+#include <unordered_map>
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 pros::MotorGroup right_mtrs({1,7,3});
@@ -104,44 +110,17 @@ void disabled() {}
  */
 void competition_initialize() {}
 
+
 /**
- * Runs the user autonomous code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the autonomous
- * mode. Alternatively, this function may be called in initialize or opcontrol
- * for non-competition testing purposes.
- *
- * If the robot is disabled or communications is lost, the autonomous task
- * will be stopped. Re-enabling the robot will restart the task, not re-start it
- * from where it left off.
+ * Runs the user autonomous code.
  */
 void autonomous() {
-	knights::RamseteConstants ramsete_constants(1, 0.5);
+	knights::display::AutonSelectionPackage package = knights::display::get_selected_auton();
+	
+	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
+	auton_map["Red1"] = &right_auton_1;
 
-	knights::PIDController lateralPID(4, 0.0, 0.0, 0.0, 127.0);
-	knights::RobotController lateralController(&chassis, &lateralPID, &ramsete_constants, false);
-
-	knights::PIDController turnPID(40, 0.0, 0.0, 0.0, 127.0);
-	knights::RobotController turnController(&chassis, &turnPID, &ramsete_constants, false);
-
-
-	knights::Pos startPos(chassis.get_position());
-
-	knights::Route test = knights::init_route_from_sd("tst.txt");
-
-
-	printf("Route of size %i loaded to memory\n", test.positions.size());
-
-	for (int i = 0; i < (int)test.positions.size(); i+=((int)test.positions.size()/40)) {
-		knights::Pos position = test.positions[i];
-		knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREY, 0));
-		target_position_dot.set_field_pos(position);
-		printf("pos: %lf %lf %lf\n", position.x, position.y, position.heading);
-	}
-
-	lateralController.follow_route_pursuit(test, 18.0, 80.0, true, 8.0, 20000);
-
-	// knights::Route to_center = knights::generate_path_to_pos(chassis.get_position(), knights::Pos(0,0,M_PI/2), 1.0, 2.0, 75.0, 14.0);
+	auton_map[package.type + std::to_string(package.number)](&chassis);
 }
 
 /**
@@ -160,7 +139,7 @@ void autonomous() {
 #define velocity_formula(x) 81*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20
 
 void raise_hood() {
-	printf("hood raised\n");
+	return;
 }
 
 void opcontrol() {
@@ -168,7 +147,7 @@ void opcontrol() {
 
 	knights::input::InputMap input;
 
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, raise_hood(), false);
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, raise_hood, true);
 
 	while (true) {
 		if (abs(master_controller.get_analog(ANALOG_RIGHT_Y)) > 2)
@@ -185,5 +164,7 @@ void opcontrol() {
 			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
 
 		pros::delay(10);
+
+		input.execute_actions(master_controller);
 	}
 }

@@ -2,15 +2,15 @@
 
 #include "api.h"
 
-knights::input::InputAction::InputAction(pros::controller_digital_e_t button, int (*bound_function)(), bool hold) 
+knights::input::InputAction::InputAction(pros::controller_digital_e_t button, void (*bound_function)(), bool hold) 
     : button(button), bound_function(bound_function), hold(hold) {
 }
 
 void knights::input::InputAction::run_function() {
-    bound_function();
+    this->bound_function();
 }
 
-void knights::input::InputMap::bind_action(pros::controller_digital_e_t button, int (*bound_function)(), bool hold) {
+void knights::input::InputMap::bind_action(pros::controller_digital_e_t button, void (*bound_function)(), bool hold) {
     this->action_list.emplace_back(button, bound_function, hold);
 }
 

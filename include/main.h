@@ -40,6 +40,9 @@
 // Knights Lib Include
 #include "knights/api.h"
 
+// User File Includes
+#include "autonomous.h"
+
 // C++ STL
 #include <iomanip>
 #include <sstream>

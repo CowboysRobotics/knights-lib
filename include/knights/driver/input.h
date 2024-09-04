@@ -9,7 +9,7 @@ namespace knights::input {
     
     class InputAction {
         private:
-            int (*bound_function)();
+            void (*bound_function)();
         public:
             /**
              * @brief Controller button to associate with action
@@ -30,7 +30,7 @@ namespace knights::input {
              * @param bound_function Function to execute on the controller button press
              * @param hold Should the action be executed on hold
              */
-            InputAction(pros::controller_digital_e_t button, int (*bound_function)(), bool hold);
+            InputAction(pros::controller_digital_e_t button, void (*bound_function)(), bool hold);
 
             /**
              * @brief Run associated function with the action
@@ -50,7 +50,7 @@ namespace knights::input {
              * @param bound_function Function to execute on the controller button press
              * @param hold Should the action be executed on hold
              */
-            void bind_action(pros::controller_digital_e_t button, int (*bound_function)(), bool hold);
+            void bind_action(pros::controller_digital_e_t button, void (*bound_function)(), bool hold);
 
             /**
              * @brief Determine which 
