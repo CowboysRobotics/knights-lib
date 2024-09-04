@@ -118,7 +118,7 @@ void autonomous() {
 	knights::display::AutonSelectionPackage package = knights::display::get_selected_auton();
 	
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
-	auton_map["Red1"] = &right_auton_1;
+	auton_map["Red1"] = &skills;
 
 	auton_map[package.type + std::to_string(package.number)](&chassis);
 }

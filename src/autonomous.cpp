@@ -3,7 +3,25 @@
 #include "knights/api.h"
 #include "knights/robot/chassis.h"
 
-void right_auton_1(knights::RobotChassis *chassis) {
+void skills(knights::RobotChassis *chassis) {
+
+    chassis->set_position(knights::Pos(-60, 0, 0));
+
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+	knights::PIDController lateralPID(2, 0.0, 0.0, 0.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	knights::PIDController turnPID(40, 0.0, 0.0, 0.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+
+    // drive back towards red stake
+    lateralController.lateral_move(-3.0, 2.0, 2000);
+
+    // put ring onto red stake
+
+    // drive forward to go for first mobile goal
+    lateralController.lateral_move(20.0, 4.0, 2000);
 
     
 
