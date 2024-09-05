@@ -79,13 +79,13 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
             l_speed /= max_curr_speed;
         }
 
+        // apply calculated velocities to motors
+        this->chassis->drivetrain->velocity_command(r_speed, l_speed);
+
         printf("target: %lf %lf curr: %lf %lf %lf , speed: %lf , angular: %lf , side speed: %lf %lf\n", 
             target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
             target_speed, angular_curve, r_speed, l_speed
         );
-
-        // apply calculated velocities to motors
-        this->chassis->drivetrain->velocity_command(r_speed, l_speed);
 
         // wait for next iteration of loop
         pros::delay(10);

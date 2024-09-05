@@ -71,8 +71,6 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
 
             // TODO: edge case; person is not turning optimally, min angle will not be right - figure this out
 
-            pros::lcd::print(6, "des angle: %lf, min a: %lf\n", desired_angle, min_angle(this->chassis->curr_position.heading, desired_angle));
-
             while(min_angle(this->chassis->curr_position.heading, desired_angle, true) > end_tolerance) {
 
                 timeout -= 10;
@@ -85,8 +83,6 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
                 speed = this->pid_controller->update(error, total_error, prev_error);
 
                 prev_error = error;
-
-                pros::lcd::print(7, "e: %lf, s: %lf, t: %lf\n", error, speed, timeout);
 
                 this->chassis->drivetrain->velocity_command(signum(angle) * speed, -signum(angle) * speed);
 

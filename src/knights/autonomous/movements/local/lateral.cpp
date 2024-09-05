@@ -61,8 +61,6 @@ void knights::RobotController::lateral_move(const float distance, const float en
             // create a variable representing the desired position
             Pos desired_position(cos(this->chassis->curr_position.heading) * distance + this->chassis->curr_position.x, 
                 sin(this->chassis->curr_position.heading) * -distance + this->chassis->curr_position.y, this->chassis->curr_position.heading);
-
-            pros::lcd::print(6, "des pos: %lf %lf %lf\n", desired_position.x, desired_position.y, knights::to_deg(desired_position.heading));
             
             while (knights::distance_btwn(this->chassis->curr_position, desired_position) > end_tolerance || 
                 knights::distance_btwn(this->chassis->prev_position, desired_position) < knights::distance_btwn(this->chassis->curr_position, desired_position)) {
@@ -71,7 +69,6 @@ void knights::RobotController::lateral_move(const float distance, const float en
                 if (timeout < 0) break;
 
                 // calculate error
-                // error = std::sqrt(std::pow(desired_position.x - this->chassis->curr_position.x, 2) + std::pow(desired_position.y - this->chassis->curr_position.x, 2));
                 error = knights::distance_btwn(this->chassis->curr_position, desired_position);
 
                 // integrate error
@@ -90,7 +87,6 @@ void knights::RobotController::lateral_move(const float distance, const float en
                 pros::delay(10);
             }
 
-            pros::lcd::print(7, "end err: %lf\n", knights::distance_btwn(this->chassis->curr_position, desired_position));
         }
 
         this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::MotorBrake::brake);

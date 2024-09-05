@@ -31,7 +31,6 @@ void knights::RobotChassis::update_position() {
         this->prevBack = this->pos_trackers->back_tracker->get_distance_travelled();
     }
 
-    // add kalman here
     if (deltaRight && deltaLeft) {
         deltaHeading = ((deltaLeft - deltaRight)/(this->pos_trackers->right_tracker->get_offset() + this->pos_trackers->left_tracker->get_offset()));
         newHeading = curr_position.heading - deltaHeading;
@@ -48,7 +47,7 @@ void knights::RobotChassis::update_position() {
     // calculate change in x and y
     if (this->pos_trackers->right_tracker != nullptr && this->pos_trackers->left_tracker != nullptr) {
         deltaY = (deltaRight+deltaLeft)/2;
-        deltaYOffset = (this->pos_trackers->right_tracker->get_offset()+ this->pos_trackers->left_tracker->get_offset())/2;
+        deltaYOffset = (this->pos_trackers->right_tracker->get_offset() + this->pos_trackers->left_tracker->get_offset())/2;
     } else if (this->pos_trackers->right_tracker != nullptr) {
         deltaY = deltaRight;
         deltaYOffset = this->pos_trackers->right_tracker->get_offset();
@@ -72,17 +71,14 @@ void knights::RobotChassis::update_position() {
         const float cnst = 2 * sin(deltaHeading / 2);
         // curved
         localX = cnst * (deltaX / deltaHeading + this->pos_trackers->back_tracker->get_offset());
-        localY = cnst * (deltaY / deltaHeading + this->pos_trackers->right_tracker->get_offset()); // using right wheel for vertical tracking
+        localY = cnst * (deltaY / deltaHeading + deltaYOffset); // using right wheel for vertical tracking
     }
 
-    // printf("aH: %lf, dX: %lf, dY: %lf, lX: %lf, lY: %lf, nH: %lf\n", averageHeading, deltaX, deltaY, localX, localY, newHeading);
-    // printf("updatepos\n");
-
     // calculate global x
-    curr_position.y += localX * -cos(averageHeading) + localY * sin(averageHeading); // old was x
+    curr_position.y += localX * -cos(averageHeading) + localY * sin(averageHeading);
 
     // calculate global y
-    curr_position.x += localX * sin(averageHeading) + localY * cos(averageHeading); // old was y
+    curr_position.x += localX * sin(averageHeading) + localY * cos(averageHeading);
 
     this->curr_position.heading = newHeading;
 }
