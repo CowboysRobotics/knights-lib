@@ -26,3 +26,16 @@ void skills(knights::RobotChassis *chassis) {
     
 
 }
+
+void pid_tuning(knights::RobotChassis *chassis) {
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+	knights::PIDController lateralPID(5, 0.0, 0.0, 0.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	knights::PIDController turnPID(70, 0.1, 20, 19.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+
+    // lateralController.lateral_move(36.0, 4.0, 4000);
+    turnController.turn_for(180, 3, 2000, false);
+}

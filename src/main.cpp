@@ -7,17 +7,20 @@
 #include <unordered_map>
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
-pros::MotorGroup right_mtrs({1,7,3});
-pros::MotorGroup left_mtrs({4,5,6});
-pros::Rotation mid_odom(18);
-pros::Rotation back_odom(14);
+pros::MotorGroup right_mtrs({14,1,8}, pros::MotorGears::blue); // 8 needs to be rev
+pros::MotorGroup left_mtrs({11,13,17}, pros::MotorGears::blue); // 13,17 need rev
+pros::Motor intake(19, pros::MotorGears::green);
+pros::Rotation mid_odom(16);
+pros::Rotation back_odom(20);
+
+pros::adi::Pneumatics clamp(8, true);
 
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
-pros::IMU imu(15);
+pros::IMU imu(9);
 
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 18, 450.0, 3.25, 0.75);
-knights::PositionTracker midOdom(&mid_odom, 1.0, 2.75, 0);
-knights::PositionTracker backOdom(&back_odom, 1.0, 2.75, 2);
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 2.75, 0.75);
+knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.677);
+knights::PositionTracker backOdom(&back_odom, 2.75, 1, 0);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
 
 // knights::PID_Controller pidController(0.4, 0.0001, 0.085, 0, 127);
@@ -49,7 +52,7 @@ void initialize() {
 	// wait until IMU is fully calibrated
 	pros::delay(2000);
 
-	knights::Pos starting_position(-36,-60,M_PI/2); // used to be -36,60
+	knights::Pos starting_position(60,-60,M_PI/2); // used to be -36,60
 
 	chassis.set_position(starting_position);
 	chassis.set_prev_position(starting_position);
@@ -58,9 +61,13 @@ void initialize() {
 	midOdom.reset();
 	backOdom.reset();
 
-	left_mtrs.set_reversed(true, 0);
+	left_mtrs.set_reversed(false, 0);
 	left_mtrs.set_reversed(true, 1);
 	left_mtrs.set_reversed(true, 2);
+
+	right_mtrs.set_reversed(false, 0);
+	right_mtrs.set_reversed(false, 1);
+	right_mtrs.set_reversed(true, 2);
 
 	// knights::Route to_center = knights::generate_path_to_pos(starting_position, knights::Pos(0,0,M_PI/2), 1.0, 2.0, 75.0, 14.0);
 
@@ -119,6 +126,7 @@ void autonomous() {
 	
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 	auton_map["Red1"] = &skills;
+	auton_map["None0"] = &pid_tuning;
 
 	auton_map[package.type + std::to_string(package.number)](&chassis);
 }
@@ -138,8 +146,35 @@ void autonomous() {
  */
 #define velocity_formula(x) 81*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20
 
-void raise_hood() {
-	return;
+#define INTAKE_VELOCITY 300
+
+bool intake_spinning = false;
+
+void intake_fwd() {
+	if (intake_spinning == true && intake.get_direction() == 1) {
+		intake.move(0);
+		intake_spinning = false;
+	} else {
+		intake.move(INTAKE_VELOCITY);
+		intake_spinning = true;
+	}
+}
+
+void intake_rev() {
+	if (intake_spinning == true && intake.get_direction() == -1) {
+		intake.move(0);
+		intake_spinning = false;
+	} else {
+		intake.move(-INTAKE_VELOCITY);
+		intake_spinning = true;
+	}
+}
+
+bool clamp_down = false;
+
+void clamp_out() {
+	clamp_down = !clamp_down;
+	clamp.set_value(clamp_down);
 }
 
 void opcontrol() {
@@ -147,7 +182,9 @@ void opcontrol() {
 
 	knights::input::InputMap input;
 
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, raise_hood, true);
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1, intake_fwd, false);
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2, intake_rev, false);
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_out, false);
 
 	while (true) {
 		if (abs(master_controller.get_analog(ANALOG_RIGHT_Y)) > 2)

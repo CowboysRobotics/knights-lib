@@ -5,6 +5,8 @@
 
 #include "knights/util/calculation.h"
 
+#define MIN_SPEED 20
+
 void knights::RobotController::turn_for(const float angle, float end_tolerance, float timeout, bool rad) {
     // turn the robot a certain amount of degrees, positive is left, negative is right
 
@@ -84,7 +86,13 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
 
                 prev_error = error;
 
+                printf("des angle: %lf, error %lf, speed: %lf\n", desired_angle, error, speed);
+
                 this->chassis->drivetrain->velocity_command(signum(angle) * speed, -signum(angle) * speed);
+
+                if (speed < MIN_SPEED) {
+                    break;
+                }
 
                 pros::delay(10);
             }

@@ -60,7 +60,7 @@ void knights::RobotController::lateral_move(const float distance, const float en
         } else {
             // create a variable representing the desired position
             Pos desired_position(cos(this->chassis->curr_position.heading) * distance + this->chassis->curr_position.x, 
-                sin(this->chassis->curr_position.heading) * -distance + this->chassis->curr_position.y, this->chassis->curr_position.heading);
+                sin(this->chassis->curr_position.heading) * distance + this->chassis->curr_position.y, this->chassis->curr_position.heading);
             
             while (knights::distance_btwn(this->chassis->curr_position, desired_position) > end_tolerance || 
                 knights::distance_btwn(this->chassis->prev_position, desired_position) < knights::distance_btwn(this->chassis->curr_position, desired_position)) {
@@ -70,6 +70,8 @@ void knights::RobotController::lateral_move(const float distance, const float en
 
                 // calculate error
                 error = knights::distance_btwn(this->chassis->curr_position, desired_position);
+
+                printf("des pos: %lf %lf %lf, error: %lf\n", desired_position.x, desired_position.y, desired_position.heading, error);
 
                 // integrate error
                 total_error += error;

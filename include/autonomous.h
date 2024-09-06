@@ -6,5 +6,6 @@
 #include "knights/robot/chassis.h"
 
 void skills(knights::RobotChassis *chassis);
+void pid_tuning(knights::RobotChassis *chassis);
 
 #endif

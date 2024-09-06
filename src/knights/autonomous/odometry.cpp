@@ -75,10 +75,10 @@ void knights::RobotChassis::update_position() {
     }
 
     // calculate global x
-    curr_position.y += localX * -cos(averageHeading) + localY * sin(averageHeading);
+    curr_position.x += localX * sin(averageHeading) + localY * -cos(averageHeading);
 
     // calculate global y
-    curr_position.x += localX * sin(averageHeading) + localY * cos(averageHeading);
+    curr_position.y += localX * cos(averageHeading) + localY *-sin(averageHeading);
 
     this->curr_position.heading = newHeading;
 }
