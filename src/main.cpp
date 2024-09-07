@@ -127,6 +127,7 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 	auton_map["Red1"] = &skills;
 	auton_map["None0"] = &pid_tuning;
+	auton_map["Blue4"] = &right_wp_auton;
 
 	auton_map[package.type + std::to_string(package.number)](&chassis);
 }
