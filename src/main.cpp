@@ -7,8 +7,8 @@
 #include <unordered_map>
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
-pros::MotorGroup right_mtrs({14,1,8}, pros::MotorGears::blue); // 8 needs to be rev
-pros::MotorGroup left_mtrs({11,13,17}, pros::MotorGears::blue); // 13,17 need rev
+pros::MotorGroup left_mtrs({8,1,14}, pros::MotorGears::blue); // 8 needs to be rev
+pros::MotorGroup right_mtrs({11,13,17}, pros::MotorGears::blue); // 13,17 need rev
 pros::Motor intake(19, pros::MotorGears::green);
 pros::Rotation mid_odom(16);
 pros::Rotation back_odom(20);
@@ -56,17 +56,19 @@ void initialize() {
 
 	chassis.set_position(starting_position);
 	chassis.set_prev_position(starting_position);
+	chassis.set_position(knights::Pos(-60.5, -14.75, 3*M_PI/2));
+	chassis.set_prev_position(knights::Pos(-60.5, -14.75, 3*M_PI/2));
 
 	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false));
 	midOdom.reset();
 	backOdom.reset();
 
-	left_mtrs.set_reversed(false, 0);
-	left_mtrs.set_reversed(true, 1);
-	left_mtrs.set_reversed(true, 2);
+	left_mtrs.set_reversed(true, 0);
+	left_mtrs.set_reversed(false, 1);
+	left_mtrs.set_reversed(false, 2);
 
 	right_mtrs.set_reversed(false, 0);
-	right_mtrs.set_reversed(false, 1);
+	right_mtrs.set_reversed(true, 1);
 	right_mtrs.set_reversed(true, 2);
 
 	// knights::Route to_center = knights::generate_path_to_pos(starting_position, knights::Pos(0,0,M_PI/2), 1.0, 2.0, 75.0, 14.0);
@@ -126,7 +128,7 @@ void autonomous() {
 	
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 	auton_map["Red1"] = &skills;
-	auton_map["None0"] = &pid_tuning;
+	auton_map["None0"] = &right_wp_auton;
 	auton_map["Blue4"] = &right_wp_auton;
 
 	auton_map[package.type + std::to_string(package.number)](&chassis);
@@ -198,8 +200,8 @@ void opcontrol() {
 		else
 			left_velocity = 0;
 
-		drivetrain.velocity_command(right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
-			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
+		drivetrain.velocity_command(-right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
+			-left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
 
 		pros::delay(10);
 

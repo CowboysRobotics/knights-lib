@@ -66,14 +66,14 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
             float desired_angle;
 
             if (rad) // inputs provided in rads
-                desired_angle = normalize_angle(this->chassis->curr_position.heading + angle, true);
-            else // inputs provided in degrees
+                desired_angle = normalize_angle(this->chassis->curr_position.heading + (angle), true);
+            else {// inputs provided in degrees
                 end_tolerance = to_rad(end_tolerance);
                 desired_angle = normalize_angle(this->chassis->curr_position.heading + to_rad(angle), true);
-
+            }
             // TODO: edge case; person is not turning optimally, min angle will not be right - figure this out
 
-            while(min_angle(this->chassis->curr_position.heading, desired_angle, true) > end_tolerance) {
+            while(std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true)) > end_tolerance) {
 
                 timeout -= 10;
                 if (timeout < 0) break;
@@ -88,7 +88,7 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
 
                 printf("des angle: %lf, error %lf, speed: %lf\n", desired_angle, error, speed);
 
-                this->chassis->drivetrain->velocity_command(signum(angle) * speed, -signum(angle) * speed);
+                this->chassis->drivetrain->velocity_command(-signum(angle) * speed, signum(angle) * speed);
 
                 if (speed < MIN_SPEED) {
                     break;
@@ -96,12 +96,13 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
 
                 pros::delay(10);
             }
+
+            this->chassis->drivetrain->velocity_command(0, 0);
             
         }
     } else {
         // holonomic code
     }
-
 
     this->in_motion = false;
     return;
