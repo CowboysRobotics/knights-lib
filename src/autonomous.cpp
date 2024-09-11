@@ -64,7 +64,7 @@ void right_wp_auton(knights::RobotChassis *chassis) {
     lateralController.lateral_move(14.0, 4.0, 500);
 
     // turn towards mobile goal
-    turnController.turn_for(120, 3.0, 750);
+    turnController.turn_for(115, 3.0, 750);
 
     // drive towards mobile goal
     lateralController.lateral_move(-22, 4.0, 750);
