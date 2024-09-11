@@ -48,7 +48,7 @@ namespace knights {
 
             void move_to_point(const Pos point, squiggles::Constraints path_constraints, const float &lookahead_distance = 18.0, const float &end_tolerance = 8.0, float timeout = 4000);
 
-            void turn_to_angle(const float angle, const float end_tolerance = 3.0, float timeout = 2000, bool rad = false); // DEGREES
+            void turn_to_angle(const float angle, int direction,float end_tolerance = 3.0, float timeout = 2000, bool rad = false); // DEGREES
 
             /**
              * @brief Move in a straight line, forwards or backwards

@@ -73,12 +73,14 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
             }
             // TODO: edge case; person is not turning optimally, min angle will not be right - figure this out
 
+            printf("des angle: %lf\n", desired_angle);
+
             while(std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true)) > end_tolerance) {
 
                 timeout -= 10;
                 if (timeout < 0) break;
 
-                error = min_angle(this->chassis->curr_position.heading, desired_angle, true);
+                error = std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true));
 
                 total_error += error;
 

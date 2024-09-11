@@ -5,8 +5,8 @@
 
 #include "knights/robot/chassis.h"
 
-void skills(knights::RobotChassis *chassis);
 void pid_tuning(knights::RobotChassis *chassis);
 void right_wp_auton(knights::RobotChassis *chassis);
+void programming_skills(knights::RobotChassis *chassis);
 
 #endif

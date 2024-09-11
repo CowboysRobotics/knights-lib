@@ -71,7 +71,7 @@ void knights::RobotController::lateral_move(const float distance, const float en
                 // calculate error
                 error = knights::distance_btwn(this->chassis->curr_position, desired_position);
 
-                printf("des pos: %lf %lf %lf, error: %lf\n", desired_position.x, desired_position.y, desired_position.heading, error);
+                // printf("des pos: %lf %lf %lf, error: %lf\n", desired_position.x, desired_position.y, desired_position.heading, error);
 
                 // integrate error
                 total_error += error;
