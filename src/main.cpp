@@ -14,7 +14,7 @@ pros::Rotation mid_odom(7);
 pros::Rotation back_odom(20);
 
 pros::adi::Pneumatics clamp(8, true);
-
+pros::adi::Pneumatics doinker(7, false);
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
 pros::IMU imu(9);
 
@@ -128,7 +128,7 @@ void autonomous() {
 	knights::display::AutonSelectionPackage package = knights::display::get_selected_auton();
 	
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
-	auton_map["None0"] = &pid_tuning;
+	auton_map["None0"] = &alex_skills;
 	auton_map["Blue4"] = &right_wp_auton;
 
 	auton_map[package.type + std::to_string(package.number)](&chassis);
@@ -180,6 +180,14 @@ void clamp_out() {
 	clamp.set_value(clamp_down);
 }
 
+bool doinked = false;
+
+void doink() {
+    doinked = !doinked;
+	doinker.set_value(doinked);
+
+}
+
 void opcontrol() {
 	float right_velocity = 0; float left_velocity = 0;
 
@@ -188,6 +196,7 @@ void opcontrol() {
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1, intake_fwd, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2, intake_rev, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_out, false);
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doink, false);
 
 	while (true) {
 		if (abs(master_controller.get_analog(ANALOG_RIGHT_Y)) > 2)
