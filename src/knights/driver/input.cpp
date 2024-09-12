@@ -15,10 +15,10 @@ void knights::input::InputMap::bind_action(pros::controller_digital_e_t button, 
 }
 
 void knights::input::InputMap::execute_actions(pros::Controller controller) {
-    for (InputAction action : this->action_list) {
-        if (controller.get_digital_new_press(action.button)) {
+    for (InputAction action : this->action_list) { // For action added to map
+        if (controller.get_digital_new_press(action.button)) { // If button just pressed
             action.run_function();
-        } else if (controller.get_digital(action.button) && action.hold) {
+        } else if (controller.get_digital(action.button) && action.hold) { // If button held and set to hold
             action.run_function();
         }
     }

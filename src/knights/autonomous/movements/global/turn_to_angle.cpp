@@ -23,6 +23,9 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
         end_tolerance = to_rad(end_tolerance);
         desired_angle = normalize_angle(to_rad(angle), true);
     }
+
+    if (sign == 0)
+        sign = knights::direction(this->chassis->curr_position.heading, desired_angle);
     
     printf("des angle: %lf\n", desired_angle);
 

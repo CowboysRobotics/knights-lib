@@ -24,6 +24,21 @@ float knights::min_angle(float start, float target, bool rad) {
     return std::remainder(error,max);
 };
 
+int knights::direction(float init_heading, float des_heading) {
+	float c1 = init_heading - des_heading;
+	float c2 = des_heading - init_heading;
+
+	if (c1 < 0)
+		c1 += 360;
+	if (c2 < 0)
+		c2 += 360;
+	
+	if (std::abs(c1) > std::abs(c2))
+		return 1;
+	else
+		return -1;
+}
+
 float knights::angular_error(float start, float target, int dir, bool rad) {
     // unimplmented yet
     return target-start;

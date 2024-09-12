@@ -29,7 +29,8 @@ knights::Route knights::operator-(knights::Route r1, const int &amt) {
 
 knights::Route knights::init_route_from_sd(std::string route_name) {
 
-    if (pros::usd::is_installed) {
+    if (pros::usd::is_installed()) {
+        printf("Found SD card\n");
         route_name.insert(0, "/usd/");
 
         std::fstream read_file(route_name, std::ios_base::in);
@@ -41,6 +42,8 @@ knights::Route knights::init_route_from_sd(std::string route_name) {
 
             while (read_file >> x && read_file >> y) {
                 positions.emplace_back(x,y,0);
+
+                printf("Pos: %lf %lf\n", x , y);
             }
 
             return knights::Route(positions);
@@ -49,6 +52,7 @@ knights::Route knights::init_route_from_sd(std::string route_name) {
             return knights::Route();
         }
     } else {
+        printf("SD card not found\n");
         return knights::Route();
     }
 }

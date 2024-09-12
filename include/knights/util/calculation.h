@@ -50,6 +50,15 @@ namespace knights {
     float angular_error(float start, float target, int dir, bool rad = true);
 
     /**
+     * @brief Get he direction between the two angles
+     * 
+     * @param init_heading initial heading
+     * @param des_heading heading to turn to
+     * @return 1 if left, -1 if right, never will return 0
+     */
+    int direction(float init_heading, float des_heading);
+
+    /**
     @brief basic signum function, evaluates whether or not a number is above, below, or at zero
     @param num the number to evaulate
     @return 1 if num > 0, 0 if num = 0, -1 if num < 0

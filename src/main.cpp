@@ -57,8 +57,8 @@ void initialize() {
 	// chassis.set_position(starting_position);
 	// chassis.set_prev_position(starting_position);
     chassis.set_position(knights::Pos(-60, 0, 0.001));
-
 	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false));
+
 	midOdom.reset();
 	backOdom.reset();
 
@@ -125,12 +125,18 @@ void competition_initialize() {}
  * Runs the user autonomous code.
  */
 void autonomous() {
+	// Query display for the selected buttons
 	knights::display::AutonSelectionPackage package = knights::display::get_selected_auton();
 	
+	// Create a map that maps autonomous to selection packages
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
-	auton_map["None0"] = &alex_skills;
-	auton_map["Blue4"] = &right_wp_auton;
 
+	// Different autons, None0 is the default auton
+	auton_map["None0"] = &right_wp_auton;
+	auton_map["Blue1"] = &programming_skills;
+	auton_map["Red1"] = &unsafe_wp_auton;
+
+	// Run the chosen auton
 	auton_map[package.type + std::to_string(package.number)](&chassis);
 }
 
@@ -193,27 +199,36 @@ void opcontrol() {
 
 	knights::input::InputMap input;
 
+	// Bind the requied input actions to the input map
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1, intake_fwd, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2, intake_rev, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_out, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doink, false);
 
 	while (true) {
+		// If controller joystick not in deadzone, calculate the velocity
 		if (abs(master_controller.get_analog(ANALOG_RIGHT_Y)) > 2)
 			right_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_RIGHT_Y)));
+		// Otherwise, stop the right motors
 		else
 			right_velocity = 0;
 
+		// If controller joystick not in deadzone, calculate the velocity
 		if (abs(master_controller.get_analog(ANALOG_LEFT_Y)) > 2)
 			left_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_LEFT_Y)));
+		// Otherwise, stop the left motors
 		else
 			left_velocity = 0;
 
+		// Send the required velocities to the drivetrain
+		// Signum function detects if the controller analog value is postive or negative
 		drivetrain.velocity_command(-right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
 			-left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
 
+		// Delay to let other tasks run
 		pros::delay(10);
 
+		// Loop through all values in input map
 		input.execute_actions(master_controller);
 	}
 }
