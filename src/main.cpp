@@ -72,29 +72,25 @@ void initialize() {
 
 	intake.set_reversed(true, 1);
 
-	// knights::Route to_center = knights::generate_path_to_pos(starting_position, knights::Pos(0,0,M_PI/2), 1.0, 2.0, 75.0, 14.0);
 
-	// //for (knights::Pos position : to_center.positions) {
-	// for (int i = 0; i < (int)to_center.positions.size(); i+=((int)to_center.positions.size()/40)) {
-	// 	knights::Pos position = to_center.positions[i];
-	// 	knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREY, 0));
-	// 	target_position_dot.set_field_pos(position);
-	// 	// printf("pos: %lf %lf %lf\n", position.x, position.y, position.heading);
-	// }
-
+	// run odometry loop
 	if (odomTask == nullptr)
 		pros::Task *odomTask = new pros::Task {[=] {
 			while (true) {
-				chassis.update_position();
+				chassis.update_position(); // query odometry system for position
 				
+				// Convoluted method of inputting everything to a string
 				std::stringstream stream;
 				stream << "Curr Pos: ";
 				stream << std::fixed << std::setprecision(2) << chassis.get_position().x << " ";
 				stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
 				stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
 				std::string s = stream.str();
+
+				// Set the display label to the current position
 				knights::display::set_pos_label(s);
 
+				// Move the current position dot to the desired position
 				knights::display::change_curr_pos_dot(chassis.get_position());
 
 				pros::delay(10);
@@ -132,9 +128,9 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// Different autons, None0 is the default auton
-	auton_map["None0"] = &right_wp_auton;
+	auton_map["None0"] = &programming_skills;
 	auton_map["Blue1"] = &programming_skills;
-	auton_map["Red1"] = &unsafe_wp_auton;
+	auton_map["Red1"] = &right_wp_auton;
 
 	// Run the chosen auton
 	auton_map[package.type + std::to_string(package.number)](&chassis);
@@ -153,28 +149,28 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-#define velocity_formula(x) 81*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20
+#define velocity_formula(x) 81*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20 // arbitrarily defined formula to translate joysticks to velocity
 
 #define INTAKE_VELOCITY 300
 
 bool intake_spinning = false;
 
 void intake_fwd() {
-	if (intake_spinning == true && intake.get_direction() == 1) {
-		intake.move(0);
+	if (intake_spinning == true && intake.get_direction() == 1) { // If intake is on or in wrong direction
+		intake.move(0); // stop intake
 		intake_spinning = false;
 	} else {
-		intake.move(INTAKE_VELOCITY);
+		intake.move(INTAKE_VELOCITY); // Spin intake forward
 		intake_spinning = true;
 	}
 }
 
 void intake_rev() {
-	if (intake_spinning == true && intake.get_direction() == -1) {
-		intake.move(0);
+	if (intake_spinning == true && intake.get_direction() == -1) { // If intake is spinning or in the wrong direction
+		intake.move(0); // stop intake
 		intake_spinning = false;
-	} else {
-		intake.move(-INTAKE_VELOCITY);
+	} else { 
+		intake.move(-INTAKE_VELOCITY); // Spin the intake in reverse
 		intake_spinning = true;
 	}
 }

@@ -64,9 +64,13 @@ void knights::display::change_curr_pos_dot(Pos pos) {
 }
 
 static void event_handler(lv_event_t * e) {
+    // Get the button event and the object it was done to
     lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t * obj = lv_event_get_target(e);
+
+    // If object value was changed
     if(code == LV_EVENT_VALUE_CHANGED) {
+        // Id is the selected 
         uint32_t id = lv_btnmatrix_get_selected_btn(obj);
         const char * txt = lv_btnmatrix_get_btn_text(obj, id);
 
