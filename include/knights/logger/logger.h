@@ -7,10 +7,12 @@
 
 namespace knights::logger {
     
-    void warn(std::string string);
-    void error(std::string string);
-    void normal(std::string string);
-    void data(std::string string);
+    void yellow(std::string string);
+    void red(std::string string);
+    void blue(std::string string);
+    void green(std::string string);
+    void cyan(std::string string);
+    void white(std::string string);
 }
 
 #endif

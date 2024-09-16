@@ -1,22 +1,34 @@
 #include "main.h"
+#include "knights/logger/colors.h"
+
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
 #include <functional>
+#include <iostream>
 #include <string>
 #include <unordered_map>
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
-pros::MotorGroup left_mtrs({8,1,14}, pros::MotorGears::blue); // 8 needs to be rev
-pros::MotorGroup right_mtrs({11,13,17}, pros::MotorGears::blue); // 13,17 need rev
-pros::MotorGroup intake({16,19}, pros::MotorGears::green);
-pros::Rotation mid_odom(7);
-pros::Rotation back_odom(20);
 
+// // Competition Robot
+// pros::MotorGroup left_mtrs({8,1,14}, pros::MotorGears::blue); // 8 needs to be rev
+// pros::MotorGroup right_mtrs({11,13,17}, pros::MotorGears::blue); // 13,17 need rev
+// pros::Rotation mid_odom(7);
+// pros::Rotation back_odom(20);
+// pros::IMU imu(9);
+
+// Test Robot
+pros::MotorGroup right_mtrs({1,7,3}, pros::MotorGears::blue);
+pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
+pros::Rotation mid_odom(18);
+pros::Rotation back_odom(14);
+pros::IMU imu(15);
+
+pros::MotorGroup intake({16,19}, pros::MotorGears::green);
 pros::adi::Pneumatics clamp(8, true);
 pros::adi::Pneumatics doinker(7, false);
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
-pros::IMU imu(9);
 
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 2.75, 0.75);
 knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.677);
@@ -45,7 +57,7 @@ void initialize() {
 	while(imu.is_calibrating()) {
 		pros::delay(10);
 	}
-	printf("init\n");
+	knights::logger::blue("Initializtion Begin");
 
 	lv_display();
 
@@ -62,13 +74,19 @@ void initialize() {
 	midOdom.reset();
 	backOdom.reset();
 
-	left_mtrs.set_reversed(true, 0);
-	left_mtrs.set_reversed(false, 1);
-	left_mtrs.set_reversed(false, 2);
+	knights::logger::blue("Initializtion End");
 
-	right_mtrs.set_reversed(false, 0);
-	right_mtrs.set_reversed(true, 1);
-	right_mtrs.set_reversed(true, 2);
+	// // Competition Robot
+	// left_mtrs.set_reversed(true, 0);
+	// left_mtrs.set_reversed(false, 1);
+	// left_mtrs.set_reversed(false, 2);
+
+	// right_mtrs.set_reversed(false, 0);
+	// right_mtrs.set_reversed(true, 1);
+	// right_mtrs.set_reversed(true, 2);
+
+	// Test Bot
+	// nothing reversed
 
 	intake.set_reversed(true, 1);
 
@@ -202,6 +220,7 @@ void opcontrol() {
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_out, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doink, false);
 
+
 	while (true) {
 		// If controller joystick not in deadzone, calculate the velocity
 		if (abs(master_controller.get_analog(ANALOG_RIGHT_Y)) > 2)
@@ -219,8 +238,8 @@ void opcontrol() {
 
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
-		drivetrain.velocity_command(-right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
-			-left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
+		drivetrain.velocity_command(right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
+			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
 
 		// Delay to let other tasks run
 		pros::delay(10);

@@ -21,4 +21,6 @@
 
 #include "knights/driver/input.h"
 
+#include "knights/logger/logger.h"
+
 #endif
