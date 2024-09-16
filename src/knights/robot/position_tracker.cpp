@@ -1,26 +1,27 @@
 #include "knights/robot/position_tracker.h"
+#include "knights/util/calculation.h"
 
 using namespace knights;
 
-PositionTracker::PositionTracker(pros::Rotation *rotation, float wheel_diameter, float gear_ratio, float offset) 
-    : rotation(rotation), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio), offset(offset) {
+PositionTracker::PositionTracker(pros::Rotation *rotation, float wheel_diameter, float gear_ratio, float offset, int direction) 
+    : rotation(rotation), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio), offset(offset), direction(direction) {
 };
 
-PositionTracker::PositionTracker(pros::adi::Encoder *adi_encoder, float wheel_diameter, float gear_ratio, float offset) 
-    : adi_encoder(adi_encoder), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio), offset(offset) {
+PositionTracker::PositionTracker(pros::adi::Encoder *adi_encoder, float wheel_diameter, float gear_ratio, float offset, int direction) 
+    : adi_encoder(adi_encoder), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio), offset(offset), direction(direction) {
 };
 
-PositionTracker::PositionTracker(pros::Motor *motor, float wheel_diameter, float gear_ratio, float offset) 
-    : motor(motor), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio), offset(offset) {
+PositionTracker::PositionTracker(pros::Motor *motor, float wheel_diameter, float gear_ratio, float offset, int direction) 
+    : motor(motor), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio), offset(offset), direction(direction) {
 };
 
 float PositionTracker::get_distance_travelled() {
     if (this->rotation != NULL) {
-        return this->rotation->get_position() * ((this->wheel_diameter * this->gear_ratio * M_PI) / 36000); // this works in centidegrees
+        return knights::signum(this->direction) * this->rotation->get_position() * ((this->wheel_diameter * this->gear_ratio * M_PI) / 36000); // this works in centidegrees
     } else if (this->adi_encoder != NULL) {
-        return this->adi_encoder->get_value() * ((this->wheel_diameter * this->gear_ratio * M_PI) / 360);
+        return knights::signum(this->direction) * this->adi_encoder->get_value() * ((this->wheel_diameter * this->gear_ratio * M_PI) / 360);
     } else if (this->motor != NULL) {
-        return this->motor->get_position() * ((this->wheel_diameter * this->gear_ratio * M_PI) / 360);
+        return knights::signum(this->direction) * this->motor->get_position() * ((this->wheel_diameter * this->gear_ratio * M_PI) / 360);
     } else {
         return 0.0;
     }

@@ -26,6 +26,9 @@ namespace knights {
 
             // the distance from the wheel to the tracking center
             float offset = 0;
+
+            // direction of the odom wheel
+            int direction = 1;
         public:
             /**
              * @brief Construct a new position tracking wheel
@@ -35,7 +38,7 @@ namespace knights {
              * @param gear_ratio gear ratio of the wheel
              * @param offset vertical or horizontal distance from the tracking wheel to the trackign center
              */
-            PositionTracker(pros::Rotation *rotation, float wheel_diameter, float gear_ratio, float offset);
+            PositionTracker(pros::Rotation *rotation, float wheel_diameter, float gear_ratio, float offset, int direction = 1);
 
             /**
              * @brief Construct a new position tracking wheel
@@ -45,7 +48,7 @@ namespace knights {
              * @param gear_ratio gear ratio of the wheel
              * @param offset vertical or horizontal distance from the tracking wheel to the trackign center
              */
-            PositionTracker(pros::adi::Encoder *adi_encoder, float wheel_diameter, float gear_ratio, float offset);
+            PositionTracker(pros::adi::Encoder *adi_encoder, float wheel_diameter, float gear_ratio, float offset, int direction = 1);
 
             /**
              * @brief Construct a new position tracking wheel
@@ -55,7 +58,7 @@ namespace knights {
              * @param gear_ratio gear ratio of the wheel
              * @param offset vertical or horizontal distance from the tracking wheel to the trackign center
              */
-            PositionTracker(pros::Motor *motor, float wheel_diameter, float gear_ratio, float offset);
+            PositionTracker(pros::Motor *motor, float wheel_diameter, float gear_ratio, float offset, int direction = 1);
 
             /**
              * @brief Get the total distance the wheel has travelled

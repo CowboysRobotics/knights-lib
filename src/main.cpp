@@ -17,6 +17,8 @@ pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 // pros::Rotation mid_odom(7);
 // pros::Rotation back_odom(20);
 // pros::IMU imu(9);
+// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.677);
+// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 0);
 
 // Test Robot
 pros::MotorGroup right_mtrs({1,7,3}, pros::MotorGears::blue);
@@ -24,6 +26,8 @@ pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
 pros::Rotation mid_odom(18);
 pros::Rotation back_odom(14);
 pros::IMU imu(15);
+knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0, -1);
+knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
 
 pros::MotorGroup intake({16,19}, pros::MotorGears::green);
 pros::adi::Pneumatics clamp(8, true);
@@ -31,8 +35,6 @@ pros::adi::Pneumatics doinker(7, false);
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
 
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 2.75, 0.75);
-knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.677);
-knights::PositionTracker backOdom(&back_odom, 2.75, 1, 0);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
 
 // knights::PID_Controller pidController(0.4, 0.0001, 0.085, 0, 127);
