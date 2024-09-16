@@ -128,9 +128,10 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// Different autons, None0 is the default auton
-	auton_map["None0"] = &programming_skills;
+	auton_map["None0"] = &left_wp_auton;
 	auton_map["Blue1"] = &programming_skills;
 	auton_map["Red1"] = &right_wp_auton;
+    auton_map["Red2"] = &left_wp_auton;
 
 	// Run the chosen auton
 	auton_map[package.type + std::to_string(package.number)](&chassis);
