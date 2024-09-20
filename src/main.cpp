@@ -1,5 +1,6 @@
 #include "main.h"
 #include "knights/logger/colors.h"
+#include "squiggles/squiggles.hpp"
 
 #include <cstddef>
 #include <cstdio>
@@ -8,34 +9,37 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
-// // Competition Robot
-// pros::MotorGroup left_mtrs({8,1,14}, pros::MotorGears::blue); // 8 needs to be rev
-// pros::MotorGroup right_mtrs({11,13,17}, pros::MotorGears::blue); // 13,17 need rev
-// pros::Rotation mid_odom(7);
-// pros::Rotation back_odom(20);
-// pros::IMU imu(9);
-// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.677);
-// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 0);
+// Competition Robot
+pros::MotorGroup left_mtrs({8,1,14}, pros::MotorGears::blue); // 8 needs to be rev
+pros::MotorGroup right_mtrs({11,13,17}, pros::MotorGears::blue); // 13,17 need rev
+pros::Rotation mid_odom(7);
+pros::Rotation back_odom(20);
+pros::Distance redirect(12);
+pros::IMU imu(9);
+knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.677);
+knights::PositionTracker backOdom(&back_odom, 2.75, 1, 0);
 
-// Test Robot
-pros::MotorGroup right_mtrs({1,7,3}, pros::MotorGears::blue);
-pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
-pros::Rotation mid_odom(18);
-pros::Rotation back_odom(14);
-pros::IMU imu(15);
-knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0, -1);
-knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
+// // Test Robot
+// pros::MotorGroup right_mtrs({1,7,3}, pros::MotorGears::blue);
+// pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
+// pros::Rotation mid_odom(18);
+// pros::Rotation back_odom(14);
+// pros::IMU imu(15);
+// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0, -1);
+// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
 
-pros::MotorGroup intake({16,19}, pros::MotorGears::green);
+pros::MotorGroup intake({16,19}, pros::MotorGears::blue);
 pros::adi::Pneumatics clamp(8, true);
 pros::adi::Pneumatics doinker(7, false);
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
 
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 2.75, 0.75);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
+pros::Motor snacky_cakes(5, pros::v5::MotorGears::green);
 
 // knights::PID_Controller pidController(0.4, 0.0001, 0.085, 0, 127);
 
@@ -59,7 +63,7 @@ void initialize() {
 	while(imu.is_calibrating()) {
 		pros::delay(10);
 	}
-	knights::logger::blue("Initializtion Begin");
+	knights::logger::blue("Initialization Begin");
 
 	lv_display();
 
@@ -70,28 +74,56 @@ void initialize() {
 
 	// chassis.set_position(starting_position);
 	// chassis.set_prev_position(starting_position);
-    chassis.set_position(knights::Pos(-60, 0, 0.001));
-	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false));
+    chassis.set_position(knights::Pos(-36, -60, M_PI/2));
+	// imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false)); -- need other for some rzn
+	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();
 	backOdom.reset();
 
-	knights::logger::blue("Initializtion End");
+	knights::logger::blue("Initialization End");
 
-	// // Competition Robot
+	// Competition Robot
+	left_mtrs.set_reversed(true, 0);
+	left_mtrs.set_reversed(false, 1);
+	left_mtrs.set_reversed(false, 2);
+
+	right_mtrs.set_reversed(false, 0);
+	right_mtrs.set_reversed(true, 1);
+	right_mtrs.set_reversed(true, 2);
+
+	// // Test Bot
 	// left_mtrs.set_reversed(true, 0);
-	// left_mtrs.set_reversed(false, 1);
-	// left_mtrs.set_reversed(false, 2);
-
-	// right_mtrs.set_reversed(false, 0);
-	// right_mtrs.set_reversed(true, 1);
-	// right_mtrs.set_reversed(true, 2);
-
-	// Test Bot
-	// nothing reversed
+	// left_mtrs.set_reversed(true, 1);
+	// left_mtrs.set_reversed(true, 2);
 
 	intake.set_reversed(true, 1);
 
+	// const double MAX_VEL = 127.0;     // in meters per second
+	// const double MAX_ACCEL = 60.0;   // in meters per second^2
+	// const double MAX_JERK = 70.0;    // in meters per second^3
+	// const double ROBOT_WIDTH = 15.0; // in meters
+	// auto constraints = squiggles::Constraints(MAX_VEL, MAX_ACCEL, MAX_JERK);
+	// auto generator = squiggles::SplineGenerator(
+	// constraints,
+	// std::make_shared<squiggles::TankModel>(ROBOT_WIDTH, constraints));
+
+	// std::vector<squiggles::ProfilePoint> path = generator.generate({squiggles::Pose(0, 0, M_PI/2), squiggles::Pose(2, 2, 0)});
+
+	// std::cout << path.size() << "\n";
+
+	// for (squiggles::ProfilePoint pt : path) {
+	// 	std::stringstream stream;
+	// 	stream << "Point Pos: ";
+	// 	stream << std::fixed << std::setprecision(2) << pt.vector.pose.x << " ";
+	// 	stream << std::fixed << std::setprecision(2) << pt.vector.pose.y << " ";
+	// 	stream << std::fixed << std::setprecision(2) << pt.vector.pose.yaw;
+	// 	stream << " V,J,A: ";
+	// 	stream << std::fixed << std::setprecision(2) << pt.vector.vel << " ";
+	// 	stream << std::fixed << std::setprecision(2) << pt.vector.jerk << " ";
+	// 	stream << std::fixed << std::setprecision(2) << pt.vector.accel << " ";
+	// 	knights::logger::cyan(stream.str());
+	// }
 
 	// run odometry loop
 	if (odomTask == nullptr)
@@ -148,7 +180,7 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// Different autons, None0 is the default auton
-	auton_map["None0"] = &left_wp_auton;
+	auton_map["None0"] = &pp_test;
 	auton_map["Blue1"] = &programming_skills;
 	auton_map["Red1"] = &right_wp_auton;
     auton_map["Red2"] = &left_wp_auton;
@@ -174,6 +206,7 @@ void autonomous() {
 
 #define INTAKE_VELOCITY 300
 
+
 bool intake_spinning = false;
 
 void intake_fwd() {
@@ -195,6 +228,34 @@ void intake_rev() {
 		intake_spinning = true;
 	}
 }
+
+
+bool hungry = false;
+
+void snack_eat() {
+	if (hungry == true && snacky_cakes.get_direction() == 1) { // If snack is on or in wrong direction
+		snacky_cakes.move(0); // stop eating
+		hungry = false;
+	} else {
+		snacky_cakes.move(INTAKE_VELOCITY); // Spin snack forward
+		hungry = true;
+	}
+}
+
+void snack_swallow() {
+	if (hungry == true && snacky_cakes.get_direction() == -1) { // If snack is spinning or in the wrong direction
+		snacky_cakes.move(0); // stop eating
+		hungry = false;
+	} else { 
+		snacky_cakes.move(-INTAKE_VELOCITY); // Spin the snack in reverse
+		hungry = true;
+	}
+}
+
+
+
+
+
 
 bool clamp_down = false;
 
@@ -221,6 +282,8 @@ void opcontrol() {
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2, intake_rev, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_out, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doink, false);
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X, snack_eat, false);
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B, snack_swallow, false);
 
 
 	while (true) {
@@ -240,8 +303,8 @@ void opcontrol() {
 
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
-		drivetrain.velocity_command(right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
-			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
+		drivetrain.velocity_command(- right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
+			- left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
 
 		// Delay to let other tasks run
 		pros::delay(10);

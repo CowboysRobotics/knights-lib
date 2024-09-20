@@ -219,8 +219,6 @@ void left_wp_auton(knights::RobotChassis *chassis){
 
 void pp_test(knights::RobotChassis *chassis) {
 	knights::Route test = knights::init_route_from_sd("test.txt");
-
-    chassis->set_position(knights::Pos(60, 20, M_PI));
     
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
@@ -236,7 +234,8 @@ void pp_test(knights::RobotChassis *chassis) {
 	// 	// printf("pos: %lf %lf %lf\n", position.x, position.y, position.heading);
 	// }
 
-	lateralController.follow_route_pursuit(test, 25.0, 80.0, true, 8.0, 20000);
+
+	lateralController.follow_route_pursuit(test, 18.0, 120.0, true, 8.0, 20000);
 }
 
 void programming_skills(knights::RobotChassis *chassis) {
