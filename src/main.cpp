@@ -14,8 +14,8 @@
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
 // Competition Robot
-pros::MotorGroup left_mtrs({8,1,14}, pros::MotorGears::blue); // 8 needs to be rev
-pros::MotorGroup right_mtrs({11,13,17}, pros::MotorGears::blue); // 13,17 need rev
+pros::MotorGroup right_mtrs({8,1,14}, pros::MotorGears::blue); // 8 needs to be rev
+pros::MotorGroup left_mtrs({11,13,17}, pros::MotorGears::blue); // 13,17 need rev
 pros::Rotation mid_odom(7);
 pros::Rotation back_odom(20);
 pros::Distance redirect(12);
@@ -40,6 +40,8 @@ pros::adi::Pneumatics doinker(7, false);
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 2.75, 0.75);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
 pros::Motor snacky_cakes(5, pros::v5::MotorGears::green);
+
+knights::PIDController wall_stake_mech_PID(50, 0, 0, 0, 127);
 
 // knights::PID_Controller pidController(0.4, 0.0001, 0.085, 0, 127);
 
@@ -84,13 +86,13 @@ void initialize() {
 	knights::logger::blue("Initialization End");
 
 	// Competition Robot
-	left_mtrs.set_reversed(true, 0);
-	left_mtrs.set_reversed(false, 1);
-	left_mtrs.set_reversed(false, 2);
+	left_mtrs.set_reversed(false, 0);
+	left_mtrs.set_reversed(true, 1);
+	left_mtrs.set_reversed(true, 2);
 
-	right_mtrs.set_reversed(false, 0);
-	right_mtrs.set_reversed(true, 1);
-	right_mtrs.set_reversed(true, 2);
+	right_mtrs.set_reversed(true, 0);
+	right_mtrs.set_reversed(false, 1);
+	right_mtrs.set_reversed(false, 2);
 
 	// // Test Bot
 	// left_mtrs.set_reversed(true, 0);
@@ -98,6 +100,7 @@ void initialize() {
 	// left_mtrs.set_reversed(true, 2);
 
 	intake.set_reversed(true, 1);
+	snacky_cakes.tare_position();
 
 	// const double MAX_VEL = 127.0;     // in meters per second
 	// const double MAX_ACCEL = 60.0;   // in meters per second^2
@@ -229,6 +232,34 @@ void intake_rev() {
 	}
 }
 
+#define WALL_STAKE_MECH_MAX_ANGLE 90
+#define WALL_STAKE_MECH_GEAR_RATIO 24/72
+
+void use_wall_stake_mech() {
+	float total_error = 0; float prev_error; float error = 1e5;
+	int timeout = 3000;
+	while (error > 5) {
+		error = WALL_STAKE_MECH_MAX_ANGLE - knights::normalize_angle(snacky_cakes.get_position() * WALL_STAKE_MECH_GEAR_RATIO, false);
+
+		timeout -= 10;
+		if (timeout < 0)
+			break;
+
+		total_error += error;
+
+		float speed = wall_stake_mech_PID.update(error, total_error, prev_error);
+
+		prev_error = error;
+
+		snacky_cakes.move(speed);
+
+		printf("error: %lf, speed, %lf, at pos: %lf, raw: %lf\n", error, speed, snacky_cakes.get_position() * WALL_STAKE_MECH_GEAR_RATIO, snacky_cakes.get_position());
+	
+		pros::delay(10);
+	}
+
+	snacky_cakes.move(0);
+}
 
 bool hungry = false;
 
@@ -251,11 +282,6 @@ void snack_swallow() {
 		hungry = true;
 	}
 }
-
-
-
-
-
 
 bool clamp_down = false;
 
@@ -284,7 +310,7 @@ void opcontrol() {
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doink, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X, snack_eat, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B, snack_swallow, false);
-
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, use_wall_stake_mech, false);
 
 	while (true) {
 		// If controller joystick not in deadzone, calculate the velocity
@@ -303,8 +329,8 @@ void opcontrol() {
 
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
-		drivetrain.velocity_command(- right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
-			- left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
+		drivetrain.velocity_command(right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
+			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
 
 		// Delay to let other tasks run
 		pros::delay(10);

@@ -69,8 +69,8 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
         float angular_curve = curvature(this->chassis->curr_position, target_point);
 
         // calculate right and left speed based on curvature
-        float r_speed = target_speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2; // used to be minus
-        float l_speed = target_speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2; // used to be plus
+        float r_speed = target_speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2; // used to be minus
+        float l_speed = target_speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2; // used to be plus
 
         // calculate if one is over max alloted speed (might need to be 127.0 - max speed in pros)
         float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / max_speed; 
