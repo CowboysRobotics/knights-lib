@@ -7,6 +7,10 @@
 #include "knights/util/calculation.h"
 #include "knights/util/position.h"
 
+#include "knights/logger/logger.h"
+
+#include <iostream>
+
 
 float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights::Pos curr, float lookahead_distance) {
     knights::Pos dir = nxt - prev;
@@ -82,10 +86,10 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
         // apply calculated velocities to motors
         this->chassis->drivetrain->velocity_command(r_speed, l_speed);
 
-        printf("target: %lf %lf curr: %lf %lf %lf , speed: %lf , angular: %lf , side speed: %lf %lf\n", 
+        logger::green(logger::string_format("target: %lf %lf curr: %lf %lf %lf , speed: %lf , angular: %lf , side speed: %lf %lf\n", 
             target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
             target_speed, angular_curve, r_speed, l_speed
-        );
+        ));
 
         // wait for next iteration of loop
         pros::delay(10);

@@ -72,10 +72,6 @@ void initialize() {
 	// wait until everything is calibrated
 	pros::delay(2000);
 
-	// knights::Pos starting_position(60,-60,M_PI/2); // used to be -36,60
-
-	// chassis.set_position(starting_position);
-	// chassis.set_prev_position(starting_position);
     chassis.set_position(knights::Pos(-36, -60, M_PI/2));
 	// imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false)); -- need other for some rzn
 	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading), false));
@@ -306,8 +302,10 @@ void opcontrol() {
 	// Bind the requied input actions to the input map
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1, intake_fwd, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2, intake_rev, false);
+	
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_out, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doink, false);
+	
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X, snack_eat, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B, snack_swallow, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, use_wall_stake_mech, false);
@@ -329,8 +327,10 @@ void opcontrol() {
 
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
-		drivetrain.velocity_command(right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
-			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)));
+		drivetrain.velocity_command(
+			right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
+			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y))
+		);
 
 		// Delay to let other tasks run
 		pros::delay(10);

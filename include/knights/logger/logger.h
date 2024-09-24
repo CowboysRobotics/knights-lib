@@ -13,6 +13,9 @@ namespace knights::logger {
     void green(std::string string);
     void cyan(std::string string);
     void white(std::string string);
+
+    template<typename ... Args>
+    std::string knights::logger::string_format( const std::string& format, Args ... args );
 }
 
 #endif
