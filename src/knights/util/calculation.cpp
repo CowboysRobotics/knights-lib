@@ -1,4 +1,5 @@
 #include "knights/util/calculation.h"
+#include "knights/robot/drivetrain.h"
 
 #include <math.h>
 #include <numeric>
@@ -70,4 +71,12 @@ float knights::clamp(float num, float min, float max) {
 
 int knights::clamp(int num, int min, int max) {
     return std::max(min, std::min(num, max));
+}
+
+float knights::to_meters(float inches) {
+    return inches/39.37;
+}
+
+float knights::to_inches(float meters) {
+    return meters*39.37;
 }

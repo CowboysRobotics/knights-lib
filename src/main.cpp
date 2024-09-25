@@ -98,31 +98,47 @@ void initialize() {
 	intake.set_reversed(true, 1);
 	snacky_cakes.tare_position();
 
-	// const double MAX_VEL = 127.0;     // in meters per second
-	// const double MAX_ACCEL = 60.0;   // in meters per second^2
-	// const double MAX_JERK = 70.0;    // in meters per second^3
-	// const double ROBOT_WIDTH = 15.0; // in meters
-	// auto constraints = squiggles::Constraints(MAX_VEL, MAX_ACCEL, MAX_JERK);
-	// auto generator = squiggles::SplineGenerator(
-	// constraints,
-	// std::make_shared<squiggles::TankModel>(ROBOT_WIDTH, constraints));
+	const double MAX_VEL = drivetrain.max_velocity();     // in meters per second
+	const double MAX_ACCEL = drivetrain.max_acceleration(9, 6);   // in meters per second^2
+	const double MAX_JERK = MAX_ACCEL*2;    // in meters per second^3
+	const double ROBOT_WIDTH = knights::to_meters(15.0); // in meters
+	auto constraints = squiggles::Constraints(MAX_VEL, MAX_ACCEL, MAX_JERK);
+	auto generator = squiggles::SplineGenerator(
+	constraints,
+	std::make_shared<squiggles::TankModel>(ROBOT_WIDTH, constraints));
 
-	// std::vector<squiggles::ProfilePoint> path = generator.generate({squiggles::Pose(0, 0, M_PI/2), squiggles::Pose(2, 2, 0)});
+	std::vector<squiggles::ProfilePoint> path = generator.generate({
+		squiggles::Pose(knights::to_meters(chassis.get_position().x), knights::to_meters(chassis.get_position().y), chassis.get_position().heading), 
+		squiggles::Pose(knights::to_meters(-12), knights::to_meters(-36), 0)}
+	);
 
-	// std::cout << path.size() << "\n";
+	std::cout << path.size() << "\n";
 
-	// for (squiggles::ProfilePoint pt : path) {
-	// 	std::stringstream stream;
-	// 	stream << "Point Pos: ";
-	// 	stream << std::fixed << std::setprecision(2) << pt.vector.pose.x << " ";
-	// 	stream << std::fixed << std::setprecision(2) << pt.vector.pose.y << " ";
-	// 	stream << std::fixed << std::setprecision(2) << pt.vector.pose.yaw;
-	// 	stream << " V,J,A: ";
-	// 	stream << std::fixed << std::setprecision(2) << pt.vector.vel << " ";
-	// 	stream << std::fixed << std::setprecision(2) << pt.vector.jerk << " ";
-	// 	stream << std::fixed << std::setprecision(2) << pt.vector.accel << " ";
-	// 	knights::logger::cyan(stream.str());
-	// }
+	int i = 0;
+
+	for (squiggles::ProfilePoint pt : path) {
+		std::stringstream stream;
+		stream << "Point Pos: ";
+		stream << std::fixed << std::setprecision(2) << knights::to_inches(pt.vector.pose.x) << " ";
+		stream << std::fixed << std::setprecision(2) << knights::to_inches(pt.vector.pose.y) << " ";
+		stream << std::fixed << std::setprecision(2) << knights::to_deg(pt.vector.pose.yaw);
+		stream << " V,J,A: ";
+		stream << std::fixed << std::setprecision(2) << pt.vector.vel << " ";
+		stream << std::fixed << std::setprecision(2) << pt.vector.jerk << " ";
+		stream << std::fixed << std::setprecision(2) << pt.vector.accel << " ";
+		knights::logger::cyan(stream.str());
+
+		if (i % 5 == 0) {
+			knights::display::MapDot dot(5, 5, lv_palette_lighten(LV_PALETTE_GREEN,5));
+			dot.set_field_pos(knights::Pos(
+				knights::to_inches(pt.vector.pose.x), 
+				knights::to_inches(pt.vector.pose.y),
+				0
+			));
+		}
+	}
+
+	knights::logger::blue(knights::logger::string_format("start pos: %lf %lf %lf", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading));
 
 	// run odometry loop
 	if (odomTask == nullptr)

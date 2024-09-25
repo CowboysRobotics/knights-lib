@@ -235,7 +235,7 @@ void pp_test(knights::RobotChassis *chassis) {
 	// }
 
 
-	lateralController.follow_route_pursuit(test, 18.0, 120.0, true, 8.0, 20000);
+	lateralController.follow_route_pursuit(test, 25.0, 110.0, true, 8.0, 20000);
 }
 
 void programming_skills(knights::RobotChassis *chassis) {

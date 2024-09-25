@@ -121,6 +121,9 @@ namespace knights {
      * @return The 't' parameter 
      */
     float circle_intersection(knights::Pos nxt, knights::Pos prev, knights::Pos curr, float lookahead_distance);
+
+    float to_meters(float inches);
+    float to_inches(float meters);
 }
 
 #endif
