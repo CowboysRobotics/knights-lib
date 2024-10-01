@@ -41,7 +41,7 @@ knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 2.75, 0.75);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
 pros::Motor snacky_cakes(5, pros::v5::MotorGears::green);
 
-knights::PIDController wall_stake_mech_PID(50, 0, 0, 0, 127);
+knights::PIDController wall_stake_mech_PID(10, 0, 0, -127, 127);
 
 // knights::PID_Controller pidController(0.4, 0.0001, 0.085, 0, 127);
 
@@ -195,7 +195,7 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// Different autons, None0 is the default auton
-	auton_map["None0"] = &pp_test;
+	auton_map["None0"] = &pid_tuning;
 	auton_map["Blue1"] = &programming_skills;
 	auton_map["Red1"] = &right_wp_auton;
     auton_map["Red2"] = &left_wp_auton;
@@ -244,18 +244,21 @@ void intake_rev() {
 	}
 }
 
-#define WALL_STAKE_MECH_MAX_ANGLE 90
+#define WALL_STAKE_MECH_MAX_ANGLE 120
 #define WALL_STAKE_MECH_GEAR_RATIO 24/72
 
 void use_wall_stake_mech() {
 	float total_error = 0; float prev_error; float error = 1e5;
 	int timeout = 3000;
-	while (error > 5) {
+
+	snacky_cakes.set_brake_mode(MOTOR_BRAKE_HOLD);
+
+	while (error > 0) {
 		error = WALL_STAKE_MECH_MAX_ANGLE - knights::normalize_angle(snacky_cakes.get_position() * WALL_STAKE_MECH_GEAR_RATIO, false);
 
-		timeout -= 10;
-		if (timeout < 0)
-			break;
+		// timeout -= 10;
+		// if (timeout < 0)
+		// 	break;
 
 		total_error += error;
 
@@ -271,6 +274,26 @@ void use_wall_stake_mech() {
 	}
 
 	snacky_cakes.move(0);
+
+	while (error < 6) {
+		error = knights::normalize_angle(snacky_cakes.get_position() * WALL_STAKE_MECH_GEAR_RATIO, false) - WALL_STAKE_MECH_MAX_ANGLE;
+
+		// timeout -= 10;
+		// if (timeout < 0)
+		// 	break;
+
+		total_error += error;
+
+		float speed = wall_stake_mech_PID.update(error, total_error, prev_error);
+
+		prev_error = error;
+
+		snacky_cakes.move(speed);
+
+		printf("error: %lf, speed, %lf, at pos: %lf, raw: %lf\n", error, speed, snacky_cakes.get_position() * WALL_STAKE_MECH_GEAR_RATIO, snacky_cakes.get_position());
+	
+		pros::delay(10);
+	}
 }
 
 bool hungry = false;
@@ -328,15 +351,15 @@ void opcontrol() {
 
 	while (true) {
 		// If controller joystick not in deadzone, calculate the velocity
-		if (abs(master_controller.get_analog(ANALOG_RIGHT_Y)) > 2)
-			right_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_RIGHT_Y)));
+		if (abs(master_controller.get_analog(ANALOG_LEFT_Y)) > 2)
+			right_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_LEFT_Y)));
 		// Otherwise, stop the right motors
 		else
 			right_velocity = 0;
 
 		// If controller joystick not in deadzone, calculate the velocity
-		if (abs(master_controller.get_analog(ANALOG_LEFT_Y)) > 2)
-			left_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_LEFT_Y)));
+		if (abs(master_controller.get_analog(ANALOG_RIGHT_Y)) > 2)
+			left_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_RIGHT_Y)));
 		// Otherwise, stop the left motors
 		else
 			left_velocity = 0;
@@ -344,8 +367,8 @@ void opcontrol() {
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
 		drivetrain.velocity_command(
-			right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
-			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y))
+			right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)), 
+			left_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))
 		);
 
 		// Delay to let other tasks run

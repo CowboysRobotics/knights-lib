@@ -384,11 +384,11 @@ void pid_tuning(knights::RobotChassis *chassis) {
 	knights::PIDController lateralPID(5.0, 0.0, 0.0, 0.0, 127.0);
 	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
 
-	knights::PIDController turnPID(30, 0.15, 0.7, 0.0, 127.0);
+	knights::PIDController turnPID(40, 0.1, 0.7, 0.0, 127.0);
 	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
 
-    // lateralController.lateral_move(48.0, 4.0, 4000);
-    turnController.turn_for(180, 3, 2000, false);
+    // lateralController.lateral_move(24.0, 4.0, 4000);
+    turnController.turn_to_angle(180, 0, 3, 5000);
 }
 
 void alex_skills(knights::RobotChassis *chassis) {
