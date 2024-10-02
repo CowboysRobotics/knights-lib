@@ -7,8 +7,8 @@
 #include "pros/rtos.hpp"
 
 #define INTAKE_VELOCITY 127
-#define RIGHT -1
-#define LEFT 1
+#define RIGHT 1
+#define LEFT -1
 
 void right_wp_auton(knights::RobotChassis *chassis) {
 
@@ -261,7 +261,7 @@ void programming_skills(knights::RobotChassis *chassis) {
 
 	intake.set_reversed(true, 1);
 
-    intake.move(-INTAKE_VELOCITY);
+    intake.move(INTAKE_VELOCITY);
     pros::delay(800);
     
     lateralController.lateral_move(14.0, 2.0, 1000);
@@ -411,7 +411,7 @@ void alex_skills(knights::RobotChassis *chassis) {
 
     intake.set_reversed(true, 1);
 
-    intake.move(-INTAKE_VELOCITY);
+    intake.move(INTAKE_VELOCITY);
     pros::delay(400);
     lateralController.lateral_move(15.5,1.0,1000);
     intake.move(0);    
@@ -420,7 +420,7 @@ void alex_skills(knights::RobotChassis *chassis) {
     clamp.retract();
     pros::delay(200);
     turnController.turn_for(-106,2.0,1000);
-    intake.move(-INTAKE_VELOCITY);
+    intake.move(INTAKE_VELOCITY);
     lateralController.lateral_move(20.0,1.0,800);
     lateralController.lateral_move(10.0,0.5,200);
     pros::delay(600);

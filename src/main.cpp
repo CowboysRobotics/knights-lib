@@ -72,9 +72,10 @@ void initialize() {
 	// wait until everything is calibrated
 	pros::delay(2000);
 
-    chassis.set_position(knights::Pos(-36, -60, M_PI/2));
-	// imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false)); -- need other for some rzn
-	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading), false));
+    // chassis.set_position(knights::Pos(-36, -60, M_PI/2));
+	chassis.set_position(knights::Pos(-60, 0, 0));
+	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false));
+	// imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();
 	backOdom.reset();
@@ -195,7 +196,7 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// Different autons, None0 is the default auton
-	auton_map["None0"] = &pid_tuning;
+	auton_map["None0"] = &programming_skills;
 	auton_map["Blue1"] = &programming_skills;
 	auton_map["Red1"] = &right_wp_auton;
     auton_map["Red2"] = &left_wp_auton;
