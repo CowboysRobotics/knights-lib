@@ -69,7 +69,7 @@ void initialize() {
 
 	lv_display();
 
-	// wait until everything is calibrated
+	// wait until everything is cali-brated
 	pros::delay(2000);
 
     // chassis.set_position(knights::Pos(-36, -60, M_PI/2));
@@ -252,7 +252,7 @@ void use_wall_stake_mech() {
 	float total_error = 0; float prev_error; float error = 1e5;
 	int timeout = 3000;
 
-	snacky_cakes.set_brake_mode(MOTOR_BRAKE_HOLD);
+	snacky_cakes.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
 	while (error > 0) {
 		error = WALL_STAKE_MECH_MAX_ANGLE - knights::normalize_angle(snacky_cakes.get_position() * WALL_STAKE_MECH_GEAR_RATIO, false);
