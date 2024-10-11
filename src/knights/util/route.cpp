@@ -13,6 +13,16 @@ knights::Route::Route() {
     this->positions = {};
 }
 
+knights::RouteAction::RouteAction(knights::ACTION_TYPE type, std::string route_name, float end_tolerance, int timeout) :
+    type(type), route_name(route_name), end_tolerance(end_tolerance), timeout(timeout) {}
+
+knights::RouteAction::RouteAction(ACTION_TYPE type, float specific, float end_tolerance, int timeout) :
+    type(type), end_tolerance(end_tolerance), timeout(timeout) {}
+
+knights::RouteAction::RouteAction(ACTION_TYPE type, void (*bound_function)()) :
+    type(type), bound_function(bound_function) {}
+
+
 knights::Route knights::operator+(const Route &r1, const Route &r2) {
     return Route(r1.positions + r2.positions);
 };
@@ -56,3 +66,56 @@ knights::Route knights::init_route_from_sd(std::string route_name) {
         return knights::Route();
     }
 }
+
+knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
+        if (pros::usd::is_installed()) {
+        printf("Found SD card\n");
+        file_name.insert(0, "/usd/");
+
+        std::fstream read_file(file_name, std::ios_base::in);
+
+        if (read_file) {
+            std::vector<knights::Pos> positions;
+
+            float x,y;
+
+            while (read_file >> x && read_file >> y) {
+                positions.emplace_back(x,y,0);
+
+                printf("Pos: %lf %lf\n", x , y);
+            }
+
+            return knights::AdvancedRoute();
+
+        } else {
+            return knights::AdvancedRoute();
+        }
+    } else {
+        printf("SD card not found\n");
+        return knights::AdvancedRoute();
+    }
+}
+
+
+// #include <bits/stdc++.h>
+// using namespace std;
+
+// int main() {
+// 	string s;
+// 	while (cin >> s) {
+// 		char v; int x,y,z;
+// 		cout << s << endl;
+// 		if (s == "rs") {
+// 			while (cin >> v >> x >> y) {
+// 				cout << v << x << y << endl;
+// 			}
+// 			cout << "end" << endl;
+// 		}
+// 		cout << s << endl;
+// 		if (s == "ps") {
+// 			cin >> x >> y >> z;
+// 			cout << "e" << x << y << z << endl;
+// 		}
+// 	}
+// 	cout << "yes" << endl;
+// }
