@@ -97,21 +97,23 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
 }
 
 
-// #include <bits/stdc++.h>
-// using namespace std;
-
 // int main() {
 // 	string s;
 // 	while (cin >> s) {
 // 		char v; int x,y,z;
 // 		cout << s << endl;
 // 		if (s == "rs") {
-// 			while (cin >> v >> x >> y) {
-// 				cout << v << x << y << endl;
+// 			while (cin >> v) {
+// 				if (strcmp(&v, "p") == 0) {
+// 					cin >> x >> y;
+// 					cout << v << x << y << endl;
+// 				}
+// 				else {
+// 					break;
+// 				}
 // 			}
 // 			cout << "end" << endl;
 // 		}
-// 		cout << s << endl;
 // 		if (s == "ps") {
 // 			cin >> x >> y >> z;
 // 			cout << "e" << x << y << z << endl;
