@@ -1,5 +1,7 @@
 #include "main.h"
+#include "knights/autonomous/path.h"
 #include "knights/logger/colors.h"
+#include "knights/logger/logger.h"
 #include "squiggles/squiggles.hpp"
 
 #include <cstddef>
@@ -99,45 +101,70 @@ void initialize() {
 	intake.set_reversed(true, 1);
 	snacky_cakes.tare_position();
 
-	const double MAX_VEL = drivetrain.max_velocity();     // in meters per second
-	const double MAX_ACCEL = drivetrain.max_acceleration(9, 6);   // in meters per second^2
-	const double MAX_JERK = MAX_ACCEL*2;    // in meters per second^3
-	const double ROBOT_WIDTH = knights::to_meters(15.0); // in meters
-	auto constraints = squiggles::Constraints(MAX_VEL, MAX_ACCEL, MAX_JERK);
-	auto generator = squiggles::SplineGenerator(
-	constraints,
-	std::make_shared<squiggles::TankModel>(ROBOT_WIDTH, constraints));
+	std::string s = "output.txt";
 
-	std::vector<squiggles::ProfilePoint> path = generator.generate({
-		squiggles::Pose(knights::to_meters(chassis.get_position().x), knights::to_meters(chassis.get_position().y), chassis.get_position().heading), 
-		squiggles::Pose(knights::to_meters(-12), knights::to_meters(-36), 0)}
-	);
+	knights::AdvancedRoute test_route = advanced_route_from_file(s);
 
-	std::cout << path.size() << "\n";
+	knights::logger::green("started route read");
 
-	int i = 0;
+	for (auto action : test_route.actions) {
+		if (action.type == knights::action_type::FOLLOW)
+			knights::logger::red("follow");
+		else if (action.type == knights::action_type::LATERAL)
+			knights::logger::red("lateral");
+		else if (action.type == knights::action_type::TURN)
+			knights::logger::red("turn");
+	}
 
-	for (squiggles::ProfilePoint pt : path) {
-		std::stringstream stream;
-		stream << "Point Pos: ";
-		stream << std::fixed << std::setprecision(2) << knights::to_inches(pt.vector.pose.x) << " ";
-		stream << std::fixed << std::setprecision(2) << knights::to_inches(pt.vector.pose.y) << " ";
-		stream << std::fixed << std::setprecision(2) << knights::to_deg(pt.vector.pose.yaw);
-		stream << " V,J,A: ";
-		stream << std::fixed << std::setprecision(2) << pt.vector.vel << " ";
-		stream << std::fixed << std::setprecision(2) << pt.vector.jerk << " ";
-		stream << std::fixed << std::setprecision(2) << pt.vector.accel << " ";
-		knights::logger::cyan(stream.str());
-
-		if (i % 5 == 0) {
-			knights::display::MapDot dot(5, 5, lv_palette_lighten(LV_PALETTE_GREEN,5));
-			dot.set_field_pos(knights::Pos(
-				knights::to_inches(pt.vector.pose.x), 
-				knights::to_inches(pt.vector.pose.y),
-				0
-			));
+	for (auto route : test_route.routes) {
+		for (auto pt : route.second.positions) {
+			knights::logger::green(knights::logger::string_format("pt: %lf %lf %lf", pt.x, pt.y, pt.heading));
 		}
 	}
+
+	knights::logger::green("end route read");
+
+	// // Squiggles test
+	// const double MAX_VEL = drivetrain.max_velocity();     // in meters per second
+	// const double MAX_ACCEL = drivetrain.max_acceleration(9, 6);   // in meters per second^2
+	// const double MAX_JERK = MAX_ACCEL*2;    // in meters per second^3
+	// const double ROBOT_WIDTH = knights::to_meters(15.0); // in meters
+	// auto constraints = squiggles::Constraints(MAX_VEL, MAX_ACCEL, MAX_JERK);
+	// auto generator = squiggles::SplineGenerator(
+	// constraints,
+	// std::make_shared<squiggles::TankModel>(ROBOT_WIDTH, constraints));
+
+	// std::vector<squiggles::ProfilePoint> path = generator.generate({
+	// 	squiggles::Pose(knights::to_meters(chassis.get_position().x), knights::to_meters(chassis.get_position().y), chassis.get_position().heading), 
+	// 	squiggles::Pose(knights::to_meters(-12), knights::to_meters(-36), 0)}
+	// );
+
+	// std::cout << path.size() << "\n";
+
+	// int i = 0;
+
+	// for (squiggles::ProfilePoint pt : path) {
+	// 	std::stringstream stream;
+	// 	stream << "Point Pos: ";
+	// 	stream << std::fixed << std::setprecision(2) << knights::to_inches(pt.vector.pose.x) << " ";
+	// 	stream << std::fixed << std::setprecision(2) << knights::to_inches(pt.vector.pose.y) << " ";
+	// 	stream << std::fixed << std::setprecision(2) << knights::to_deg(pt.vector.pose.yaw);
+	// 	stream << " V,J,A: ";
+	// 	stream << std::fixed << std::setprecision(2) << pt.vector.vel << " ";
+	// 	stream << std::fixed << std::setprecision(2) << pt.vector.jerk << " ";
+	// 	stream << std::fixed << std::setprecision(2) << pt.vector.accel << " ";
+	// 	knights::logger::cyan(stream.str());
+
+	// 	if (i % 5 == 0) {
+	// 		knights::display::MapDot dot(5, 5, lv_palette_lighten(LV_PALETTE_GREEN,5));
+	// 		dot.set_field_pos(knights::Pos(
+	// 			knights::to_inches(pt.vector.pose.x), 
+	// 			knights::to_inches(pt.vector.pose.y),
+	// 			0
+	// 		));
+	// 	}
+	// }
+	// // ---- end squiggles test ----
 
 	knights::logger::blue(knights::logger::string_format("start pos: %lf %lf %lf", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading));
 

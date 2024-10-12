@@ -1,11 +1,11 @@
 #pragma once
 
-#include <map>
-#ifndef _PATH_H
-#define _PATH_H
+#ifndef _PATHK_H
+#define _PATHK_H
 
 #include <string>
 #include <vector>
+#include <map>
 
 #include "knights/util/position.h"
 
@@ -27,6 +27,39 @@ namespace knights {
          */
         Route();
 
+    };
+
+        enum action_type {
+        LATERAL,
+        TURN,
+        FOLLOW,
+        COMMAND
+    };
+
+    struct RouteAction { 
+       action_type type;  
+       std::string route_name = "none";
+       float specific;
+       float end_tolerance;
+       int timeout;
+       void (*bound_function)() = nullptr;
+
+       RouteAction(action_type type, std::string route_name, float end_tolerance, int timeout);
+
+       RouteAction(action_type type, float specific, float end_tolerance, int timeout);
+
+       RouteAction(action_type type, void (*bound_function)());
+    };
+
+    struct AdvancedRoute {
+        std::map<std::string, Route> routes;
+        std::vector<RouteAction> actions;
+
+        void execute();
+
+        AdvancedRoute(std::map<std::string, Route> routes, std::vector<RouteAction> actions);
+
+        AdvancedRoute();
     };
 
     /**
@@ -62,39 +95,8 @@ namespace knights {
      * @param route_name The name and extension of the file to look for (ex. "file.txt")
      */
     Route init_route_from_sd(std::string route_name);
-
-    enum ACTION_TYPE {
-        LATERAL,
-        TURN,
-        FOLLOW,
-        COMMAND
-    };
-
-    struct RouteAction { 
-       ACTION_TYPE type;  
-       std::string route_name = "none";
-       float specific;
-       float end_tolerance;
-       int timeout;
-       void (*bound_function)() = nullptr;
-
-       RouteAction(ACTION_TYPE type, std::string route_name, float end_tolerance, int timeout);
-
-       RouteAction(ACTION_TYPE type, float specific, float end_tolerance, int timeout);
-
-       RouteAction(ACTION_TYPE type, void (*bound_function)());
-    };
-
-    class AdvancedRoute {
-        std::map<std::string, Route> routes;
-        std::vector<RouteAction> actions;
-
-        void execute();
-
-        AdvancedRoute(std::map<std::string, Route> routes, std::vector<RouteAction> actions);
-    };
-
-    AdvancedRoute advanced_route_from_file(std::string file_name);
 }
+
+knights::AdvancedRoute advanced_route_from_file(std::string file_name);
 
 #endif
