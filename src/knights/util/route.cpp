@@ -23,7 +23,7 @@ knights::RouteAction::RouteAction(knights::action_type type, std::string route_n
     type(type), route_name(route_name), end_tolerance(end_tolerance), timeout(timeout) {}
 
 knights::RouteAction::RouteAction(action_type type, float specific, float end_tolerance, int timeout) :
-    type(type), end_tolerance(end_tolerance), timeout(timeout) {}
+    type(type), end_tolerance(end_tolerance), timeout(timeout), specific(specific) {}
 
 knights::RouteAction::RouteAction(action_type type, std::string function_name) :
     type(type), function_name(function_name) {}
@@ -64,8 +64,6 @@ knights::Route knights::init_route_from_sd(std::string route_name) {
 
             while (read_file >> x && read_file >> y) {
                 positions.emplace_back(x,y,0);
-
-                printf("Pos: %lf %lf\n", x , y);
             }
 
             return knights::Route(positions);
@@ -118,10 +116,10 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
                     // not proprly pushing
                     ar_actions.push_back(new_action);
 
-                    knights::logger::red(knights::logger::string_format("lateral: %lf %lf %lf", 
-                        x, y, z));
-                    printf("lateral: %lf %lf %d\n", 
-                            new_action.specific, new_action.end_tolerance, new_action.timeout);
+                    // knights::logger::red(knights::logger::string_format("lateral: %lf %lf %lf", 
+                    //     x, y, z));
+                    // printf("lateral: %lf %lf %d\n", 
+                    //         new_action.specific, new_action.end_tolerance, new_action.timeout);
                 }
                 else if (read_string == "ts") { // turn to angle
                     // x = angle, y = end_tolerance, z = timeout

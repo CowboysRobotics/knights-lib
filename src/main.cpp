@@ -125,7 +125,7 @@ void initialize() {
 	knights::PIDController lateralPID(5, 0.0, 0.0, 0.0, 0.0);
 	knights::PIDController turnPID(40, 0.15, 0.7, 0.0, 0.0);
 	knights::input::AutonomousInputMap inputMap;
-	// test_route.execute(&chassis, &lateralPID, &turnPID, &inputMap);
+	test_route.execute(&chassis, &lateralPID, &turnPID, &inputMap);
 
 	knights::logger::green("end route read");
 
