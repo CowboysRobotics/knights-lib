@@ -8,6 +8,9 @@
 #include <map>
 
 #include "knights/util/position.h"
+#include "knights/driver/input.h"
+#include "knights/robot/chassis.h"
+#include "knights/autonomous/pid.h"
 
 namespace knights {
 
@@ -42,20 +45,20 @@ namespace knights {
        float specific;
        float end_tolerance;
        int timeout;
-       void (*bound_function)() = nullptr;
+       std::string function_name;
 
        RouteAction(action_type type, std::string route_name, float end_tolerance, int timeout);
 
        RouteAction(action_type type, float specific, float end_tolerance, int timeout);
 
-       RouteAction(action_type type, void (*bound_function)());
+       RouteAction(action_type type, std::string function_name);
     };
 
     struct AdvancedRoute {
         std::map<std::string, Route> routes;
         std::vector<RouteAction> actions;
 
-        void execute();
+        void execute(knights::RobotChassis *chassis, knights::PIDController *lateral_pid, knights::PIDController *turn_pid, knights::input::AutonomousInputMap *input_map);
 
         AdvancedRoute(std::map<std::string, Route> routes, std::vector<RouteAction> actions);
 

@@ -3,6 +3,9 @@
 #ifndef _INPUT_H
 #define _INPUT_H
 
+#include <map>
+#include <vector>
+
 #include "api.h"
 
 namespace knights::input {
@@ -59,6 +62,16 @@ namespace knights::input {
              */
             void execute_actions(pros::Controller controller);
 
+    };
+
+
+    class AutonomousInputMap {
+        private:
+            std::map<std::string, void(*)()> action_map;
+        public:
+            void bind_action(std::string name, void (*bound_function)());
+
+            void execute_action(std::string name);
     };
 }
 

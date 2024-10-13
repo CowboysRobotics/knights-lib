@@ -1,9 +1,15 @@
 #include "knights/autonomous/path.h"
+#include "knights/logger/logger.h"
 #include "knights/util/position.h"
+#include "knights/driver/input.h"
+#include "knights/robot/chassis.h"
+#include "knights/autonomous/pid.h"
+#include "knights/autonomous/controller.h"
 
 #include "api.h"
 
 #include <fstream>
+#include <string>
 
 knights::Route::Route(std::vector<Pos> positions) {
     this->positions = positions;
@@ -19,8 +25,8 @@ knights::RouteAction::RouteAction(knights::action_type type, std::string route_n
 knights::RouteAction::RouteAction(action_type type, float specific, float end_tolerance, int timeout) :
     type(type), end_tolerance(end_tolerance), timeout(timeout) {}
 
-knights::RouteAction::RouteAction(action_type type, void (*bound_function)()) :
-    type(type), bound_function(bound_function) {}
+knights::RouteAction::RouteAction(action_type type, std::string function_name) :
+    type(type), function_name(function_name) {}
 
 knights::AdvancedRoute::AdvancedRoute() {
     this->actions = std::vector<knights::RouteAction>();
@@ -74,7 +80,7 @@ knights::Route knights::init_route_from_sd(std::string route_name) {
 }
 
 knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
-        if (pros::usd::is_installed()) {
+    if (pros::usd::is_installed()) {
         printf("Found SD card\n");
         file_name.insert(0, "/usd/");
 
@@ -106,7 +112,16 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
                 else if (read_string == "ps") { // move for distance
                     // x = distance, y = end_tolerance, z = timeout
                     read_file >> x >> y >> z;
-                    ar_actions.emplace_back(knights::action_type::LATERAL, x, y, z);
+
+                    knights::RouteAction new_action(knights::action_type::LATERAL, x, y, z);
+
+                    // not proprly pushing
+                    ar_actions.push_back(new_action);
+
+                    knights::logger::red(knights::logger::string_format("lateral: %lf %lf %lf", 
+                        x, y, z));
+                    printf("lateral: %lf %lf %d\n", 
+                            new_action.specific, new_action.end_tolerance, new_action.timeout);
                 }
                 else if (read_string == "ts") { // turn to angle
                     // x = angle, y = end_tolerance, z = timeout
@@ -128,5 +143,42 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
     } else {
         printf("SD card not found\n");
         return knights::AdvancedRoute();
+    }
+}
+
+void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::PIDController *lateral_pid, knights::PIDController *turn_pid, knights::input::AutonomousInputMap *input_map) {
+    
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+    knights::RobotController lateralController(chassis, lateral_pid, &ramsete_constants, false);
+    knights::RobotController turnController(chassis, turn_pid, &ramsete_constants, false);
+
+    for (RouteAction curr_action : this->actions) {
+        if (curr_action.type == knights::action_type::LATERAL) {
+            lateralController.lateral_move(curr_action.specific, curr_action.end_tolerance, curr_action.timeout);
+            knights::logger::red(knights::logger::string_format("lateral %lf", curr_action.specific));
+        }
+        else if (curr_action.type == knights::action_type::TURN) {
+            turnController.turn_to_angle(curr_action.specific, 0,curr_action.end_tolerance, curr_action.timeout);
+            knights::logger::green(knights::logger::string_format("turn %lf", curr_action.specific));
+        }
+        else if (curr_action.type == knights::action_type::FOLLOW && this->routes.contains(curr_action.route_name)) {
+            lateralController.follow_route_pursuit(
+                this->routes[curr_action.route_name], 
+                18.0, 
+                0.0, // 127.0
+                true, 
+                curr_action.end_tolerance, 
+                curr_action.timeout
+            );
+            knights::logger::cyan(knights::logger::string_format("follow: %s", curr_action.route_name.c_str()));
+            for (knights::Pos pos : this->routes[curr_action.route_name].positions) {
+                knights::logger::yellow(knights::logger::string_format("p: %lf %lf %lf", pos.x, pos.y, pos.heading));
+            }
+        }
+        else if (curr_action.type == knights::action_type::COMMAND) {
+            input_map->execute_action(curr_action.function_name);
+            knights::logger::blue(knights::logger::string_format("command %s", curr_action.function_name.c_str()));
+        }
     }
 }

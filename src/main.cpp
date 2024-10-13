@@ -107,20 +107,25 @@ void initialize() {
 
 	knights::logger::green("started route read");
 
-	for (auto action : test_route.actions) {
-		if (action.type == knights::action_type::FOLLOW)
-			knights::logger::red("follow");
-		else if (action.type == knights::action_type::LATERAL)
-			knights::logger::red("lateral");
-		else if (action.type == knights::action_type::TURN)
-			knights::logger::red("turn");
-	}
+	// for (auto action : test_route.actions) {
+	// 	if (action.type == knights::action_type::FOLLOW)
+	// 		knights::logger::red("follow");
+	// 	else if (action.type == knights::action_type::LATERAL)
+	// 		knights::logger::red("lateral");
+	// 	else if (action.type == knights::action_type::TURN)
+	// 		knights::logger::red("turn");
+	// }
 
-	for (auto route : test_route.routes) {
-		for (auto pt : route.second.positions) {
-			knights::logger::green(knights::logger::string_format("pt: %lf %lf %lf", pt.x, pt.y, pt.heading));
-		}
-	}
+	// for (auto route : test_route.routes) {
+	// 	for (auto pt : route.second.positions) {
+	// 		knights::logger::green(knights::logger::string_format("pt: %lf %lf %lf", pt.x, pt.y, pt.heading));
+	// 	}
+	// }
+
+	knights::PIDController lateralPID(5, 0.0, 0.0, 0.0, 0.0);
+	knights::PIDController turnPID(40, 0.15, 0.7, 0.0, 0.0);
+	knights::input::AutonomousInputMap inputMap;
+	// test_route.execute(&chassis, &lateralPID, &turnPID, &inputMap);
 
 	knights::logger::green("end route read");
 

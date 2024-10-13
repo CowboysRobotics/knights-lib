@@ -23,3 +23,15 @@ void knights::input::InputMap::execute_actions(pros::Controller controller) {
         }
     }
 }
+
+void knights::input::AutonomousInputMap::bind_action(std::string name, void (*bound_function)()) {
+    if (!this->action_map.contains(name)) {
+        this->action_map[name] = bound_function;
+    }
+}
+
+void knights::input::AutonomousInputMap::execute_action(std::string name) {
+    if (this->action_map.contains(name)) {
+        this->action_map[name]();
+    }
+}
