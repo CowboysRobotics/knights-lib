@@ -77,8 +77,6 @@ void knights::RobotChassis::update_position() {
         localY = cnst * (deltaY / deltaHeading + deltaYOffset); // using right wheel for vertical tracking
     }
 
-    // printf("lx+y %lf %lf, dPos %lf %lf %lf\n", localX, localY, deltaX, deltaY, deltaHeading);
-
     // calculate global x
     curr_position.x += localX * sin(averageHeading) + localY * -cos(averageHeading);
 

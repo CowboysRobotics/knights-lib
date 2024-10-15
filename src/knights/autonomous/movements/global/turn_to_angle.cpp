@@ -44,7 +44,7 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
 
         prev_error = error;
 
-        knights::logger::green(knights::logger::string_format("des angle: %lf, curr angle %lf, error %lf, speed: %lf\n", to_deg(desired_angle), to_deg(this->chassis->curr_position.heading), error, speed));
+        // knights::logger::green(knights::logger::string_format("des angle: %lf, curr angle %lf, error %lf, speed: %lf\n", to_deg(desired_angle), to_deg(this->chassis->curr_position.heading), error, speed));
 
         this->chassis->drivetrain->velocity_command(-sign * speed, sign * speed);
 

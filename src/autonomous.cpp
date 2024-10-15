@@ -5,6 +5,7 @@
 #include "pros/adi.hpp"
 #include "pros/motor_group.hpp"
 #include "pros/rtos.hpp"
+#include "knights/logger/logger.h"
 
 #define INTAKE_VELOCITY 127
 #define RIGHT 1
@@ -218,24 +219,41 @@ void left_wp_auton(knights::RobotChassis *chassis){
 }
 
 void pp_test(knights::RobotChassis *chassis) {
-	knights::Route test = knights::init_route_from_sd("test.txt");
-    
-    knights::RamseteConstants ramsete_constants(1, 0.5);
+	std::string s = "output.txt";
 
-	knights::PIDController lateralPID(5, 0.0, 0.0, 0.0, 127.0);
-	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+	knights::AdvancedRoute test_route = advanced_route_from_file(s);
 
-	printf("Route of size %i loaded to memory\n", test.positions.size());
+	// knights::logger::green("started route read");
 
-	// for (int i = 0; i < (int)test.positions.size() - 1; i+=((int)test.positions.size()/40)) {
-	// 	knights::Pos position = test.positions[i];
-	// 	knights::display::MapDot target_position_dot(5,5,lv_palette_lighten(LV_PALETTE_GREY, 0));
-	// 	target_position_dot.set_field_pos(position);
-	// 	// printf("pos: %lf %lf %lf\n", position.x, position.y, position.heading);
+	// for (auto action : test_route.actions) {
+	// 	if (action.type == knights::action_type::FOLLOW)
+	// 		// knights::logger::red("follow");
+	// 	else if (action.type == knights::action_type::LATERAL)
+	// 		// knights::logger::red("lateral");
+	// 	else if (action.type == knights::action_type::TURN)
+	// 		// knights::logger::red("turn");
 	// }
 
+	for (auto route : test_route.routes) {
+		for (auto pt : route.second.positions) {
+			// knights::logger::green(// knights::logger::string_format("pt: %lf %lf %lf", pt.x, pt.y, pt.heading));
+		}
+	}
 
-	lateralController.follow_route_pursuit(test, 25.0, 110.0, true, 8.0, 20000);
+    chassis->set_position(-36.0, -60.0, M_PI/2);
+    chassis->set_prev_position(-36.0, -60.0, M_PI/2);
+
+
+	knights::PIDController lateralPID(5, 0.0, 0.0, 0.0, 127.0);
+	knights::PIDController turnPID(60, 0.15, 0.7, 0.0, 127.0);
+	knights::input::AutonomousInputMap inputMap;
+	test_route.execute(chassis, &lateralPID, &turnPID, &inputMap);
+
+	// knights::logger::green("end route read");
+
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+    knights::PIDController lateralPID2(5, 0.0, 0.0, 0.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID2, &ramsete_constants, false);
 }
 
 void programming_skills(knights::RobotChassis *chassis) {

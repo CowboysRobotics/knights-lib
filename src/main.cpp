@@ -16,12 +16,12 @@
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
 // Competition Robot
-pros::MotorGroup right_mtrs({8,1,14}, pros::MotorGears::blue); // 8 needs to be rev
-pros::MotorGroup left_mtrs({11,13,17}, pros::MotorGears::blue); // 13,17 need rev
-pros::Rotation mid_odom(7);
-pros::Rotation back_odom(20);
-pros::Distance redirect(12);
-pros::IMU imu(9);
+pros::MotorGroup right_mtrs({3,9,5}, pros::MotorGears::blue); // 8 needs to be rev
+pros::MotorGroup left_mtrs({8,1,7}, pros::MotorGears::blue); // 13,17 need rev
+pros::Rotation mid_odom(13);
+pros::Rotation back_odom(14);
+pros::Distance redirect(19);
+pros::IMU imu(11);
 knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.677);
 knights::PositionTracker backOdom(&back_odom, 2.75, 1, 0);
 
@@ -67,7 +67,7 @@ void initialize() {
 	while(imu.is_calibrating()) {
 		pros::delay(10);
 	}
-	knights::logger::blue("Initialization Begin");
+	//knights::logger::blue("Initialization Begin");
 
 	lv_display();
 
@@ -82,7 +82,7 @@ void initialize() {
 	midOdom.reset();
 	backOdom.reset();
 
-	knights::logger::blue("Initialization End");
+	//knights::logger::blue("Initialization End");
 
 	// Competition Robot
 	left_mtrs.set_reversed(false, 0);
@@ -101,33 +101,6 @@ void initialize() {
 	intake.set_reversed(true, 1);
 	snacky_cakes.tare_position();
 
-	std::string s = "output.txt";
-
-	knights::AdvancedRoute test_route = advanced_route_from_file(s);
-
-	knights::logger::green("started route read");
-
-	// for (auto action : test_route.actions) {
-	// 	if (action.type == knights::action_type::FOLLOW)
-	// 		knights::logger::red("follow");
-	// 	else if (action.type == knights::action_type::LATERAL)
-	// 		knights::logger::red("lateral");
-	// 	else if (action.type == knights::action_type::TURN)
-	// 		knights::logger::red("turn");
-	// }
-
-	// for (auto route : test_route.routes) {
-	// 	for (auto pt : route.second.positions) {
-	// 		knights::logger::green(knights::logger::string_format("pt: %lf %lf %lf", pt.x, pt.y, pt.heading));
-	// 	}
-	// }
-
-	knights::PIDController lateralPID(5, 0.0, 0.0, 0.0, 0.0);
-	knights::PIDController turnPID(40, 0.15, 0.7, 0.0, 0.0);
-	knights::input::AutonomousInputMap inputMap;
-	test_route.execute(&chassis, &lateralPID, &turnPID, &inputMap);
-
-	knights::logger::green("end route read");
 
 	// // Squiggles test
 	// const double MAX_VEL = drivetrain.max_velocity();     // in meters per second
@@ -158,7 +131,7 @@ void initialize() {
 	// 	stream << std::fixed << std::setprecision(2) << pt.vector.vel << " ";
 	// 	stream << std::fixed << std::setprecision(2) << pt.vector.jerk << " ";
 	// 	stream << std::fixed << std::setprecision(2) << pt.vector.accel << " ";
-	// 	knights::logger::cyan(stream.str());
+	// 	//knights::logger::cyan(stream.str());
 
 	// 	if (i % 5 == 0) {
 	// 		knights::display::MapDot dot(5, 5, lv_palette_lighten(LV_PALETTE_GREEN,5));
@@ -171,7 +144,7 @@ void initialize() {
 	// }
 	// // ---- end squiggles test ----
 
-	knights::logger::blue(knights::logger::string_format("start pos: %lf %lf %lf", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading));
+	//knights::logger::blue(//knights::logger::string_format("start pos: %lf %lf %lf", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading));
 
 	// run odometry loop
 	if (odomTask == nullptr)
@@ -186,6 +159,7 @@ void initialize() {
 				stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
 				stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
 				std::string s = stream.str();
+				// printf("curr pos: %lf %lf %lf\n", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading);
 
 				// Set the display label to the current position
 				knights::display::set_pos_label(s);
@@ -228,7 +202,7 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// Different autons, None0 is the default auton
-	auton_map["None0"] = &programming_skills;
+	auton_map["None0"] = &pp_test;
 	auton_map["Blue1"] = &programming_skills;
 	auton_map["Red1"] = &right_wp_auton;
     auton_map["Red2"] = &left_wp_auton;

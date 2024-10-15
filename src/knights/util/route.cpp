@@ -118,8 +118,8 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
                     // not proprly pushing
                     ar_actions.push_back(new_action);
 
-                    // knights::logger::red(knights::logger::string_format("lateral: %lf %lf %lf", 
-                    //     x, y, z));
+                    knights::logger::red(knights::logger::string_format("lateral: %lf %lf %lf", 
+                        x, y, z));
                     // printf("lateral: %lf %lf %d\n", 
                     //         new_action.specific, new_action.end_tolerance, new_action.timeout);
                 }
@@ -182,5 +182,6 @@ void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::PI
             input_map->execute_action(curr_action.function_name);
             knights::logger::blue(knights::logger::string_format("command %s", curr_action.function_name.c_str()));
         }
+        pros::delay(200);
     }
 }
