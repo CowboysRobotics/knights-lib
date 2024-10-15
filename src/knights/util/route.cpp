@@ -130,6 +130,8 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
                 }
                 else if (read_string == "cs") { // command start
                     // logic for commands here
+                    read_file >> identifier;
+                    ar_actions.emplace_back(knights::action_type::COMMAND, identifier);
                 }
                 else if (read_string == "eof")
                     break;
@@ -159,7 +161,7 @@ void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::PI
             knights::logger::red(knights::logger::string_format("lateral %lf", curr_action.specific));
         }
         else if (curr_action.type == knights::action_type::TURN) {
-            turnController.turn_to_angle(curr_action.specific, 0,curr_action.end_tolerance, curr_action.timeout);
+            // turnController.turn_to_angle(curr_action.specific, 0,curr_action.end_tolerance, curr_action.timeout, false);
             knights::logger::green(knights::logger::string_format("turn %lf", curr_action.specific));
         }
         else if (curr_action.type == knights::action_type::FOLLOW && this->routes.contains(curr_action.route_name)) {
