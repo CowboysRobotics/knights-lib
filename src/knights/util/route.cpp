@@ -95,6 +95,8 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
                 if (read_string == "rs") { // follow route
                     // x and y are position points in route
                     // need to add route title
+                    read_file >> x >> y;
+                    float end_tol = x; int timeout = y;
                     std::vector<knights::Pos> positions;
                     while (identifier != "re") {
                         read_file >> identifier;
@@ -103,7 +105,7 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
                             positions.emplace_back(x, y, 0);
                         }
                     }
-                    ar_actions.emplace_back(knights::action_type::FOLLOW, std::to_string(route_amt), 10.0, 7500);
+                    ar_actions.emplace_back(knights::action_type::FOLLOW, std::to_string(route_amt), end_tol, timeout);
                     ar_routes[std::to_string(route_amt)] = knights::Route(positions);
                     route_amt++;
                 }
