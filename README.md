@@ -9,26 +9,28 @@ We will list our features with the format: `feature | completeness`
 - Control Algorithms
 	- Path Following
 		- Pure Pursuit | Coded + Light Testing
-		- Ramsete | Not Coded
 	- Position Tracking
 		- Odometry | Coded + Light Testing
 			- Features many different configurations for tracking wheels and IMUs
 	- Move To Point
-		- Turn to Heading | Not Coded
+		- Turn to Heading | Fully Complete
 		- Move to Point w/ Heading | Not Coded
 	- PID
 	    - Lateral Movement | Fully Complete
-	    - Turning Movement | Coded + Light Testing
+	    - Turning Movement | Fully Complete
 - Path Generation
     - Motion Profiling | Included w/ Squiggles
     - Generation of path to position and heading | Included w/ Squiggles
 - Systems
 	- Drivetrains
-		- Tank/Differential | Fully Supported + Completed
-		- Holonomic | Not Fully Supported + Completed
+		- Tank/Differential | Fully Supported + Complete
+		- Holonomic | Not Fully Supported + Complete
 - Cosmetics
-	- Autonomous Selector | Cosmetic Completion - Not Feature Complete
-	- Odometry Visual Display | Fully Completed
+	- Autonomous Selector | Fully Complete
+	- Odometry Visual Display | Fully Complete
+- Route Generation
+	- Read basic route from SD Card | Fully Complete
+	- Read advanced route from SD Card | Code Complete + Light Testing
 
 ### Docs & Tutorials
 Work in progress, if you have questions, please message me on discord. (Username: nrgking)
