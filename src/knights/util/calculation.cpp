@@ -35,9 +35,9 @@ int knights::direction(float init_heading, float des_heading) {
 		c2 += 360;
 	
 	if (std::abs(c1) > std::abs(c2))
-		return -1;
-	else
 		return 1;
+	else
+		return -1;
 }
 
 float knights::angular_error(float start, float target, int dir, bool rad) {

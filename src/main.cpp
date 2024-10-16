@@ -34,14 +34,14 @@ knights::PositionTracker backOdom(&back_odom, 2.75, 1, 0);
 // knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0, -1);
 // knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
 
-pros::MotorGroup intake({16,19}, pros::MotorGears::blue);
-pros::adi::Pneumatics clamp(8, true);
-pros::adi::Pneumatics doinker(7, false);
+pros::Motor intake(6, pros::MotorGears::blue);
+pros::adi::Pneumatics clamp(4, true);
+pros::adi::Pneumatics doinker(2, false);
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
 
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 2.75, 0.75);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
-pros::Motor snacky_cakes(5, pros::v5::MotorGears::green);
+pros::Motor snacky_cakes(20, pros::v5::MotorGears::green);
 
 knights::PIDController wall_stake_mech_PID(10, 0, 0, -127, 127);
 
@@ -74,8 +74,8 @@ void initialize() {
 	// wait until everything is cali-brated
 	pros::delay(2000);
 
-    // chassis.set_position(knights::Pos(-36, -60, M_PI/2));
-	chassis.set_position(knights::Pos(-60, 0, 0));
+    chassis.set_position(knights::Pos(-36, -60, M_PI/2));
+	// chassis.set_position(knights::Pos(-60, 0, 0));
 	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false));
 	// imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading), false));
 
@@ -98,7 +98,7 @@ void initialize() {
 	// left_mtrs.set_reversed(true, 1);
 	// left_mtrs.set_reversed(true, 2);
 
-	intake.set_reversed(true, 1);
+	intake.set_reversed(true, 0);
 	snacky_cakes.tare_position();
 
 

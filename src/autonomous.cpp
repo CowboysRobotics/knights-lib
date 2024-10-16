@@ -245,15 +245,9 @@ void pp_test(knights::RobotChassis *chassis) {
 
 
 	knights::PIDController lateralPID(5, 0.0, 0.0, 0.0, 127.0);
-	knights::PIDController turnPID(60, 0.15, 0.7, 0.0, 127.0);
+	knights::PIDController turnPID(800, 0.1, 0.7, 0.0, 127.0);
 	knights::input::AutonomousInputMap inputMap;
 	test_route.execute(chassis, &lateralPID, &turnPID, &inputMap);
-
-	// knights::logger::green("end route read");
-
-    knights::RamseteConstants ramsete_constants(1, 0.5);
-    knights::PIDController lateralPID2(5, 0.0, 0.0, 0.0, 127.0);
-	knights::RobotController lateralController(chassis, &lateralPID2, &ramsete_constants, false);
 }
 
 void programming_skills(knights::RobotChassis *chassis) {
