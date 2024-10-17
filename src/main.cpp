@@ -76,8 +76,8 @@ void initialize() {
 
     chassis.set_position(knights::Pos(-36, -60, M_PI/2));
 	// chassis.set_position(knights::Pos(-60, 0, 0));
-	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false));
-	// imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading), false));
+	// imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false));
+	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();
 	backOdom.reset();

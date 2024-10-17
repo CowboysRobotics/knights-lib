@@ -168,7 +168,7 @@ void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::PI
             lateralController.follow_route_pursuit(
                 this->routes[curr_action.route_name], 
                 18.0, 
-                0.0, // 127.0
+                127.0, // 127.0
                 true, 
                 curr_action.end_tolerance, 
                 curr_action.timeout
