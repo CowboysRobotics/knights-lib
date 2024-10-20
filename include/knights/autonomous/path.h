@@ -30,9 +30,11 @@ namespace knights {
          */
         Route();
 
+        float length_dist();
+
     };
 
-        enum action_type {
+    enum action_type {
         LATERAL,
         TURN,
         FOLLOW,

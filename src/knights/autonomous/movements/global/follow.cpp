@@ -47,9 +47,13 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
     knights::Pos target_point = route.positions[0];
     int closest_i = 0;
     float closest_dist = 1e10;
+    float traveled_dist = 0.0;
 
     // While the robot has not reached the desired point and is not at the end of the route
     while (distance_btwn(this->chassis->curr_position, route.positions[route.positions.size()-1]) > end_tolerance && closest_i != route.positions.size()-1) {
+
+        traveled_dist += distance_btwn(this->chassis->prev_position, this->chassis->curr_position);
+        float error = route.length_dist() - traveled_dist;
 
         // find nearest point
         for (int i = 0; i < route.positions.size(); i++) {
@@ -89,9 +93,9 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
         else
             this->chassis->drivetrain->velocity_command(-r_speed, -l_speed);
 
-        logger::green(logger::string_format("target: %lf %lf curr: %lf %lf %lf , speed: %lf , angular: %lf , side speed: %lf %lf\n", 
+        logger::green(logger::string_format("target: %lf %lf curr: %lf %lf %lf , speed: %lf , angular: %lf , side speed: %lf %lf, dist: %lf, error: %lf\n", 
             target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
-            target_speed, angular_curve, r_speed, l_speed
+            target_speed, angular_curve, r_speed, l_speed, traveled_dist, error
         ));
 
         // wait for next iteration of loop

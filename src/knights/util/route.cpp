@@ -19,6 +19,19 @@ knights::Route::Route() {
     this->positions = {};
 }
 
+float knights::Route::length_dist() {
+    if (this->positions.size() < 2)
+        return 0.0;
+
+    float dist = 0.0;
+
+    for (int i = 1; i < this->positions.size(); i++) {
+        dist += distance_btwn(this->positions[i], this->positions[i-1]);
+    }
+
+    return dist;
+}
+
 knights::RouteAction::RouteAction(knights::action_type type, std::string route_name, float end_tolerance, int timeout) :
     type(type), route_name(route_name), end_tolerance(end_tolerance), timeout(timeout) {}
 
