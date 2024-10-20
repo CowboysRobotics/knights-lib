@@ -84,7 +84,10 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
         }
 
         // apply calculated velocities to motors
-        this->chassis->drivetrain->velocity_command(r_speed, l_speed);
+        if (forwards)
+            this->chassis->drivetrain->velocity_command(r_speed, l_speed);
+        else
+            this->chassis->drivetrain->velocity_command(-r_speed, -l_speed);
 
         logger::green(logger::string_format("target: %lf %lf curr: %lf %lf %lf , speed: %lf , angular: %lf , side speed: %lf %lf\n", 
             target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
