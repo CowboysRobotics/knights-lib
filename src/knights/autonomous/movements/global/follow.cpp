@@ -93,10 +93,12 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
         else
             this->chassis->drivetrain->velocity_command(-r_speed, -l_speed);
 
-        logger::green(logger::string_format("target: %lf %lf curr: %lf %lf %lf , speed: %lf , angular: %lf , side speed: %lf %lf, dist: %lf, error: %lf\n", 
-            target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
-            target_speed, angular_curve, r_speed, l_speed, traveled_dist, error
-        ));
+        if (std::fmod(timeout, 1000) == 0) {
+            logger::green(logger::string_format("target: %lf %lf curr: %lf %lf %lf , speed: %lf , angular: %lf , side speed: %lf %lf, dist: %lf, error: %lf\n", 
+                target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
+                target_speed, angular_curve, r_speed, l_speed, traveled_dist, error
+            ));
+        }
 
         // wait for next iteration of loop
         pros::delay(10);

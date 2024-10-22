@@ -21,7 +21,7 @@ pros::MotorGroup left_mtrs({8,1,7}, pros::MotorGears::blue); // 13,17 need rev
 pros::Rotation mid_odom(13);
 pros::Rotation back_odom(14);
 pros::Distance redirect(19);
-pros::IMU imu(11);
+pros::IMU imu(12);
 knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.677);
 knights::PositionTracker backOdom(&back_odom, 2.75, 1, 0);
 
@@ -41,7 +41,7 @@ pros::adi::Pneumatics doinker(2, false);
 
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 2.75, 0.75);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
-pros::Motor snacky_cakes(20, pros::v5::MotorGears::green);
+pros::MotorGroup snacky_cakes({20, 4}, pros::v5::MotorGears::green);
 
 knights::PIDController wall_stake_mech_PID(10, 0, 0, -127, 127);
 
@@ -75,7 +75,7 @@ void initialize() {
 	pros::delay(2000);
 
     chassis.set_position(knights::Pos(-36, -60, M_PI/2));
-	// chassis.set_position(knights::Pos(-60, 0, 0));
+	// chassis.set_position(knights::Pos(-36, 60, 0));
 	// imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false));
 	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading), false));
 
@@ -93,6 +93,7 @@ void initialize() {
 	right_mtrs.set_reversed(false, 1);
 	right_mtrs.set_reversed(false, 2);
 
+	snacky_cakes.set_reversed(true, 1);
 	// // Test Bot
 	// left_mtrs.set_reversed(true, 0);
 	// left_mtrs.set_reversed(true, 1);
@@ -232,7 +233,7 @@ void autonomous() {
 bool intake_spinning = false;
 
 void intake_fwd() {
-	if (intake_spinning == true && intake.get_direction() == 1) { // If intake is on or in wrong direction
+	if (intake_spinning == true && intake.get_direction() == -1) { // If intake is on or in wrong direction
 		intake.move(0); // stop intake
 		intake_spinning = false;
 	} else {
@@ -242,7 +243,7 @@ void intake_fwd() {
 }
 
 void intake_rev() {
-	if (intake_spinning == true && intake.get_direction() == -1) { // If intake is spinning or in the wrong direction
+	if (intake_spinning == true && intake.get_direction() == 1) { // If intake is spinning or in the wrong direction
 		intake.move(0); // stop intake
 		intake_spinning = false;
 	} else { 
@@ -250,6 +251,30 @@ void intake_rev() {
 		intake_spinning = true;
 	}
 }
+bool redirection_true = false;
+
+void redirection_toggle() {
+	intake.set_brake_mode(pros::MotorBrake::hold);
+	if (redirection_true == true){
+		redirection_true = false;
+	}
+	else {
+		redirection_true = true;
+	}
+}
+
+
+
+void redirection() {
+	pros::delay(19);
+	intake.brake();
+	pros::delay(100);
+	intake.set_brake_mode(pros::MotorBrake::coast);
+	intake_rev();
+}
+
+
+
 
 #define WALL_STAKE_MECH_MAX_ANGLE 120
 #define WALL_STAKE_MECH_GEAR_RATIO 24/72
@@ -311,6 +336,9 @@ void snack_eat() {
 		hungry = false;
 	} else {
 		snacky_cakes.move(INTAKE_VELOCITY); // Spin snack forward
+		pros::delay(750);
+		snacky_cakes.set_brake_mode(pros::MotorBrake::hold);
+		snacky_cakes.brake();
 		hungry = true;
 	}
 }
@@ -321,6 +349,9 @@ void snack_swallow() {
 		hungry = false;
 	} else { 
 		snacky_cakes.move(-INTAKE_VELOCITY); // Spin the snack in reverse
+		pros::delay(250);
+		snacky_cakes.set_brake_mode(pros::MotorBrake::coast);
+		snacky_cakes.brake();
 		hungry = true;
 	}
 }
@@ -354,7 +385,7 @@ void opcontrol() {
 	
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X, snack_eat, false);
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B, snack_swallow, false);
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, use_wall_stake_mech, false);
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, redirection_toggle, false);
 
 	while (true) {
 		// If controller joystick not in deadzone, calculate the velocity
@@ -370,6 +401,10 @@ void opcontrol() {
 		// Otherwise, stop the left motors
 		else
 			left_velocity = 0;
+		
+		if	(redirection_true == true and redirect.get() < 10)
+			redirection();
+
 
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative

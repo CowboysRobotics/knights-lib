@@ -6,10 +6,13 @@
 #include "pros/motor_group.hpp"
 #include "pros/rtos.hpp"
 #include "knights/logger/logger.h"
+#include <iomanip>
 
-#define INTAKE_VELOCITY 127
 #define RIGHT 1
 #define LEFT -1
+
+
+#define INTAKE_VELOCITY 300
 
 void right_wp_auton(knights::RobotChassis *chassis) {
 
@@ -218,37 +221,6 @@ void left_wp_auton(knights::RobotChassis *chassis){
 
 }
 
-void pp_test(knights::RobotChassis *chassis) {
-	std::string s = "output.txt";
-
-	knights::AdvancedRoute test_route = advanced_route_from_file(s);
-
-	// knights::logger::green("started route read");
-
-	// for (auto action : test_route.actions) {
-	// 	if (action.type == knights::action_type::FOLLOW)
-	// 		// knights::logger::red("follow");
-	// 	else if (action.type == knights::action_type::LATERAL)
-	// 		// knights::logger::red("lateral");
-	// 	else if (action.type == knights::action_type::TURN)
-	// 		// knights::logger::red("turn");
-	// }
-
-	for (auto route : test_route.routes) {
-		for (auto pt : route.second.positions) {
-			// knights::logger::green(// knights::logger::string_format("pt: %lf %lf %lf", pt.x, pt.y, pt.heading));
-		}
-	}
-
-    chassis->set_position(-36.0, -60.0, M_PI/2);
-    chassis->set_prev_position(-36.0, -60.0, M_PI/2);
-
-
-	knights::PIDController lateralPID(5, 0.0, 0.0, 0.0, 127.0);
-	knights::PIDController turnPID(800, 0.1, 0.7, 0.0, 127.0);
-	knights::input::AutonomousInputMap inputMap;
-	test_route.execute(chassis, &lateralPID, &turnPID, &inputMap);
-}
 
 void programming_skills(knights::RobotChassis *chassis) {
     // initialize all controllers and movements
@@ -393,63 +365,118 @@ void programming_skills(knights::RobotChassis *chassis) {
 void pid_tuning(knights::RobotChassis *chassis) {
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(5.0, 0.0, 0.0, 0.0, 127.0);
+	knights::PIDController lateralPID(5.9, 0.0016, 0.01, 0.0, 127.0);
 	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
 
 	knights::PIDController turnPID(60, 0.1, 0.7, 0.0, 127.0);
 	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
 
-    lateralController.lateral_move(24.0, 4.0, 4000);
-    turnController.turn_to_angle(90, 0, 3, 5000);
+    // turnController.turn_to_angle(0,RIGHT);
+    lateralController.lateral_move(24.0, 3.0, 750);
+    pros::delay(100);
+    turnController.turn_to_angle(0, 0);
+    pros::delay(100);
+    lateralController.lateral_move(24.0, 4.0, 750);
 }
 
 void alex_skills(knights::RobotChassis *chassis) {
 // initialize all controllers and movements
-    pros::MotorGroup intake({16,19}, pros::MotorGears::green);
-    pros::adi::Pneumatics clamp(8, true);
-    pros::adi::Pneumatics doinker(7,false);
-
     chassis->set_position(knights::Pos(-60.5, -14.75, 3*M_PI/2));
 
     pros::delay(10);
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(5, 0.0, 0.0, 0.0, 127.0);
+	knights::PIDController lateralPID(0, 0.0, 0.0, 0.0, 127.0);
 	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
 
 	knights::PIDController turnPID(30, 0.15, 0.7, 0.0, 127.0);
 	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
 
-    intake.set_reversed(true, 1);
+    lateralController.lateral_move(18,1.0,16000);
 
-    intake.move(INTAKE_VELOCITY);
-    pros::delay(400);
-    lateralController.lateral_move(15.5,1.0,1000);
-    intake.move(0);    
-    turnController.turn_for(97.0,2.0,1000);
-    lateralController.lateral_move(-18.0,1.0,1000);
-    clamp.retract();
-    pros::delay(200);
-    turnController.turn_for(-106,2.0,1000);
-    intake.move(INTAKE_VELOCITY);
-    lateralController.lateral_move(20.0,1.0,800);
-    lateralController.lateral_move(10.0,0.5,200);
-    pros::delay(600);
-    turnController.turn_for(-94,1.0,400);
-    lateralController.lateral_move(18.0,1.0,800);
-    lateralController.lateral_move(8,0.5,200);
-    pros::delay(1000);
-    turnController.turn_for(-147,1.0,400);
-    lateralController.lateral_move(20.0,1.5,500);
-    pros::delay(600);
-    turnController.turn_for(-30,0.5,200);
-    lateralController.lateral_move(10.0,0.5,400);
-    pros::delay(600);
-    turnController.turn_for(50,1,400);   
-    lateralController.lateral_move(-10.,0.5,400);
-    turnController.turn_for(60,2.0,600);
-    lateralController.lateral_move(14,1.0,400);
+}
+
+pros::Motor intake2(6, pros::MotorGears::blue);
+pros::adi::Pneumatics clamp2(4, true);
+pros::adi::Pneumatics doinker2(2, false);
+pros::MotorGroup snacky_cakes2({20, 4}, pros::v5::MotorGears::green);
 
 
+bool intake_spinning2 = false;
+
+void intake_fwd2() {
+	if (intake_spinning2 == true && intake2.get_direction() == -1) { // If intake is on or in wrong direction
+		intake2.move(0); // stop intake
+		intake_spinning2 = false;
+	} else {
+		intake2.move(INTAKE_VELOCITY); // Spin intake forward
+		intake_spinning2 = true;
+	}
+}
+
+void intake_rev2() {
+    printf("reached\n");
+	if (intake_spinning2 == true && intake2.get_direction() == 1) { // If intake is spinning or in the wrong direction
+		intake2.move(0); // stop intake
+		intake_spinning2 = false;
+	} else { 
+		intake2.move(-INTAKE_VELOCITY); // Spin the intake in reverse
+		intake_spinning2 = true;
+	}
+}
+
+bool clamp_down2 = false;
+
+void clamp_out2() {
+	clamp_down2 = !clamp_down2;
+	clamp2.set_value(clamp_down2);
+}
+
+void pp_test(knights::RobotChassis *chassis) {
+
+	std::string s = "left_auton.txt";
+
+	knights::AdvancedRoute test_route = advanced_route_from_file(s);
+
+	// knights::logger::green("started route read");
+
+	// for (auto action : test_route.actions) {
+	// 	if (action.type == knights::action_type::FOLLOW)
+	// 		// knights::logger::red("follow");
+	// 	else if (action.type == knights::action_type::LATERAL)
+	// 		// knights::logger::red("lateral");
+	// 	else if (action.type == knights::action_type::TURN)
+	// 		// knights::logger::red("turn");
+	// }
+
+	for (auto route : test_route.routes) {
+		for (auto pt : route.second.positions) {
+			knights::logger::green(knights::logger::string_format("pt: %lf %lf %lf", pt.x, pt.y, pt.heading));
+		}
+	}
+
+    // chassis->set_position(-36.0, -60.0, M_PI/2);
+    // chassis->set_prev_position(-36.0, -60.0, M_PI/2);
+
+    chassis->set_position(-60.0, 12.0, M_PI/2);
+    chassis->set_prev_position(-60.0, 12.0, M_PI/2);
+
+
+
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+	knights::PIDController lateralPID(6, 0.00019, 0.01, 0.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	knights::PIDController turnPID(60, 0.1, 0.7, 0.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+
+
+	knights::input::AutonomousInputMap inputMap;
+    inputMap.bind_action("intakeRev", intake_rev2);
+    inputMap.bind_action("intakeFwd", intake_fwd2);
+    inputMap.bind_action("clamp", clamp_out2);
+
+	test_route.execute(chassis, &lateralPID, &turnPID, &inputMap);
 }

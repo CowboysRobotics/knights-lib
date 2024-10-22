@@ -77,7 +77,7 @@ void knights::RobotController::lateral_move(const float distance, const float en
                 // use pid formula to calculate speed
                 speed = this->pid_controller->update(error, total_error, prev_error) * knights::signum(distance);
 
-                // printf("des pos: %lf %lf %lf, error: %lf, speed: %lf\n", desired_position.x, desired_position.y, desired_position.heading, error, speed);
+                printf("des pos: %lf %lf %lf, error: %lf, speed: %lf, curr: %lf %lf %lf\n", desired_position.x, desired_position.y, desired_position.heading, error, speed, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading);
 
                 // save previous error
                 prev_error = error;
@@ -90,9 +90,6 @@ void knights::RobotController::lateral_move(const float distance, const float en
             }
 
         }
-
-        this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::MotorBrake::brake);
-        this->chassis->drivetrain->left_mtrs->set_brake_mode_all(pros::MotorBrake::brake);
 
         this->chassis->drivetrain->right_mtrs->move(0);
         this->chassis->drivetrain->left_mtrs->move(0);

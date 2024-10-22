@@ -58,7 +58,7 @@ namespace knights {
              *                      - this is used to account for the center of the bot not being the front
              * @param timeout Amount of time to wait before exiting the move
              */
-            void lateral_move(const float distance, float end_tolerance = 3.0, float timeout = 2000);
+            void lateral_move(const float distance, float end_tolerance = 3.0, float timeout = 750);
 
             /**
              * @brief Turn the robot left or right for a certain angle
@@ -69,7 +69,7 @@ namespace knights {
              * @param timeout Amount of time to wait before exiting the movement
              * @param rad Whether the provided angle is in radians or not
              */
-            void turn_for(const float angle, const float end_tolerance = 2.0, float timeout= 2000, bool rad = false); // DEGREES
+            void turn_for(const float angle, const float end_tolerance = 2.0, float timeout= 750, bool rad = false); // DEGREES
 
 
     };
