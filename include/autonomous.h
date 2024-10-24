@@ -12,5 +12,8 @@ void alex_skills(knights::RobotChassis *chassis);
 void pp_test(knights::RobotChassis *chassis);
 void unsafe_wp_auton(knights::RobotChassis *chassis);
 void left_wp_auton(knights::RobotChassis *chassis);
+void left_wp_red(knights::RobotChassis *chassis);
+void left_wp_blue(knights::RobotChassis *chassis);
+
 
 #endif

@@ -35,8 +35,8 @@ knights::PositionTracker backOdom(&back_odom, 2.75, 1, 0);
 // knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
 
 pros::Motor intake(6, pros::MotorGears::blue);
-pros::adi::Pneumatics clamp(4, true);
-pros::adi::Pneumatics doinker(2, false);
+pros::adi::Pneumatics clamp(2, false);
+pros::adi::Pneumatics doinker(4, true);
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
 
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 2.75, 0.75);
@@ -74,13 +74,6 @@ void initialize() {
 	// wait until everything is cali-brated
 	pros::delay(2000);
 
-    chassis.set_position(knights::Pos(-36, -60, M_PI/2));
-	// chassis.set_position(knights::Pos(-36, 60, 0));
-	// imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false));
-	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading), false));
-
-	midOdom.reset();
-	backOdom.reset();
 
 	//knights::logger::blue("Initialization End");
 
@@ -147,30 +140,6 @@ void initialize() {
 
 	//knights::logger::blue(//knights::logger::string_format("start pos: %lf %lf %lf", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading));
 
-	// run odometry loop
-	if (odomTask == nullptr)
-		pros::Task *odomTask = new pros::Task {[=] {
-			while (true) {
-				chassis.update_position(); // query odometry system for position
-				
-				// Convoluted method of inputting everything to a string
-				std::stringstream stream;
-				stream << "Curr Pos: ";
-				stream << std::fixed << std::setprecision(2) << chassis.get_position().x << " ";
-				stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
-				stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
-				std::string s = stream.str();
-				// printf("curr pos: %lf %lf %lf\n", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading);
-
-				// Set the display label to the current position
-				knights::display::set_pos_label(s);
-
-				// Move the current position dot to the desired position
-				knights::display::change_curr_pos_dot(chassis.get_position());
-
-				pros::delay(10);
-			}
-		}};
 }
 
 /**
@@ -196,6 +165,7 @@ void competition_initialize() {}
  * Runs the user autonomous code.
  */
 void autonomous() {
+
 	// Query display for the selected buttons
 	knights::display::AutonSelectionPackage package = knights::display::get_selected_auton();
 	
@@ -203,13 +173,54 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// Different autons, None0 is the default auton
-	auton_map["None0"] = &pp_test;
-	auton_map["Blue1"] = &programming_skills;
-	auton_map["Red1"] = &right_wp_auton;
-    auton_map["Red2"] = &left_wp_auton;
+	auton_map["None0"] = &left_wp_blue;
+	// auton_map["Blue1"] = &programming_skills;
+	auton_map["Red1"] = &left_wp_red;
+    auton_map["Blue1"] = &left_wp_blue;
+
+	chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
+
+	if (package.type + std::to_string(package.number) == "Red1") {
+		chassis.set_position(knights::Pos(-60.5, -14.75, M_PI/2));
+	} else if (package.type + std::to_string(package.number) == "Blue1") {
+		chassis.set_position(knights::Pos(-60.5, -14.75, 3*M_PI/2));
+	}
+
+	// chassis.set_position(knights::Pos(-36, 60, 0));
+	// imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading)-180, false));
+	imu.set_heading(knights::normalize_angle(knights::to_deg(chassis.get_position().heading), false));
+
+	midOdom.reset();
+	backOdom.reset();
+
+	// run odometry loop
+	if (odomTask == nullptr)
+		pros::Task *odomTask = new pros::Task {[=] {
+			while (true) {
+				chassis.update_position(); // query odometry system for position
+				
+				// Convoluted method of inputting everything to a string
+				std::stringstream stream;
+				stream << "Curr Pos: ";
+				stream << std::fixed << std::setprecision(2) << chassis.get_position().x << " ";
+				stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
+				stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
+				std::string s = stream.str();
+				// printf("curr pos: %lf %lf %lf\n", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading);
+
+				// Set the display label to the current position
+				knights::display::set_pos_label(s);
+
+				// Move the current position dot to the desired position
+				knights::display::change_curr_pos_dot(chassis.get_position());
+
+				pros::delay(10);
+			}
+		}};
 
 	// Run the chosen auton
 	auton_map[package.type + std::to_string(package.number)](&chassis);
+
 }
 
 /**
@@ -270,7 +281,7 @@ void redirection() {
 	intake.brake();
 	pros::delay(100);
 	intake.set_brake_mode(pros::MotorBrake::coast);
-	intake_rev();
+	redirection_true = false;
 }
 
 
@@ -402,7 +413,7 @@ void opcontrol() {
 		else
 			left_velocity = 0;
 		
-		if	(redirection_true == true and redirect.get() < 10)
+		if	(redirection_true == true and redirect.get() < 15)
 			redirection();
 
 
