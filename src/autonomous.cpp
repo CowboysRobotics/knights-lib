@@ -379,23 +379,7 @@ void pid_tuning(knights::RobotChassis *chassis) {
     lateralController.lateral_move(24.0, 4.0, 750);
 }
 
-void alex_skills(knights::RobotChassis *chassis) {
-// initialize all controllers and movements
-    chassis->set_position(knights::Pos(-60.5, -14.75, 3*M_PI/2));
 
-    pros::delay(10);
-
-    knights::RamseteConstants ramsete_constants(1, 0.5);
-
-	knights::PIDController lateralPID(0, 0.0, 0.0, 0.0, 127.0);
-	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
-
-	knights::PIDController turnPID(30, 0.15, 0.7, 0.0, 127.0);
-	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
-
-    lateralController.lateral_move(18,1.0,16000);
-
-}
 
 pros::Motor intake2(6, pros::MotorGears::blue);
 pros::adi::Pneumatics clamp2(2, false);
@@ -584,3 +568,202 @@ void pp_test(knights::RobotChassis *chassis) {
 
 	test_route.execute(chassis, &lateralPID, &turnPID, &inputMap);
 }
+void blue_right_wp(knights::RobotChassis *chassis) {
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+    knights::PIDController lateralPID(5.9, 0.0016, 0.01, 0.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	knights::PIDController turnPID(60, 0.1, 0.7, 0.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+
+    chassis->set_position(knights::Pos(-60.5, -14.75, 3*M_PI/2));
+
+    clamp2.set_value(false);
+
+    lateralController.lateral_move(-12);
+    pros::delay(200);
+    turnController.turn_to_angle(0, LEFT); 
+    pros::delay(200); 
+    lateralController.lateral_move(-7);
+    pros::delay(200);
+    intake_rev2();
+    pros::delay(300);
+    lateralController.lateral_move(6.0);
+    pros::delay(200);
+    clamp2.set_value(true);
+    intake_fwd2();
+    lateralController.lateral_move(6.0);
+    pros::delay(200);
+    turnController.turn_to_angle(105, LEFT, 3.0, 750);
+    pros::delay(200);
+    lateralController.lateral_move(-9);
+    pros::delay(200);
+    turnController.turn_to_angle(155, LEFT, 3.0, 750);
+    pros::delay(200);
+    lateralController.lateral_move(-10);
+    pros::delay(200);
+    lateralController.lateral_move(-14);
+    pros::delay(200);
+    clamp2.set_value(false);
+    intake_rev2();
+    pros::delay(500);
+    turnController.turn_to_angle(255,LEFT);
+    pros::delay(400);
+    lateralController.lateral_move(17);
+    pros::delay(400);
+    turnController.turn_to_angle(360,LEFT);
+    pros::delay(300);
+    lateralController.lateral_move(10);
+    pros::delay(400);
+    turnController.turn_to_angle(68,LEFT);
+    pros::delay(200);
+    lateralController.lateral_move(19);
+    turnController.turn_to_angle(30, RIGHT);
+}
+
+void blue_left_nwp(knights::RobotChassis *chassis) {
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+    knights::PIDController lateralPID(5.9, 0.0016, 0.01, 0.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	knights::PIDController turnPID(60, 0.1, 0.7, 0.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+
+    chassis->set_position(knights::Pos(-60.5, -14.75, 3*M_PI/2));
+
+    clamp2.set_value(false);
+
+    lateralController.lateral_move(-12);
+    pros::delay(200);
+    turnController.turn_to_angle(180, RIGHT); 
+    pros::delay(200); 
+    lateralController.lateral_move(-7);
+    pros::delay(200);
+    intake_rev2();
+    pros::delay(300);
+    lateralController.lateral_move(6.0);
+    pros::delay(200);
+    clamp2.set_value(true);
+    intake_fwd2();
+    lateralController.lateral_move(6.0);
+    pros::delay(200);
+    turnController.turn_to_angle(75, RIGHT, 3.0, 750);
+    pros::delay(200);
+    lateralController.lateral_move(-9);
+    pros::delay(200);
+    turnController.turn_to_angle(25, RIGHT, 3.0, 750);
+    pros::delay(200);
+    lateralController.lateral_move(-10);
+    pros::delay(200);
+    lateralController.lateral_move(-14);
+    pros::delay(200);
+    clamp2.set_value(false);
+    intake_rev2();
+    pros::delay(500);
+    turnController.turn_to_angle(290,RIGHT);
+    pros::delay(400);
+    lateralController.lateral_move(20);
+    pros::delay(400);
+
+}
+
+void red_right_nwp(knights::RobotChassis *chassis) {
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+    knights::PIDController lateralPID(5.9, 0.0016, 0.01, 0.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	knights::PIDController turnPID(60, 0.1, 0.7, 0.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+
+    chassis->set_position(knights::Pos(-60.5, -14.75, 3*M_PI/2));
+
+    clamp2.set_value(false);
+
+    lateralController.lateral_move(-12);
+    pros::delay(200);
+    turnController.turn_to_angle(0, LEFT); 
+    pros::delay(200); 
+    lateralController.lateral_move(-7);
+    pros::delay(200);
+    intake_rev2();
+    pros::delay(300);
+    lateralController.lateral_move(6.0);
+    pros::delay(200);
+    clamp2.set_value(true);
+    intake_fwd2();
+    lateralController.lateral_move(6.0);
+    pros::delay(200);
+    turnController.turn_to_angle(105, LEFT, 3.0, 750);
+    pros::delay(200);
+    lateralController.lateral_move(-9);
+    pros::delay(200);
+    turnController.turn_to_angle(155, LEFT, 3.0, 750);
+    pros::delay(200);
+    lateralController.lateral_move(-10);
+    pros::delay(200);
+    lateralController.lateral_move(-14);
+    pros::delay(200);
+    clamp2.set_value(false);
+    intake_rev2();
+    pros::delay(500);
+    turnController.turn_to_angle(260,LEFT);
+    pros::delay(400);
+}
+
+void red_left_wp(knights::RobotChassis *chassis) {
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+    knights::PIDController lateralPID(5.9, 0.0016, 0.01, 0.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	knights::PIDController turnPID(60, 0.1, 0.7, 0.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+
+    chassis->set_position(knights::Pos(-60.5, -14.75, 3*M_PI/2));
+
+    clamp2.set_value(false);
+
+    lateralController.lateral_move(-12);
+    pros::delay(200);
+    turnController.turn_to_angle(180, RIGHT); 
+    pros::delay(200); 
+    lateralController.lateral_move(-7);
+    pros::delay(200);
+    intake_rev2();
+    pros::delay(300);
+    lateralController.lateral_move(6.0);
+    pros::delay(200);
+    clamp2.set_value(true);
+    intake_fwd2();
+    lateralController.lateral_move(6.0);
+    pros::delay(200);
+    turnController.turn_to_angle(75, RIGHT, 3.0, 750);
+    pros::delay(200);
+    lateralController.lateral_move(-9);
+    pros::delay(200);
+    turnController.turn_to_angle(25, RIGHT, 3.0, 750);
+    pros::delay(200);
+    lateralController.lateral_move(-10);
+    pros::delay(200);
+    lateralController.lateral_move(-14);
+    pros::delay(200);
+    clamp2.set_value(false);
+    intake_rev2();
+    pros::delay(500);
+    turnController.turn_to_angle(290,RIGHT);
+    pros::delay(400);
+    lateralController.lateral_move(20);
+    pros::delay(400);
+    turnController.turn_to_angle(197,RIGHT);
+    pros::delay(300);
+    lateralController.lateral_move(12);
+    pros::delay(400);
+    turnController.turn_to_angle(100,RIGHT);
+    pros::delay(200);
+    lateralController.lateral_move(18);
+    turnController.turn_to_angle(140, LEFT);
+}
+

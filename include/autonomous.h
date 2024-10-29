@@ -8,12 +8,15 @@
 void pid_tuning(knights::RobotChassis *chassis);
 void right_wp_auton(knights::RobotChassis *chassis);
 void programming_skills(knights::RobotChassis *chassis);
-void alex_skills(knights::RobotChassis *chassis);
 void pp_test(knights::RobotChassis *chassis);
 void unsafe_wp_auton(knights::RobotChassis *chassis);
 void left_wp_auton(knights::RobotChassis *chassis);
 void left_wp_red(knights::RobotChassis *chassis);
 void left_wp_blue(knights::RobotChassis *chassis);
 
+void blue_right_wp(knights::RobotChassis *chassis);
+void blue_left_nwp(knights::RobotChassis *chassis);
+void red_right_nwp(knights::RobotChassis *chassis);
+void red_left_wp(knights::RobotChassis *chassis);
 
 #endif

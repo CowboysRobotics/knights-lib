@@ -16,8 +16,8 @@
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
 // Competition Robot
-pros::MotorGroup right_mtrs({3,9,5}, pros::MotorGears::blue); // 8 needs to be rev
-pros::MotorGroup left_mtrs({8,1,7}, pros::MotorGears::blue); // 13,17 need rev
+pros::MotorGroup right_mtrs({3,11,16}, pros::MotorGears::blue); // no reverse
+pros::MotorGroup left_mtrs({9,18,20}, pros::MotorGears::blue); // no reverse
 pros::Rotation mid_odom(13);
 pros::Rotation back_odom(14);
 pros::Distance redirect(19);
@@ -39,7 +39,7 @@ pros::adi::Pneumatics clamp(2, false);
 pros::adi::Pneumatics doinker(4, true);
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
 
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 2.75, 0.75);
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 600.0, 2.75, 0.75);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
 pros::MotorGroup snacky_cakes({20, 4}, pros::v5::MotorGears::green);
 
@@ -79,12 +79,12 @@ void initialize() {
 
 	// Competition Robot
 	left_mtrs.set_reversed(false, 0);
-	left_mtrs.set_reversed(true, 1);
-	left_mtrs.set_reversed(true, 2);
+	left_mtrs.set_reversed(false, 1);
+	left_mtrs.set_reversed(false, 2);
 
 	right_mtrs.set_reversed(true, 0);
-	right_mtrs.set_reversed(false, 1);
-	right_mtrs.set_reversed(false, 2);
+	right_mtrs.set_reversed(true, 1);
+	right_mtrs.set_reversed(true, 2);
 
 	snacky_cakes.set_reversed(true, 1);
 	// // Test Bot
@@ -173,10 +173,13 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// Different autons, None0 is the default auton
-	auton_map["None0"] = &left_wp_blue;
+	auton_map["None0"] = &red_left_wp;
 	// auton_map["Blue1"] = &programming_skills;
-	auton_map["Red1"] = &left_wp_red;
-    auton_map["Blue1"] = &left_wp_blue;
+	
+	auton_map["Red1"] = &red_left_wp;
+	auton_map["Red2"] = &red_right_nwp;
+    auton_map["Blue1"] = &blue_right_wp;
+	auton_map["Blue2"] = &blue_left_nwp;
 
 	chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
 
