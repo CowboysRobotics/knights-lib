@@ -27,6 +27,7 @@ knights::Pos knights::RobotChassis::get_position() {
 
 void knights::RobotChassis::set_position(knights::Pos position) {
     this->curr_position = position;
+    this->set_prev_position(position);
 };
 
 void knights::RobotChassis::set_prev_position(float x, float y, float heading) {

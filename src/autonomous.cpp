@@ -11,7 +11,6 @@
 #define RIGHT 1
 #define LEFT -1
 
-
 #define INTAKE_VELOCITY 300
 
 void right_wp_auton(knights::RobotChassis *chassis) {
@@ -373,10 +372,8 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
     // turnController.turn_to_angle(0,RIGHT);
     lateralController.lateral_move(24.0, 3.0, 750);
-    pros::delay(100);
-    turnController.turn_to_angle(0, 0);
-    pros::delay(100);
-    lateralController.lateral_move(24.0, 4.0, 750);
+
+    turnController.turn_to_angle(90, LEFT);
 }
 
 
