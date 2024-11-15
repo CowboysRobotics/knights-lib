@@ -16,12 +16,26 @@
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
 // Competition Robot
-pros::MotorGroup right_mtrs({3,11,16}, pros::MotorGears::blue); // no reverse
-pros::MotorGroup left_mtrs({9,18,20}, pros::MotorGears::blue); // no reverse
-pros::Rotation mid_odom(13);
-pros::Rotation back_odom(14);
-pros::Distance redirect(19);
+
+//front of bot is intake side
+
+//assign ports to right side drive-train
+pros::MotorGroup right_mtrs({4,5,14}, pros::MotorGears::blue); // no reverse
+
+//assign ports to left side drive-train
+pros::MotorGroup left_mtrs({9,6,18}, pros::MotorGears::blue); // no reverse
+
+//assign ports to odom pods for position tracking
+pros::Rotation mid_odom(13); //perpendicular tracking
+pros::Rotation back_odom(14); //parallel tracking
+
+//assign port for imu tracker
 pros::IMU imu(12);
+
+//assign ports to intake, leftside first, rightside second
+pros::MotorGroup intake({17,10}, pros::MotorGears::blue);
+
+//dimensions and positions of odom pods for calculations for position tracking
 knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.677);
 knights::PositionTracker backOdom(&back_odom, 2.75, 1, 0);
 
@@ -34,16 +48,17 @@ knights::PositionTracker backOdom(&back_odom, 2.75, 1, 0);
 // knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0, -1);
 // knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
 
-pros::Motor intake(6, pros::MotorGears::blue);
-pros::adi::Pneumatics clamp(2, false);
-pros::adi::Pneumatics doinker(4, true);
+//assign ports for pneumatics
+pros::adi::Pneumatics clamp(7, false); //clamp solenoid
+pros::adi::Pneumatics doinker(4, true); //doinker solenoid
+pros::adi::Pneumatics big_arm_section(8,false); //big arm solenoid
+pros::adi::Pneumatics small_arm_section(5,false); //small arm solenoid
+pros::adi::Pneumatics wall_stake_mech_clamp(6,false); //ring clamp solenoid
+
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
 
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 600.0, 2.75, 0.75);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
-pros::MotorGroup snacky_cakes({20, 4}, pros::v5::MotorGears::green);
-
-knights::PIDController wall_stake_mech_PID(10, 0, 0, -127, 127);
 
 // knights::PID_Controller pidController(0.4, 0.0001, 0.085, 0, 127);
 
@@ -67,6 +82,7 @@ void initialize() {
 	while(imu.is_calibrating()) {
 		pros::delay(10);
 	}
+	//make sure that the imu sensor is accurate before the start of a match
 	//knights::logger::blue("Initialization Begin");
 
 	lv_display();
@@ -78,23 +94,26 @@ void initialize() {
 	//knights::logger::blue("Initialization End");
 
 	// Competition Robot
+
+	//front of the bot is intake
+
+	//assign direction to left side drive-train motors 
 	left_mtrs.set_reversed(false, 0);
 	left_mtrs.set_reversed(false, 1);
 	left_mtrs.set_reversed(false, 2);
 
+	//assign direction to right side drive-train motors
 	right_mtrs.set_reversed(true, 0);
 	right_mtrs.set_reversed(true, 1);
 	right_mtrs.set_reversed(true, 2);
 
-	snacky_cakes.set_reversed(true, 1);
-	// // Test Bot
+		// // Test Bot
 	// left_mtrs.set_reversed(true, 0);
 	// left_mtrs.set_reversed(true, 1);
 	// left_mtrs.set_reversed(true, 2);
 
-	intake.set_reversed(true, 0);
-	snacky_cakes.tare_position();
-
+	intake.set_reversed(true,0);
+	intake.set_reversed(false, 1);
 
 	// // Squiggles test
 	// const double MAX_VEL = drivetrain.max_velocity();     // in meters per second
@@ -245,161 +264,76 @@ void autonomous() {
 
 
 bool intake_spinning = false;
+bool intake_forward = false;
 
 void intake_fwd() {
-	if (intake_spinning == true && intake.get_direction() == -1) { // If intake is on or in wrong direction
+	if (intake_spinning == true && intake_forward == true) { // If intake is on or in wrong direction
 		intake.move(0); // stop intake
 		intake_spinning = false;
 	} else {
 		intake.move(INTAKE_VELOCITY); // Spin intake forward
 		intake_spinning = true;
+		intake_forward = true;
 	}
 }
 
 void intake_rev() {
-	if (intake_spinning == true && intake.get_direction() == 1) { // If intake is spinning or in the wrong direction
+	if (intake_spinning == true && intake_forward == false) { // If intake is spinning or in the wrong direction
 		intake.move(0); // stop intake
 		intake_spinning = false;
 	} else { 
 		intake.move(-INTAKE_VELOCITY); // Spin the intake in reverse
 		intake_spinning = true;
-	}
-}
-bool redirection_true = false;
-
-void redirection_toggle() {
-	intake.set_brake_mode(pros::MotorBrake::hold);
-	if (redirection_true == true){
-		redirection_true = false;
-	}
-	else {
-		redirection_true = true;
+		intake_forward = false;
 	}
 }
 
 
 
-void redirection() {
-	pros::delay(19);
-	intake.brake();
-	pros::delay(100);
-	intake.set_brake_mode(pros::MotorBrake::coast);
-	redirection_true = false;
-}
-
-
-
-
-#define WALL_STAKE_MECH_MAX_ANGLE 120
-#define WALL_STAKE_MECH_GEAR_RATIO 24/72
-
-void use_wall_stake_mech() {
-	float total_error = 0; float prev_error; float error = 1e5;
-	int timeout = 3000;
-
-	snacky_cakes.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-
-	while (error > 0) {
-		error = WALL_STAKE_MECH_MAX_ANGLE - knights::normalize_angle(snacky_cakes.get_position() * WALL_STAKE_MECH_GEAR_RATIO, false);
-
-		// timeout -= 10;
-		// if (timeout < 0)
-		// 	break;
-
-		total_error += error;
-
-		float speed = wall_stake_mech_PID.update(error, total_error, prev_error);
-
-		prev_error = error;
-
-		snacky_cakes.move(speed);
-
-		printf("error: %lf, speed, %lf, at pos: %lf, raw: %lf\n", error, speed, snacky_cakes.get_position() * WALL_STAKE_MECH_GEAR_RATIO, snacky_cakes.get_position());
-	
-		pros::delay(10);
-	}
-
-	snacky_cakes.move(0);
-
-	while (error < 6) {
-		error = knights::normalize_angle(snacky_cakes.get_position() * WALL_STAKE_MECH_GEAR_RATIO, false) - WALL_STAKE_MECH_MAX_ANGLE;
-
-		// timeout -= 10;
-		// if (timeout < 0)
-		// 	break;
-
-		total_error += error;
-
-		float speed = wall_stake_mech_PID.update(error, total_error, prev_error);
-
-		prev_error = error;
-
-		snacky_cakes.move(speed);
-
-		printf("error: %lf, speed, %lf, at pos: %lf, raw: %lf\n", error, speed, snacky_cakes.get_position() * WALL_STAKE_MECH_GEAR_RATIO, snacky_cakes.get_position());
-	
-		pros::delay(10);
-	}
-}
-
-bool hungry = false;
-
-void snack_eat() {
-	if (hungry == true && snacky_cakes.get_direction() == 1) { // If snack is on or in wrong direction
-		snacky_cakes.move(0); // stop eating
-		hungry = false;
-	} else {
-		snacky_cakes.move(INTAKE_VELOCITY); // Spin snack forward
-		pros::delay(750);
-		snacky_cakes.set_brake_mode(pros::MotorBrake::hold);
-		snacky_cakes.brake();
-		hungry = true;
-	}
-}
-
-void snack_swallow() {
-	if (hungry == true && snacky_cakes.get_direction() == -1) { // If snack is spinning or in the wrong direction
-		snacky_cakes.move(0); // stop eating
-		hungry = false;
-	} else { 
-		snacky_cakes.move(-INTAKE_VELOCITY); // Spin the snack in reverse
-		pros::delay(250);
-		snacky_cakes.set_brake_mode(pros::MotorBrake::coast);
-		snacky_cakes.brake();
-		hungry = true;
-	}
-}
 
 bool clamp_down = false;
 
 void clamp_out() {
-	clamp_down = !clamp_down;
-	clamp.set_value(clamp_down);
+	clamp_down = !clamp_down; //toggle whether active or inactive mode
+	clamp.set_value(clamp_down); //activate clamp if inactive or deactivate clamp if active
 }
 
-bool doinked = false;
+bool arm_extended = false;
 
-void doink() {
-    doinked = !doinked;
-	doinker.set_value(doinked);
-
+void arm_extend() {
+	arm_extended = !arm_extended; //toggle whether active or inactive mode
+	small_arm_section.set_value(arm_extended); //extend arm if active or retract arm if inactive
 }
+
+bool arm_up = false;
+
+void wall_stake_mech() {
+	arm_up = !arm_up; //toggle whether active or inactive mode
+	big_arm_section.set_value(arm_up); //move arm up if active or move down if inactive
+}
+
+bool ring_clamp = false;
+
+void close_arm() {
+	ring_clamp = !ring_clamp; //toggle whether active or inactive mode
+	wall_stake_mech_clamp.set_value(ring_clamp); //activate arm clamp if active or open arm clamp if inactive
+}
+
 
 void opcontrol() {
-	float right_velocity = 0; float left_velocity = 0;
+	float right_velocity = 0; float left_velocity = 0; 
 
 	knights::input::InputMap input;
 
 	// Bind the requied input actions to the input map
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1, intake_fwd, false);
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2, intake_rev, false);
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1, intake_fwd, false); //assign intake forward toggle to controller button L1
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2, intake_rev, false); //assign intake reverse toggle to controller button L2
 	
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_out, false);
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doink, false);
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_out, false); //assign clamp toggle to controller button R2
 	
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X, snack_eat, false);
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B, snack_swallow, false);
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, redirection_toggle, false);
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, close_arm, false); //assign arm clmap toggle to controller button A
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X, wall_stake_mech, false); //assign arm clmap toggle to controller button A
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B, arm_extend, false); //assign arm clmap toggle to controller button A
 
 	while (true) {
 		// If controller joystick not in deadzone, calculate the velocity
@@ -415,9 +349,6 @@ void opcontrol() {
 		// Otherwise, stop the left motors
 		else
 			left_velocity = 0;
-		
-		if	(redirection_true == true and redirect.get() < 15)
-			redirection();
 
 
 		// Send the required velocities to the drivetrain
