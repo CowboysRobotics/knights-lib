@@ -17,5 +17,3 @@ for i,point in enumerate(route):
     if i > 0:
         total_dist += dist(route[i-1], route[i])
 
-
-
