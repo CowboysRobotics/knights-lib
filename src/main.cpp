@@ -27,10 +27,10 @@ pros::MotorGroup left_mtrs({9,6,18}, pros::MotorGears::blue); // no reverse
 
 //assign ports to odom pods for position tracking
 pros::Rotation mid_odom(12); // parallel tracking
-pros::Rotation back_odom(19); // perpendicular tracking
+pros::Rotation back_odom(20); // perpendicular tracking
 
 //assign port for imu tracker
-pros::IMU imu(15);
+pros::IMU imu(19);
 
 //assign ports to intake, leftside first, rightside second
 pros::MotorGroup intake({17,10}, pros::MotorGears::blue);
@@ -50,7 +50,7 @@ knights::PositionTracker backOdom(&back_odom, 2.75, 1, 3.1875);
 
 //assign ports for pneumatics
 pros::adi::Pneumatics clamp(7, false); //clamp solenoid
-pros::adi::Pneumatics doinker(4, true); //doinker solenoid
+pros::adi::Pneumatics doinker(4, false); //doinker solenoid
 pros::adi::Pneumatics big_arm_section(8,false); //big arm solenoid
 pros::adi::Pneumatics small_arm_section(5,false); //small arm solenoid
 pros::adi::Pneumatics wall_stake_mech_clamp(6,false); //ring clamp solenoid
@@ -192,12 +192,6 @@ void autonomous() {
 
 	// Different autons, None0 is the default auton
 	auton_map["None0"] = &pid_tuning;
-	// auton_map["Blue1"] = &programming_skills;
-	
-	auton_map["Red1"] = &red_left_wp;
-	auton_map["Red2"] = &red_right_nwp;
-    auton_map["Blue1"] = &blue_right_wp;
-	auton_map["Blue2"] = &blue_left_nwp;
 
 	// chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
 
@@ -293,10 +287,19 @@ void intake_rev() {
 
 bool clamp_down = false;
 
-void clamp_out() {
+void clamp_toggle() {
 	clamp_down = !clamp_down; //toggle whether active or inactive mode
 	clamp.set_value(clamp_down); //activate clamp if inactive or deactivate clamp if active
 }
+
+
+bool doinker_activate = false;
+
+void doinker_toggle() {
+	doinker_activate = !doinker_activate; //toggle whether active or inactive mode
+	doinker.set_value(doinker_activate); //extend doinker if inactive or retract clamp if active
+}
+
 
 bool arm_extended = false;
 
@@ -362,8 +365,9 @@ void opcontrol() {
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1, intake_fwd, false); //assign intake forward toggle to controller button L1
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2, intake_rev, false); //assign intake reverse toggle to controller button L2
 	
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_out, false); //assign clamp toggle to controller button R2
-	
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_toggle, false); //assign clamp toggle to controller button R2
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doinker_toggle, false); //assign doinker toggle to controller button R1
+
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, close_arm, false); //assign arm clmap toggle to controller button A
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X, wall_stake_mech, false); //assign arm clmap toggle to controller button A
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B, arm_extend, false); //assign arm clmap toggle to controller button A
