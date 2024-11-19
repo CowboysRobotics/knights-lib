@@ -5,11 +5,15 @@
 #include "knights/robot/drivetrain.h"
 
 #include "knights/util/calculation.h"
+#include "pros/motors.h"
 #include "pros/rtos.hpp"
 
 void knights::RobotController::lateral_move(const float distance, const float end_tolerance, float timeout) {
     if (this->in_motion) return;
     this->in_motion = true;
+
+    this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
+    this->chassis->drivetrain->left_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
 
     // lateral move the chassis of a robot
     if (this->chassis->drivetrain != nullptr) {
@@ -78,12 +82,30 @@ void knights::RobotController::lateral_move(const float distance, const float en
                 // use pid formula to calculate speed
                 speed = this->pid_controller->update(error, total_error, prev_error) * knights::signum(distance);
 
-                // printf("des pos: %lf %lf %lf, error: %lf, speed: %lf, curr: %lf %lf %lf\n", desired_position.x, desired_position.y, desired_position.heading, error, speed, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading);
+                printf("des pos: %lf %lf %lf, error: %lf, speed: %lf, curr: %lf %lf %lf\n", desired_position.x, desired_position.y, desired_position.heading, error, speed, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading);
 
-                printf("ptg,%lf,%d,\n", error, pros::millis());
+                // printf("ptg,%lf,%d,\n", error, pros::millis());
+
+                if (fabs(speed) <= this->pid_controller->min_velocity) {
+                    break;
+                }
 
                 // save previous error
                 prev_error = error;
+
+                // // --- EXPERIMENTAL
+                // float angular_curve = curvature(this->chassis->curr_position, desired_position);
+                
+                // // calculate right and left speed based on curvature
+                // float r_speed = speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;
+                // float l_speed = speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2;
+
+                // // calculate if one is over max alloted speed (might need to be 127.0 - max speed in pros)
+                // float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / this->pid_controller->max_velocity; 
+                // if (max_curr_speed > 1) {
+                //     r_speed /= max_curr_speed;
+                //     l_speed /= max_curr_speed;
+                // }
 
                 // send command to drivetrain
                 this->chassis->drivetrain->velocity_command(speed,speed);

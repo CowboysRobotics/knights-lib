@@ -12,6 +12,8 @@ namespace knights {
 
             // values to clamp the PID to
             float max_velocity = 127.0; float min_velocity = 0.0;
+
+            friend class RobotController;
         public:
             /**
              * @brief Construct a new PID controller object

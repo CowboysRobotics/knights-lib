@@ -7,7 +7,7 @@
 
 #include "knights/logger/logger.h"
 
-#define MIN_SPEED 10
+#define MIN_SPEED 20
 
 void knights::RobotController::turn_to_angle(const float angle, int direction, float end_tolerance, float timeout, bool rad) {
     if (this->in_motion) return;
@@ -30,6 +30,9 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
         sign = knights::direction(this->chassis->curr_position.heading, desired_angle);
     
     printf("des angle: %lf, at: %lf\n", desired_angle, chassis->curr_position.heading);
+
+    this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
+    this->chassis->drivetrain->left_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
 
     while(std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true)) > end_tolerance) {
 

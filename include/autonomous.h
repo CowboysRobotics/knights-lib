@@ -8,4 +8,6 @@
 void pid_tuning(knights::RobotChassis *chassis);
 void pp_test(knights::RobotChassis *chassis);
 
+void red_rush(knights::RobotChassis *chassis);
+
 #endif

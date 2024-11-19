@@ -191,18 +191,20 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// Different autons, None0 is the default auton
-	auton_map["None0"] = &pid_tuning;
+	auton_map["None0"] = &pp_test;
 
 	// chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
 
-	if (package.type + std::to_string(package.number) == "Red1") {
-		chassis.set_position(knights::Pos(-60.5, -14.75, M_PI/2));
-	} else if (package.type + std::to_string(package.number) == "Blue1") {
-		chassis.set_position(knights::Pos(-60.5, -14.75, 3*M_PI/2));
-	}
+	// if (package.type + std::to_string(package.number) == "Red1") {
+	// 	chassis.set_position(knights::Pos(-60.5, -14.75, M_PI/2));
+	// } else if (package.type + std::to_string(package.number) == "Blue1") {
+	// 	chassis.set_position(knights::Pos(-60.5, -14.75, 3*M_PI/2));
+	// } else if (package.type + std::to_string(package.number) == "None0") {
+	// 	chassis.set_position(knights::Pos(0,0,M_PI/2));
+	// }
 
 	// need to find a way to do this dynamically
-	chassis.set_position(knights::Pos(0, 0, 0));
+	chassis.set_position(knights::Pos(-60, 0, 0));
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();
@@ -252,7 +254,7 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-#define velocity_formula(x) 81*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20 // arbitrarily defined formula to translate joysticks to velocity
+#define velocity_formula(x) 160*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20 // arbitrarily defined formula to translate joysticks to velocity
 
 #define INTAKE_VELOCITY 300
 

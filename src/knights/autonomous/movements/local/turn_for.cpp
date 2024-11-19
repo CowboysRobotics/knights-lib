@@ -76,7 +76,6 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
             while(std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true)) > end_tolerance) {
 
                 timeout -= 10;
-                if (timeout < 0) break;
 
                 error = std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true));
 
@@ -90,7 +89,7 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
 
                 this->chassis->drivetrain->velocity_command(-signum(angle) * speed, signum(angle) * speed);
 
-                if (speed < MIN_SPEED) {
+                if (fabs(speed) < MIN_SPEED) {
                     break;
                 }
 
