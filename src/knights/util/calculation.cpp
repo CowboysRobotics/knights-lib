@@ -26,12 +26,17 @@ float knights::min_angle(float start, float target, bool rad) {
 };
 
 int knights::direction(float init_heading, float des_heading) {
-	float change = des_heading - init_heading + 360;
+float diff = des_heading - init_heading;
 
-	if (change < 180)
-		return 1;
-	else
-		return -1;
+    if (diff < -180.0)
+        diff += 360.0;
+    if (diff > 180.0)
+        diff -= 360.0;
+
+    if (diff > 0)
+        return 1;
+    else
+        return -1;
 }
 
 float knights::angular_error(float start, float target, int dir, bool rad) {

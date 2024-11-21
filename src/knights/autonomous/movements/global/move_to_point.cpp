@@ -6,20 +6,72 @@
 
 #include "knights/util/calculation.h"
 
+#include "knights/util/position.h"
 #include "squiggles/squiggles.hpp"
 
-void knights::RobotController::move_to_point(const Pos point, squiggles::Constraints path_constraints, const float &lookahead_distance, const float &end_tolerance, float timeout) {
+void knights::RobotController::move_to_point(const Pos desired_position, const float &end_tolerance, float timeout) {
     
     printf("m2 started\n");
 
-    std::vector<squiggles::ProfilePoint> motion_profile = knights::generate_motion_profile(
-        this->chassis->curr_position, 
-        point,
-        this->chassis->drivetrain->track_width,
-        path_constraints
-    );
+    // lateral move the chassis of a robot
+    if (this->chassis->drivetrain != nullptr) {
+        // move function for differential drive
+        float speed,error;
+        float prev_error = distance_btwn(desired_position, this->chassis->curr_position); float total_error = 0.0;
+        
+        while (knights::distance_btwn(this->chassis->curr_position, desired_position) > end_tolerance || 
+            knights::distance_btwn(this->chassis->prev_position, desired_position) < knights::distance_btwn(this->chassis->curr_position, desired_position)) {
+            // decrease timeout and break if went over
+            timeout -= 10;
+            if (timeout < 0) break;
 
-    this->follow_route_ramsete(motion_profile, lookahead_distance, end_tolerance, timeout);
+            // calculate error
+            error = knights::distance_btwn(this->chassis->curr_position, desired_position);
+
+            // integrate error
+            total_error += error;
+
+            // use pid formula to calculate speed
+            speed = this->pid_controller->update(error, total_error, prev_error);
+
+            printf("des pos: %lf %lf %lf, error: %lf, speed: %lf, curr: %lf %lf %lf\n", desired_position.x, desired_position.y, desired_position.heading, error, speed, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading);
+
+            // printf("ptg,%lf,%d,\n", error, pros::millis());
+
+            if (fabs(speed) <= this->pid_controller->min_velocity) {
+                break;
+            }
+
+            // save previous error
+            prev_error = error;
+
+            // --- EXPERIMENTAL
+            float angular_curve = curvature(this->chassis->curr_position, desired_position);
+            
+            // calculate right and left speed based on curvature
+            float r_speed = speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;
+            float l_speed = speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2;
+
+            // calculate if one is over max alloted speed (might need to be 127.0 - max speed in pros)
+            float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / this->pid_controller->max_velocity; 
+            if (max_curr_speed > 1) {
+                r_speed /= max_curr_speed;
+                l_speed /= max_curr_speed;
+            }
+
+            // send command to drivetrain
+            this->chassis->drivetrain->velocity_command(speed,speed);
+
+            // delay
+            pros::delay(10);
+        }
+
+    
+
+        this->chassis->drivetrain->right_mtrs->move(0);
+        this->chassis->drivetrain->left_mtrs->move(0);
+
+    }
 
     return;
 }

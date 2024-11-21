@@ -8,6 +8,19 @@
 void pid_tuning(knights::RobotChassis *chassis);
 void pp_test(knights::RobotChassis *chassis);
 
-void red_rush(knights::RobotChassis *chassis);
+void skills(knights::RobotChassis *chassis);
+
+void red_left_wp(knights::RobotChassis *chassis);
+void red_rush_right_wp(knights::RobotChassis *chassis);
+void blue_right_wp(knights::RobotChassis *chassis);
+void blue_rush_left_wp(knights::RobotChassis *chassis);
+
+void red_left_elim(knights::RobotChassis *chassis);
+void red_rush_right_elim(knights::RobotChassis *chassis);
+void blue_right_elim(knights::RobotChassis *chassis);
+void blue_rush_left_elim(knights::RobotChassis *chassis);
+
+
+
 
 #endif

@@ -16,12 +16,12 @@
 
 
 //assign ports to intake, leftside first, rightside second
-pros::MotorGroup intake_auton({17,10}, pros::MotorGears::blue);
+pros::MotorGroup intake_auton({9,13}, pros::MotorGears::blue);
 
 //assign ports for pneumatics
-pros::adi::Pneumatics clamp_auton(7, false); //clamp solenoid
-pros::adi::Pneumatics doinker_auton(4, false); //doinker solenoid
-pros::adi::Pneumatics big_arm_auton_section(8,false); //big arm solenoid
+pros::adi::Pneumatics clamp_auton(8, false); //clamp solenoid
+pros::adi::Pneumatics doinker_auton(6, false); //doinker solenoid
+pros::adi::Pneumatics big_arm_auton_section(7,false); //big arm solenoid
 pros::adi::Pneumatics small_arm_auton_section(5,false); //small arm solenoid
 pros::adi::Pneumatics wall_stake_mech_clamp_auton(6,false); //ring clamp solenoid
 
@@ -149,30 +149,399 @@ void pp_test(knights::RobotChassis *chassis) {
 	test_route.execute(chassis, &lateralPID, &turnPID, &inputMap);
 }
 
+#define WAIT 150
 
-void red_rush(knights::RobotChassis *chassis){
-    
+void skills(knights::RobotChassis *chassis) {
 	knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(2.8, 0.00225, 0.0015, 0.0, 127.0);
+	knights::PIDController lateralPID(5, 0.0, 0.0065, 10.0, 127.0);
 	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
 
-	knights::PIDController turnPID(27, 0.056, 0.00, 0.0, 127.0);
+	knights::PIDController turnPID(54, 0.017, 0.002, 10.0, 127.0);
 	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+	
+	intake_auton.set_reversed(false,0);
+	intake_auton.set_reversed(true, 1);
 
-    
-	intake_auton.set_reversed(true,0);
-	intake_auton.set_reversed(false, 1);
-
-
-    lateralController.lateral_move(-26,0.5,2000);
-	turnController.turn_to_angle(60,LEFT,0.5,500);
-	lateralController.lateral_move(-22,0.5,2000);
 	clamp_auton_toggle();
+
+	lateralController.lateral_move(-10, 2.0, 750);
 	intake_auton_fwd();
-	turnController.turn_to_angle(350, RIGHT,0.5,500);
-	lateralController.lateral_move(10,0.5,500);
+
+	pros::delay(5*WAIT);
+
+	lateralController.lateral_move(12, 2.0, 750);
+
+	clamp_auton_toggle();
+
+	turnController.turn_to_angle(90, LEFT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(-12);
+
+	lateralController.lateral_move(-14);
+
+	clamp_auton_toggle();
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(0, RIGHT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(24);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(270, RIGHT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(22.5);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(180, RIGHT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(18);
+
+	pros::delay(2*WAIT);
+
+	lateralController.lateral_move(14);
+
+	pros::delay(2*WAIT);
+
+	lateralController.lateral_move(-12);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(270, LEFT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(10);
+
+	pros::delay(2*WAIT);
+
+	lateralController.lateral_move(-18);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(45, LEFT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(-23);
+
+	intake_auton_fwd();
+
+	clamp_auton_toggle();
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(16);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(315, RIGHT);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(270, RIGHT);
+
+	lateralController.lateral_move(-40);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(270, LEFT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(-20);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(-12);
+
+	clamp_auton_toggle();
+
+	intake_auton_fwd();
+
+	pros::delay(2*WAIT);
+
+	turnController.turn_to_angle(0, LEFT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(22);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(90, LEFT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(25);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(180, LEFT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(18);
+
+	pros::delay(2*WAIT);
+
+	lateralController.lateral_move(14);
+
+	pros::delay(2*WAIT);
+
+	lateralController.lateral_move(-12);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(90, RIGHT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(10);
+
+	pros::delay(2*WAIT);
+
+	lateralController.lateral_move(-18);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(315, RIGHT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(-23);
+
+	intake_auton_fwd();
+
+	clamp_auton_toggle();
+
+	// go to other side now
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(16);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(10, LEFT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(48, 3.0, 1500);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(305, RIGHT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(28);
+
+	intake_auton.move(70);
+
+	pros::delay(450);
+
+	intake_auton.move(0);	
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(120, LEFT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(-26);
+
+	clamp_auton_toggle();
+
+	intake_auton_fwd();
+
+	pros::delay(2*WAIT);
+
+}
 
 
+
+
+void red_left_wp(knights::RobotChassis *chassis) {
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+    // knights::PIDController lateralPID(2.8, 0.00225, 0.0015, 0.0, 127.0);
+    knights::PIDController lateralPID(4, 0.0, 0.0065, 25.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	// knights::PIDController turnPID(27, 0.056, 0.00, 0.0, 127.0);
+	knights::PIDController turnPID(48, 0.017, 0.002, 25.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+    
+	intake_auton.set_reversed(false,0);
+	intake_auton.set_reversed(true, 1);
+
+    lateralController.lateral_move(-29);
+	
+	clamp_auton_toggle();
+	pros::delay(150);
+	intake_auton_fwd();
+	turnController.turn_to_angle(143, RIGHT);
+	pros::delay(100);
+
+	lateralController.lateral_move(23);
+	pros::delay(100);
+	lateralController.lateral_move(-8);
+	turnController.turn_to_angle(150, LEFT);
+    lateralController.lateral_move(17);
+	turnController.turn_to_angle(260, LEFT);
+    lateralController.lateral_move(19);
+	pros::delay(1000);
+	intake_auton_rev();
+    lateralController.lateral_move(25);
+	clamp_auton_toggle();
+	turnController.turn_to_angle(345, LEFT);
+	intake_auton_fwd();
+    lateralController.lateral_move(33);
+	pros::delay(500);
+	lateralController.lateral_move(18);
+    pros::delay(750);
+	intake_auton_fwd();
+    turnController.turn_to_angle(270, RIGHT);
+	intake_auton_rev();
+	pros::delay(500);
+	wall_stake_mech_auton();
+	intake_auton_fwd();
+	pros::delay(250);
+	lateralController.lateral_move(15);
+	intake_auton_fwd();
+	wall_stake_mech_auton();
+    pros::delay(750);
+	lateralController.lateral_move(-36);
+
+}
+
+
+void red_rush_right_wp(knights::RobotChassis *chassis) {
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+    // knights::PIDController lateralPID(2.8, 0.00225, 0.0015, 0.0, 127.0);
+    knights::PIDController lateralPID(4, 0.0, 0.0065, 25.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	// knights::PIDController turnPID(27, 0.056, 0.00, 0.0, 127.0);
+	knights::PIDController turnPID(48, 0.017, 0.002, 25.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+    
+	intake_auton.set_reversed(false,0);
+	intake_auton.set_reversed(true, 1);
+
+}
+
+
+void blue_right_wp(knights::RobotChassis *chassis) {
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+    // knights::PIDController lateralPID(2.8, 0.00225, 0.0015, 0.0, 127.0);
+    knights::PIDController lateralPID(4, 0.0, 0.0065, 25.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	// knights::PIDController turnPID(27, 0.056, 0.00, 0.0, 127.0);
+	knights::PIDController turnPID(48, 0.017, 0.002, 25.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+     
+	intake_auton.set_reversed(false,0);
+	intake_auton.set_reversed(true, 1);
+
+}
+
+
+void blue_rush_left_wp(knights::RobotChassis *chassis) {
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+    // knights::PIDController lateralPID(2.8, 0.00225, 0.0015, 0.0, 127.0);
+    knights::PIDController lateralPID(4, 0.0, 0.0065, 25.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	// knights::PIDController turnPID(27, 0.056, 0.00, 0.0, 127.0);
+	knights::PIDController turnPID(48, 0.017, 0.002, 25.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+    
+	intake_auton.set_reversed(false,0);
+	intake_auton.set_reversed(true, 1);
+
+}
+
+
+void red_right_elim(knights::RobotChassis *chassis) {
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+    // knights::PIDController lateralPID(2.8, 0.00225, 0.0015, 0.0, 127.0);
+    knights::PIDController lateralPID(4, 0.0, 0.0065, 25.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	// knights::PIDController turnPID(27, 0.056, 0.00, 0.0, 127.0);
+	knights::PIDController turnPID(48, 0.017, 0.002, 25.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+    
+	intake_auton.set_reversed(false,0);
+	intake_auton.set_reversed(true, 1);
+
+}
+
+
+void red_rush_right_elim(knights::RobotChassis *chassis) {
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+    // knights::PIDController lateralPID(2.8, 0.00225, 0.0015, 0.0, 127.0);
+    knights::PIDController lateralPID(4, 0.0, 0.0065, 25.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	// knights::PIDController turnPID(27, 0.056, 0.00, 0.0, 127.0);
+	knights::PIDController turnPID(48, 0.017, 0.002, 25.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+    
+	intake_auton.set_reversed(false,0);
+	intake_auton.set_reversed(true, 1);
+
+}
+
+
+void blue_right_elim(knights::RobotChassis *chassis) {
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+    // knights::PIDController lateralPID(2.8, 0.00225, 0.0015, 0.0, 127.0);
+    knights::PIDController lateralPID(4, 0.0, 0.0065, 25.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	// knights::PIDController turnPID(27, 0.056, 0.00, 0.0, 127.0);
+	knights::PIDController turnPID(48, 0.017, 0.002, 25.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+    
+	intake_auton.set_reversed(false,0);
+	intake_auton.set_reversed(true, 1);
+
+}
+
+
+void blue_left_rush_elim(knights::RobotChassis *chassis) {
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+    // knights::PIDController lateralPID(2.8, 0.00225, 0.0015, 0.0, 127.0);
+    knights::PIDController lateralPID(4, 0.0, 0.0065, 25.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+
+	// knights::PIDController turnPID(27, 0.056, 0.00, 0.0, 127.0);
+	knights::PIDController turnPID(48, 0.017, 0.002, 25.0, 127.0);
+	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
+    
+	intake_auton.set_reversed(false,0);
+	intake_auton.set_reversed(true, 1);
 
 }

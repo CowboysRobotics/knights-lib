@@ -20,20 +20,20 @@ pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 //front of bot is intake side
 
 //assign ports to right side drive-train
-pros::MotorGroup right_mtrs({4,5,14}, pros::MotorGears::blue); // no reverse
+pros::MotorGroup right_mtrs({1,2,14}, pros::MotorGears::blue); // no reverse
 
 //assign ports to left side drive-train
-pros::MotorGroup left_mtrs({9,6,18}, pros::MotorGears::blue); // no reverse
+pros::MotorGroup left_mtrs({7,8,16}, pros::MotorGears::blue); // no reverse
 
 //assign ports to odom pods for position tracking
 pros::Rotation mid_odom(12); // parallel tracking
-pros::Rotation back_odom(20); // perpendicular tracking
+pros::Rotation back_odom(19); // perpendicular tracking
 
 //assign port for imu tracker
-pros::IMU imu(19);
+pros::IMU imu(17);
 
 //assign ports to intake, leftside first, rightside second
-pros::MotorGroup intake({17,10}, pros::MotorGears::blue);
+pros::MotorGroup intake({9,13}, pros::MotorGears::blue);
 
 //dimensions and positions of odom pods for calculations for position tracking
 knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.825);
@@ -49,9 +49,9 @@ knights::PositionTracker backOdom(&back_odom, 2.75, 1, 3.1875);
 // knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
 
 //assign ports for pneumatics
-pros::adi::Pneumatics clamp(7, false); //clamp solenoid
-pros::adi::Pneumatics doinker(4, false); //doinker solenoid
-pros::adi::Pneumatics big_arm_section(8,false); //big arm solenoid
+pros::adi::Pneumatics clamp(8, false); //clamp solenoid
+pros::adi::Pneumatics doinker(6, false); //doinker solenoid
+pros::adi::Pneumatics big_arm_section(7,false); //big arm solenoid
 pros::adi::Pneumatics small_arm_section(5,false); //small arm solenoid
 pros::adi::Pneumatics wall_stake_mech_clamp(6,false); //ring clamp solenoid
 
@@ -112,8 +112,8 @@ void initialize() {
 	// left_mtrs.set_reversed(true, 1);
 	// left_mtrs.set_reversed(true, 2);
 
-	intake.set_reversed(true,0);
-	intake.set_reversed(false, 1);
+	intake.set_reversed(false,0);
+	intake.set_reversed(true, 1);
 
 	// // Squiggles test
 	// const double MAX_VEL = drivetrain.max_velocity();     // in meters per second
@@ -191,7 +191,17 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// Different autons, None0 is the default auton
-	auton_map["None0"] = &pp_test;
+	// auton_map["None0"] = &blue_right;
+	// chassis.set_position(knights::Pos(54.5, 12.5, 4.234));
+
+	auton_map["None0"] = &skills;
+    chassis.set_position(knights::Pos(-59, 0, 0));
+
+	// auton_map["None0"] = &red_left_wp;
+    // chassis.set_position(knights::Pos(38, 48, 4.081));
+	
+
+	//chassis.set_position(knights::Pos(59, 0, 0));
 
 	// chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
 
@@ -204,7 +214,6 @@ void autonomous() {
 	// }
 
 	// need to find a way to do this dynamically
-	chassis.set_position(knights::Pos(-60, 0, 0));
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();
