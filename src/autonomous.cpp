@@ -198,7 +198,7 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(22.5);
+	lateralController.lateral_move(20);
 
 	pros::delay(WAIT);
 
@@ -230,11 +230,11 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(WAIT);
 
-	turnController.turn_to_angle(45, LEFT);
+	turnController.turn_to_angle(55, LEFT);
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(-23);
+	lateralController.lateral_move(-25);
 
 	intake_auton_fwd();
 
@@ -242,7 +242,7 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(16);
+	lateralController.lateral_move(18);
 
 	pros::delay(WAIT);
 
@@ -284,7 +284,7 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(25);
+	lateralController.lateral_move(22.5);
 
 	pros::delay(WAIT);
 
@@ -316,11 +316,11 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(WAIT);
 
-	turnController.turn_to_angle(315, RIGHT);
+	turnController.turn_to_angle(305, RIGHT);
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(-23);
+	lateralController.lateral_move(-25);
 
 	intake_auton_fwd();
 
@@ -330,7 +330,7 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(16);
+	lateralController.lateral_move(18);
 
 	pros::delay(WAIT);
 
@@ -338,21 +338,23 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(48, 3.0, 1500);
+	lateralController.lateral_move(50, 3.0, 1500);
+
+	// lateralController.lateral_move(17, 3.0, 1500);
 
 	pros::delay(WAIT);
 
-	turnController.turn_to_angle(305, RIGHT);
+	turnController.turn_to_angle(310, RIGHT);
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(28);
+	lateralController.lateral_move(32);
 
-	intake_auton.move(70);
+	intake_auton_fwd();
 
 	pros::delay(450);
 
-	intake_auton.move(0);	
+	intake_auton_fwd();
 
 	pros::delay(WAIT);
 
@@ -360,13 +362,51 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(-26);
+	lateralController.lateral_move(-18);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(-18);
 
 	clamp_auton_toggle();
 
 	intake_auton_fwd();
 
 	pros::delay(2*WAIT);
+
+	lateralController.lateral_move(34);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(70, RIGHT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(28);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(0, RIGHT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(18);
+
+	pros::delay(WAIT);
+
+	turnController.turn_to_angle(225, RIGHT);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(-33);
+
+	pros::delay(WAIT);
+
+	clamp_auton_toggle();
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(40);
 
 }
 

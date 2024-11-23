@@ -35,6 +35,9 @@ pros::IMU imu(17);
 //assign ports to intake, leftside first, rightside second
 pros::MotorGroup intake({9,13}, pros::MotorGears::blue);
 
+//assign port to distance sensor for redirect
+pros::Distance redirect(6);
+
 //dimensions and positions of odom pods for calculations for position tracking
 knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.825);
 knights::PositionTracker backOdom(&back_odom, 2.75, 1, 3.1875);
@@ -312,13 +315,6 @@ void doinker_toggle() {
 }
 
 
-bool arm_extended = false;
-
-void arm_extend() {
-	arm_extended = !arm_extended; //toggle whether active or inactive mode
-	small_arm_section.set_value(arm_extended); //extend arm if active or retract arm if inactive
-}
-
 bool arm_up = false;
 
 void wall_stake_mech() {
@@ -326,13 +322,27 @@ void wall_stake_mech() {
 	big_arm_section.set_value(arm_up); //move arm up if active or move down if inactive
 }
 
-bool ring_clamp = false;
+bool redirection_toggle = false;
 
-void close_arm() {
-	ring_clamp = !ring_clamp; //toggle whether active or inactive mode
-	wall_stake_mech_clamp.set_value(ring_clamp); //activate arm clamp if active or open arm clamp if inactive
+void redirect_toggle() {
+	redirection_toggle = !redirection_toggle;
 }
 
+
+
+void redirection() {
+	if (redirection_toggle == true && (redirect.get_distance() < 45 )){
+			intake.set_brake_mode(pros::MotorBrake::coast);
+			intake_rev();
+			redirection_toggle = false;
+			intake.set_brake_mode(pros::MotorBrake::hold);
+
+	}
+
+
+
+
+}
 
 void opcontrol() {
 
@@ -379,10 +389,8 @@ void opcontrol() {
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_toggle, false); //assign clamp toggle to controller button R2
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doinker_toggle, false); //assign doinker toggle to controller button R1
 
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, close_arm, false); //assign arm clmap toggle to controller button A
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, redirect_toggle, false); //assign arm clmap toggle to controller button A
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X, wall_stake_mech, false); //assign arm clmap toggle to controller button A
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B, arm_extend, false); //assign arm clmap toggle to controller button A
-
 	while (true) {
 		// If controller joystick not in deadzone, calculate the velocity
 		if (abs(master_controller.get_analog(ANALOG_LEFT_Y)) > 2)
@@ -408,7 +416,9 @@ void opcontrol() {
 
 		// Delay to let other tasks run
 		pros::delay(10);
-
+		
+		redirection();
+		
 		// Loop through all values in input map
 		input.execute_actions(master_controller);
 	}
