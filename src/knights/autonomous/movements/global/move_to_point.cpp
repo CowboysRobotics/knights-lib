@@ -7,7 +7,6 @@
 #include "knights/util/calculation.h"
 
 #include "knights/util/position.h"
-#include "squiggles/squiggles.hpp"
 
 void knights::RobotController::move_to_point(const Pos desired_position, const float &end_tolerance, float timeout) {
     

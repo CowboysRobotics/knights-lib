@@ -54,7 +54,7 @@ void knights::display::MapDot::init(int width, int height, lv_color_t color) {
 void knights::display::MapDot::set_field_pos(knights::Pos pos) {
     pos.x = knights::clamp(pos.x, -72.0, 72.0);
     pos.y = knights::clamp(pos.y, -72.0, 72.0);
-    lv_obj_set_pos(this->dot, (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2) - this->width/2, (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2) - this->height/2);
+    lv_obj_set_pos(this->dot, (pos.x/24 * TILE + X_MARGIN) + (BG_SIZE/2.0) - this->width/2.0, (-pos.y/24 * TILE + Y_MARGIN) + (BG_SIZE/2.0) - this->height/2.0);
 }
 
 knights::display::MapDot curr_position_dot;
@@ -74,16 +74,16 @@ static void event_handler(lv_event_t * e) {
         uint32_t id = lv_btnmatrix_get_selected_btn(obj);
         const char * txt = lv_btnmatrix_get_btn_text(obj, id);
 
-        if (txt == "Red" || txt == "Blue") {
+        if (strcmp(txt, "Red") || strcmp(txt, "Blue")) {
             curr_package.type = txt;
-        } else if (txt != "Enter") {
+        } else if (!strcmp(txt, "Enter")) {
             curr_package.number = std::stoi(txt);
         }
         printf("Selected Auton: %s %i\n", curr_package.type.c_str(), curr_package.number);
     }
 }
 
-static const char* type_map[] = {"Red", "Blue", ""};
+static const char* type_map[] = {"Red", "Blue", "Skills", ""};
 
 static const char* num_map[] = {"1", "2", "3", "4", ""};
 
