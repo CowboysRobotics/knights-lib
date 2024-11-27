@@ -76,6 +76,10 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
         float target_speed = std::fmin(5/curvature(this->chassis->curr_position, target_point, route.positions[closest_i+1]), max_speed);
         float angular_curve = curvature(this->chassis->curr_position, target_point);
 
+        if (!forwards || lookahead_distance < 0) {
+            angular_curve = curvature(Pos(this->chassis->curr_position.x, this->chassis->curr_position.y, knights::normalize_angle(this->chassis->curr_position.heading)), target_point);
+        }
+
         // calculate right and left speed based on curvature
         float r_speed = target_speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;
         float l_speed = target_speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2;
@@ -88,7 +92,7 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
         }
 
         // apply calculated velocities to motors
-        if (forwards)
+        if (forwards && lookahead_distance > 0)
             this->chassis->drivetrain->velocity_command(r_speed, l_speed);
         else
             this->chassis->drivetrain->velocity_command(-r_speed, -l_speed);

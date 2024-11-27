@@ -93,6 +93,7 @@ void lv_display(void) {
     lv_btnmatrix_set_map(btnm1, type_map);
     lv_btnmatrix_set_btn_width(btnm1, 0, 2);
     lv_btnmatrix_set_btn_width(btnm1, 1, 2);
+    lv_btnmatrix_set_btn_width(btnm1, 2, 2);
     lv_btnmatrix_set_btn_ctrl_all(btnm1, LV_BTNMATRIX_CTRL_CHECKABLE);
     lv_btnmatrix_set_one_checked(btnm1, true);
 

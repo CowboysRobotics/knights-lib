@@ -14,22 +14,32 @@
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
-// Competition Robot
+// // Competition Robot
+// //front of bot is intake side
+// //assign ports to right side drive-train
+// pros::MotorGroup right_mtrs({1,2,14}, pros::MotorGears::blue); // no reverse
+// //assign ports to left side drive-train
+// pros::MotorGroup left_mtrs({7,8,16}, pros::MotorGears::blue); // no reverse
+// //assign ports to odom pods for position tracking
+// pros::Rotation mid_odom(12); // parallel tracking
+// pros::Rotation back_odom(19); // perpendicular tracking
+// //assign port for imu tracker
+// pros::IMU imu(17);
+// //dimensions and positions of odom pods for calculations for position tracking
+// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.825);
+// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 3.1875);
+// // #### END
 
-//front of bot is intake side
+// #### Test Robot
+pros::MotorGroup right_mtrs({1,7,3}, pros::MotorGears::blue);
+pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
+pros::Rotation mid_odom(18);
+pros::Rotation back_odom(14);
+pros::IMU imu(15);
+knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
+knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
+// #### END
 
-//assign ports to right side drive-train
-pros::MotorGroup right_mtrs({1,2,14}, pros::MotorGears::blue); // no reverse
-
-//assign ports to left side drive-train
-pros::MotorGroup left_mtrs({7,8,16}, pros::MotorGears::blue); // no reverse
-
-//assign ports to odom pods for position tracking
-pros::Rotation mid_odom(12); // parallel tracking
-pros::Rotation back_odom(19); // perpendicular tracking
-
-//assign port for imu tracker
-pros::IMU imu(17);
 
 //assign ports to intake, leftside first, rightside second
 pros::MotorGroup intake({9,13}, pros::MotorGears::blue);
@@ -37,18 +47,6 @@ pros::MotorGroup intake({9,13}, pros::MotorGears::blue);
 //assign port to distance sensor for redirect
 pros::Distance redirect(6);
 
-//dimensions and positions of odom pods for calculations for position tracking
-knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.825);
-knights::PositionTracker backOdom(&back_odom, 2.75, 1, 3.1875);
-
-// // Test Robot
-// pros::MotorGroup right_mtrs({1,7,3}, pros::MotorGears::blue);
-// pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
-// pros::Rotation mid_odom(18);
-// pros::Rotation back_odom(14);
-// pros::IMU imu(15);
-// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0, -1);
-// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
 
 //assign ports for pneumatics
 pros::adi::Pneumatics clamp(8, false); //clamp solenoid
@@ -304,7 +302,7 @@ void redirection() {
 void opcontrol() {
 
 	// need to find a way to do this dynamically
-	chassis.set_position(knights::Pos(0, 0, 0));
+	chassis.set_position(knights::Pos(0, 0, M_PI/2));
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();
