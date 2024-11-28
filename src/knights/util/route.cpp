@@ -32,8 +32,8 @@ float knights::Route::length_dist() {
     return dist;
 }
 
-knights::RouteAction::RouteAction(knights::action_type type, std::string route_name, float end_tolerance, int timeout) :
-    type(type), route_name(route_name), end_tolerance(end_tolerance), timeout(timeout) {}
+knights::RouteAction::RouteAction(knights::action_type type, std::string route_name, float end_tolerance, int timeout, float lookahead) :
+    type(type), route_name(route_name), end_tolerance(end_tolerance), timeout(timeout), lookahead(lookahead) {}
 
 knights::RouteAction::RouteAction(action_type type, float specific, float end_tolerance, int timeout) :
     type(type), end_tolerance(end_tolerance), timeout(timeout), specific(specific) {}
@@ -108,8 +108,9 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
                 if (read_string == "rs") { // follow route
                     // x and y are position points in route
                     // need to add route title
-                    read_file >> x >> y;
-                    float end_tol = x; int timeout = y;
+                    read_file >> x >> y >> z;
+                    std::cout << x << y << z << "\n";
+                    float end_tol = x; int timeout = y; float lookahead = z;
                     std::vector<knights::Pos> positions;
                     while (identifier != "re") {
                         read_file >> identifier;
@@ -118,7 +119,7 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
                             positions.emplace_back(x, y, 0);
                         }
                     }
-                    ar_actions.emplace_back(knights::action_type::FOLLOW, std::to_string(route_amt), end_tol, timeout);
+                    ar_actions.emplace_back(knights::action_type::FOLLOW, std::to_string(route_amt), end_tol, timeout, lookahead);
                     ar_routes[std::to_string(route_amt)] = knights::Route(positions);
                     route_amt++;
                 }
@@ -180,7 +181,7 @@ void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::PI
         else if (curr_action.type == knights::action_type::FOLLOW && this->routes.contains(curr_action.route_name)) {
             lateralController.follow_route_pursuit(
                 this->routes[curr_action.route_name], 
-                18.0, 
+                curr_action.lookahead, 
                 127.0, // 127.0
                 true, 
                 curr_action.end_tolerance, 

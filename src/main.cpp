@@ -93,24 +93,23 @@ void initialize() {
 
 	knights::logger::blue("Initialization End");
 
-	// Competition Robot
+	// // #### Competition Robot
+	// //front of the bot is intake
+	// //assign direction to left side drive-train motors 
+	// left_mtrs.set_reversed(false, 0);
+	// left_mtrs.set_reversed(false, 1);
+	// left_mtrs.set_reversed(false, 2);
+	// //assign direction to right side drive-train motors
+	// right_mtrs.set_reversed(true, 0);
+	// right_mtrs.set_reversed(true, 1);
+	// right_mtrs.set_reversed(true, 2);
+	// // ####
 
-	//front of the bot is intake
-
-	//assign direction to left side drive-train motors 
-	left_mtrs.set_reversed(false, 0);
-	left_mtrs.set_reversed(false, 1);
-	left_mtrs.set_reversed(false, 2);
-
-	//assign direction to right side drive-train motors
-	right_mtrs.set_reversed(true, 0);
-	right_mtrs.set_reversed(true, 1);
-	right_mtrs.set_reversed(true, 2);
-
-		// // Test Bot
-	// left_mtrs.set_reversed(true, 0);
-	// left_mtrs.set_reversed(true, 1);
-	// left_mtrs.set_reversed(true, 2);
+	// #### Test Bot
+	left_mtrs.set_reversed(true, 0);
+	left_mtrs.set_reversed(true, 1);
+	left_mtrs.set_reversed(true, 2);
+	// ####
 
 	intake.set_reversed(false,0);
 	intake.set_reversed(true, 1);
@@ -152,8 +151,8 @@ void autonomous() {
 	// auton_map["None0"] = &blue_right;
 	// chassis.set_position(knights::Pos(54.5, 12.5, 4.234));
 
-	auton_map["None0"] = &skills;
-    chassis.set_position(knights::Pos(-59, 0, 0));
+	auton_map["None0"] = &pp_test;
+    chassis.set_position(knights::Pos(0, 0, M_PI/2));
 
 	// auton_map["None0"] = &red_left_wp;
     // chassis.set_position(knights::Pos(38, 48, 4.081));

@@ -47,9 +47,10 @@ namespace knights {
        float specific;
        float end_tolerance;
        int timeout;
+       float lookahead;
        std::string function_name;
 
-       RouteAction(action_type type, std::string route_name, float end_tolerance, int timeout);
+       RouteAction(action_type type, std::string route_name, float end_tolerance, int timeout, float lookahead);
 
        RouteAction(action_type type, float specific, float end_tolerance, int timeout);
 

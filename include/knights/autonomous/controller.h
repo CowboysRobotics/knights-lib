@@ -49,7 +49,7 @@ namespace knights {
              * @param end_tolerance Distance to end the loop at
              * @param timeout Amount of time to wait before ending the movement
              */
-            void follow_route_pursuit(knights::Route &route, const float &lookahead_distance = 15.0, const float max_speed = 127.0, const bool forwards = true, const float end_tolerance = 8.0, float timeout = 5000);
+            void follow_route_pursuit(knights::Route &route, float lookahead_distance = 15.0, const float max_speed = 127.0, bool forwards = true, const float end_tolerance = 8.0, float timeout = 5000);
 
             // void follow_route_ramsete(std::vector<squiggles::ProfilePoint> profile, const float &lookahead_distance = 15.0, const float &end_tolerance = 8.0, float timeout = 5000);
 

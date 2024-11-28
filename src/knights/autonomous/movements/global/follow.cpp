@@ -36,12 +36,17 @@ float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights:
         return -1;
 }
 
-void knights::RobotController::follow_route_pursuit(knights::Route &route, const float &lookahead_distance, const float max_speed, const bool forwards, 
+void knights::RobotController::follow_route_pursuit(knights::Route &route, float lookahead_distance, const float max_speed, bool forwards, 
     const float end_tolerance, float timeout) {
     if (this->in_motion || route.positions.size() < 2) return;
     this->in_motion = true;
 
     // follow a pure pursuit route  
+
+    if (lookahead_distance < 0) {
+        forwards = false;
+        lookahead_distance = fabs(lookahead_distance);
+    }
 
     // declare essential values
     knights::Pos target_point = route.positions[0];
@@ -76,7 +81,7 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
         float target_speed = std::fmin(5/curvature(this->chassis->curr_position, target_point, route.positions[closest_i+1]), max_speed);
         float angular_curve = curvature(this->chassis->curr_position, target_point);
 
-        if (!forwards || lookahead_distance < 0) {
+        if (!forwards) {
             angular_curve = curvature(Pos(this->chassis->curr_position.x, this->chassis->curr_position.y, knights::normalize_angle(this->chassis->curr_position.heading)), target_point);
         }
 
@@ -92,15 +97,15 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, const
         }
 
         // apply calculated velocities to motors
-        if (forwards && lookahead_distance > 0)
+        if (forwards)
             this->chassis->drivetrain->velocity_command(r_speed, l_speed);
         else
             this->chassis->drivetrain->velocity_command(-r_speed, -l_speed);
 
-        if (std::fmod(timeout, 50) == 0) {
-            logger::green(logger::string_format("target: %lf %lf curr: %lf %lf %lf , speed: %lf , angular: %lf , side speed: %lf %lf, dist: %lf, error: %lf\n", 
+        if (std::fmod(timeout, 100) == 0) {
+            logger::green(logger::string_format("target: %lf %lf curr: %lf %lf %lf , speed: %lf , angular: %lf , side speed: %lf %lf, dist: %lf, error: %lf, fwd: %d\n", 
                 target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
-                target_speed, angular_curve, r_speed, l_speed, traveled_dist, error
+                target_speed, angular_curve, r_speed, l_speed, traveled_dist, error, forwards
             ));
         }
 

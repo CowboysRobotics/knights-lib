@@ -103,20 +103,16 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
 void pp_test(knights::RobotChassis *chassis) {
 
-	std::string s = "left_auton.txt";
+	std::string s = "test-backward.txt";
 
 	knights::AdvancedRoute test_route = advanced_route_from_file(s);
 
 	// knights::logger::green("started route read");
 
-	// for (auto action : test_route.actions) {
-	// 	if (action.type == knights::action_type::FOLLOW)
-	// 		// knights::logger::red("follow");
-	// 	else if (action.type == knights::action_type::LATERAL)
-	// 		// knights::logger::red("lateral");
-	// 	else if (action.type == knights::action_type::TURN)
-	// 		// knights::logger::red("turn");
-	// }
+	for (auto action : test_route.actions) {
+		if (action.type == knights::action_type::FOLLOW)
+			knights::logger::red(knights::logger::string_format("lookahead: %lf\n", action.lookahead));
+	}
 
 	for (auto route : test_route.routes) {
 		for (auto pt : route.second.positions) {
@@ -130,15 +126,21 @@ void pp_test(knights::RobotChassis *chassis) {
 		}
 	}
 
-	chassis->set_position(knights::Pos(-60, 0, 0));
+	chassis->set_position(knights::Pos(0, 0, M_PI/2));
 
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(4, 0.0, 0.0065, 10.0, 127.0);
-	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+	// // #### COMPETITION BOT
+	// knights::PIDController lateralPID(5, 0.0, 0.0065, 10.0, 127.0);
+	// knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+	// knights::PIDController turnPID(54, 0.017, 0.002, 10.0, 127.0);
+	// knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
 
-	knights::PIDController turnPID(48, 0.017, 0.002, 10.0, 127.0);
+	// #### TEST BOT
+	knights::PIDController lateralPID(3, 0.0, 0.0065, 10.0, 127.0);
+	knights::RobotController lateralController(chassis, &lateralPID, &ramsete_constants, false);
+	knights::PIDController turnPID(54, 0.017, 0.002, 10.0, 127.0);
 	knights::RobotController turnController(chassis, &turnPID, &ramsete_constants, false);
 	
 	knights::input::AutonomousInputMap inputMap;
