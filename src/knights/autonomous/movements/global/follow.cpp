@@ -10,6 +10,7 @@
 #include "knights/logger/logger.h"
 
 #include <iostream>
+#include <math.h>
 
 
 float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights::Pos curr, float lookahead_distance) {
@@ -37,28 +38,37 @@ float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights:
 }
 
 void knights::RobotController::follow_route_pursuit(knights::Route &route, float lookahead_distance, const float max_speed, bool forwards, 
-    const float end_tolerance, float timeout) {
+    float end_tolerance, float timeout, float use_pid) {
     if (this->in_motion || route.positions.size() < 2) return;
     this->in_motion = true;
 
     // follow a pure pursuit route  
 
+    // make bot move backwards if lookahead is negative
     if (lookahead_distance < 0) {
         forwards = false;
         lookahead_distance = fabs(lookahead_distance);
+    }
+
+    // use pid if end tolerance is negative
+    if (end_tolerance < 0) {
+        use_pid = true;
+        end_tolerance = fabs(end_tolerance);
     }
 
     // declare essential values
     knights::Pos target_point = route.positions[0];
     int closest_i = 0;
     float closest_dist = 1e10;
-    float traveled_dist = 0.0;
+    float error = distance_btwn(this->chassis->curr_position, route.positions[route.positions.size()-1]);
+    float prev_error = error; float total_error = 0.0;
 
     // While the robot has not reached the desired point and is not at the end of the route
-    while (distance_btwn(this->chassis->curr_position, route.positions[route.positions.size()-1]) > end_tolerance && closest_i != route.positions.size()-1) {
+    while (error > end_tolerance && closest_i != route.positions.size()-1) {
 
-        traveled_dist += distance_btwn(this->chassis->prev_position, this->chassis->curr_position);
-        float error = route.length_dist() - traveled_dist;
+        // update error values
+        error = distance_btwn(this->chassis->curr_position, route.positions[route.positions.size()-1]);
+        total_error += error;
 
         // find nearest point
         for (int i = 0; i < route.positions.size(); i++) {
@@ -80,10 +90,15 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         // determine the speed and angular curvature to use for calculating ratio of motor velocities
         float target_speed = std::fmin(5/curvature(this->chassis->curr_position, target_point, route.positions[closest_i+1]), max_speed);
         float angular_curve = curvature(this->chassis->curr_position, target_point);
-
         if (!forwards) {
             angular_curve = curvature(Pos(this->chassis->curr_position.x, this->chassis->curr_position.y, knights::normalize_angle(this->chassis->curr_position.heading)), target_point);
         }
+
+        // determine speed based on PID if selected to use
+        if (use_pid) {
+            target_speed = this->pid_controller->update(error, total_error, prev_error);
+        }
+        prev_error = error;
 
         // calculate right and left speed based on curvature
         float r_speed = target_speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;
@@ -103,9 +118,9 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
             this->chassis->drivetrain->velocity_command(-r_speed, -l_speed);
 
         if (std::fmod(timeout, 100) == 0) {
-            logger::green(logger::string_format("target: %lf %lf curr: %lf %lf %lf , speed: %lf , angular: %lf , side speed: %lf %lf, dist: %lf, error: %lf, fwd: %d\n", 
+            logger::green(logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d\n closest_i: %d, angular_curve: %lf, timeout: %lf", 
                 target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
-                target_speed, angular_curve, r_speed, l_speed, traveled_dist, error, forwards
+                target_speed, angular_curve, r_speed, l_speed, error, forwards, closest_i, angular_curve, timeout
             ));
         }
 
