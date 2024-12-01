@@ -53,7 +53,7 @@ namespace knights {
 
             // void follow_route_ramsete(std::vector<squiggles::ProfilePoint> profile, const float &lookahead_distance = 15.0, const float &end_tolerance = 8.0, float timeout = 5000);
 
-            void move_to_point(const Pos desired_position, const float &end_tolerance = 2.0, float timeout = 1000);
+            void move_to_point(const Pos desired_position, const bool forwards = true, const float &end_tolerance = 2.0, float timeout = 1000);
 
             void turn_to_angle(const float angle, int direction,float end_tolerance = 3.0, float timeout = 2000, bool rad = false); // DEGREES
 

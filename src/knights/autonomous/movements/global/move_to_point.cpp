@@ -8,7 +8,7 @@
 
 #include "knights/util/position.h"
 
-void knights::RobotController::move_to_point(const Pos desired_position, const float &end_tolerance, float timeout) {
+void knights::RobotController::move_to_point(const Pos desired_position, const bool forwards, const float &end_tolerance, float timeout) {
     
     printf("m2 started\n");
 
@@ -41,11 +41,18 @@ void knights::RobotController::move_to_point(const Pos desired_position, const f
                 break;
             }
 
+            if (!forwards)
+                speed *= -1;
+
             // save previous error
             prev_error = error;
 
             // --- EXPERIMENTAL
             float angular_curve = curvature(this->chassis->curr_position, desired_position);
+
+            if (!forwards) {
+                angular_curve = curvature(Pos(this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading-M_PI), desired_position);
+            }
             
             // calculate right and left speed based on curvature
             float r_speed = speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;
@@ -59,7 +66,7 @@ void knights::RobotController::move_to_point(const Pos desired_position, const f
             }
 
             // send command to drivetrain
-            this->chassis->drivetrain->velocity_command(speed,speed);
+            this->chassis->drivetrain->velocity_command(r_speed,l_speed);
 
             // delay
             pros::delay(10);

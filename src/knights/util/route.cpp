@@ -195,6 +195,7 @@ void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::PI
         else if (curr_action.type == knights::action_type::COMMAND) {
             input_map->execute_action(curr_action.function_name);
             knights::logger::blue(knights::logger::string_format("command %s", curr_action.function_name.c_str()));
+            pros::delay(400);
         }
         pros::delay(200);
     }

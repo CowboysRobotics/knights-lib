@@ -14,32 +14,22 @@
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
-// // Competition Robot
-// //front of bot is intake side
-// //assign ports to right side drive-train
-// pros::MotorGroup right_mtrs({1,2,14}, pros::MotorGears::blue); // no reverse
-// //assign ports to left side drive-train
-// pros::MotorGroup left_mtrs({7,8,16}, pros::MotorGears::blue); // no reverse
-// //assign ports to odom pods for position tracking
-// pros::Rotation mid_odom(12); // parallel tracking
-// pros::Rotation back_odom(19); // perpendicular tracking
-// //assign port for imu tracker
-// pros::IMU imu(17);
-// //dimensions and positions of odom pods for calculations for position tracking
-// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.825);
-// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 3.1875);
-// // #### END
+// Competition Robot
 
-// #### Test Robot
-pros::MotorGroup right_mtrs({1,7,3}, pros::MotorGears::blue);
-pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
-pros::Rotation mid_odom(18);
-pros::Rotation back_odom(14);
-pros::IMU imu(15);
-knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
-knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
-// #### END
+//front of bot is intake side
 
+//assign ports to right side drive-train
+pros::MotorGroup right_mtrs({1,2,14}, pros::MotorGears::blue); // no reverse
+
+//assign ports to left side drive-train
+pros::MotorGroup left_mtrs({7,8,16}, pros::MotorGears::blue); // no reverse
+
+//assign ports to odom pods for position tracking
+pros::Rotation mid_odom(12); // parallel tracking
+pros::Rotation back_odom(19); // perpendicular tracking
+
+//assign port for imu tracker
+pros::IMU imu(17);
 
 //assign ports to intake, leftside first, rightside second
 pros::MotorGroup intake({9,13}, pros::MotorGears::blue);
@@ -47,13 +37,24 @@ pros::MotorGroup intake({9,13}, pros::MotorGears::blue);
 //assign port to distance sensor for redirect
 pros::Distance redirect(6);
 
+//dimensions and positions of odom pods for calculations for position tracking
+knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.825);
+knights::PositionTracker backOdom(&back_odom, 2.75, 1, 3.1875);
+
+// // Test Robot
+// pros::MotorGroup right_mtrs({1,7,3}, pros::MotorGears::blue);
+// pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
+// pros::Rotation mid_odom(18);
+// pros::Rotation back_odom(14);
+// pros::IMU imu(15);
+// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0, -1);
+// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
 
 //assign ports for pneumatics
 pros::adi::Pneumatics clamp(8, false); //clamp solenoid
 pros::adi::Pneumatics doinker(6, false); //doinker solenoid
 pros::adi::Pneumatics big_arm_section(7,false); //big arm solenoid
 pros::adi::Pneumatics small_arm_section(5,false); //small arm solenoid
-pros::adi::Pneumatics wall_stake_mech_clamp(6,false); //ring clamp solenoid
 
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
 
@@ -93,26 +94,69 @@ void initialize() {
 
 	knights::logger::blue("Initialization End");
 
-	// // #### Competition Robot
-	// //front of the bot is intake
-	// //assign direction to left side drive-train motors 
-	// left_mtrs.set_reversed(false, 0);
-	// left_mtrs.set_reversed(false, 1);
-	// left_mtrs.set_reversed(false, 2);
-	// //assign direction to right side drive-train motors
-	// right_mtrs.set_reversed(true, 0);
-	// right_mtrs.set_reversed(true, 1);
-	// right_mtrs.set_reversed(true, 2);
-	// // ####
+	// Competition Robot
 
-	// #### Test Bot
-	left_mtrs.set_reversed(true, 0);
-	left_mtrs.set_reversed(true, 1);
-	left_mtrs.set_reversed(true, 2);
-	// ####
+	//front of the bot is intake
+
+	//assign direction to left side drive-train motors 
+	left_mtrs.set_reversed(false, 0);
+	left_mtrs.set_reversed(false, 1);
+	left_mtrs.set_reversed(false, 2);
+
+	//assign direction to right side drive-train motors
+	right_mtrs.set_reversed(true, 0);
+	right_mtrs.set_reversed(true, 1);
+	right_mtrs.set_reversed(true, 2);
+
+		// // Test Bot
+	// left_mtrs.set_reversed(true, 0);
+	// left_mtrs.set_reversed(true, 1);
+	// left_mtrs.set_reversed(true, 2);
 
 	intake.set_reversed(false,0);
 	intake.set_reversed(true, 1);
+
+	// // Squiggles test
+	// const double MAX_VEL = drivetrain.max_velocity();     // in meters per second
+	// const double MAX_ACCEL = drivetrain.max_acceleration(9, 6);   // in meters per second^2
+	// const double MAX_JERK = MAX_ACCEL*2;    // in meters per second^3
+	// const double ROBOT_WIDTH = knights::to_meters(15.0); // in meters
+	// auto constraints = squiggles::Constraints(MAX_VEL, MAX_ACCEL, MAX_JERK);
+	// auto generator = squiggles::SplineGenerator(
+	// constraints,
+	// std::make_shared<squiggles::TankModel>(ROBOT_WIDTH, constraints));
+
+	// std::vector<squiggles::ProfilePoint> path = generator.generate({
+	// 	squiggles::Pose(knights::to_meters(chassis.get_position().x), knights::to_meters(chassis.get_position().y), chassis.get_position().heading), 
+	// 	squiggles::Pose(knights::to_meters(-12), knights::to_meters(-36), 0)}
+	// );
+
+	// std::cout << path.size() << "\n";
+
+	// int i = 0;
+
+	// for (squiggles::ProfilePoint pt : path) {
+	// 	std::stringstream stream;
+	// 	stream << "Point Pos: ";
+	// 	stream << std::fixed << std::setprecision(2) << knights::to_inches(pt.vector.pose.x) << " ";
+	// 	stream << std::fixed << std::setprecision(2) << knights::to_inches(pt.vector.pose.y) << " ";
+	// 	stream << std::fixed << std::setprecision(2) << knights::to_deg(pt.vector.pose.yaw);
+	// 	stream << " V,J,A: ";
+	// 	stream << std::fixed << std::setprecision(2) << pt.vector.vel << " ";
+	// 	stream << std::fixed << std::setprecision(2) << pt.vector.jerk << " ";
+	// 	stream << std::fixed << std::setprecision(2) << pt.vector.accel << " ";
+	// 	//knights::logger::cyan(stream.str());
+
+	// 	if (i % 5 == 0) {
+	// 		knights::display::MapDot dot(5, 5, lv_palette_lighten(LV_PALETTE_GREEN,5));
+	// 		dot.set_field_pos(knights::Pos(
+	// 			knights::to_inches(pt.vector.pose.x), 
+	// 			knights::to_inches(pt.vector.pose.y),
+	// 			0
+	// 		));
+	// 	}
+	// }
+	// // ---- end squiggles test ----
 
 	//knights::logger::blue(//knights::logger::string_format("start pos: %lf %lf %lf", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading));
 }
@@ -151,24 +195,33 @@ void autonomous() {
 	// auton_map["None0"] = &blue_right;
 	// chassis.set_position(knights::Pos(54.5, 12.5, 4.234));
 
-	auton_map["None0"] = &pp_test;
-    chassis.set_position(knights::Pos(0, 0, M_PI/2));
+	// auton_map["None0"] = &skills;
+    // chassis.set_position(knights::Pos(-59, 0, 0));
 
-	// auton_map["None0"] = &red_left_wp;
-    // chassis.set_position(knights::Pos(38, 48, 4.081));
-	
+	auton_map["Red1"] = &red_left_wp_new;
+	auton_map["Blue1"] = &blue_right_wp_new;
+
+	// auton_map["Blue2"] = &blue_rush_left_elim;
+
+	auton_map["Blue4"] = &skills;
+    //  chassis.set_position(knights::Pos(38, 48, 4.081));
+
+	auton_map["None0"] = &blue_right_wp_new;
+	chassis.set_position(knights::Pos(-56.5,15,knights::normalize_angle(-3.95728)));
 
 	//chassis.set_position(knights::Pos(59, 0, 0));
 
 	// chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
 
-	// if (package.type + std::to_string(package.number) == "Red1") {
-	// 	chassis.set_position(knights::Pos(-60.5, -14.75, M_PI/2));
-	// } else if (package.type + std::to_string(package.number) == "Blue1") {
-	// 	chassis.set_position(knights::Pos(-60.5, -14.75, 3*M_PI/2));
-	// } else if (package.type + std::to_string(package.number) == "None0") {
-	// 	chassis.set_position(knights::Pos(0,0,M_PI/2));
-	// }
+	if (package.type + std::to_string(package.number) == "Red1") {
+	chassis.set_position(knights::Pos(-56.5,15,3.95728));
+	} else if (package.type + std::to_string(package.number) == "Blue1") {
+	chassis.set_position(knights::Pos(-56.5,15,knights::normalize_angle(-3.95728)));
+	} else if (package.type + std::to_string(package.number) == "Blue4") {
+		chassis.set_position(knights::Pos(-59, 0, 0));
+	// } else if (package.type + std::to_string(package.number) == "Blue2") {
+	// 	chassis.set_position(knights::Pos(-59, 0, M_PI));
+	}
 
 	// need to find a way to do this dynamically
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
@@ -269,6 +322,15 @@ void doinker_toggle() {
 }
 
 
+bool end_arm_up = false;
+
+void end_arm() {
+	end_arm_up = !end_arm_up; //toggle whether active or inactive mode
+	small_arm_section.set_value(end_arm_up); //extend doinker if inactive or retract clamp if active
+}
+
+
+
 bool arm_up = false;
 
 void wall_stake_mech() {
@@ -299,9 +361,10 @@ void redirection() {
 }
 
 void opcontrol() {
+	
 
 	// need to find a way to do this dynamically
-	chassis.set_position(knights::Pos(0, 0, M_PI/2));
+	chassis.set_position(knights::Pos(0, 0, 0));
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();
@@ -343,8 +406,9 @@ void opcontrol() {
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_toggle, false); //assign clamp toggle to controller button R2
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doinker_toggle, false); //assign doinker toggle to controller button R1
 
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, redirect_toggle, false); //assign arm clmap toggle to controller button A
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X, wall_stake_mech, false); //assign arm clmap toggle to controller button A
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, redirect_toggle, false); //assign the redirection macro to controller button A
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X, wall_stake_mech, false); //assign arm lift toggle to controller button X
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B, end_arm, false); //assign the end part of the arm to controller button B
 	while (true) {
 		// If controller joystick not in deadzone, calculate the velocity
 		if (abs(master_controller.get_analog(ANALOG_LEFT_Y)) > 2)
@@ -372,7 +436,7 @@ void opcontrol() {
 		pros::delay(10);
 		
 		redirection();
-		
+
 		// Loop through all values in input map
 		input.execute_actions(master_controller);
 	}

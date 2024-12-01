@@ -89,9 +89,10 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
 
         // determine the speed and angular curvature to use for calculating ratio of motor velocities
         float target_speed = std::fmin(5/curvature(this->chassis->curr_position, target_point, route.positions[closest_i+1]), max_speed);
-        float angular_curve = curvature(this->chassis->curr_position, target_point);
+        // float angular_curve = curvature(this->chassis->curr_position, target_point);
+            float angular_curve = curvature(Pos(this->chassis->curr_position.x, this->chassis->curr_position.y, knights::normalize_angle(this->chassis->curr_position.heading)), target_point);
         if (!forwards) {
-            angular_curve = curvature(Pos(this->chassis->curr_position.x, this->chassis->curr_position.y, knights::normalize_angle(this->chassis->curr_position.heading)), target_point);
+            angular_curve = curvature(Pos(this->chassis->curr_position.x, this->chassis->curr_position.y, knights::normalize_angle(this->chassis->curr_position.heading - M_PI)), target_point);
         }
 
         // determine speed based on PID if selected to use

@@ -10,6 +10,9 @@ void pp_test(knights::RobotChassis *chassis);
 
 void skills(knights::RobotChassis *chassis);
 
+void red_left_wp_new(knights::RobotChassis *chassis);
+void blue_right_wp_new(knights::RobotChassis *chassis);
+
 void red_left_wp(knights::RobotChassis *chassis);
 void red_rush_right_wp(knights::RobotChassis *chassis);
 void blue_right_wp(knights::RobotChassis *chassis);
