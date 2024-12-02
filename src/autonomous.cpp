@@ -103,7 +103,7 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
 void pp_test(knights::RobotChassis *chassis) {
 
-	std::string s = "4_ring.txt";
+	std::string s = "test-forward.txt";
 
 	knights::AdvancedRoute test_route = advanced_route_from_file(s);
 

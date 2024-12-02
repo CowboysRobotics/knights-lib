@@ -162,8 +162,8 @@ void autonomous() {
 	auton_map["Blue4"] = &skills;
     //  chassis.set_position(knights::Pos(38, 48, 4.081));
 
-	auton_map["None0"] = &blue_right_wp_new;
-	chassis.set_position(knights::Pos(-56.5,15,knights::normalize_angle(-3.95728)));
+	auton_map["None0"] = &pp_test;
+	chassis.set_position(knights::Pos(0,0,M_PI/2));
 
 	//chassis.set_position(knights::Pos(59, 0, 0));
 
@@ -310,15 +310,9 @@ void redirection() {
 			intake.set_brake_mode(pros::MotorBrake::hold);
 
 	}
-
-
-
-
 }
 
 void opcontrol() {
-	
-
 	// need to find a way to do this dynamically
 	chassis.set_position(knights::Pos(0, 0, 0));
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));

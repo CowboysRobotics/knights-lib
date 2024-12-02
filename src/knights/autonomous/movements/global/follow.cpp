@@ -8,6 +8,7 @@
 #include "knights/util/position.h"
 
 #include "knights/logger/logger.h"
+#include "pros/motors.h"
 
 #include <iostream>
 #include <math.h>
@@ -64,7 +65,9 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
     float prev_error = error; float total_error = 0.0;
 
     // While the robot has not reached the desired point and is not at the end of the route
-    while (error > end_tolerance && closest_i != route.positions.size()-1) {
+    // while (error > end_tolerance && closest_i != route.positions.size()-1) {
+    // while (closest_i < route.positions.size()-1) {
+    while (distance_btwn(target_point, route.positions[route.positions.size()-1]) > end_tolerance) {
 
         // update error values
         error = distance_btwn(this->chassis->curr_position, route.positions[route.positions.size()-1]);
@@ -89,8 +92,7 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
 
         // determine the speed and angular curvature to use for calculating ratio of motor velocities
         float target_speed = std::fmin(5/curvature(this->chassis->curr_position, target_point, route.positions[closest_i+1]), max_speed);
-        // float angular_curve = curvature(this->chassis->curr_position, target_point);
-            float angular_curve = curvature(Pos(this->chassis->curr_position.x, this->chassis->curr_position.y, knights::normalize_angle(this->chassis->curr_position.heading)), target_point);
+        float angular_curve = curvature(this->chassis->curr_position, target_point);
         if (!forwards) {
             angular_curve = curvature(Pos(this->chassis->curr_position.x, this->chassis->curr_position.y, knights::normalize_angle(this->chassis->curr_position.heading - M_PI)), target_point);
         }
@@ -118,11 +120,16 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         else
             this->chassis->drivetrain->velocity_command(-r_speed, -l_speed);
 
-        if (std::fmod(timeout, 100) == 0) {
-            logger::green(logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d\n closest_i: %d, angular_curve: %lf, timeout: %lf", 
+        if (std::fmod(timeout, 200) == 0) {
+            // logger::green(logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d\n closest_i: %d, angular_curve: %lf, timeout: %lf", 
+            //     target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
+            //     target_speed, angular_curve, r_speed, l_speed, error, forwards, closest_i, angular_curve, timeout
+            // ));
+
+            printf("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d\n closest_i: %d, angular_curve: %lf, timeout: %lf\n", 
                 target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
-                target_speed, angular_curve, r_speed, l_speed, error, forwards, closest_i, angular_curve, timeout
-            ));
+                target_speed, angular_curve, r_speed, l_speed, error, forwards, closest_i, angular_curve, timeout);
+
         }
 
         // wait for next iteration of loop
@@ -131,6 +138,9 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
 
         if (timeout < 0) break;
     }
+
+    this->chassis->drivetrain->right_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    this->chassis->drivetrain->left_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 
     // stop motors after route over
     this->chassis->drivetrain->velocity_command(0,0);
