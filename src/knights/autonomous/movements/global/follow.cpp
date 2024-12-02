@@ -45,13 +45,13 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
 
     // follow a pure pursuit route  
 
-    // make bot move backwards if lookahead is negative
+    // make bot move backwards if lookahead is negative - shorthand
     if (lookahead_distance < 0) {
         forwards = false;
         lookahead_distance = fabs(lookahead_distance);
     }
 
-    // use pid if end tolerance is negative
+    // use pid if end tolerance is negative - shorthand
     if (end_tolerance < 0) {
         use_pid = true;
         end_tolerance = fabs(end_tolerance);
@@ -118,7 +118,7 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         if (forwards)
             this->chassis->drivetrain->velocity_command(r_speed, l_speed);
         else
-            this->chassis->drivetrain->velocity_command(-r_speed, -l_speed);
+            this->chassis->drivetrain->velocity_command(-l_speed, -r_speed);
 
         if (std::fmod(timeout, 200) == 0) {
             // logger::green(logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d\n closest_i: %d, angular_curve: %lf, timeout: %lf", 
