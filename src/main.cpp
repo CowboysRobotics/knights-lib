@@ -206,8 +206,8 @@ void autonomous() {
 	auton_map["Blue4"] = &skills;
     //  chassis.set_position(knights::Pos(38, 48, 4.081));
 
-	auton_map["None0"] = &red_rush_right_elim;
-	chassis.set_position(knights::Pos(-48.0,-60.0,knights::normalize_angle(3.141592)));
+	auton_map["None0"] = &pp_test;
+	chassis.set_position(knights::Pos(-60.0,0.0,0));
 
 	//chassis.set_position(knights::Pos(59, 0, 0));
 

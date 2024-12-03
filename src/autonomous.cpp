@@ -103,7 +103,7 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
 void pp_test(knights::RobotChassis *chassis) {
 
-	std::string s = "4_ring.txt";
+	std::string s = "test-skills.txt";
 
 	knights::AdvancedRoute test_route = advanced_route_from_file(s);
 
@@ -130,7 +130,7 @@ void pp_test(knights::RobotChassis *chassis) {
 		}
 	}
 
-	chassis->set_position(knights::Pos(-54, 28, 3.14159));
+	// chassis->set_position(knights::Pos(-54, 28, 3.14159));
 
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
@@ -167,12 +167,12 @@ void skills(knights::RobotChassis *chassis) {
 
 	clamp_auton_toggle();
 
-	lateralController.lateral_move(-10, 2.0, 1250);
+	lateralController.lateral_move(-10, 2.0, 750);
 	intake_in();
 
-	pros::delay(5*WAIT);
+	pros::delay(3*WAIT);
 
-	lateralController.lateral_move(12, 2.0, 1250);
+	lateralController.lateral_move(11, 2.0, 750);
 
 	clamp_auton_toggle();
 
@@ -182,7 +182,7 @@ void skills(knights::RobotChassis *chassis) {
 
 	lateralController.lateral_move(-12);
 
-	lateralController.lateral_move(-14);
+	lateralController.lateral_move(-12);
 
 	clamp_auton_toggle();
 
@@ -192,7 +192,7 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(24);
+	lateralController.lateral_move(22);
 
 	pros::delay(WAIT);
 
@@ -216,7 +216,7 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(2*WAIT);
 
-	lateralController.lateral_move(-12);
+	lateralController.lateral_move(-10);
 
 	pros::delay(WAIT);
 
@@ -224,19 +224,19 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(10);
+	lateralController.lateral_move(12);
 
 	pros::delay(2*WAIT);
 
-	lateralController.lateral_move(-18);
+	lateralController.lateral_move(-22);
 
 	pros::delay(WAIT);
 
-	turnController.turn_to_angle(55, LEFT);
+	turnController.turn_to_angle(35, LEFT);
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(-25);
+	lateralController.lateral_move(-21);
 
 	intake_in();
 
@@ -244,7 +244,7 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(18);
+	lateralController.lateral_move(16, 1.0, 750);
 
 	pros::delay(WAIT);
 
@@ -252,9 +252,9 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(WAIT);
 
-	turnController.turn_to_angle(270, RIGHT);
+	turnController.turn_to_angle(280, RIGHT);
 
-	lateralController.lateral_move(-40);
+	lateralController.lateral_move(-44);
 
 	pros::delay(WAIT);
 
@@ -262,7 +262,7 @@ void skills(knights::RobotChassis *chassis) {
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(-20);
+	lateralController.lateral_move(-24);
 
 	pros::delay(WAIT);
 
@@ -802,21 +802,40 @@ void red_rush_right_elim(knights::RobotChassis *chassis) {
 	lateralController.lateral_move(-25);
 	turnController.turn_to_angle(220, LEFT);
 	lateralController.lateral_move(-10);
+	lateralController.lateral_move(-9);
+	clamp_auton_toggle();
+	intake_in();
+	turnController.turn_to_angle(165, RIGHT);
+	lateralController.lateral_move(14);
+	clamp_auton_toggle();
+	pros::delay(WAIT);
+	intake_in();
+	turnController.turn_to_angle(270,LEFT);
+	pros::delay(WAIT);
+	lateralController.lateral_move(-14);
 	lateralController.lateral_move(-10);
 	clamp_auton_toggle();
 	intake_in();
-	turnController.turn_to_angle(170, RIGHT);
-	lateralController.lateral_move(16);
+	pros::delay(WAIT);
+	turnController.turn_to_angle(135,RIGHT);
+	pros::delay(WAIT);
+	lateralController.lateral_move(18);
 	clamp_auton_toggle();
-	pros::delay(250);
+	pros::delay(WAIT);
+	lateralController.lateral_move(8);
+	pros::delay(3 * WAIT);
+	intake_out();
+	pros::delay(WAIT);
 	intake_in();
-	turnController.turn_to_angle(260,LEFT);
-	lateralController.lateral_move(-22);
-	clamp_auton_toggle();
-	intake_in();
-	pros::delay(250);
-	turnController.turn_to_angle(140,RIGHT);
-	lateralController.lateral_move(30);
+	wall_stake_mech_auton();
+	pros::delay(WAIT);
+	turnController.turn_to_angle(180, LEFT);
+	lateralController.lateral_move(17);
+	pros::delay(WAIT);
+	wall_stake_mech_auton();
+	pros::delay(WAIT);
+	lateralController.lateral_move(-24);
+	lateralController.lateral_move(-10);
 }
 
 void blue_right_elim(knights::RobotChassis *chassis) {

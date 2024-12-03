@@ -64,7 +64,8 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
     float prev_error = error; float total_error = 0.0;
 
     // While the robot has not reached the desired point and is not at the end of the route
-    while (error > end_tolerance && closest_i != route.positions.size()-1) {
+    // while (error > end_tolerance && closest_i != route.positions.size()-1) {
+    while(distance_btwn(target_point, route.positions[route.positions.size()-1]) > end_tolerance) {
 
         // update error values
         error = distance_btwn(this->chassis->curr_position, route.positions[route.positions.size()-1]);
@@ -116,7 +117,7 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         if (forwards)
             this->chassis->drivetrain->velocity_command(r_speed, l_speed);
         else
-            this->chassis->drivetrain->velocity_command(-r_speed, -l_speed);
+            this->chassis->drivetrain->velocity_command(-l_speed, -r_speed);
 
         if (std::fmod(timeout, 100) == 0) {
             logger::green(logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d\n closest_i: %d, angular_curve: %lf, timeout: %lf", 
