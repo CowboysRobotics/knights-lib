@@ -21,7 +21,7 @@ void blue_rush_left_wp(knights::RobotChassis *chassis);
 void red_left_elim(knights::RobotChassis *chassis);
 void red_rush_right_elim(knights::RobotChassis *chassis);
 void blue_right_elim(knights::RobotChassis *chassis);
-void blue_rush_left_elim(knights::RobotChassis *chassis);
+void blue_left_rush_elim(knights::RobotChassis *chassis);
 
 
 

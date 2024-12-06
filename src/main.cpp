@@ -199,15 +199,21 @@ void autonomous() {
     // chassis.set_position(knights::Pos(-59, 0, 0));
 
 	auton_map["Red1"] = &red_left_wp_new;
+	auton_map["Red2"] = &red_rush_right_elim;
 	auton_map["Blue1"] = &blue_right_wp_new;
-	auton_map["Red3"] = &red_rush_right_elim;
+	auton_map["Blue2"] = &blue_left_rush_elim;
 	// auton_map["Blue2"] = &blue_rush_left_elim;
 
 	auton_map["Blue4"] = &skills;
     //  chassis.set_position(knights::Pos(38, 48, 4.081));
 
-	auton_map["None0"] = &pp_test;
-	chassis.set_position(knights::Pos(-60.0,0.0,0));
+	auton_map["Red4"] = &pp_test;
+	// chassis.set_position(knights::Pos(-60.0,0.0,0));
+
+
+
+	auton_map["None0"] = &skills;
+	chassis.set_position(knights::Pos(-56.5,0,0));
 
 	//chassis.set_position(knights::Pos(59, 0, 0));
 
@@ -218,11 +224,13 @@ void autonomous() {
 	} else if (package.type + std::to_string(package.number) == "Blue1") {
 	chassis.set_position(knights::Pos(-56.5,15,knights::normalize_angle(-3.95728)));
 	} else if (package.type + std::to_string(package.number) == "Blue4") {
-		chassis.set_position(knights::Pos(-59, 0, 0));
+		chassis.set_position(knights::Pos(-58.5, 0, 0));
 	// } else if (package.type + std::to_string(package.number) == "Blue2") {
 	// 	chassis.set_position(knights::Pos(-59, 0, M_PI));
-	} else if (package.type + std::to_string(package.number) == "Red3") {
-	chassis.set_position(knights::Pos(-48.0,-60.0,3.14159265));
+	} else if (package.type + std::to_string(package.number) == "Red2") {
+		chassis.set_position(knights::Pos(-48.0,-60.0,3.14159265));
+	} else if (package.type + std::to_string(package.number) == "Blue2") {
+		chassis.set_position(knights::Pos(-48.0,-60.0,-3.14159265));
 	}
 
 	// need to find a way to do this dynamically
