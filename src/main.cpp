@@ -200,8 +200,11 @@ void autonomous() {
 
 	auton_map["Red1"] = &red_left_wp_new;
 	auton_map["Red2"] = &red_rush_right_elim;
+	auton_map["Red3"] = &red_left_wp_safe;
+
 	auton_map["Blue1"] = &blue_right_wp_new;
 	auton_map["Blue2"] = &blue_left_rush_elim;
+	auton_map["Blue3"] = &blue_right_wp_safe;
 	// auton_map["Blue2"] = &blue_rush_left_elim;
 
 	auton_map["Blue4"] = &skills;
@@ -212,16 +215,16 @@ void autonomous() {
 
 
 
-	auton_map["None0"] = &skills;
-	chassis.set_position(knights::Pos(-56.5,0,0));
+	auton_map["None0"] = &empty;
+	chassis.set_position(knights::Pos(-48,-60.0,3.14159265));
 
 	//chassis.set_position(knights::Pos(59, 0, 0));
 
 	// chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
 
-	if (package.type + std::to_string(package.number) == "Red1") {
+	if (package.type + std::to_string(package.number) == "Red1" || package.type + std::to_string(package.number) == "Red3") {
 	chassis.set_position(knights::Pos(-56.5,15,3.95728));
-	} else if (package.type + std::to_string(package.number) == "Blue1") {
+	} else if (package.type + std::to_string(package.number) == "Blue1" || package.type + std::to_string(package.number) == "Blue3") {
 	chassis.set_position(knights::Pos(-56.5,15,knights::normalize_angle(-3.95728)));
 	} else if (package.type + std::to_string(package.number) == "Blue4") {
 		chassis.set_position(knights::Pos(-58.5, 0, 0));
