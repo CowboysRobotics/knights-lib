@@ -113,8 +113,6 @@ void initialize() {
 
 	intake.set_reversed(false,0);
 	intake.set_reversed(true, 1);
-
-	//knights::logger::blue(//knights::logger::string_format("start pos: %lf %lf %lf", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading));
 }
 
 /**
@@ -154,8 +152,8 @@ void autonomous() {
 	// auton_map["None0"] = &skills;
     // chassis.set_position(knights::Pos(-59, 0, 0));
 
-	auton_map["Red1"] = &red_left_wp_new;
-	auton_map["Blue1"] = &blue_right_wp_new;
+	auton_map["Red1"] = &red_left_wp;
+	auton_map["Blue1"] = &blue_right_wp;
 
 	// auton_map["Blue2"] = &blue_rush_left_elim;
 
