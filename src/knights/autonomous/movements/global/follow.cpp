@@ -57,6 +57,9 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         end_tolerance = fabs(end_tolerance);
     }
 
+    this->chassis->drivetrain->right_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    this->chassis->drivetrain->left_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+
     // declare essential values
     knights::Pos target_point = route.positions[0];
     int closest_i = 0;
@@ -138,9 +141,6 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
 
         if (timeout < 0) break;
     }
-
-    this->chassis->drivetrain->right_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-    this->chassis->drivetrain->left_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 
     // stop motors after route over
     this->chassis->drivetrain->velocity_command(0,0);
