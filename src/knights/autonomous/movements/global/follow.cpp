@@ -70,14 +70,16 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
     // While the robot has not reached the desired point and is not at the end of the route
     // while (error > end_tolerance && closest_i != route.positions.size()-1) {
     // while (closest_i < route.positions.size()-1) {
-    while (distance_btwn(target_point, route.positions[route.positions.size()-1]) > end_tolerance) {
+    while (error > end_tolerance) {
 
         // update error values
         error = distance_btwn(this->chassis->curr_position, route.positions[route.positions.size()-1]);
         total_error += error;
 
+        closest_dist = distance_btwn(this->chassis->curr_position,  route.positions[closest_i]);
+
         // find nearest point
-        for (int i = 0; i < route.positions.size(); i++) {
+        for (int i = closest_i; i < route.positions.size(); i++) {
             if (distance_btwn(this->chassis->curr_position,  route.positions[i]) < closest_dist) {
                 closest_dist = distance_btwn(this->chassis->curr_position,  route.positions[i]);
                 closest_i = i;
@@ -123,15 +125,12 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         else
             this->chassis->drivetrain->velocity_command(-l_speed, -r_speed);
 
-        if (std::fmod(timeout, 200) == 0) {
-            // logger::green(logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d\n closest_i: %d, angular_curve: %lf, timeout: %lf", 
-            //     target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
-            //     target_speed, angular_curve, r_speed, l_speed, error, forwards, closest_i, angular_curve, timeout
-            // ));
-
-            printf("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d\n closest_i: %d, angular_curve: %lf, timeout: %lf\n", 
+        if (std::fmod(timeout, 50) == 0) {
+            logger::green(logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d\n closest_i: %lf %lf %d , end pt: %lf %lf %d, angular_curve: %lf, timeout: %lf", 
                 target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
-                target_speed, angular_curve, r_speed, l_speed, error, forwards, closest_i, angular_curve, timeout);
+                target_speed, angular_curve, r_speed, l_speed, error, forwards, route.positions[closest_i].x, route.positions[closest_i].y, closest_i, 
+                route.positions.back().x, route.positions.back().y, route.positions.size(), angular_curve, timeout
+            ));
 
         }
 

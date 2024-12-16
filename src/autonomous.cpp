@@ -120,12 +120,12 @@ void pp_test(knights::RobotChassis *chassis) {
 		}
 	}
 
-	chassis->set_position(knights::Pos(-54, 28, 3.14159));
+	// chassis->set_position(knights::Pos(12, 12, M_PI/2));
 
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 80.0);
 	knights::RobotController lateralController(chassis, &lateralPID);
 
 	knights::PIDController turnPID(TURN_kP, TURN_kI, TURN_kD, 10.0, 127.0);

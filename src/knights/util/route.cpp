@@ -1,3 +1,4 @@
+#include "calculation.h"
 #include "knights/autonomous/path.h"
 #include "knights/logger/logger.h"
 #include "knights/util/position.h"
@@ -182,8 +183,8 @@ void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::PI
             lateralController.follow_route_pursuit(
                 this->routes[curr_action.route_name], 
                 curr_action.lookahead, 
-                127.0, // 127.0
-                true, 
+                lateral_pid->get_max_speed(), 
+                knights::signum(curr_action.lookahead),
                 curr_action.end_tolerance, 
                 curr_action.timeout
             );

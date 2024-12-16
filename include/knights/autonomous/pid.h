@@ -50,6 +50,20 @@ namespace knights {
              */
             float update(float error, float total_error, float prev_error);
 
+            /**
+             * @brief Get the maximum speed of the controller
+             * 
+             * @return float - Maximum Speed of the controller
+             */
+            float get_max_speed();
+
+            /**
+             * @brief Get the minimum speed of the controller
+             * 
+             * @return float - Minimum Speed of the controller
+             */
+            float get_min_speed();
+
     };
 
 }
