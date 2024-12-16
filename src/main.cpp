@@ -213,10 +213,14 @@ void autonomous() {
 	auton_map["Red4"] = &pp_test;
 	// chassis.set_position(knights::Pos(-60.0,0.0,0));
 
+	
+	auton_map["None0"] = &red_rush_right_elim;
+	// chassis.set_position(knights::Pos(-60,0,knights::to_rad(225)));
+	chassis.set_position(knights::Pos(-48.0,-60.0,3.14159265));
 
 
-	auton_map["None0"] = &empty;
-	chassis.set_position(knights::Pos(-48,-60.0,3.14159265));
+	// auton_map["None0"] = &empty;
+	// chassis.set_position(knights::Pos(-48,-60.0,3.14159265));
 
 	//chassis.set_position(knights::Pos(59, 0, 0));
 
