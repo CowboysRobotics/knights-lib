@@ -35,9 +35,6 @@ We will list our features with the format: `feature | completeness`
 ### Docs & Tutorials
 Work in progress, if you have questions, please message me on discord. (Username: nrgking)
 
-### Used Libraries
-We currently use [Squiggles](https://github.com/baylessj/robotsquiggles) for path generation, however we would like to implement our own soon.
-
 ### Contribution
 > **Legal Note About Contributing**
 > If you contribute to this library, you agree that you have created 100% of your content and have rights to it, and that you understand that your content will be provided under the license of the project.
