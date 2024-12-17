@@ -1,0 +1,4 @@
+ERROR - __main__:main - could not open port 'COM4'. Try closing any other VEX IDEs such as VEXCode, Robot Mesh Studio, or firmware utilities; moving to a different USB port; or restarting the device. - pros-cli version:3.5.4
+  File "serial\serialutil.py", line 244, in __init__
+  File "serial\serialwin32.py", line 64, in open
+pros.serial.ports.exceptions.ConnectionRefusedException: could not open port 'COM4'. Try closing any other VEX IDEs such as VEXCode, Robot Mesh Studio, or firmware utilities; moving to a different USB port; or restarting the device.

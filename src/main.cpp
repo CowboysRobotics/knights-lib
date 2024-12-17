@@ -31,7 +31,7 @@ pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 // // #### END
 
 // #### Test Robot
-pros::MotorGroup right_mtrs({1,7,3}, pros::MotorGears::blue);
+pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
 pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
 pros::Rotation mid_odom(18);
 pros::Rotation back_odom(14);
@@ -57,7 +57,7 @@ pros::adi::Pneumatics wall_stake_mech_clamp(6,false); //ring clamp solenoid
 
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
 
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10, 600.0, 2.75, 1);
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 3.25, 3/4);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
 
 // knights::PID_Controller pidController(0.4, 0.0001, 0.085, 0, 127);
@@ -161,7 +161,7 @@ void autonomous() {
     // //  chassis.set_position(knights::Pos(38, 48, 4.081));
 
 	auton_map["None0"] = &pp_test;
-	chassis.set_position(knights::Pos(12,12,M_PI/2));
+	chassis.set_position(knights::Pos(-60,-36,0));
 
 	//chassis.set_position(knights::Pos(59, 0, 0));
 

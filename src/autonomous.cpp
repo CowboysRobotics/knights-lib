@@ -138,7 +138,8 @@ void pp_test(knights::RobotChassis *chassis) {
 	inputMap.bind_action("armExtend", arm_auton_extend);
 	inputMap.bind_action("wallStake", wall_stake_mech_auton);
 
-	test_route.execute(chassis, &lateralPID, &turnPID, &inputMap);
+	// test_route.execute(chassis, &lateralPID, &turnPID, &inputMap);
+	lateralController.move_to_point(knights::Pos(24, 24, 0));
 }
 
 #define WAIT 140

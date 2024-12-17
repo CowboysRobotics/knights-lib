@@ -102,6 +102,8 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
             angular_curve = curvature(Pos(this->chassis->curr_position.x, this->chassis->curr_position.y, knights::normalize_angle(this->chassis->curr_position.heading - M_PI)), target_point);
         }
 
+        // issue w/ turning right
+
         // determine speed based on PID if selected to use
         if (use_pid) {
             target_speed = this->pid_controller->update(error, total_error, prev_error);
@@ -125,7 +127,7 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         else
             this->chassis->drivetrain->velocity_command(-l_speed, -r_speed);
 
-        if (std::fmod(timeout, 50) == 0) {
+        if (std::fmod(timeout, 75) == 0) {
             logger::green(logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d\n closest_i: %lf %lf %d , end pt: %lf %lf %d, angular_curve: %lf, timeout: %lf", 
                 target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
                 target_speed, angular_curve, r_speed, l_speed, error, forwards, route.positions[closest_i].x, route.positions[closest_i].y, closest_i, 
