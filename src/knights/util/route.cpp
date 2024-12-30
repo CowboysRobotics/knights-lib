@@ -130,7 +130,6 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
 
                     knights::RouteAction new_action(knights::action_type::LATERAL, x, y, z);
 
-                    // not proprly pushing
                     ar_actions.push_back(new_action);
 
                     knights::logger::red(knights::logger::string_format("lateral: %lf %lf %lf", 
@@ -190,7 +189,7 @@ void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::PI
             );
             knights::logger::cyan(knights::logger::string_format("follow: %s", curr_action.route_name.c_str()));
             for (knights::Pos pos : this->routes[curr_action.route_name].positions) {
-                knights::logger::yellow(knights::logger::string_format("p: %lf %lf %lf", pos.x, pos.y, pos.heading));
+                // knights::logger::yellow(knights::logger::string_format("p: %lf %lf %lf", pos.x, pos.y, pos.heading));
             }
         }
         else if (curr_action.type == knights::action_type::COMMAND) {

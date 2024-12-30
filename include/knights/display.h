@@ -66,6 +66,11 @@ namespace knights::display {
      */
     void set_pos_label(std::string str);
 
+    /**
+     * @brief Move the current position dot
+     * 
+     * @param pos coordinates to move it to
+     */
     void change_curr_pos_dot(Pos pos);
 
 }

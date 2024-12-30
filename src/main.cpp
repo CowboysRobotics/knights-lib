@@ -1,16 +1,13 @@
 #include "main.h"
-#include "knights/autonomous/path.h"
-#include "knights/logger/colors.h"
 #include "knights/logger/logger.h"
+#include "pros/misc.h"
 
-#include <cstddef>
 #include <cstdio>
 #include <cstring>
 #include <functional>
 #include <iostream>
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
@@ -161,7 +158,7 @@ void autonomous() {
     // //  chassis.set_position(knights::Pos(38, 48, 4.081));
 
 	auton_map["None0"] = &pp_test;
-	chassis.set_position(knights::Pos(-60,-36,0));
+	chassis.set_position(knights::Pos(36,12,M_PI/2));
 
 	//chassis.set_position(knights::Pos(59, 0, 0));
 

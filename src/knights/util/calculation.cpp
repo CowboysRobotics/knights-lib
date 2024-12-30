@@ -26,7 +26,7 @@ float knights::min_angle(float start, float target, bool rad) {
 };
 
 int knights::direction(float init_heading, float des_heading) {
-float diff = des_heading - init_heading;
+    float diff = des_heading - init_heading;
 
     if (diff < -180.0)
         diff += 360.0;

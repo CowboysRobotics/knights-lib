@@ -82,8 +82,6 @@ void knights::RobotController::lateral_move(const float distance, const float en
                 // use pid formula to calculate speed
                 speed = this->pid_controller->update(error, total_error, prev_error) * knights::signum(distance);
 
-                // printf("des pos: %lf %lf %lf, error: %lf, speed: %lf, curr: %lf %lf %lf\n", desired_position.x, desired_position.y, desired_position.heading, error, speed, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading);
-
                 // printf("ptg,%lf,%d,\n", error, pros::millis());
 
                 if (fabs(speed) <= this->pid_controller->min_velocity) {
@@ -120,7 +118,7 @@ void knights::RobotController::lateral_move(const float distance, const float en
         this->chassis->drivetrain->left_mtrs->move(0);
 
     } else {
-        // holomic lateral movement code
+        // holomic lateral movement code - not done yet
     }
 
     this->in_motion = false;

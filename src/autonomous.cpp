@@ -120,8 +120,6 @@ void pp_test(knights::RobotChassis *chassis) {
 		}
 	}
 
-	// chassis->set_position(knights::Pos(12, 12, M_PI/2));
-
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
@@ -138,8 +136,7 @@ void pp_test(knights::RobotChassis *chassis) {
 	inputMap.bind_action("armExtend", arm_auton_extend);
 	inputMap.bind_action("wallStake", wall_stake_mech_auton);
 
-	// test_route.execute(chassis, &lateralPID, &turnPID, &inputMap);
-	lateralController.move_to_point(knights::Pos(24, 24, 0));
+	test_route.execute(chassis, &lateralPID, &turnPID, &inputMap);
 }
 
 #define WAIT 140

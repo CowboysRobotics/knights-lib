@@ -8,35 +8,28 @@ A PROS library for use with the V5RC system. This library is designed to help se
 We will list our features with the format: `feature | completeness`
 - Control Algorithms
 	- Path Following
-		- Pure Pursuit | Coded + Light Testing
+		- Pure Pursuit | Fully Complete
 	- Position Tracking
-		- Odometry | Coded + Light Testing
+		- Odometry | Fully Complete
 			- Features many different configurations for tracking wheels and IMUs
 	- Move To Point
 		- Turn to Heading | Fully Complete
-		- Move to Point w/ Heading | Not Coded
+		- Move to Point | Coded + Light Testing
 	- PID
 	    - Lateral Movement | Fully Complete
 	    - Turning Movement | Fully Complete
-- Path Generation
-    - Motion Profiling | Included w/ Squiggles
-    - Generation of path to position and heading | Included w/ Squiggles
 - Systems
 	- Drivetrains
-		- Tank/Differential | Fully Supported + Complete
-		- Holonomic | Not Fully Supported + Complete
+		- Tank/Differential | Fully Complete
 - Cosmetics
 	- Autonomous Selector | Fully Complete
 	- Odometry Visual Display | Fully Complete
 - Route Generation
 	- Read basic route from SD Card | Fully Complete
-	- Read advanced route from SD Card | Code Complete + Light Testing
+	- Read advanced route from SD Card | Fully Complete
 
 ### Docs & Tutorials
 Work in progress, if you have questions, please message me on discord. (Username: nrgking)
-
-### Used Libraries
-We currently use [Squiggles](https://github.com/baylessj/robotsquiggles) for path generation, however we would like to implement our own soon.
 
 ### Contribution
 > **Legal Note About Contributing**
@@ -49,7 +42,7 @@ If you have any ideas or requests for features, please create an enhancement req
 #### 2. Bugs
 If you find any bugs with the library, please open an issue on GitHub.
 #### 3.  Commenting
-Please comment all functions in header files with doxygen comments. Code should also be readable without comments (descriptive variable names, . For a more detailed guide, follow one such as [this](https://stackoverflow.blog/2021/12/23/best-practices-for-writing-code-comments/). 
+Please comment all functions in header files with doxygen comments. Code should also be readable without comments (descriptive variable names, etc.). For a more detailed guide, follow one such as [this](https://stackoverflow.blog/2021/12/23/best-practices-for-writing-code-comments/). 
 
 Thank you for considering contributing to our library! Most of the current work has been done by a single team, so any help is appreciated.
 

@@ -11,7 +11,7 @@
 #include <stdexcept>
 
 
-// https://stackoverflow.com/questions/2342162/stdstring-formatting-like-sprintf
+// function from https://stackoverflow.com/questions/2342162/stdstring-formatting-like-sprintf
 std::string knights::logger::string_format(const std::string fmt, ...) {
     int size = ((int)fmt.size()) * 2 + 50;   // Use a rubric appropriate for your code
     std::string str;
