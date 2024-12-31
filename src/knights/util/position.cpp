@@ -174,16 +174,16 @@ float knights::curvature(const Point &pt1, const Point &pt2, const Point &pt3) {
 float knights::curvature(const Pos &start, const Pos &end) {
     // calculate whether the bot needs to turn right or left
     // simplified form of seeing whether a point on the robot travelling line is r/l of the target
-    float side = knights::signum((float)(sin(start.heading) * (end.x - start.x) - cos(start.heading) * (end.y - start.y)));
+    float side = knights::signum((sinf(start.heading) * (end.x - start.x) - cosf(start.heading) * (end.y - start.y)));
 
     // now calculate arc
     // using formula ax + by + c = 0 with b = 1, solve for x
-    float a = -tan(start.heading);
-    float c = tan(start.heading) * start.x - end.y;
-    float x = fabs(a * end.x + end.y + c) / sqrt((a * a) + 1);
+    float a = -tanf(start.heading);
+    float c = tanf(start.heading) * start.x - start.y;
+    float x = fabsf(a * end.x + end.y + c) / sqrt((a * a) + 1);
 
     // calculate current distance between the start and end point
-    float lookaheadDistance = hypot(end.x-start.x, end.y-start.y);
+    float lookaheadDistance = hypotf(end.x-start.x, end.y-start.y);
 
     // return the curvature
     return side * ((2 * x) / (lookaheadDistance * lookaheadDistance));

@@ -36,7 +36,7 @@ float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights:
             return s2;
         else
             return -1;
-    } else 
+    } else // no or one real solution
         return -1;
 }
 
@@ -67,30 +67,38 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
     // declare essential values
     knights::Pos target_point = route.positions[0];
     int closest_i = 0;
-    float closest_dist = 1e10;
+    float closest_dist = 1e5;
     float error = distance_btwn(this->chassis->curr_position, route.positions[route.positions.size()-1]);
     float prev_error = error; float total_error = 0.0;
+
+    float max_lookahead = lookahead_distance;
+    float angular_curve;
 
     // While the robot has not reached the desired point and is not at the end of the route
     while (error > end_tolerance && closest_i != route.positions.size()-1 ) {
 
+        knights::Pos curr_position = this->chassis->curr_position;
+        if (!forwards || lookahead_distance < 0) {
+            curr_position.heading = knights::normalize_angle(curr_position.heading + M_PI);
+        }
+
         // update error values
-        error = distance_btwn(this->chassis->curr_position, route.positions[route.positions.size()-1]);
+        error = distance_btwn(curr_position, route.positions[route.positions.size()-1]);
         total_error += error;
 
-        closest_dist = distance_btwn(this->chassis->curr_position,  route.positions[closest_i]);
+        closest_dist = 1e5;
 
         // find nearest point
         for (int i = closest_i; i < route.positions.size(); i++) {
-            if (distance_btwn(this->chassis->curr_position,  route.positions[i]) < closest_dist) {
-                closest_dist = distance_btwn(this->chassis->curr_position,  route.positions[i]);
+            if (distance_btwn(curr_position,  route.positions[i]) < closest_dist) {
+                closest_dist = distance_btwn(curr_position,  route.positions[i]);
                 closest_i = i;
             }
         }
 
         // find lookahead point
         for (int i = closest_i; i < route.positions.size() - 1; i++) {
-            float t = circle_intersection(route.positions[i+1], route.positions[i], this->chassis->curr_position, lookahead_distance);
+            float t = circle_intersection(route.positions[i+1], route.positions[i], curr_position, lookahead_distance);
 
             if (t != -1) {
                 target_point = lerp(route.positions[i], route.positions[i+1], t);
@@ -98,16 +106,13 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         }
 
         // determine the speed and angular curvature to use for calculating ratio of motor velocities
-        float target_speed = std::fmin(12/curvature(this->chassis->curr_position, target_point, route.positions[closest_i+1]), max_speed);
-        float angular_curve = curvature(this->chassis->curr_position, target_point);
-        if (!forwards) {
-            angular_curve = curvature(Pos(this->chassis->curr_position.x, this->chassis->curr_position.y, knights::normalize_angle(this->chassis->curr_position.heading - M_PI)), target_point);
-        }
+        float target_speed = std::fmin(5/curvature(curr_position, target_point, route.positions[closest_i+1]), max_speed);
+        angular_curve = curvature(curr_position, target_point);
 
-        // decrease angular curve if the target point is at the end of the path
-        if (distance_btwn(this->chassis->curr_position, target_point)/lookahead_distance < 0.5) {
-            angular_curve *= ((distance_btwn(this->chassis->curr_position, target_point)/lookahead_distance) * 0.1);
-        }
+        // // decrease angular curve if the target point is at the end of the path
+        // if (distance_btwn(curr_position, target_point)/lookahead_distance < 0.5) {
+        //     angular_curve *= ((distance_btwn(curr_position, target_point)/lookahead_distance) * 0.1);
+        // }
 
         // determine speed based on PID if selected to use
         if (use_pid) {
@@ -137,9 +142,8 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
             logger::green(logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , used angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d\n closest_i: %lf %lf %d , end pt: %lf %lf %d, real angular_curve: %lf, timeout: %lf, curr lhd: %lf, calculated lhd: %lf", 
                 target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
                 target_speed, angular_curve, r_speed, l_speed, error, forwards, route.positions[closest_i].x, route.positions[closest_i].y, closest_i, 
-                route.positions.back().x, route.positions.back().y, route.positions.size(), angular_curve/(distance_btwn(this->chassis->curr_position, target_point)/lookahead_distance), timeout, distance_btwn(this->chassis->curr_position, target_point), distance_btwn(this->chassis->curr_position, target_point)/lookahead_distance
+                route.positions.back().x, route.positions.back().y, route.positions.size(), angular_curve, timeout, distance_btwn(this->chassis->curr_position, target_point), distance_btwn(this->chassis->curr_position, target_point)/lookahead_distance
             ));
-
         }
 
         // wait for next iteration of loop

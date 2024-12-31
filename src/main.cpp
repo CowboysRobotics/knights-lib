@@ -158,7 +158,7 @@ void autonomous() {
     // //  chassis.set_position(knights::Pos(38, 48, 4.081));
 
 	auton_map["None0"] = &pp_test;
-	chassis.set_position(knights::Pos(36,12,M_PI/2));
+	chassis.set_position(knights::Pos(12,12,M_PI/2));
 
 	//chassis.set_position(knights::Pos(59, 0, 0));
 
