@@ -82,12 +82,13 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
             curr_position.heading = knights::normalize_angle(curr_position.heading + M_PI);
         }
 
-        if (target_point != route.positions[0]) {
+        // lookahead scaling
+        if (target_point != route.positions[0]) { // make sure we have valid closest_i variables, it won't be right if the robot is at the start of the route
             lookahead_distance = clamp(
             max_lookahead * 
-            (4/curvature(route.positions[closest_i], route.positions[closest_i+1], route.positions[closest_i+2]))
+            (4/curvature(route.positions[closest_i], route.positions[closest_i+1], route.positions[closest_i+2])) // tuned formula dependent on curvature
             /max_speed,
-            max_lookahead*0.8, max_lookahead*3);
+            max_lookahead*0.8, max_lookahead*3); // limit lookahead from going too high or too low
         }
 
         // update error values
