@@ -187,10 +187,12 @@ void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::PI
                 curr_action.end_tolerance, 
                 curr_action.timeout
             );
-            knights::logger::cyan(knights::logger::string_format("follow: %s", curr_action.route_name.c_str()));
-            for (knights::Pos pos : this->routes[curr_action.route_name].positions) {
-                // knights::logger::yellow(knights::logger::string_format("p: %lf %lf %lf", pos.x, pos.y, pos.heading));
-            }
+            knights::logger::cyan(knights::logger::string_format("follow: %s , pos: %lf %lf %lf , error: %lf", curr_action.route_name.c_str(), 
+                chassis->get_position().x, chassis->get_position().y, chassis->get_position().heading, 
+                knights::distance_btwn(chassis->get_position(), this->routes[curr_action.route_name].positions.back())));
+            // for (knights::Pos pos : this->routes[curr_action.route_name].positions) {
+            //     // knights::logger::yellow(knights::logger::string_format("p: %lf %lf %lf", pos.x, pos.y, pos.heading));
+            // }
         }
         else if (curr_action.type == knights::action_type::COMMAND) {
             input_map->execute_action(curr_action.function_name);

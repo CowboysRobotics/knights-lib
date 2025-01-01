@@ -82,6 +82,14 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
             curr_position.heading = knights::normalize_angle(curr_position.heading + M_PI);
         }
 
+        if (target_point != route.positions[0]) {
+            lookahead_distance = clamp(
+            max_lookahead * 
+            (4/curvature(route.positions[closest_i], route.positions[closest_i+1], route.positions[closest_i+2]))
+            /max_speed,
+            max_lookahead*0.8, max_lookahead*3);
+        }
+
         // update error values
         error = distance_btwn(curr_position, route.positions[route.positions.size()-1]);
         total_error += error;
@@ -106,19 +114,20 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         }
 
         // determine the speed and angular curvature to use for calculating ratio of motor velocities
-        float target_speed = std::fmin(5/curvature(curr_position, target_point, route.positions[closest_i+1]), max_speed);
+        float target_speed = std::fmin(2/curvature(route.positions[closest_i], route.positions[closest_i+1], route.positions[closest_i+2]), max_speed);
         angular_curve = curvature(curr_position, target_point);
 
-        // // decrease angular curve if the target point is at the end of the path
-        // if (distance_btwn(curr_position, target_point)/lookahead_distance < 0.5) {
-        //     angular_curve *= ((distance_btwn(curr_position, target_point)/lookahead_distance) * 0.1);
-        // }
-
-        // determine speed based on PID if selected to use
-        if (use_pid) {
-            target_speed = this->pid_controller->update(error, total_error, prev_error);
+        // decrease angular curve if the target point is at the end of the path
+        if (distance_btwn(curr_position, target_point)/lookahead_distance < 0.3) {
+            angular_curve *= ((distance_btwn(curr_position, target_point)/lookahead_distance) * 0.1);
+            target_speed *= (distance_btwn(curr_position, target_point)/lookahead_distance) * 1.5;
         }
-        prev_error = error;
+
+        // // determine speed based on PID if selected to use
+        // if (use_pid) {
+        //     target_speed = this->pid_controller->update(error, total_error, prev_error);
+        // }
+        // prev_error = error;
 
         // calculate right and left speed based on curvature
         float r_speed = target_speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;
@@ -142,7 +151,7 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
             logger::green(logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , used angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d\n closest_i: %lf %lf %d , end pt: %lf %lf %d, real angular_curve: %lf, timeout: %lf, curr lhd: %lf, calculated lhd: %lf", 
                 target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
                 target_speed, angular_curve, r_speed, l_speed, error, forwards, route.positions[closest_i].x, route.positions[closest_i].y, closest_i, 
-                route.positions.back().x, route.positions.back().y, route.positions.size(), angular_curve, timeout, distance_btwn(this->chassis->curr_position, target_point), distance_btwn(this->chassis->curr_position, target_point)/lookahead_distance
+                route.positions.back().x, route.positions.back().y, route.positions.size(), angular_curve/((distance_btwn(curr_position, target_point)/lookahead_distance) * 0.1), timeout, lookahead_distance, distance_btwn(this->chassis->curr_position, target_point)/lookahead_distance
             ));
         }
 

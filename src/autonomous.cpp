@@ -108,11 +108,11 @@ void pp_test(knights::RobotChassis *chassis) {
 	std::string s = "test3.txt";
 
 	knights::AdvancedRoute test_route = advanced_route_from_file(s);
-	for (auto route : test_route.routes) {
-		for (auto pt : route.second.positions) {
-			// knights::logger::green(knights::logger::string_format("pt: %lf %lf %lf", pt.x, pt.y, pt.heading));
-		}
-	}
+	// for (auto route : test_route.routes) {
+	// 	for (auto pt : route.second.positions) {
+	// 		// knights::logger::green(knights::logger::string_format("pt: %lf %lf %lf", pt.x, pt.y, pt.heading));
+	// 	}
+	// }
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 

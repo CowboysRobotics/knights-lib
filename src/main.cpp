@@ -1,5 +1,6 @@
 #include "main.h"
 #include "knights/logger/logger.h"
+#include "knights/util/calculation.h"
 #include "pros/misc.h"
 
 #include <cstdio>
@@ -158,7 +159,7 @@ void autonomous() {
     // //  chassis.set_position(knights::Pos(38, 48, 4.081));
 
 	auton_map["None0"] = &pp_test;
-	chassis.set_position(knights::Pos(12,12,M_PI/2));
+	chassis.set_position(knights::Pos(12,12,knights::to_rad(90)));
 
 	//chassis.set_position(knights::Pos(59, 0, 0));
 
