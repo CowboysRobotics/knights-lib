@@ -19,6 +19,7 @@ namespace knights {
             bool use_motor_encoders = false;
 
             bool in_motion = false;
+
         public:
             /**
              * @brief Construct a new Robot Controller object

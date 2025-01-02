@@ -88,7 +88,7 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
             max_lookahead * 
             (4/curvature(route.positions[closest_i], route.positions[closest_i+1], route.positions[closest_i+2])) // tuned formula dependent on curvature
             /max_speed,
-            max_lookahead*0.8, max_lookahead*3); // limit lookahead from going too high or too low
+            max_lookahead*0.8, max_lookahead*1.8); // limit lookahead from going too high or too low
         }
 
         // update error values
@@ -119,10 +119,13 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         angular_curve = curvature(curr_position, target_point);
 
         // decrease angular curve if the target point is at the end of the path
-        if (distance_btwn(curr_position, target_point)/lookahead_distance < 0.3) {
-            angular_curve *= ((distance_btwn(curr_position, target_point)/lookahead_distance) * 0.1);
-            target_speed *= (distance_btwn(curr_position, target_point)/lookahead_distance) * 1.5;
+        if (distance_btwn(curr_position, target_point)/max_lookahead < 0.3 && distance_btwn(curr_position, route.positions.back()) < max_lookahead) {
+            angular_curve *= ((distance_btwn(curr_position, target_point)/max_lookahead) * 0.1);
+            target_speed *= (distance_btwn(curr_position, target_point)/max_lookahead) * 3;
         }
+
+        if (target_speed < this->pid_controller->get_min_speed())
+            break;
 
         // // determine speed based on PID if selected to use
         // if (use_pid) {
@@ -149,10 +152,10 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
 
         // log for debugging
         if (std::fmod(timeout, 75) == 0) {
-            logger::green(logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , used angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d\n closest_i: %lf %lf %d , end pt: %lf %lf %d, real angular_curve: %lf, timeout: %lf, curr lhd: %lf, calculated lhd: %lf", 
+            logger::green(logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , used angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d closest_i: %lf %lf %d , end pt: %lf %lf %d, real angular_curve: %lf, timeout: %lf, curr lhd: %lf, calculated lhd: %lf", 
                 target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
                 target_speed, angular_curve, r_speed, l_speed, error, forwards, route.positions[closest_i].x, route.positions[closest_i].y, closest_i, 
-                route.positions.back().x, route.positions.back().y, route.positions.size(), angular_curve/((distance_btwn(curr_position, target_point)/lookahead_distance) * 0.1), timeout, lookahead_distance, distance_btwn(this->chassis->curr_position, target_point)/lookahead_distance
+                route.positions.back().x, route.positions.back().y, route.positions.size(), angular_curve/((distance_btwn(curr_position, target_point)/max_lookahead) * 0.1), timeout, lookahead_distance, distance_btwn(this->chassis->curr_position, target_point)/max_lookahead
             ));
         }
 

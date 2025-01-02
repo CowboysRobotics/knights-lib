@@ -14,7 +14,7 @@
 
 #define INTAKE_VELOCITY 300
 
-#define LATERAL_kP 6
+#define LATERAL_kP 5
 #define LATERAL_kI 0
 #define LATERAL_kD 0.0065
 
@@ -105,7 +105,7 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
 void pp_test(knights::RobotChassis *chassis) {
 
-	std::string s = "test3.txt";
+	std::string s = "test-whole.txt";
 
 	knights::AdvancedRoute test_route = advanced_route_from_file(s);
 	// for (auto route : test_route.routes) {
@@ -116,7 +116,7 @@ void pp_test(knights::RobotChassis *chassis) {
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 80.0);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 100.0);
 	knights::RobotController lateralController(chassis, &lateralPID);
 
 	knights::PIDController turnPID(TURN_kP, TURN_kI, TURN_kD, 10.0, 127.0);
