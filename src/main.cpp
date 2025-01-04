@@ -12,31 +12,31 @@
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
-// // Competition Robot
-// //front of bot is intake side
-// //assign ports to right side drive-train
-// pros::MotorGroup right_mtrs({1,2,14}, pros::MotorGears::blue); // no reverse
-// //assign ports to left side drive-train
-// pros::MotorGroup left_mtrs({7,8,16}, pros::MotorGears::blue); // no reverse
-// //assign ports to odom pods for position tracking
-// pros::Rotation mid_odom(12); // parallel tracking
-// pros::Rotation back_odom(19); // perpendicular tracking
-// //assign port for imu tracker
-// pros::IMU imu(17);
-// //dimensions and positions of odom pods for calculations for position tracking
-// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.825);
-// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 3.1875);
-// // #### END
-
-// #### Test Robot
-pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
-pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
-pros::Rotation mid_odom(18);
-pros::Rotation back_odom(14);
-pros::IMU imu(15);
-knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
-knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
+// Competition Robot
+//front of bot is intake side
+//assign ports to right side drive-train
+pros::MotorGroup right_mtrs({1,2,14}, pros::MotorGears::blue); // no reverse
+//assign ports to left side drive-train
+pros::MotorGroup left_mtrs({7,8,16}, pros::MotorGears::blue); // no reverse
+//assign ports to odom pods for position tracking
+pros::Rotation mid_odom(12); // parallel tracking
+pros::Rotation back_odom(19); // perpendicular tracking
+//assign port for imu tracker
+pros::IMU imu(17);
+//dimensions and positions of odom pods for calculations for position tracking
+knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.825);
+knights::PositionTracker backOdom(&back_odom, 2.75, 1, 3.1875);
 // #### END
+
+// // #### Test Robot
+// pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
+// pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
+// pros::Rotation mid_odom(18);
+// pros::Rotation back_odom(14);
+// pros::IMU imu(15);
+// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
+// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
+// // #### END
 
 
 //assign ports to intake, leftside first, rightside second
@@ -91,23 +91,23 @@ void initialize() {
 
 	knights::logger::blue("Initialization End");
 
-	// // #### Competition Robot
-	// //front of the bot is intake
-	// //assign direction to left side drive-train motors 
-	// left_mtrs.set_reversed(false, 0);
-	// left_mtrs.set_reversed(false, 1);
-	// left_mtrs.set_reversed(false, 2);
-	// //assign direction to right side drive-train motors
-	// right_mtrs.set_reversed(true, 0);
-	// right_mtrs.set_reversed(true, 1);
-	// right_mtrs.set_reversed(true, 2);
-	// // ####
-
-	// #### Test Bot
-	left_mtrs.set_reversed(true, 0);
-	left_mtrs.set_reversed(true, 1);
-	left_mtrs.set_reversed(true, 2);
+	// #### Competition Robot
+	//front of the bot is intake
+	//assign direction to left side drive-train motors 
+	left_mtrs.set_reversed(false, 0);
+	left_mtrs.set_reversed(false, 1);
+	left_mtrs.set_reversed(false, 2);
+	//assign direction to right side drive-train motors
+	right_mtrs.set_reversed(true, 0);
+	right_mtrs.set_reversed(true, 1);
+	right_mtrs.set_reversed(true, 2);
 	// ####
+
+	// // #### Test Bot
+	// left_mtrs.set_reversed(true, 0);
+	// left_mtrs.set_reversed(true, 1);
+	// left_mtrs.set_reversed(true, 2);
+	// // ####
 
 	intake.set_reversed(false,0);
 	intake.set_reversed(true, 1);
@@ -376,8 +376,13 @@ void opcontrol() {
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
 		drivetrain.velocity_command(
-			right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
-			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y))
+			// ## TEST BOT
+			// right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
+			// left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y))
+
+			// ## COMPETITION
+			right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)),
+			left_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))
 		);
 
 		// Delay to let other tasks run
