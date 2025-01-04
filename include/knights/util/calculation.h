@@ -54,9 +54,10 @@ namespace knights {
      * 
      * @param init_heading initial heading
      * @param des_heading heading to turn to
+     * @param rad whether input is in radians or not (assumed degrees otherwise)
      * @return 1 if left, -1 if right, never will return 0
      */
-    int direction(float init_heading, float des_heading);
+    int direction(float init_heading, float des_heading, bool rad = true);
 
     /**
     @brief basic signum function, evaluates whether or not a number is above, below, or at zero

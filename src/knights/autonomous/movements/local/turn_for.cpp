@@ -5,8 +5,6 @@
 
 #include "knights/util/calculation.h"
 
-#define MIN_SPEED 20
-
 void knights::RobotController::turn_for(const float angle, float end_tolerance, float timeout, bool rad) {
     // turn the robot a certain amount of degrees, positive is left, negative is right
 
@@ -37,7 +35,8 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
             while(fabsf((right_pos + left_pos)/2) < fabsf(desired_position)) {
                 // decrease timeout and break if went over
                 timeout -= 10;
-                if (timeout < 0) break;
+                if (timeout < 0) 
+                    break;
 
                 // calculate error, convert position to distance so tuning is the same
                 error = this->chassis->drivetrain->position_to_distance(fabsf(desired_position) - fabsf((right_pos + left_pos)/2));
@@ -71,31 +70,30 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
                 end_tolerance = to_rad(end_tolerance);
                 desired_angle = normalize_angle(this->chassis->curr_position.heading + to_rad(angle), true);
             }
-            // TODO: edge case; person is not turning optimally, min angle will not be right - figure this out
 
             while(std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true)) > end_tolerance) {
 
+                // if we are over alloted time, end the function
                 timeout -= 10;
+                if (timeout < 0)
+                    break;
 
+                // calculate using PID formula
                 error = std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true));
-
                 total_error += error;
-
                 speed = this->pid_controller->update(error, total_error, prev_error);
-
                 prev_error = error;
-
-                printf("des angle: %lf, error %lf, speed: %lf\n", desired_angle, error, speed);
 
                 this->chassis->drivetrain->velocity_command(-signum(angle) * speed, signum(angle) * speed);
 
-                if (fabs(speed) < MIN_SPEED) {
+                if (fabs(speed) < this->pid_controller->get_min_speed()) {
                     break;
                 }
 
                 pros::delay(10);
             }
 
+            // stop the robot
             this->chassis->drivetrain->velocity_command(0, 0);
             
         }

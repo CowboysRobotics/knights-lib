@@ -56,7 +56,7 @@ namespace knights::input {
             void bind_action(pros::controller_digital_e_t button, void (*bound_function)(), bool hold);
 
             /**
-             * @brief Determine which 
+             * @brief Determine which actions to run based on controller input
              * 
              * @param controller Controller to query for button presses
              */
@@ -69,8 +69,19 @@ namespace knights::input {
         private:
             std::map<std::string, void(*)()> action_map;
         public:
+            /**
+             * @brief Add an action to the input map
+             * 
+             * @param bound_function Function to execute on the controller button press
+             * @param name Key to add the function under
+             */
             void bind_action(std::string name, void (*bound_function)());
 
+            /**
+             * @brief Run an action within input map
+             * 
+             * @param name Key of function to run
+             */
             void execute_action(std::string name);
     };
 }

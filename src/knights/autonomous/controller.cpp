@@ -22,6 +22,15 @@ float knights::PIDController::update(float error, float total_error, float prev_
     return knights::clamp(this->kP * error + this->kI * total_error + this->kD * (error - prev_error), this->min_velocity, this->max_velocity);
 }
 
+float knights::PIDController::get_max_speed() {
+    return std::fabs(this->max_velocity);
+}
+
+float knights::PIDController::get_min_speed() {
+    return std::fabs(this->min_velocity);
+}
+
+
 knights::RamseteConstants::RamseteConstants(const float &damping, const float &proportional)
     : damping(damping), proportional(proportional) {
 }

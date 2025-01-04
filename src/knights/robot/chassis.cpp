@@ -18,7 +18,6 @@ void knights::RobotChassis::set_position(float x, float y, float heading) {
     this->curr_position.x = x;
     this->curr_position.y = y;
     this->curr_position.heading = heading;
-    // this->pos_trackers->inertial->set_heading(knights::normalize_angle(knights::to_deg(heading)-180, false));
 }
 
 knights::Pos knights::RobotChassis::get_position() {

@@ -1,16 +1,14 @@
 #include "main.h"
-#include "knights/autonomous/path.h"
-#include "knights/logger/colors.h"
 #include "knights/logger/logger.h"
+#include "knights/util/calculation.h"
+#include "pros/misc.h"
 
-#include <cstddef>
 #include <cstdio>
 #include <cstring>
 #include <functional>
 #include <iostream>
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
@@ -31,7 +29,7 @@ pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 // // #### END
 
 // #### Test Robot
-pros::MotorGroup right_mtrs({1,7,3}, pros::MotorGears::blue);
+pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
 pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
 pros::Rotation mid_odom(18);
 pros::Rotation back_odom(14);
@@ -57,7 +55,7 @@ pros::adi::Pneumatics wall_stake_mech_clamp(6,false); //ring clamp solenoid
 
 // make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
 
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 600.0, 2.75, 1);
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 3.25, 3/4);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
 
 // knights::PID_Controller pidController(0.4, 0.0001, 0.085, 0, 127);
@@ -145,39 +143,39 @@ void autonomous() {
 	// Create a map that maps autonomous to selection packages
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
-	// Different autons, None0 is the default auton
-	// auton_map["None0"] = &blue_right;
-	// chassis.set_position(knights::Pos(54.5, 12.5, 4.234));
+	// // Different autons, None0 is the default auton
+	// // auton_map["None0"] = &blue_right;
+	// // chassis.set_position(knights::Pos(54.5, 12.5, 4.234));
 
-	// auton_map["None0"] = &skills;
-    // chassis.set_position(knights::Pos(-59, 0, 0));
+	// // auton_map["None0"] = &skills;
+    // // chassis.set_position(knights::Pos(-59, 0, 0));
 
-	auton_map["Red1"] = &red_left_wp_new;
-	auton_map["Blue1"] = &blue_right_wp_new;
-	auton_map["Red3"] = &red_rush_right_elim;
-	// auton_map["Blue2"] = &blue_rush_left_elim;
+	// auton_map["Red1"] = &red_left_wp_new;
+	// auton_map["Blue1"] = &blue_right_wp_new;
+	// auton_map["Red3"] = &red_rush_right_elim;
+	// // auton_map["Blue2"] = &blue_rush_left_elim;
 
-	auton_map["Blue4"] = &skills;
-    //  chassis.set_position(knights::Pos(38, 48, 4.081));
+	// auton_map["Blue4"] = &skills;
+    // //  chassis.set_position(knights::Pos(38, 48, 4.081));
 
 	auton_map["None0"] = &pp_test;
-	chassis.set_position(knights::Pos(0,0,M_PI/2));
+	chassis.set_position(knights::Pos(-60,0,knights::to_rad(0)));
 
 	//chassis.set_position(knights::Pos(59, 0, 0));
 
 	// chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
 
-	if (package.type + std::to_string(package.number) == "Red1") {
-	chassis.set_position(knights::Pos(-56.5,15,3.95728));
-	} else if (package.type + std::to_string(package.number) == "Blue1") {
-	chassis.set_position(knights::Pos(-56.5,15,knights::normalize_angle(-3.95728)));
-	} else if (package.type + std::to_string(package.number) == "Blue4") {
-		chassis.set_position(knights::Pos(-59, 0, 0));
-	// } else if (package.type + std::to_string(package.number) == "Blue2") {
-	// 	chassis.set_position(knights::Pos(-59, 0, M_PI));
-	} else if (package.type + std::to_string(package.number) == "Red3") {
-	chassis.set_position(knights::Pos(-48.0,-60.0,3.14159265));
-	}
+	// if (package.type + std::to_string(package.number) == "Red1") {
+	// chassis.set_position(knights::Pos(-56.5,15,3.95728));
+	// } else if (package.type + std::to_string(package.number) == "Blue1") {
+	// chassis.set_position(knights::Pos(-56.5,15,knights::normalize_angle(-3.95728)));
+	// } else if (package.type + std::to_string(package.number) == "Blue4") {
+	// 	chassis.set_position(knights::Pos(-59, 0, 0));
+	// // } else if (package.type + std::to_string(package.number) == "Blue2") {
+	// // 	chassis.set_position(knights::Pos(-59, 0, M_PI));
+	// } else if (package.type + std::to_string(package.number) == "Red3") {
+	// chassis.set_position(knights::Pos(-48.0,-60.0,3.14159265));
+	// }
 
 	// need to find a way to do this dynamically
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
@@ -362,14 +360,14 @@ void opcontrol() {
 	while (true) {
 		// If controller joystick not in deadzone, calculate the velocity
 		if (abs(master_controller.get_analog(ANALOG_LEFT_Y)) > 2)
-			right_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_LEFT_Y)));
+			right_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_RIGHT_Y)));
 		// Otherwise, stop the right motors
 		else
 			right_velocity = 0;
 
 		// If controller joystick not in deadzone, calculate the velocity
 		if (abs(master_controller.get_analog(ANALOG_RIGHT_Y)) > 2)
-			left_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_RIGHT_Y)));
+			left_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_LEFT_Y)));
 		// Otherwise, stop the left motors
 		else
 			left_velocity = 0;
@@ -378,8 +376,8 @@ void opcontrol() {
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
 		drivetrain.velocity_command(
-			right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)), 
-			left_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))
+			right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
+			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y))
 		);
 
 		// Delay to let other tasks run

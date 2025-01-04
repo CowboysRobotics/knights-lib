@@ -13,6 +13,7 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
     if (this->in_motion) return;
     this->in_motion = true;
 
+    // get direction to turn (l, r, best)
     int sign = knights::signum(direction);
 
     float speed,error;
@@ -26,11 +27,15 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
         desired_angle = normalize_angle(to_rad(angle), true);
     }
 
-    if (sign == 0)
-        sign = knights::direction(this->chassis->curr_position.heading, desired_angle);
+    if (sign == 0) // if we're taking best direction
+        sign = knights::direction(this->chassis->curr_position.heading, desired_angle); // calculate direction
     
-    printf("des angle: %lf, at: %lf\n", desired_angle, chassis->curr_position.heading);
-
+    if (sign == 1)
+        knights::logger::yellow("clockwise");
+    else
+        knights::logger::yellow("counterclockwise");
+    
+    // set brake mode to stop so we don't overshoot
     this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
     this->chassis->drivetrain->left_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
 
@@ -39,6 +44,7 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
         timeout -= 10;
         if (timeout < 0) break;
 
+        // calculate w/ PID formula
         error = std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true));
 
         total_error += error;
@@ -47,7 +53,7 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
 
         prev_error = error;
 
-        knights::logger::green(knights::logger::string_format("des angle: %lf, curr angle %lf, error %lf, speed: %lf\n", to_deg(desired_angle), to_deg(this->chassis->curr_position.heading), error, speed));
+        knights::logger::green(knights::logger::string_format("des angle: %lf, curr angle %lf, error %lf, speed: %lf\n", desired_angle, this->chassis->curr_position.heading, error, speed));
 
         this->chassis->drivetrain->velocity_command(-sign * speed, sign * speed);
 

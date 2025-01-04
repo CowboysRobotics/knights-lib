@@ -25,18 +25,19 @@ float knights::min_angle(float start, float target, bool rad) {
     return std::remainder(error,max);
 };
 
-int knights::direction(float init_heading, float des_heading) {
-float diff = des_heading - init_heading;
+int knights::direction(float init_heading, float des_heading, bool rad) {
+    float max = rad ? M_PI*2 : 360.0; 
+    float diff = knights::normalize_angle(des_heading, rad) - knights::normalize_angle(init_heading, rad);
 
-    if (diff < -180.0)
-        diff += 360.0;
-    if (diff > 180.0)
-        diff -= 360.0;
+    if (diff < -max/2)
+        diff += max;
+    if (diff > max/2)
+        diff -= max;
 
     if (diff > 0)
-        return 1;
-    else
         return -1;
+    else
+        return 1;
 }
 
 float knights::angular_error(float start, float target, int dir, bool rad) {

@@ -16,7 +16,7 @@ knights::ProfileGenerator::ProfileGenerator(float rpm, float wheel_diameter) :
     rpm(rpm), wheel_diameter(wheel_diameter) {}
 
 
-// could use squiggles
+// NOT CURRENTLY OPERATIONAL
 std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate_profile(knights::Route route, knights::Pos start, knights::Drivetrain* drivetrain, 
     float lookahead, float speed_max, float speed_min, float interval) {
 

@@ -19,6 +19,7 @@ namespace knights {
             bool use_motor_encoders = false;
 
             bool in_motion = false;
+
         public:
             /**
              * @brief Construct a new Robot Controller object
@@ -51,10 +52,19 @@ namespace knights {
              */
             void follow_route_pursuit(knights::Route &route, float lookahead_distance = 15.0, const float max_speed = 127.0, bool forwards = true, float end_tolerance = 8.0, float timeout = 5000, float use_pid = false);
 
-            // void follow_route_ramsete(std::vector<squiggles::ProfilePoint> profile, const float &lookahead_distance = 15.0, const float &end_tolerance = 8.0, float timeout = 5000);
 
             void move_to_point(const Pos desired_position, const bool forwards = true, const float &end_tolerance = 2.0, float timeout = 1000);
 
+            /**
+             * @brief Turn the robot to a specific angle
+             * 
+             * @param angle Angle to turn to
+             * @param direction Whether to turn left (-1), right (1), or best direction (0)
+             * @param end_tolerance Angle that the bot will stop moving at (ie if this is 5, the bot will stop moving 5 degrees before the heading) 
+             *                      - this is used to account for the center of the bot not being the front
+             * @param timeout Amount of time to wait before exiting the movement
+             * @param rad Whether the provided angle is in radians or not
+             */
             void turn_to_angle(const float angle, int direction,float end_tolerance = 3.0, float timeout = 2000, bool rad = false); // DEGREES
 
             /**

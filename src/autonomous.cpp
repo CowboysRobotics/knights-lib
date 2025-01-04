@@ -14,7 +14,7 @@
 
 #define INTAKE_VELOCITY 300
 
-#define LATERAL_kP 6
+#define LATERAL_kP 5
 #define LATERAL_kI 0
 #define LATERAL_kD 0.0065
 
@@ -105,27 +105,18 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
 void pp_test(knights::RobotChassis *chassis) {
 
-	std::string s = "test-forward.txt";
+	std::string s = "test-whole.txt";
 
 	knights::AdvancedRoute test_route = advanced_route_from_file(s);
-	for (auto route : test_route.routes) {
-		for (auto pt : route.second.positions) {
-			// knights::logger::green(knights::logger::string_format("pt: %lf %lf %lf", pt.x, pt.y, pt.heading));
-		}
-	}
-
-	for (auto action : test_route.actions) {
-		if (action.type == knights::action_type::LATERAL) {
-			knights::logger::yellow(knights::logger::string_format("vals: %lf %lf %lf\n", action.specific, action.end_tolerance, action.timeout));
-		}
-	}
-
-	chassis->set_position(knights::Pos(-54, 28, 3.14159));
-
+	// for (auto route : test_route.routes) {
+	// 	for (auto pt : route.second.positions) {
+	// 		// knights::logger::green(knights::logger::string_format("pt: %lf %lf %lf", pt.x, pt.y, pt.heading));
+	// 	}
+	// }
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 100.0);
 	knights::RobotController lateralController(chassis, &lateralPID);
 
 	knights::PIDController turnPID(TURN_kP, TURN_kI, TURN_kD, 10.0, 127.0);

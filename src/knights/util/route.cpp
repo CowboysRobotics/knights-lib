@@ -1,3 +1,4 @@
+#include "calculation.h"
 #include "knights/autonomous/path.h"
 #include "knights/logger/logger.h"
 #include "knights/util/position.h"
@@ -129,7 +130,6 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
 
                     knights::RouteAction new_action(knights::action_type::LATERAL, x, y, z);
 
-                    // not proprly pushing
                     ar_actions.push_back(new_action);
 
                     knights::logger::red(knights::logger::string_format("lateral: %lf %lf %lf", 
@@ -175,22 +175,24 @@ void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::PI
             knights::logger::red(knights::logger::string_format("lateral %lf", curr_action.specific));
         }
         else if (curr_action.type == knights::action_type::TURN) {
-            turnController.turn_to_angle(curr_action.specific, 0,curr_action.end_tolerance, curr_action.timeout, false);
+            turnController.turn_to_angle(curr_action.specific, 0,curr_action.end_tolerance, curr_action.timeout, true);
             knights::logger::green(knights::logger::string_format("turn %lf", curr_action.specific));
         }
         else if (curr_action.type == knights::action_type::FOLLOW && this->routes.contains(curr_action.route_name)) {
             lateralController.follow_route_pursuit(
                 this->routes[curr_action.route_name], 
                 curr_action.lookahead, 
-                127.0, // 127.0
-                true, 
+                lateral_pid->get_max_speed(), 
+                knights::signum(curr_action.lookahead),
                 curr_action.end_tolerance, 
                 curr_action.timeout
             );
-            knights::logger::cyan(knights::logger::string_format("follow: %s", curr_action.route_name.c_str()));
-            for (knights::Pos pos : this->routes[curr_action.route_name].positions) {
-                knights::logger::yellow(knights::logger::string_format("p: %lf %lf %lf", pos.x, pos.y, pos.heading));
-            }
+            knights::logger::cyan(knights::logger::string_format("follow: %s , pos: %lf %lf %lf , error: %lf", curr_action.route_name.c_str(), 
+                chassis->get_position().x, chassis->get_position().y, chassis->get_position().heading, 
+                knights::distance_btwn(chassis->get_position(), this->routes[curr_action.route_name].positions.back())));
+            // for (knights::Pos pos : this->routes[curr_action.route_name].positions) {
+            //     // knights::logger::yellow(knights::logger::string_format("p: %lf %lf %lf", pos.x, pos.y, pos.heading));
+            // }
         }
         else if (curr_action.type == knights::action_type::COMMAND) {
             input_map->execute_action(curr_action.function_name);
