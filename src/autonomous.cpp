@@ -14,7 +14,7 @@
 
 #define INTAKE_VELOCITY 300
 
-#define LATERAL_kP 5
+#define LATERAL_kP 4
 #define LATERAL_kI 0
 #define LATERAL_kD 0.0065
 
