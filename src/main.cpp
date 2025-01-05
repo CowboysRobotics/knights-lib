@@ -312,7 +312,7 @@ void redirection() {
 
 void opcontrol() {
 	// need to find a way to do this dynamically
-	chassis.set_position(knights::Pos(0, 0, 0));
+	chassis.set_position(knights::Pos(12, 12, knights::to_rad(90)));
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();
