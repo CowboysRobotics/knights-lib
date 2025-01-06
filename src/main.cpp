@@ -42,33 +42,23 @@ knights::PositionTracker backOdom(&back_odom, 2.75, 1, 3.1875);
 //assign ports to Lady Brown arm mech
 pros::Motor lb(21, pros::MotorGears::green);
 
-
 //assign ports to intake, leftside first, rightside second
 pros::Motor intake(20, pros::MotorGears::blue);
 
 //assign port to distance sensor for redirect
 pros::Distance redirect(6);
 
-
 //assign ports for pneumatics
 pros::adi::Pneumatics clamp(1, false); //clamp solenoid
 pros::adi::Pneumatics doinker(6, false); //doinker solenoid
 
-
-
-// make sure to take note if IMU is facing z axis up or down, changes how direction is calculated
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 3.25, 3/4);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
-
-// knights::PID_Controller pidController(0.4, 0.0001, 0.085, 0, 127);
 
 knights::RobotChassis chassis(
 	&drivetrain,
 	&odomTrackers
 );
-
-// knights::Robot_Controller botController(&chassis, &pidController, false);
-
 
 pros::Task *odomTask = nullptr;
 
@@ -113,9 +103,6 @@ void initialize() {
 
 	// intake.set_reversed(false,0);
 	// intake.set_reversed(true, 1);
-
-
-
 }
 
 /**
