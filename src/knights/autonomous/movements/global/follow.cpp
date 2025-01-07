@@ -69,10 +69,11 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
     int closest_i = 0;
     float closest_dist = 1e5;
     float error = distance_btwn(this->chassis->curr_position, route.positions[route.positions.size()-1]);
-    float prev_error = error; float total_error = 0.0;
 
     float max_lookahead = lookahead_distance;
     float angular_curve;
+
+    this->pid_controller->reset();
 
     // While the robot has not reached the desired point and is not at the end of the route
     while (error > end_tolerance && closest_i != route.positions.size()-1 ) {
@@ -93,7 +94,6 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
 
         // update error values
         error = distance_btwn(curr_position, route.positions[route.positions.size()-1]);
-        total_error += error;
 
         closest_dist = 1e5;
 
@@ -127,11 +127,10 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         if (target_speed < this->pid_controller->get_min_speed())
             break;
 
-        // // determine speed based on PID if selected to use
-        // if (use_pid) {
-        //     target_speed = this->pid_controller->update(error, total_error, prev_error);
-        // }
-        // prev_error = error;
+        // determine speed based on PID if selected to use
+        if (use_pid) {
+            target_speed = this->pid_controller->update(error);
+        }
 
         // calculate right and left speed based on curvature
         float r_speed = target_speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;

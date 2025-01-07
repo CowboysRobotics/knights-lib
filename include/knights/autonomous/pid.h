@@ -13,6 +13,9 @@ namespace knights {
             // values to clamp the PID to
             float max_velocity = 127.0; float min_velocity = 0.0;
 
+            // PID use values
+            float prev_error; float total_error;
+
             friend class RobotController;
         public:
             /**
@@ -44,11 +47,16 @@ namespace knights {
              * @brief Use the PID formula with the given tuner values in order to calculate a value that is adjusted for error
              * 
              * @param error desired value - current value
-             * @param total_error compounded value of all error values
-             * @param prev_error error from one iteration of the loop ago
              * @return a speed that is calculated with the PID formula
              */
-            float update(float error, float total_error, float prev_error);
+            float update(float error);
+
+            /**
+             * @brief Reset the internal values (total and previous error) of the PID controller
+             * 
+             * @return float 
+             */
+            void reset();
 
             /**
              * @brief Get the maximum speed of the controller

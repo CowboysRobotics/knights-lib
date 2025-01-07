@@ -16,6 +16,8 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
         float speed,error;
         float prev_error = fabsf(to_rad(angle)); float total_error = 0.0;
 
+        this->pid_controller->reset();
+
         if (this->use_motor_encoders) {
             // use circumfrence of circle divided by 360 times degrees to calculate how much one side would need to rotate
             // then divide by 2 bcuz both sides will be rotating
@@ -41,14 +43,8 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
                 // calculate error, convert position to distance so tuning is the same
                 error = this->chassis->drivetrain->position_to_distance(fabsf(desired_position) - fabsf((right_pos + left_pos)/2));
 
-                // integrate error
-                total_error += error;
-
                 // use pid formula to calculate speed
-                speed = this->pid_controller->update(error, total_error, prev_error);
-
-                // save previous error
-                prev_error = error;
+                speed = this->pid_controller->update(error);
 
                 // update positions of motors
                 right_pos = knights::avg(this->chassis->drivetrain->right_mtrs->get_position_all());
@@ -79,10 +75,8 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
                     break;
 
                 // calculate using PID formula
-                error = std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true));
-                total_error += error;
-                speed = this->pid_controller->update(error, total_error, prev_error);
-                prev_error = error;
+                error = std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true));\
+                speed = this->pid_controller->update(error);
 
                 this->chassis->drivetrain->velocity_command(-signum(angle) * speed, signum(angle) * speed);
 

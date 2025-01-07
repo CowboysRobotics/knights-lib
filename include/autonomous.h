@@ -3,7 +3,8 @@
 #ifndef _AUTONOMOUS_H_
 #define _AUTONOMOUS_H_
 
-#include "knights/robot/chassis.h"
+#include "knights/api.h"
+#include "globals.h"
 
 void pid_tuning(knights::RobotChassis *chassis);
 void pp_test(knights::RobotChassis *chassis);

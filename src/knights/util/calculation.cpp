@@ -35,9 +35,9 @@ int knights::direction(float init_heading, float des_heading, bool rad) {
         diff -= max;
 
     if (diff > 0)
-        return -1;
+        return -1; // counterclockwise
     else
-        return 1;
+        return 1; // clockwise
 }
 
 float knights::angular_error(float start, float target, int dir, bool rad) {
