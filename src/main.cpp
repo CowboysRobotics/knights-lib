@@ -1,4 +1,5 @@
 #include "main.h"
+#include "globals.h"
 #include "knights/logger/logger.h"
 #include "knights/util/calculation.h"
 #include "pros/misc.h"
@@ -53,6 +54,7 @@ void initialize() {
 
 	// intake.set_reversed(false,0);
 	// intake.set_reversed(true, 1);
+	lady_brown.set_reversed(true);
 }
 
 /**
@@ -211,9 +213,11 @@ void opcontrol() {
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1, intake_in, false); //assign intake forward toggle to controller button L1
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2, intake_out, false); //assign intake reverse toggle to controller button L2
 	
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, lady_brown_fwd, false); //assign intake forward toggle to controller button L1
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_DOWN, lady_brown_rev, false); //assign intake reverse toggle to controller button L2
-	
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, lady_brown_score, false); //assign lady brown position score to controller button up
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_DOWN, lady_brown_down, false); //assign lady brown down position to controller button down
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_LEFT, lady_brown_load1,false); //assign lady brown position load 1 to controller button left
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_RIGHT,lady_brown_load2,false); //assign lady brown position load 2 to controller button right
+
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_toggle, false); //assign clamp toggle to controller button R2
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doinker_toggle, false); //assign doinker toggle to controller button R1
 

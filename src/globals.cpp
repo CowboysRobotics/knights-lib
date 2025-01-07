@@ -10,6 +10,9 @@
 #include "knights/robot/drivetrain.h"
 #include "knights/robot/chassis.h"
 
+#include <cmath>
+#include <cstdio>
+
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
 // Competition Robot
@@ -40,7 +43,7 @@ knights::PositionTracker backOdom(&back_odom, 2.75, 1, 3.1875);
 
 //assign ports to Lady Brown arm mech
 pros::Motor lady_brown(21, pros::MotorGears::green);
-pros::Rotation lady_brown_rotation(1);
+pros::Rotation lady_brown_rotation(7);
 
 //assign ports to intake, leftside first, rightside second
 pros::Motor intake(20, pros::MotorGears::blue);
@@ -90,9 +93,9 @@ void intake_out() {
 }
 
 #define LADY_BROWN_VELOCITY 127.0
-#define LADY_BROWN_kP 1
+#define LADY_BROWN_kP 5
 #define LADY_BROWN_kI 0.001
-#define LADY_BROWN_kD 0.1
+#define LADY_BROWN_kD 0.3
 
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
@@ -135,12 +138,18 @@ void lady_brown_to_angle(float angle, int timeout) { // angle in 0-360 deg
     lady_brown_spinning = true;
 
     while (fabsf(error) > LADY_BROWN_END_TOLERANCE && lady_brown_spinning) {
-        error = angle - lady_brown_rotation.get_angle()/100.0;
+        error = fabs(angle - lady_brown_rotation.get_angle()/100.0);
+		
+		printf("error %F \n", fabs(error));
+		printf("direction %d \n", knights::direction(lady_brown_rotation.get_angle()/100.0,angle,false));
+
+
 
         lady_brown.move(
             -lady_brown_PID.update(error) * 
             knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false)
         );
+
 
         timeout -= 20;
         if (timeout < 0) {
