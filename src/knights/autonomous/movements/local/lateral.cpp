@@ -15,11 +15,12 @@ void knights::RobotController::lateral_move(const float distance, const float en
     this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
     this->chassis->drivetrain->left_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
 
+    this->pid_controller->reset();
+
     // lateral move the chassis of a robot
     if (this->chassis->drivetrain != nullptr) {
         // move function for differential drive
         float speed,error;
-        float prev_error = distance; float total_error = 0.0;
 
         if (this->use_motor_encoders) {
             // reset motor encoders to 0
@@ -43,14 +44,8 @@ void knights::RobotController::lateral_move(const float distance, const float en
                 // calculate error, convert position to distance so tuning is the same
                 error = this->chassis->drivetrain->position_to_distance(fabsf(desired_position) - fabsf((right_pos + left_pos)/2));
 
-                // integrate error
-                total_error += error;
-
                 // use pid formula to calculate speed
-                speed = this->pid_controller->update(error, total_error, prev_error) * knights::signum(distance);
-
-                // save previous error
-                prev_error = error;
+                speed = this->pid_controller->update(error) * knights::signum(distance);
 
                 // update positions of motors
                 right_pos = knights::avg(this->chassis->drivetrain->right_mtrs->get_position_all());
@@ -76,20 +71,12 @@ void knights::RobotController::lateral_move(const float distance, const float en
                 // calculate error
                 error = knights::distance_btwn(this->chassis->curr_position, desired_position);
 
-                // integrate error
-                total_error += error;
-
                 // use pid formula to calculate speed
-                speed = this->pid_controller->update(error, total_error, prev_error) * knights::signum(distance);
-
-                // printf("ptg,%lf,%d,\n", error, pros::millis());
+                speed = this->pid_controller->update(error) * knights::signum(distance);
 
                 if (fabs(speed) <= this->pid_controller->min_velocity) {
                     break;
                 }
-
-                // save previous error
-                prev_error = error;
 
                 // --- EXPERIMENTAL
                 float angular_curve = curvature(this->chassis->curr_position, desired_position);

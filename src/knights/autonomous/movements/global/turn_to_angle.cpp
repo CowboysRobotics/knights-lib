@@ -39,6 +39,8 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
     this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
     this->chassis->drivetrain->left_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
 
+    this->pid_controller->reset();
+
     while(std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true)) > end_tolerance) {
 
         timeout -= 10;
@@ -47,11 +49,7 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
         // calculate w/ PID formula
         error = std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true));
 
-        total_error += error;
-
-        speed = this->pid_controller->update(error, total_error, prev_error);
-
-        prev_error = error;
+        speed = this->pid_controller->update(error);
 
         knights::logger::green(knights::logger::string_format("des angle: %lf, curr angle %lf, error %lf, speed: %lf\n", desired_angle, this->chassis->curr_position.heading, error, speed));
 

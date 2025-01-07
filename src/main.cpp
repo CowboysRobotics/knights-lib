@@ -10,56 +10,6 @@
 #include <string>
 #include <unordered_map>
 
-pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
-
-// Competition Robot
-//front of bot is intake side
-//assign ports to right side drive-train
-pros::MotorGroup right_mtrs({2,3,4}, pros::MotorGears::blue); // no reverse
-//assign ports to left side drive-train
-pros::MotorGroup left_mtrs({14,16,13}, pros::MotorGears::blue); // no reverse
-//assign ports to odom pods for position tracking
-pros::Rotation mid_odom(12); // parallel tracking
-pros::Rotation back_odom(19); // perpendicular tracking
-//assign port for imu tracker
-pros::IMU imu(17);
-//dimensions and positions of odom pods for calculations for position tracking
-knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.825);
-knights::PositionTracker backOdom(&back_odom, 2.75, 1, 3.1875);
-// #### END
-
-// // #### Test Robot
-// pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
-// pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
-// pros::Rotation mid_odom(18);
-// pros::Rotation back_odom(14);
-// pros::IMU imu(15);
-// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
-// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
-// // #### END
-
-
-//assign ports to Lady Brown arm mech
-pros::Motor lb(21, pros::MotorGears::green);
-
-//assign ports to intake, leftside first, rightside second
-pros::Motor intake(20, pros::MotorGears::blue);
-
-//assign port to distance sensor for redirect
-pros::Distance redirect(6);
-
-//assign ports for pneumatics
-pros::adi::Pneumatics clamp(1, false); //clamp solenoid
-pros::adi::Pneumatics doinker(6, false); //doinker solenoid
-
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 3.25, 3/4);
-knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
-
-knights::RobotChassis chassis(
-	&drivetrain,
-	&odomTrackers
-);
-
 pros::Task *odomTask = nullptr;
 
 /**
@@ -219,88 +169,6 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-#define velocity_formula(x) 160*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20 // arbitrarily defined formula to translate joysticks to velocity
-
-#define INTAKE_VELOCITY 300
-
-
-bool intake_spinning = false;
-bool intake_forward = false;
-
-void intake_fwd() {
-	if (intake_spinning == true && intake_forward == true) { // If intake is on or in wrong direction
-		intake.move(0); // stop intake
-		intake_spinning = false;
-	} else {
-		intake.move(INTAKE_VELOCITY); // Spin intake forward
-		intake_spinning = true;
-		intake_forward = true;
-	}
-}
-
-void intake_rev() {
-	if (intake_spinning == true && intake_forward == false) { // If intake is spinning or in the wrong direction
-		intake.move(0); // stop intake
-		intake_spinning = false;
-	} else { 
-		intake.move(-INTAKE_VELOCITY); // Spin the intake in reverse
-		intake_spinning = true;
-		intake_forward = false;
-	}
-}
-
-
-
-#define LADY_BROWN_VELOCITY 300
-
-
-bool lady_brown_spinning = false;
-bool lady_brown_forward = false;
-
-void lady_brown_fwd() {
-	if (lady_brown_spinning == true && lady_brown_forward == true) { // If intake is on or in wrong direction
-		lb.move(0); // stop intake
-		lady_brown_spinning = false;
-	} else {
-		lb.move(LADY_BROWN_VELOCITY); // Spin intake forward
-		lady_brown_spinning = true;
-		lady_brown_forward = true;
-	}
-}
-
-void lady_brown_rev() {
-	if (lady_brown_spinning == true && lady_brown_forward == false) { // If intake is spinning or in the wrong direction
-		lb.move(0); // stop intake
-		lady_brown_spinning = false;
-	} else { 
-		lb.move(-INTAKE_VELOCITY); // Spin the intake in reverse
-		lady_brown_spinning = true;
-		lady_brown_forward = false;
-	}
-}
-
-
-
-
-
-
-bool clamp_down = false;
-
-void clamp_toggle() {
-	clamp_down = !clamp_down; //toggle whether active or inactive mode
-	clamp.set_value(clamp_down); //activate clamp if inactive or deactivate clamp if active
-}
-
-
-bool doinker_activate = false;
-
-void doinker_toggle() {
-	doinker_activate = !doinker_activate; //toggle whether active or inactive mode
-	doinker.set_value(doinker_activate); //extend doinker if inactive or retract clamp if active
-}
-
-
-
 
 void opcontrol() {
 	// need to find a way to do this dynamically
@@ -340,8 +208,8 @@ void opcontrol() {
 	knights::input::InputMap input;
 
 	// Bind the requied input actions to the input map
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1, intake_fwd, false); //assign intake forward toggle to controller button L1
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2, intake_rev, false); //assign intake reverse toggle to controller button L2
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1, intake_in, false); //assign intake forward toggle to controller button L1
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2, intake_out, false); //assign intake reverse toggle to controller button L2
 	
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, lady_brown_fwd, false); //assign intake forward toggle to controller button L1
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_DOWN, lady_brown_rev, false); //assign intake reverse toggle to controller button L2

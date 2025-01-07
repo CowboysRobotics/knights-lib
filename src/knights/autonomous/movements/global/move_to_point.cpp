@@ -14,7 +14,8 @@ void knights::RobotController::move_to_point(const Pos desired_position, const b
     if (this->chassis->drivetrain != nullptr) {
         // move function for differential drive
         float speed,error;
-        float prev_error = distance_btwn(desired_position, this->chassis->curr_position); float total_error = 0.0;
+
+        this->pid_controller->reset();
         
         while (knights::distance_btwn(this->chassis->curr_position, desired_position) > end_tolerance || 
             knights::distance_btwn(this->chassis->prev_position, desired_position) < knights::distance_btwn(this->chassis->curr_position, desired_position)) {
@@ -25,11 +26,8 @@ void knights::RobotController::move_to_point(const Pos desired_position, const b
             // calculate error
             error = knights::distance_btwn(this->chassis->curr_position, desired_position);
 
-            // integrate error
-            total_error += error;
-
             // use pid formula to calculate speed
-            speed = this->pid_controller->update(error, total_error, prev_error);
+            speed = this->pid_controller->update(error);
 
             // end if speed below minimum
             if (fabs(speed) <= this->pid_controller->min_velocity) {
@@ -39,9 +37,6 @@ void knights::RobotController::move_to_point(const Pos desired_position, const b
             // reverse speed to move backward
             if (!forwards)
                 speed *= -1;
-
-            // save previous error
-            prev_error = error;
 
             // calculate angular curve to point we want to go at
             float angular_curve = curvature(this->chassis->curr_position, desired_position);
