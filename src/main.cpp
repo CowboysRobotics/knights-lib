@@ -33,26 +33,26 @@ void initialize() {
 
 	knights::logger::blue("Initialization End");
 
-	// #### Competition Robot
-	//front of the bot is intake
-	//assign direction to left side drive-train motors 
-	left_mtrs.set_reversed(false, 0);
-	left_mtrs.set_reversed(false, 1);
-	left_mtrs.set_reversed(true, 2);
-	//assign direction to right side drive-train motors
-	right_mtrs.set_reversed(true, 0);
-	right_mtrs.set_reversed(true, 1);
-	right_mtrs.set_reversed(false, 2);
-	// ####
-
-	// // #### Test Bot
-	// left_mtrs.set_reversed(true, 0);
-	// left_mtrs.set_reversed(true, 1);
+	// // #### Competition Robot
+	// //front of the bot is intake
+	// //assign direction to left side drive-train motors 
+	// left_mtrs.set_reversed(false, 0);
+	// left_mtrs.set_reversed(false, 1);
 	// left_mtrs.set_reversed(true, 2);
+	// //assign direction to right side drive-train motors
+	// right_mtrs.set_reversed(true, 0);
+	// right_mtrs.set_reversed(true, 1);
+	// right_mtrs.set_reversed(false, 2);
 	// // ####
 
-	// intake.set_reversed(false,0);
-	// intake.set_reversed(true, 1);
+	// #### Test Bot
+	left_mtrs.set_reversed(true, 0);
+	left_mtrs.set_reversed(true, 1);
+	left_mtrs.set_reversed(true, 2);
+	// ####
+
+	intake.set_reversed(false,0);
+	intake.set_reversed(true, 1);
 }
 
 /**
