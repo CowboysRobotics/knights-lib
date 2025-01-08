@@ -18,9 +18,9 @@ pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 // Competition Robot
 //front of bot is intake side
 //assign ports to right side drive-train
-pros::MotorGroup right_mtrs({2,3,4}, pros::MotorGears::blue); // no reverse
+pros::MotorGroup left_mtrs({2,3,4}, pros::MotorGears::blue); // no reverse
 //assign ports to left side drive-train
-pros::MotorGroup left_mtrs({14,16,13}, pros::MotorGears::blue); // no reverse
+pros::MotorGroup right_mtrs({14,16,13}, pros::MotorGears::blue); // no reverse
 //assign ports to odom pods for position tracking
 pros::Rotation mid_odom(12); // parallel tracking
 pros::Rotation back_odom(19); // perpendicular tracking
@@ -130,7 +130,15 @@ void lady_brown_rev() {
 	}
 }
 
-void lady_brown_to_angle(float angle, int timeout) { // angle in 0-360 deg
+void lady_brown_to_angle(float angle, int timeout, bool async = true) { // angle in 0-360 deg
+	if (async) {
+		pros::Task task([&]() {
+			lady_brown_to_angle(angle, timeout, false);
+		});
+		pros::delay(20);
+		return;
+	}
+
     float error = angle - lady_brown_rotation.get_angle()/100.0;
 
     lady_brown_PID.reset();
@@ -175,6 +183,7 @@ void lady_brown_load2() {
 }
 
 void lady_brown_score() {
+	intake.move(0);
     lady_brown_to_angle(LADY_BROWN_SCORE, 1000);
 }
 

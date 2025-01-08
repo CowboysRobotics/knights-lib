@@ -241,8 +241,8 @@ void opcontrol() {
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
 		drivetrain.velocity_command(
-			right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)), 
-			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y))
+			left_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)),
+			right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))
 		);
 
 		// Delay to let other tasks run
