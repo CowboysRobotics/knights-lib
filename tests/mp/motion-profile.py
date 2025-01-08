@@ -6,7 +6,7 @@ def dist(pt1, pt2):
 
 route = []
 
-file = open("tests/mptestroute.txt", "r")
+file = open("tests/mp/mptestroute.txt", "r")
 
 for line in file:
     route.append([float(line.split()[0]), float(line.split()[1])])

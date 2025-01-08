@@ -125,6 +125,18 @@ namespace knights {
 
     float to_meters(float inches);
     float to_inches(float meters);
+
+    /**
+     * @brief Declare value as inches
+     * 
+     */
+    constexpr long double operator"" _in(unsigned long long inches);
+
+    /**
+     * @brief Declare value as meters
+     * 
+     */
+    constexpr long double operator"" _m(unsigned long long meters);
 }
 
 #endif

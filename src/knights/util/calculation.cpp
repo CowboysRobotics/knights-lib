@@ -80,3 +80,11 @@ float knights::to_meters(float inches) {
 float knights::to_inches(float meters) {
     return meters*39.37;
 }
+
+constexpr long double operator"" _in(unsigned long long inches) {
+    return static_cast<long double>(inches);
+}
+
+constexpr long double operator"" _m(unsigned long long meters) {
+    return static_cast<long double>(knights::to_meters(meters));
+}
