@@ -172,7 +172,7 @@ void autonomous() {
 
 void opcontrol() {
 	// need to find a way to do this dynamically
-	chassis.set_position(knights::Pos(12_in, 12_in, knights::to_rad(90)));
+	chassis.set_position(knights::Pos(12.0_in, 12.0_in, knights::to_rad(90)));
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();
