@@ -19,6 +19,8 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
 	knights::PIDController turnPID(TURN_kP, TURN_kI, TURN_kD, 10.0, 127.0);
 	knights::RobotController turnController(chassis, &turnPID);
+
+	lateralController.lateral_move(24);
 }
 
 

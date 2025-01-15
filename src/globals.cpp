@@ -22,13 +22,13 @@ pros::MotorGroup left_mtrs({2,3,4}, pros::MotorGears::blue); // no reverse
 //assign ports to left side drive-train
 pros::MotorGroup right_mtrs({14,16,13}, pros::MotorGears::blue); // no reverse
 //assign ports to odom pods for position tracking
-pros::Rotation mid_odom(12); // parallel tracking
-pros::Rotation back_odom(19); // perpendicular tracking
+pros::Rotation mid_odom(8); // parallel tracking
+pros::Rotation back_odom(	11); // perpendicular tracking
 //assign port for imu tracker
-pros::IMU imu(17);
+pros::IMU imu(6);
 //dimensions and positions of odom pods for calculations for position tracking
-knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 2.825);
-knights::PositionTracker backOdom(&back_odom, 2.75, 1, 3.1875);
+knights::PositionTracker midOdom(&mid_odom, 2, 1, 1.25, -1);
+knights::PositionTracker backOdom(&back_odom, 2, 1, 1.875, -1);
 // #### END
 
 // // #### Test Robot
@@ -53,7 +53,7 @@ pros::Distance redirect(6);
 
 //assign ports for pneumatics
 pros::adi::Pneumatics clamp(1, false); //clamp solenoid
-pros::adi::Pneumatics doinker(6, false); //doinker solenoid
+pros::adi::Pneumatics doinker(3, false); //doinker solenoid
 
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 3.25, 3/4);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
@@ -93,16 +93,16 @@ void intake_out() {
 }
 
 #define LADY_BROWN_VELOCITY 127.0
-#define LADY_BROWN_kP 5
-#define LADY_BROWN_kI 0.001
-#define LADY_BROWN_kD 0.3
+#define LADY_BROWN_kP 2.3
+#define LADY_BROWN_kI 0.000
+#define LADY_BROWN_kD 0.6
 
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
 #define LADY_BROWN_DOWN 0
-#define LADY_BROWN_LOAD1 32
-#define LADY_BROWN_LOAD2 32
-#define LADY_BROWN_SCORE 150
+#define LADY_BROWN_LOAD1 29
+#define LADY_BROWN_LOAD2 37
+#define LADY_BROWN_SCORE 155
 #define LADY_BROWN_END_TOLERANCE 1.0
 
 bool lady_brown_spinning = false;
@@ -148,11 +148,6 @@ void lady_brown_to_angle(float angle, int timeout, bool async = true) { // angle
     while (fabsf(error) > LADY_BROWN_END_TOLERANCE && lady_brown_spinning) {
         error = fabs(angle - lady_brown_rotation.get_angle()/100.0);
 		
-		printf("error %F \n", fabs(error));
-		printf("direction %d \n", knights::direction(lady_brown_rotation.get_angle()/100.0,angle,false));
-
-
-
         lady_brown.move(
             -lady_brown_PID.update(error) * 
             knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false)
@@ -168,23 +163,26 @@ void lady_brown_to_angle(float angle, int timeout, bool async = true) { // angle
     }
 
     lady_brown.move(0);
+	printf("error: %F \n", error);
+	printf("position: %i \n", lady_brown_rotation.get_angle());
+
 }
 
 void lady_brown_down() {
-    lady_brown_to_angle(LADY_BROWN_DOWN, 1000);
+    lady_brown_to_angle(LADY_BROWN_DOWN, 1500);
 }
 
 void lady_brown_load1() {
-    lady_brown_to_angle(LADY_BROWN_LOAD1, 1000);
+    lady_brown_to_angle(LADY_BROWN_LOAD1, 1500);
 }
 
 void lady_brown_load2() {
-    lady_brown_to_angle(LADY_BROWN_LOAD2, 1000);
+    lady_brown_to_angle(LADY_BROWN_LOAD2, 1500);
 }
 
 void lady_brown_score() {
 	intake.move(0);
-    lady_brown_to_angle(LADY_BROWN_SCORE, 1000);
+    lady_brown_to_angle(LADY_BROWN_SCORE, 1500);
 }
 
 bool clamp_down = false;
