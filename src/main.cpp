@@ -88,13 +88,13 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// // Different autons, None0 is the default auton
-	// // auton_map["None0"] = &blue_right;
-	// // chassis.set_position(knights::Pos(54.5, 12.5, 4.234));
+	auton_map["None0"] = &skills;
+	chassis.set_position(knights::Pos(-60, 0, 0));
 
 	// // auton_map["None0"] = &skills;
     // // chassis.set_position(knights::Pos(-59, 0, 0));
 
-	// auton_map["Red1"] = &red_left_wp_new;
+	auton_map["Red1"] = &red_left_wp;
 	// auton_map["Blue1"] = &blue_right_wp_new;
 	// auton_map["Red3"] = &red_rush_right_elim;
 	// // auton_map["Blue2"] = &blue_rush_left_elim;
@@ -102,24 +102,22 @@ void autonomous() {
 	// auton_map["Blue4"] = &skills;
     // //  chassis.set_position(knights::Pos(38, 48, 4.081));
 
-	auton_map["None0"] = &pid_tuning;
-	chassis.set_position(knights::Pos(0,0,knights::to_rad(0)));
+	// auton_map["None0"] = &pp_test;
+	// chassis.set_position(knights::Pos(-60,0,knights::to_rad(0)));
 
 	//chassis.set_position(knights::Pos(59, 0, 0));
 
 	// chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
 
-	// if (package.type + std::to_string(package.number) == "Red1") {
-	// chassis.set_position(knights::Pos(-56.5,15,3.95728));
-	// } else if (package.type + std::to_string(package.number) == "Blue1") {
-	// chassis.set_position(knights::Pos(-56.5,15,knights::normalize_angle(-3.95728)));
-	// } else if (package.type + std::to_string(package.number) == "Blue4") {
-	// 	chassis.set_position(knights::Pos(-59, 0, 0));
-	// // } else if (package.type + std::to_string(package.number) == "Blue2") {
-	// // 	chassis.set_position(knights::Pos(-59, 0, M_PI));
-	// } else if (package.type + std::to_string(package.number) == "Red3") {
-	// chassis.set_position(knights::Pos(-48.0,-60.0,3.14159265));
-	// }
+	if (package.type + std::to_string(package.number) == "Red1") { // red left
+		chassis.set_position(knights::Pos(-55.1, 37.5, 0));
+	} else if (package.type + std::to_string(package.number) == "Blue1") {
+		chassis.set_position(knights::Pos(-56.5,15,knights::normalize_angle(-3.95728)));
+	} else if (package.type + std::to_string(package.number) == "Blue4") {
+		chassis.set_position(knights::Pos(-59, 0, 0));
+	} else if (package.type + std::to_string(package.number) == "Red3") {
+	chassis.set_position(knights::Pos(-48.0,-60.0,3.14159265));
+	}
 
 	// need to find a way to do this dynamically
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));

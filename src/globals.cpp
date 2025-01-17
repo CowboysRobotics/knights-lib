@@ -54,6 +54,7 @@ pros::Distance redirect(6);
 //assign ports for pneumatics
 pros::adi::Pneumatics clamp(1, false); //clamp solenoid
 pros::adi::Pneumatics doinker(3, false); //doinker solenoid
+pros::adi::Pneumatics rush_mech(2, false); //rush mech solenoid
 
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 3.25, 3/4);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
@@ -100,8 +101,8 @@ void intake_out() {
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
 #define LADY_BROWN_DOWN 0
-#define LADY_BROWN_LOAD1 29
-#define LADY_BROWN_LOAD2 37
+#define LADY_BROWN_LOAD1 37
+#define LADY_BROWN_LOAD2 36
 #define LADY_BROWN_SCORE 155
 #define LADY_BROWN_END_TOLERANCE 1.0
 
@@ -197,4 +198,11 @@ bool doinker_activate = false;
 void doinker_toggle() {
 	doinker_activate = !doinker_activate; //toggle whether active or inactive mode
 	doinker.set_value(doinker_activate); //extend doinker if inactive or retract clamp if active
+}
+
+bool rush_mech_down = false;
+
+void toggle_rush_mech() {
+	rush_mech_down = !rush_mech_down;
+	rush_mech.set_value(rush_mech_down);
 }

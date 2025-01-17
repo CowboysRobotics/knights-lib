@@ -1,5 +1,6 @@
 #include "autonomous.h" 
 #include "hold-cold-asset/asset.hpp"
+#include "knights/autonomous/path.h"
 
 #define RIGHT 1
 #define LEFT -1
@@ -53,7 +54,7 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
 void pp_test(knights::RobotChassis *chassis) {
 
-	std::string s = "test-whole.txt";
+	std::string s = "test-skills.txt";
 
 	knights::AdvancedRoute test_route = advanced_route_from_file(s);
 	// for (auto route : test_route.routes) {
@@ -83,15 +84,27 @@ void pp_test(knights::RobotChassis *chassis) {
     inputMap.bind_action("intakeRev", intake_out);
     inputMap.bind_action("intakeFwd", intake_in);
     inputMap.bind_action("clamp", clamp_toggle);
-
+	inputMap.bind_action("lbDown", lady_brown_down);
+	inputMap.bind_action("lbLoad1", lady_brown_load1);
+	inputMap.bind_action("lbScore", lady_brown_score);
+	inputMap.bind_action("rushMech", toggle_rush_mech);
 
 	test_route.execute(chassis, &lateralPID, &turnPID_90, &inputMap);
 }
 
 #define WAIT 140
 
+#define w pros::delay(WAIT)
+#define tw(x) pros::delay((x)*WAIT)
+
 void skills(knights::RobotChassis *chassis) {
 	knights::RamseteConstants ramsete_constants(1, 0.5);
+
+	knights::Route otherside_1 = knights::init_route_from_sd("os_skills.txt");
+
+	for (auto pos : otherside_1.positions) {
+		printf("pos %lf %lf read\n", pos.x, pos.y);
+	}
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
 	knights::RobotController lateralController(chassis, &lateralPID);
@@ -108,15 +121,75 @@ void skills(knights::RobotChassis *chassis) {
 	knights::PIDController turnPID_180(TURN_kP_180, TURN_kI_180, TURN_kD_180, 10.0, 127.0);
 	knights::RobotController turnController_180(chassis, &turnPID_180);
 
-	intake.set_reversed(false,0);
-	intake.set_reversed(true, 1);
+	lateralController.lateral_move(-8);
+
+	// intake_in();
+
+	tw(4);
+
+	// intake_in();
+
+	lateralController.lateral_move(12); w;
+
+	turnController_90.turn_to_angle(90); w;
+
+	lateralController.lateral_move(-24); tw(2);
+
+	clamp_toggle(); tw(2);
+	// intake_in();
+
+	turnController_90.turn_to_angle(0); w;
+
+	lateralController.lateral_move(20); w;
+
+	turnController_45.turn_to_angle(330); w;
+
+	lateralController.lateral_move(50, 3.0, 1500); tw(3);
+
+	lady_brown_load1();
+	intake_in();
+
+	turnController_90.turn_to_angle(220); w;
+
+	lateralController.lateral_move(24); tw(3);
+
+	turnController_45.turn_to_angle(270); w;
+
+	lateralController.lateral_move(12); w;
+
+	lady_brown_score(); tw(5); lady_brown_down(); intake_in();
+
+	lateralController.lateral_move(-12); w;
+
+	turnController_90.turn_to_angle(180); w;
+
+	lateralController.lateral_move(56, 3.0, 2000); tw(3);
+
+	lateralController.lateral_move(-12); w;
+
+	turnController_90.turn_to_angle(270); w;
+
+	lateralController.lateral_move(16); tw(2); w;
+
+	turnController_90.turn_to_angle(0); w;
+
+	lateralController.lateral_move(-8); w;
+
+	clamp_toggle(); tw(3);
+
+
+
+
+
+
 
 }
 
 void red_left_wp(knights::RobotChassis *chassis) {
-	knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 100.0);
 	knights::RobotController lateralController(chassis, &lateralPID);
 
 	knights::PIDController turnPID_45(TURN_kP_45, TURN_kI_45, TURN_kD_45, 10.0, 127.0);
@@ -131,9 +204,41 @@ void red_left_wp(knights::RobotChassis *chassis) {
 	knights::PIDController turnPID_180(TURN_kP_180, TURN_kI_180, TURN_kD_180, 10.0, 127.0);
 	knights::RobotController turnController_180(chassis, &turnPID_180);
 	
-	intake.set_reversed(false,0);
-	intake.set_reversed(true, 1);
+	toggle_rush_mech();
 
+	lateralController.lateral_move(20);
+
+	pros::delay(WAIT);
+
+	turnController_45.turn_to_angle(32, 0);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(19);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(-12);
+
+	pros::delay(WAIT);
+
+	toggle_rush_mech();
+
+	turnController_90.turn_to_angle(100, 0);
+
+	pros::delay(WAIT);
+
+	lateralController.lateral_move(-16);
+
+	clamp_toggle();
+
+	pros::delay(WAIT);
+
+	intake_in();
+
+	pros::delay(2*WAIT);
+
+	lateralController.lateral_move(24);
 }
 
 

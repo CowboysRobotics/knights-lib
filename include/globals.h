@@ -85,5 +85,6 @@ void lady_brown_load2();
 void lady_brown_score();
 void clamp_toggle();
 void doinker_toggle();
+void toggle_rush_mech();
 
 #endif // ROBOT_CONFIG_H
