@@ -74,7 +74,7 @@ static void event_handler(lv_event_t * e) {
         uint32_t id = lv_btnmatrix_get_selected_btn(obj);
         const char * txt = lv_btnmatrix_get_btn_text(obj, id);
 
-        if (strcmp(txt, "Red") || strcmp(txt, "Blue") || strcmp(txt, "Skills")) {
+        if (strcmp(txt, "Red") || strcmp(txt, "Blue")) {
             curr_package.type = txt;
         } else if (!strcmp(txt, "Enter")) {
             curr_package.number = std::stoi(txt);
@@ -83,7 +83,7 @@ static void event_handler(lv_event_t * e) {
     }
 }
 
-static const char* type_map[] = {"Red", "Blue", "Skills", ""};
+static const char* type_map[] = {"Red", "Blue", ""};
 
 static const char* num_map[] = {"1", "2", "3", "4", ""};
 
