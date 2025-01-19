@@ -78,19 +78,19 @@ void knights::RobotController::lateral_move(const float distance, const float en
                     break;
                 }
 
-                // --- EXPERIMENTAL
-                float angular_curve = curvature(this->chassis->curr_position, desired_position);
+                // // --- EXPERIMENTAL
+                // float angular_curve = curvature(this->chassis->curr_position, desired_position);
                 
-                // calculate right and left speed based on curvature
-                float r_speed = speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;
-                float l_speed = speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2;
+                // // calculate right and left speed based on curvature
+                // float r_speed = speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;
+                // float l_speed = speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2;
 
-                // calculate if one is over max alloted speed (might need to be 127.0 - max speed in pros)
-                float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / this->pid_controller->max_velocity; 
-                if (max_curr_speed > 1) {
-                    r_speed /= max_curr_speed;
-                    l_speed /= max_curr_speed;
-                }
+                // // calculate if one is over max alloted speed (might need to be 127.0 - max speed in pros)
+                // float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / this->pid_controller->max_velocity; 
+                // if (max_curr_speed > 1) {
+                //     r_speed /= max_curr_speed;
+                //     l_speed /= max_curr_speed;
+                // }
 
                 // send command to drivetrain
                 this->chassis->drivetrain->velocity_command(speed,speed);

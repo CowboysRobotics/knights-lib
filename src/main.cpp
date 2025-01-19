@@ -88,18 +88,21 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// // Different autons, None0 is the default auton
-	auton_map["None0"] = &skills;
-	chassis.set_position(knights::Pos(-60, 0, 0));
+	auton_map["None0"] = &alt_skills;
+	chassis.set_position(knights::Pos(-55.1,0,0));
+	
+	//chassis.set_position(knights::Pos(-60,0,0));
+	//chassis.set_position(knights::Pos(-58, -15,knights::to_rad(180)));
 
 	// // auton_map["None0"] = &skills;
     // // chassis.set_position(knights::Pos(-59, 0, 0));
 
-	auton_map["Red1"] = &red_left_wp;
-	// auton_map["Blue1"] = &blue_right_wp_new;
-	// auton_map["Red3"] = &red_rush_right_elim;
-	// // auton_map["Blue2"] = &blue_rush_left_elim;
+	auton_map["Red1"] = &red_rush_right_wp;
+	auton_map["Red2"] = &red_left_wp;
+	auton_map["Blue1"] = &blue_rush_left_wp;
+	auton_map["Blue2"] = &blue_right_wp;
 
-	// auton_map["Blue4"] = &skills;
+	auton_map["Blue4"] = &skills;
     // //  chassis.set_position(knights::Pos(38, 48, 4.081));
 
 	// auton_map["None0"] = &pp_test;
@@ -109,14 +112,14 @@ void autonomous() {
 
 	// chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
 
-	if (package.type + std::to_string(package.number) == "Red1") { // red left
-		chassis.set_position(knights::Pos(-55.1, 37.5, 0));
-	} else if (package.type + std::to_string(package.number) == "Blue1") {
-		chassis.set_position(knights::Pos(-56.5,15,knights::normalize_angle(-3.95728)));
+	printf("%s\n", package.type + std::to_string(package.number));
+
+	if (package.type + std::to_string(package.number) == "Red1" || package.type + std::to_string(package.number) == "Blue1") {
+		chassis.set_position(knights::Pos(-58, -15, knights::to_rad(180))); // only works b/c -180 == 180
+	} else if (package.type + std::to_string(package.number) == "Red2" || package.type + std::to_string(package.number) == "Blue2") {
+		chassis.set_position(knights::Pos(-55.1,37.5,0)); // only works b/c -0 == 0
 	} else if (package.type + std::to_string(package.number) == "Blue4") {
 		chassis.set_position(knights::Pos(-59, 0, 0));
-	} else if (package.type + std::to_string(package.number) == "Red3") {
-	chassis.set_position(knights::Pos(-48.0,-60.0,3.14159265));
 	}
 
 	// need to find a way to do this dynamically
@@ -213,8 +216,8 @@ void opcontrol() {
 	
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_Y, lady_brown_score, false); //assign lady brown position score to controller button up
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B, lady_brown_down, false); //assign lady brown down position to controller button down
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_DOWN, lady_brown_load1,false); //assign lady brown position load 1 to controller button left
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_RIGHT,lady_brown_load2,false); //assign lady brown position load 2 to controller button right
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_DOWN, lady_brown_load2,false); //assign lady brown position load 1 to controller button left
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_RIGHT,lady_brown_load1,false); //assign lady brown position load 2 to controller button right
 
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_toggle, false); //assign clamp toggle to controller button R2
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doinker_toggle, false); //assign doinker toggle to controller button R1

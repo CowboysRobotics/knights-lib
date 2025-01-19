@@ -1,5 +1,6 @@
 #pragma once
 
+#include "knights/robot/chassis.h"
 #ifndef _AUTONOMOUS_H_
 #define _AUTONOMOUS_H_
 
@@ -18,6 +19,7 @@ void red_left_wp(knights::RobotChassis *chassis);
 void red_rush_right_wp(knights::RobotChassis *chassis);
 void blue_right_wp(knights::RobotChassis *chassis);
 void blue_rush_left_wp(knights::RobotChassis *chassis);
+void alt_skills(knights::RobotChassis *chassis);
 
 void red_left_elim(knights::RobotChassis *chassis);
 void red_rush_right_elim(knights::RobotChassis *chassis);

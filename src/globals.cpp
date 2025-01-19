@@ -101,9 +101,10 @@ void intake_out() {
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
 #define LADY_BROWN_DOWN 0
-#define LADY_BROWN_LOAD1 37
-#define LADY_BROWN_LOAD2 36
+#define LADY_BROWN_LOAD1 36
+#define LADY_BROWN_LOAD2 225
 #define LADY_BROWN_SCORE 155
+#define LADY_BROWN_ALLIANCE 193
 #define LADY_BROWN_END_TOLERANCE 1.0
 
 bool lady_brown_spinning = false;
@@ -181,9 +182,16 @@ void lady_brown_load2() {
     lady_brown_to_angle(LADY_BROWN_LOAD2, 1500);
 }
 
-void lady_brown_score() {
+void lady_brown_score() {;
+	intake_spinning = false;
 	intake.move(0);
     lady_brown_to_angle(LADY_BROWN_SCORE, 1500);
+}
+
+void lady_brown_alliance() {
+	intake_spinning = false;
+	intake.move(0);
+    lady_brown_to_angle(LADY_BROWN_ALLIANCE, 1500);
 }
 
 bool clamp_down = false;

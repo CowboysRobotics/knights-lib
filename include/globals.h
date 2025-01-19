@@ -83,6 +83,7 @@ void lady_brown_down();
 void lady_brown_load1();
 void lady_brown_load2();
 void lady_brown_score();
+void lady_brown_alliance();
 void clamp_toggle();
 void doinker_toggle();
 void toggle_rush_mech();
