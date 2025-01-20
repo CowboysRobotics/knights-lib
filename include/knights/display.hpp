@@ -4,7 +4,7 @@
 #define _KNIGHTS_DISPLAY_H
 
 #include "liblvgl/lvgl.h"
-#include "knights/api.h"
+#include "knights/api.hpp"
 #include <string>
 
 extern void lv_display(void);

@@ -1,14 +1,14 @@
-#include "knights/autonomous/pid.h"
-#include "knights/util/calculation.h"
+#include "knights/autonomous/pid.hpp"
+#include "knights/util/calculation.hpp"
 #include "pros/abstract_motor.hpp"
 #include "pros/motors.hpp"
 #include "pros/adi.hpp"
 #include "pros/rotation.hpp"
 #include "pros/imu.hpp"
 #include "pros/distance.hpp"
-#include "knights/robot/position_tracker.h"
-#include "knights/robot/drivetrain.h"
-#include "knights/robot/chassis.h"
+#include "knights/robot/position_tracker.hpp"
+#include "knights/robot/drivetrain.hpp"
+#include "knights/robot/chassis.hpp"
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 

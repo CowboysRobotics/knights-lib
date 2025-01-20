@@ -1,6 +1,6 @@
 #include "main.h"
-#include "knights/logger/logger.h"
-#include "knights/util/calculation.h"
+#include "knights/logger/logger.hpp"
+#include "knights/util/calculation.hpp"
 #include "pros/misc.h"
 
 #include <cstdio>

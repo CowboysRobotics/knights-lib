@@ -1,7 +1,7 @@
-#include "knights/autonomous/path.h"
-#include "knights/autonomous/profile.h"
-#include "knights/util/calculation.h"
-#include "knights/util/timer.h"
+#include "knights/autonomous/path.hpp"
+#include "knights/autonomous/profile.hpp"
+#include "knights/util/calculation.hpp"
+#include "knights/util/timer.hpp"
 
 // MIGHT NOT BE USEFUL
 

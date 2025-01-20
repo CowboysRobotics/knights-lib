@@ -3,8 +3,8 @@
 #ifndef _PATHGEN_H
 #define _PATHGEN_H
 
-#include "knights/autonomous/path.h"
-#include "knights/util/position.h"
+#include "knights/autonomous/path.hpp"
+#include "knights/util/position.hpp"
 
 namespace knights {
 

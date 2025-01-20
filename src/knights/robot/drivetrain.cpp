@@ -1,6 +1,6 @@
 #include "pros/imu.hpp"
 #include <cmath>
-#include "knights/robot/drivetrain.h"
+#include "knights/robot/drivetrain.hpp"
 
 #define MAX_VOLTAGE 127.0
 #define SECONDS_PER_MIN 60.0

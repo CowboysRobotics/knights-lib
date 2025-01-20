@@ -1,5 +1,5 @@
-#include "knights/logger/colors.h"
-#include "knights/logger/logger.h"
+#include "knights/logger/colors.hpp"
+#include "knights/logger/logger.hpp"
 
 #include "api.h"
 

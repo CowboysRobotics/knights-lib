@@ -7,10 +7,10 @@
 #include <vector>
 #include <map>
 
-#include "knights/util/position.h"
-#include "knights/driver/input.h"
-#include "knights/robot/chassis.h"
-#include "knights/autonomous/pid.h"
+#include "knights/util/position.hpp"
+#include "knights/driver/input.hpp"
+#include "knights/robot/chassis.hpp"
+#include "knights/autonomous/pid.hpp"
 
 namespace knights {
 

@@ -1,7 +1,7 @@
-#include "knights/display.h"
-#include "knights/api.h"
+#include "knights/display.hpp"
+#include "knights/api.hpp"
 #include "api.h"
-#include "display.h"
+#include "knights/display.hpp"
 
 #define TILE 180/6
 #define X_MARGIN 270

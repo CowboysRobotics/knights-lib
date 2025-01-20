@@ -1,11 +1,11 @@
-#include "knights/autonomous/controller.h"
-#include "knights/autonomous/pid.h"
+#include "knights/autonomous/controller.hpp"
+#include "knights/autonomous/pid.hpp"
 
-#include "knights/robot/chassis.h"
+#include "knights/robot/chassis.hpp"
 
-#include "knights/util/calculation.h"
+#include "knights/util/calculation.hpp"
 
-#include "knights/logger/logger.h"
+#include "knights/logger/logger.hpp"
 
 #define MIN_SPEED 20
 
