@@ -1,6 +1,5 @@
 #pragma once
 
-#include "knights/robot/chassis.h"
 #ifndef _AUTONOMOUS_H_
 #define _AUTONOMOUS_H_
 

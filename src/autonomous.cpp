@@ -1,7 +1,6 @@
 #include "autonomous.h" 
 #include "globals.h"
-#include "hold-cold-asset/asset.hpp"
-#include "knights/autonomous/path.h"
+#include "knights/autonomous/path.hpp"
 
 #define RIGHT 1
 #define LEFT -1
@@ -25,8 +24,6 @@
 #define TURN_kP_180 34
 #define TURN_kI_180 0.017
 #define TURN_kD_180 0.24
-
-ASSET(output_txt);
 
 void pid_tuning(knights::RobotChassis *chassis) {
     knights::RamseteConstants ramsete_constants(1, 0.5);

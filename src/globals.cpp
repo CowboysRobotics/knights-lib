@@ -41,16 +41,6 @@ knights::PositionTracker backOdom(&back_odom, 2, 1, 1.875, -1);
 // knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
 // // #### END
 
-// // #### Test Robot
-// pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
-// pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
-// pros::Rotation mid_odom(18);
-// pros::Rotation back_odom(14);
-// pros::IMU imu(15);
-// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
-// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
-// // #### END
-
 //assign ports to Lady Brown arm mech
 pros::Motor lady_brown(21, pros::MotorGears::green);
 pros::Rotation lady_brown_rotation(7);

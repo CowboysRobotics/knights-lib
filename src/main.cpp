@@ -106,13 +106,11 @@ void autonomous() {
 
 	// chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
 
-	printf("%s\n", package.type + std::to_string(package.number));
-
-	if (package.type + std::to_string(package.number) == "Red1" || package.type + std::to_string(package.number) == "Blue1") {
+	if (package.get_value() == "Red1" || package.get_value() == "Blue1") {
 		chassis.set_position(knights::Pos(-58, -15, knights::to_rad(180))); // only works b/c -180 == 180
-	} else if (package.type + std::to_string(package.number) == "Red2" || package.type + std::to_string(package.number) == "Blue2") {
+	} else if (package.get_value() == "Red2" || package.get_value() == "Blue2") {
 		chassis.set_position(knights::Pos(-55.1,37.5,0)); // only works b/c -0 == 0
-	} else if (package.type + std::to_string(package.number) == "Blue4") {
+	} else if (package.get_value() == "Blue4") {
 		chassis.set_position(knights::Pos(-59, 0, 0));
 	}
 
