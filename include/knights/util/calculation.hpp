@@ -145,4 +145,20 @@ inline constexpr long double operator"" _m(long double meters) {
     return static_cast<long double>(meters*39.37);
 }
 
+/**
+ * @brief Declare value as degrees - therefore it will be converted to radians
+ * 
+ */
+inline constexpr long double operator"" _deg(long double degrees) {
+    return static_cast<long double>(degrees/180.0 * M_PI);
+}
+
+/**
+ * @brief Declare value as radians
+ * 
+ */
+inline constexpr long double operator"" _rad(long double radians) {
+    return static_cast<long double>(radians);
+}
+
 #endif

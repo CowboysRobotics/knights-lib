@@ -16,6 +16,10 @@ knights::display::AutonSelectionPackage knights::display::get_selected_auton(voi
     return curr_package;
 }
 
+std::string knights::display::AutonSelectionPackage::get_value(void) {
+    return this->type + this->number;
+}
+
 static lv_obj_t * pos_label;
 
 knights::display::MapDot::MapDot(int width, int height, lv_color_t color) {
@@ -74,12 +78,13 @@ static void event_handler(lv_event_t * e) {
         uint32_t id = lv_btnmatrix_get_selected_btn(obj);
         const char * txt = lv_btnmatrix_get_btn_text(obj, id);
 
-        if (strcmp(txt, "Red") || strcmp(txt, "Blue") || strcmp(txt, "Skills")) {
+        if (txt == "Red" || txt == "Blue" || txt == "Skills") {
             curr_package.type = txt;
-        } else if (!strcmp(txt, "Enter")) {
-            curr_package.number = std::stoi(txt);
+        } else {
+            // std::cout << txt << "\n";
+            curr_package.number = txt;
         }
-        printf("Selected Auton: %s %i\n", curr_package.type.c_str(), curr_package.number);
+        printf("Selected Auton: %s %s\n", curr_package.type.c_str(), curr_package.number.c_str());
     }
 }
 

@@ -107,15 +107,15 @@ void autonomous() {
 
 	// chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
 
-	// if (package.type + std::to_string(package.number) == "Red1") {
+	// if (package.get_value()== "Red1") {
 	// chassis.set_position(knights::Pos(-56.5,15,3.95728));
-	// } else if (package.type + std::to_string(package.number) == "Blue1") {
+	// } else if (package.get_value() == "Blue1") {
 	// chassis.set_position(knights::Pos(-56.5,15,knights::normalize_angle(-3.95728)));
-	// } else if (package.type + std::to_string(package.number) == "Blue4") {
+	// } else if (package.get_value() == "Blue4") {
 	// 	chassis.set_position(knights::Pos(-59, 0, 0));
-	// // } else if (package.type + std::to_string(package.number) == "Blue2") {
+	// // } else if (package.get_value() == "Blue2") {
 	// // 	chassis.set_position(knights::Pos(-59, 0, M_PI));
-	// } else if (package.type + std::to_string(package.number) == "Red3") {
+	// } else if (package.get_value() == "Red3") {
 	// chassis.set_position(knights::Pos(-48.0,-60.0,3.14159265));
 	// }
 
@@ -152,7 +152,8 @@ void autonomous() {
 		}};
 
 	// Run the chosen auton
-	auton_map[package.type + std::to_string(package.number)](&chassis);
+	if (auton_map.contains(package.get_value()))
+		auton_map[package.get_value()](&chassis);
 
 }
 
