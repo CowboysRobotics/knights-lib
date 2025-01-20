@@ -1,6 +1,9 @@
 #include "pros/imu.hpp"
 #include <cmath>
-#include "knights/robot/drivetrain.h"
+#include "knights/robot/drivetrain.hpp"
+
+#define MAX_VOLTAGE 127.0
+#define SECONDS_PER_MIN 60.0
 
 knights::Drivetrain::Drivetrain(pros::MotorGroup *right_mtrs, pros::MotorGroup *left_mtrs, float track_width, float rpm, float wheel_diameter, float gear_ratio) 
     : right_mtrs(right_mtrs), left_mtrs(left_mtrs), track_width(track_width), rpm(rpm), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio) {
@@ -26,6 +29,14 @@ float knights::Drivetrain::max_acceleration(float mass, float motor_amt, float s
 float knights::Drivetrain::max_velocity() {
     // v = circumfrence * rotation rate
     return M_PI * this->wheel_diameter * (this->rpm / 60.0);
+}
+
+float knights::Drivetrain::voltage_to_velocity(float voltage) {
+    return (voltage/MAX_VOLTAGE) * this->max_velocity();
+}
+
+float knights::Drivetrain::velocity_to_voltage(float velocity) {
+    return (MAX_VOLTAGE * SECONDS_PER_MIN * velocity) / (this->rpm * M_PI * this->wheel_diameter * this->gear_ratio);
 }
 
 knights::Holonomic::Holonomic(pros::Motor *frontRight, pros::Motor *frontLeft, pros::Motor *backRight, pros::Motor *backLeft, float track_width, float rpm, float wheel_diameter, float gear_ratio)

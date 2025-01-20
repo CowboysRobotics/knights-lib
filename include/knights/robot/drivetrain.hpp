@@ -72,6 +72,23 @@ namespace knights {
              * @return Maximum velocity of the drivetrain 
              */
             float max_velocity();
+
+            /**
+             * @brief Convert voltage to the velocity of the drivetrain (assumed no external factors)
+             * 
+             * @param voltage 
+             * @return float 
+             */
+            float voltage_to_velocity(float voltage);
+
+            /**
+             * @brief Convert velocity to the voltage required to go at that velocity (assumed no external factors)
+             * 
+             * @param velocity 
+             * @return float 
+             */
+            float velocity_to_voltage(float velocity);
+
     };
 
     class Holonomic {

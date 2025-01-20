@@ -1,10 +1,10 @@
-#include "knights/autonomous/controller.h"
-#include "knights/autonomous/pid.h"
+#include "knights/autonomous/controller.hpp"
+#include "knights/autonomous/pid.hpp"
 
-#include "knights/robot/chassis.h"
-#include "knights/robot/drivetrain.h"
+#include "knights/robot/chassis.hpp"
+#include "knights/robot/drivetrain.hpp"
 
-#include "knights/util/calculation.h"
+#include "knights/util/calculation.hpp"
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
 
@@ -74,9 +74,9 @@ void knights::RobotController::lateral_move(const float distance, const float en
                 // use pid formula to calculate speed
                 speed = this->pid_controller->update(error) * knights::signum(distance);
 
-                if (fabs(speed) <= this->pid_controller->min_velocity) {
-                    break;
-                }
+                // if (fabs(speed) <= this->pid_controller->min_velocity-10) {
+                //     break;
+                // }
 
                 // // --- EXPERIMENTAL
                 // float angular_curve = curvature(this->chassis->curr_position, desired_position);

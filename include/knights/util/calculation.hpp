@@ -1,10 +1,11 @@
 #pragma once
-#include <vector>
 
 #ifndef _CALCULATION_H
 #define _CALCULATION_H
 
-#include "knights/util/position.h"
+#include <vector>
+
+#include "knights/util/position.hpp"
 
 namespace knights {
 
@@ -125,6 +126,39 @@ namespace knights {
 
     float to_meters(float inches);
     float to_inches(float meters);
+
+}
+
+/**
+ * @brief Declare value as inches
+ * 
+ */
+inline constexpr long double operator"" _in(long double inches) {
+    return static_cast<long double>(inches);
+}
+
+/**
+ * @brief Declare value as meters
+ * 
+ */
+inline constexpr long double operator"" _m(long double meters) {
+    return static_cast<long double>(meters*39.37);
+}
+
+/**
+ * @brief Declare value as degrees - therefore it will be converted to radians
+ * 
+ */
+inline constexpr long double operator"" _deg(long double degrees) {
+    return static_cast<long double>(degrees/180.0 * M_PI);
+}
+
+/**
+ * @brief Declare value as radians
+ * 
+ */
+inline constexpr long double operator"" _rad(long double radians) {
+    return static_cast<long double>(radians);
 }
 
 #endif

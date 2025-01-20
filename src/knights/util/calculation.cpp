@@ -1,5 +1,5 @@
-#include "knights/util/calculation.h"
-#include "knights/robot/drivetrain.h"
+#include "knights/util/calculation.hpp"
+#include "knights/robot/drivetrain.hpp"
 
 #include <math.h>
 #include <numeric>

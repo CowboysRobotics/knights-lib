@@ -1,5 +1,5 @@
-#include "knights/util/position.h"
-#include "knights/util/calculation.h"
+#include "knights/util/position.hpp"
+#include "knights/util/calculation.hpp"
 
 using namespace knights;
 

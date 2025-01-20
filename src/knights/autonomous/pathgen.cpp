@@ -1,4 +1,4 @@
-#include "knights/util/position.h"
-#include "knights/autonomous/path.h"
+#include "knights/util/position.hpp"
+#include "knights/autonomous/path.hpp"
 
-#include "knights/autonomous/pathgen.h"
+#include "knights/autonomous/pathgen.hpp"

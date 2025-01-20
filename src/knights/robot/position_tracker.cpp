@@ -1,5 +1,5 @@
-#include "knights/robot/position_tracker.h"
-#include "knights/util/calculation.h"
+#include "knights/robot/position_tracker.hpp"
+#include "knights/util/calculation.hpp"
 
 using namespace knights;
 

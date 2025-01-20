@@ -1,10 +1,10 @@
 #include "api.h"
 
-#include "knights/robot/chassis.h"
-#include "knights/robot/drivetrain.h"
-#include "knights/robot/position_tracker.h"
+#include "knights/robot/chassis.hpp"
+#include "knights/robot/drivetrain.hpp"
+#include "knights/robot/position_tracker.hpp"
 
-#include "knights/util/calculation.h"
+#include "knights/util/calculation.hpp"
 
 knights::RobotChassis::RobotChassis(Drivetrain *drivetrain, PositionTrackerGroup *pos_trackers)
     : drivetrain(drivetrain), pos_trackers(pos_trackers) {

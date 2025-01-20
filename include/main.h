@@ -38,7 +38,7 @@
 #include "api.h"
 
 // Knights Lib Include
-#include "knights/api.h"
+#include "knights/api.hpp"
 
 // User File Includes
 #include "autonomous.h"

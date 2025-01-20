@@ -6,7 +6,7 @@
 #define RIGHT 1
 #define LEFT -1
 
-#define LATERAL_kP 5
+#define LATERAL_kP 4
 #define LATERAL_kI 0
 #define LATERAL_kD 0.0065
 

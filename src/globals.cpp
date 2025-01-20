@@ -1,14 +1,14 @@
-#include "knights/autonomous/pid.h"
-#include "knights/util/calculation.h"
+#include "knights/autonomous/pid.hpp"
+#include "knights/util/calculation.hpp"
 #include "pros/abstract_motor.hpp"
 #include "pros/motors.hpp"
 #include "pros/adi.hpp"
 #include "pros/rotation.hpp"
 #include "pros/imu.hpp"
 #include "pros/distance.hpp"
-#include "knights/robot/position_tracker.h"
-#include "knights/robot/drivetrain.h"
-#include "knights/robot/chassis.h"
+#include "knights/robot/position_tracker.hpp"
+#include "knights/robot/drivetrain.hpp"
+#include "knights/robot/chassis.hpp"
 
 #include <cmath>
 #include <cstdio>
@@ -30,6 +30,16 @@ pros::IMU imu(6);
 knights::PositionTracker midOdom(&mid_odom, 2, 1, 1.25, -1);
 knights::PositionTracker backOdom(&back_odom, 2, 1, 1.875, -1);
 // #### END
+
+// // #### Test Robot
+// pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
+// pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
+// pros::Rotation mid_odom(18);
+// pros::Rotation back_odom(14);
+// pros::IMU imu(15);
+// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
+// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
+// // #### END
 
 // // #### Test Robot
 // pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);

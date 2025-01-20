@@ -1,7 +1,7 @@
-#include "knights/display.h"
-#include "knights/api.h"
+#include "knights/display.hpp"
+#include "knights/api.hpp"
 #include "api.h"
-#include "display.h"
+#include "knights/display.hpp"
 
 #define TILE 180/6
 #define X_MARGIN 270
@@ -14,6 +14,10 @@ LV_IMG_DECLARE(pix_art_his_field);
 
 knights::display::AutonSelectionPackage knights::display::get_selected_auton(void) {
     return curr_package;
+}
+
+std::string knights::display::AutonSelectionPackage::get_value(void) {
+    return this->type + this->number;
 }
 
 static lv_obj_t * pos_label;
@@ -74,12 +78,13 @@ static void event_handler(lv_event_t * e) {
         uint32_t id = lv_btnmatrix_get_selected_btn(obj);
         const char * txt = lv_btnmatrix_get_btn_text(obj, id);
 
-        if (txt == "Red" || txt == "Blue") {
+        if (txt == "Red" || txt == "Blue" || txt == "Skills") {
             curr_package.type = txt;
-        } else if (txt != "Enter") {
-            curr_package.number = std::stoi(txt);
+        } else {
+            // std::cout << txt << "\n";
+            curr_package.number = txt;
         }
-        printf("Selected Auton: %s %i\n", curr_package.type.c_str(), curr_package.number);
+        printf("Selected Auton: %s %s\n", curr_package.type.c_str(), curr_package.number.c_str());
     }
 }
 

@@ -5,10 +5,10 @@
 
 #include "api.h"
 
-#include "knights/robot/drivetrain.h"
-#include "knights/robot/position_tracker.h"
+#include "knights/robot/drivetrain.hpp"
+#include "knights/robot/position_tracker.hpp"
 
-#include "knights/util/position.h"
+#include "knights/util/position.hpp"
 
 
 namespace knights {

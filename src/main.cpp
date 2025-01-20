@@ -1,7 +1,7 @@
 #include "main.h"
+#include "knights/logger/logger.hpp"
+#include "knights/util/calculation.hpp"
 #include "globals.h"
-#include "knights/logger/logger.h"
-#include "knights/util/calculation.h"
 #include "pros/misc.h"
 
 #include <cstdio>
@@ -34,22 +34,16 @@ void initialize() {
 
 	knights::logger::blue("Initialization End");
 
-	// #### Competition Robot
-	//front of the bot is intake
-	//assign direction to left side drive-train motors 
-	left_mtrs.set_reversed(false, 0);
-	left_mtrs.set_reversed(false, 1);
-	left_mtrs.set_reversed(true, 2);
-	//assign direction to right side drive-train motors
-	right_mtrs.set_reversed(true, 0);
-	right_mtrs.set_reversed(true, 1);
-	right_mtrs.set_reversed(false, 2);
-	// ####
-
-	// // #### Test Bot
-	// left_mtrs.set_reversed(true, 0);
-	// left_mtrs.set_reversed(true, 1);
+	// // #### Competition Robot
+	// //front of the bot is intake
+	// //assign direction to left side drive-train motors 
+	// left_mtrs.set_reversed(false, 0);
+	// left_mtrs.set_reversed(false, 1);
 	// left_mtrs.set_reversed(true, 2);
+	// //assign direction to right side drive-train motors
+	// right_mtrs.set_reversed(true, 0);
+	// right_mtrs.set_reversed(true, 1);
+	// right_mtrs.set_reversed(false, 2);
 	// // ####
 
 	// intake.set_reversed(false, 0);
@@ -155,7 +149,8 @@ void autonomous() {
 		}};
 
 	// Run the chosen auton
-	auton_map[package.type + std::to_string(package.number)](&chassis);
+	if (auton_map.contains(package.get_value()))
+		auton_map[package.get_value()](&chassis);
 
 }
 
@@ -175,7 +170,7 @@ void autonomous() {
 
 void opcontrol() {
 	// need to find a way to do this dynamically
-	chassis.set_position(knights::Pos(12, 12, knights::to_rad(90)));
+	chassis.set_position(knights::Pos(12.0_in, 12.0_in, knights::to_rad(90)));
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();

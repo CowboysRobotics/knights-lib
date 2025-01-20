@@ -1,9 +1,9 @@
-#include "knights/autonomous/controller.h"
-#include "knights/autonomous/pid.h"
+#include "knights/autonomous/controller.hpp"
+#include "knights/autonomous/pid.hpp"
 
-#include "knights/robot/chassis.h"
+#include "knights/robot/chassis.hpp"
 
-#include "knights/util/calculation.h"
+#include "knights/util/calculation.hpp"
 
 void knights::RobotController::turn_for(const float angle, float end_tolerance, float timeout, bool rad) {
     // turn the robot a certain amount of degrees, positive is left, negative is right
@@ -80,9 +80,9 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
 
                 this->chassis->drivetrain->velocity_command(-signum(angle) * speed, signum(angle) * speed);
 
-                if (fabs(speed) < this->pid_controller->get_min_speed()) {
-                    break;
-                }
+                // if (fabs(speed) < this->pid_controller->get_min_speed()) {
+                //     break;
+                // }
 
                 pros::delay(10);
             }

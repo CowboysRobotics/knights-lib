@@ -1,4 +1,4 @@
-#include "knights/driver/input.h"
+#include "knights/driver/input.hpp"
 
 #include "api.h"
 

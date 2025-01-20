@@ -3,9 +3,9 @@
 #ifndef _PROFILE_H
 #define _PROFILE_H
 
-#include "knights/robot/drivetrain.h"
-#include "knights/util/position.h"
-#include "knights/autonomous/path.h"
+#include "knights/robot/drivetrain.hpp"
+#include "knights/util/position.hpp"
+#include "knights/autonomous/path.hpp"
 
 
 namespace knights {

@@ -4,7 +4,7 @@
 #define _KNIGHTS_DISPLAY_H
 
 #include "liblvgl/lvgl.h"
-#include "knights/api.h"
+#include "knights/api.hpp"
 #include <string>
 
 extern void lv_display(void);
@@ -49,7 +49,9 @@ namespace knights::display {
 
     struct AutonSelectionPackage {
         std::string type = "None"; // red or blue
-        int number = 0; // number of auton
+        std::string number = "0"; // number of auton
+
+        std::string get_value(void);
     };
 
     /**

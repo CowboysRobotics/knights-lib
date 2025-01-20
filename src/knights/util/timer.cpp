@@ -1,4 +1,4 @@
-#include "knights/util/timer.h"
+#include "knights/util/timer.hpp"
 #include "api.h"
 
 knights::Timer::Timer() {

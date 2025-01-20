@@ -3,11 +3,11 @@
 #ifndef _CONTROLLER_H
 #define _CONTROLLER_H
 
-#include "knights/autonomous/pid.h"
-#include "knights/autonomous/ramsete.h"
-#include "knights/autonomous/path.h"
+#include "knights/autonomous/pid.hpp"
+#include "knights/autonomous/ramsete.hpp"
+#include "knights/autonomous/path.hpp"
 
-#include "knights/robot/chassis.h"
+#include "knights/robot/chassis.hpp"
 
 namespace knights {
 
