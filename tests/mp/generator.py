@@ -6,7 +6,37 @@ figure, axis = plt.subplots(2, 1)
 def dist_between(x1, y1, x2, y2):
   return np.hypot(x2-x1, y2-y1)
 
-def motion_profile(max_acceleration, max_velocity, distance, elapsed_time):
+def lerp(start, end, step):
+  return start + (end-start) * step
+
+def get_total_time(max_acceleration, max_velocity, distance, elapsed_time):
+  # Calculate the time it takes to accelerate to max velocity
+  acceleration_dt = max_velocity / max_acceleration
+
+  # If we can't accelerate to max velocity in the given distance, we'll accelerate as much as possible
+  halfway_distance = distance / 2
+  acceleration_distance = 0.5 * max_acceleration * acceleration_dt ** 2
+
+  if (acceleration_distance > halfway_distance):
+    acceleration_dt = np.sqrt(halfway_distance / (0.5 * max_acceleration))
+
+  acceleration_distance = 0.5 * max_acceleration * acceleration_dt ** 2
+
+  # recalculate max velocity based on the time we have to accelerate and decelerate
+  max_velocity = max_acceleration * acceleration_dt
+
+  # we decelerate at the same rate as we accelerate
+  deceleration_dt = acceleration_dt
+
+  # calculate the time that we're at max velocity
+  cruise_distance = distance - 2 * acceleration_distance
+  cruise_dt = cruise_distance / max_velocity
+  deceleration_time = acceleration_dt + cruise_dt
+
+  # check if we're still in the motion profile
+  return(acceleration_dt + cruise_dt + deceleration_dt)
+
+def motion_profile_pos(max_acceleration, max_velocity, distance, elapsed_time):
   # Calculate the time it takes to accelerate to max velocity
   acceleration_dt = max_velocity / max_acceleration
 
@@ -90,14 +120,14 @@ RPM = 450
 max_acceleration = 10 # arbitrary constant
 max_velocity = (DESIRED_VOLTAGE/MAX_VOLTAGE) * np.pi * WHEEL_DIAMETER * (RPM / 60.0)
 
-speeds = []
-times = np.linspace(0, 30, 10000)
+distances = []
+times = np.linspace(0, get_total_time(max_acceleration, max_velocity, total_dist, val), 200)
 
 for val in times:
-  speeds.append(motion_profile(max_acceleration, max_velocity, total_dist, val))
+  distances.append(motion_profile_pos(max_acceleration, max_velocity, total_dist, val))
 
-axis[0].plot(times, speeds)
-axis[0].set_title("Linear Motion Profile")
+axis[0].plot(times, distances)
+axis[0].set_title("Distance Travelled")
 
 axis[1].plot(x_val, y_val)
 axis[1].set_title("Path")
