@@ -15,31 +15,31 @@
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
-// Competition Robot
-//front of bot is intake side
-//assign ports to right side drive-train
-pros::MotorGroup left_mtrs({2,3,4}, pros::MotorGears::blue); // no reverse
-//assign ports to left side drive-train
-pros::MotorGroup right_mtrs({14,16,13}, pros::MotorGears::blue); // no reverse
-//assign ports to odom pods for position tracking
-pros::Rotation mid_odom(8); // parallel tracking
-pros::Rotation back_odom(	11); // perpendicular tracking
-//assign port for imu tracker
-pros::IMU imu(6);
-//dimensions and positions of odom pods for calculations for position tracking
-knights::PositionTracker midOdom(&mid_odom, 2, 1, 1.25, -1);
-knights::PositionTracker backOdom(&back_odom, 2, 1, 1.875, -1);
-// #### END
-
-// // #### Test Robot
-// pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
-// pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
-// pros::Rotation mid_odom(18);
-// pros::Rotation back_odom(14);
-// pros::IMU imu(15);
-// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
-// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
+// // Competition Robot
+// //front of bot is intake side
+// //assign ports to right side drive-train
+// pros::MotorGroup left_mtrs({2,3,4}, pros::MotorGears::blue); // no reverse
+// //assign ports to left side drive-train
+// pros::MotorGroup right_mtrs({14,16,13}, pros::MotorGears::blue); // no reverse
+// //assign ports to odom pods for position tracking
+// pros::Rotation mid_odom(8); // parallel tracking
+// pros::Rotation back_odom(	11); // perpendicular tracking
+// //assign port for imu tracker
+// pros::IMU imu(6);
+// //dimensions and positions of odom pods for calculations for position tracking
+// knights::PositionTracker midOdom(&mid_odom, 2, 1, 1.25, -1);
+// knights::PositionTracker backOdom(&back_odom, 2, 1, 1.875, -1);
 // // #### END
+
+// #### Test Robot
+pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
+pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
+pros::Rotation mid_odom(18);
+pros::Rotation back_odom(14);
+pros::IMU imu(15);
+knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
+knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
+// #### END
 
 //assign ports to Lady Brown arm mech
 pros::Motor lady_brown(21, pros::MotorGears::green);
