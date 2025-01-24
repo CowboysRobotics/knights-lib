@@ -65,7 +65,7 @@ namespace knights {
              * @param timeout Amount of time to wait before exiting the movement
              * @param rad Whether the provided angle is in radians or not
              */
-            void turn_to_angle(const float angle, int direction = 0, float end_tolerance = 3.0, float timeout = 2000, bool rad = false); // DEGREES
+            void turn_to_angle(const float angle, int direction = 0, float end_tolerance = 3.0, float timeout = 1000, bool rad = false); // DEGREES
 
             /**
              * @brief Move in a straight line, forwards or backwards

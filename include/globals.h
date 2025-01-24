@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pros/optical.hpp"
 #ifndef ROBOT_CONFIG_H
 #define ROBOT_CONFIG_H
 
@@ -26,6 +27,8 @@ extern pros::MotorGroup left_mtrs;
 extern pros::Rotation mid_odom;
 extern pros::Rotation back_odom;
 extern pros::IMU imu;
+extern pros::Optical colors;
+
 
 // Position Trackers
 extern knights::PositionTracker midOdom;
@@ -72,6 +75,10 @@ extern bool lady_brown_spinning;
 extern bool lady_brown_forward;
 extern bool clamp_down;
 extern bool doinker_activate;
+extern bool color_sorting;
+extern bool blue_alliance;
+extern bool red_alliance;
+
 
 // Function Prototypes
 void intake_in();
@@ -87,5 +94,9 @@ void lady_brown_alliance();
 void clamp_toggle();
 void doinker_toggle();
 void toggle_rush_mech();
+void change_color();
+void toggle_color_sort();
+void color_sort();
+
 
 #endif // ROBOT_CONFIG_H

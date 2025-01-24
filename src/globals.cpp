@@ -3,24 +3,25 @@
 #include "pros/abstract_motor.hpp"
 #include "pros/motors.hpp"
 #include "pros/adi.hpp"
+#include "pros/optical.hpp"
 #include "pros/rotation.hpp"
 #include "pros/imu.hpp"
 #include "pros/distance.hpp"
 #include "knights/robot/position_tracker.hpp"
 #include "knights/robot/drivetrain.hpp"
 #include "knights/robot/chassis.hpp"
+#include "pros/rtos.hpp"
 
 #include <cmath>
 #include <cstdio>
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
-
 // Competition Robot
 //front of bot is intake side
 //assign ports to right side drive-train
-pros::MotorGroup left_mtrs({2,3,4}, pros::MotorGears::blue); // no reverse
+pros::MotorGroup left_mtrs({2,3,-4}, pros::MotorGears::blue); // no reverse
 //assign ports to left side drive-train
-pros::MotorGroup right_mtrs({14,16,13}, pros::MotorGears::blue); // no reverse
+pros::MotorGroup right_mtrs({-14,-16,13}, pros::MotorGears::blue); // no reverse
 //assign ports to odom pods for position tracking
 pros::Rotation mid_odom(8); // parallel tracking
 pros::Rotation back_odom(	11); // perpendicular tracking
@@ -46,10 +47,12 @@ pros::Motor lady_brown(21, pros::MotorGears::green);
 pros::Rotation lady_brown_rotation(7);
 
 //assign ports to intake, leftside first, rightside second
-pros::Motor intake(20, pros::MotorGears::blue);
+pros::MotorGroup intake({20, 5}, pros::MotorGears::blue);
 
 //assign port to distance sensor for redirect
-pros::Distance redirect(6);
+pros::Optical colors(15);
+
+
 
 //assign ports for pneumatics
 pros::adi::Pneumatics clamp(1, false); //clamp solenoid
@@ -94,17 +97,17 @@ void intake_out() {
 }
 
 #define LADY_BROWN_VELOCITY 127.0
-#define LADY_BROWN_kP 2.3
+#define LADY_BROWN_kP 2.1
 #define LADY_BROWN_kI 0.000
-#define LADY_BROWN_kD 0.6
+#define LADY_BROWN_kD 0.0017
 
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
 #define LADY_BROWN_DOWN 0
-#define LADY_BROWN_LOAD1 36
-#define LADY_BROWN_LOAD2 225
-#define LADY_BROWN_SCORE 155
-#define LADY_BROWN_ALLIANCE 193
+#define LADY_BROWN_LOAD1 339
+#define LADY_BROWN_LOAD2 339
+#define LADY_BROWN_SCORE 213
+#define LADY_BROWN_ALLIANCE 165
 #define LADY_BROWN_END_TOLERANCE 1.0
 
 bool lady_brown_spinning = false;
@@ -115,7 +118,7 @@ void lady_brown_fwd() {
 		lady_brown.move(0); // stop intake
 		lady_brown_spinning = false;
 	} else {
-		lady_brown.move(LADY_BROWN_VELOCITY); // Spin intake forward
+		lady_brown.move(-LADY_BROWN_VELOCITY); // Spin intake forward
 		lady_brown_spinning = true;
 		lady_brown_forward = true;
 	}
@@ -126,7 +129,7 @@ void lady_brown_rev() {
 		lady_brown.move(0); // stop intake
 		lady_brown_spinning = false;
 	} else { 
-		lady_brown.move(-INTAKE_VELOCITY); // Spin the intake in reverse
+		lady_brown.move(INTAKE_VELOCITY); // Spin the intake in reverse
 		lady_brown_spinning = true;
 		lady_brown_forward = false;
 	}
@@ -144,15 +147,23 @@ void lady_brown_to_angle(float angle, int timeout, bool async = true) { // angle
     float error = angle - lady_brown_rotation.get_angle()/100.0;
 
     lady_brown_PID.reset();
-    lady_brown.set_brake_mode(pros::MotorBrake::brake);
+    lady_brown.set_brake_mode(pros::MotorBrake::hold);
     lady_brown_spinning = true;
 
     while (fabsf(error) > LADY_BROWN_END_TOLERANCE && lady_brown_spinning) {
         error = fabs(angle - lady_brown_rotation.get_angle()/100.0);
-		
+
+		if (error > 180) {
+			error = 360-error;
+		}
+
+		float speed = lady_brown_PID.update(error);
+
+		printf("speed: %lf, error: %lf, dir %d, curr: %lf, des: %lf\n", speed, error, knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false), lady_brown_rotation.get_angle()/100.0, angle);
+
         lady_brown.move(
-            -lady_brown_PID.update(error) * 
-            knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false)
+            speed * 
+            -knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false)
         );
 
 
@@ -213,4 +224,56 @@ bool rush_mech_down = false;
 void toggle_rush_mech() {
 	rush_mech_down = !rush_mech_down;
 	rush_mech.set_value(rush_mech_down);
+}
+
+
+
+
+bool color_sorting = true;
+bool blue_alliance = false;
+bool red_alliance = true;
+
+void toggle_color_sort(){
+	if (color_sorting == false){
+		color_sorting = true;
+	}
+	else if (color_sorting == true){
+		color_sorting = false;
+	}
+	printf("color toggle: %d \n", color_sorting);
+}
+
+void change_color(){
+	if (blue_alliance == false && red_alliance == true){
+		blue_alliance = true;
+		red_alliance = false;
+	}
+	else if (red_alliance == false && blue_alliance == true){
+		blue_alliance = false;
+		red_alliance = true;
+	}
+	printf("blue alliance: %d \n", blue_alliance);
+	printf("red alliance: %d \n", red_alliance);
+
+
+}
+
+
+void color_sort() {
+	if (colors.get_hue() < 25 && color_sorting == true && blue_alliance == true){
+		intake.move(0);
+		pros::delay(200);
+		intake.move(INTAKE_VELOCITY);
+		printf("get rid of red %f \n", colors.get_hue());
+	
+	}
+	else if (colors.get_hue() > 200 && color_sorting == true && red_alliance == true){
+		intake.move(0);
+		pros::delay(200);
+		intake.move(INTAKE_VELOCITY);
+		printf("get rid of blue %f \n", colors.get_hue());
+	}
+	else {
+		return;
+	}
 }

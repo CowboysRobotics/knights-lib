@@ -45,12 +45,15 @@ void knights::PIDController::add_constant(float key, PIDConstants constants) {
 
 void knights::PIDController::switch_values(float target_val) {
     float min_diff = 1e8;
-    PIDConstants best_constants;
+    PIDConstants best_constants(this->kP, this->kI, this->kD);
+     printf("target: %lf, min diff: %lf\n", target_val, min_diff);
 
     for (auto const [key, value] : this->avaliable_constants) {
-        if (fabsf(key - target_val) > min_diff) {
+         printf("key: %lf\n", key);
+        if (fabsf(key - target_val) < min_diff) {
             min_diff = fabsf(key - target_val);
             best_constants = value;
+            printf("used\n");
         }
     }
 

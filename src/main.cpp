@@ -1,7 +1,6 @@
 #include "main.h"
-#include "knights/logger/logger.hpp"
-#include "knights/util/calculation.hpp"
 #include "globals.h"
+#include "knights/api.hpp"
 #include "pros/misc.h"
 
 #include <cstdio>
@@ -34,21 +33,10 @@ void initialize() {
 
 	knights::logger::blue("Initialization End");
 
-	// // #### Competition Robot
-	// //front of the bot is intake
-	// //assign direction to left side drive-train motors 
-	// left_mtrs.set_reversed(false, 0);
-	// left_mtrs.set_reversed(false, 1);
-	// left_mtrs.set_reversed(true, 2);
-	// //assign direction to right side drive-train motors
-	// right_mtrs.set_reversed(true, 0);
-	// right_mtrs.set_reversed(true, 1);
-	// right_mtrs.set_reversed(false, 2);
-	// // ####
 
 	// intake.set_reversed(false, 0);
 	// intake.set_reversed(true, 1);
-	lady_brown.set_reversed(true);
+	// lady_brown.set_reversed(true);
 }
 
 /**
@@ -81,9 +69,9 @@ void autonomous() {
 	// Create a map that maps autonomous to selection packages
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
-	// // Different autons, None0 is the default auton
-	auton_map["None0"] = &alt_skills;
-	chassis.set_position(knights::Pos(-55.1,0,0));
+	// // Different autons, skills is the default auton
+	auton_map["None0"] = &skills;
+	chassis.set_position(knights::Pos(-58,0,knights::to_rad(0)));
 	
 	//chassis.set_position(knights::Pos(-60,0,0));
 	//chassis.set_position(knights::Pos(-58, -15,knights::to_rad(180)));
@@ -96,7 +84,7 @@ void autonomous() {
 	auton_map["Blue1"] = &blue_rush_left_wp;
 	auton_map["Blue2"] = &blue_right_wp;
 
-	auton_map["Blue4"] = &skills;
+	auton_map["Skills0"] = &skills;
     // //  chassis.set_position(knights::Pos(38, 48, 4.081));
 
 	// auton_map["None0"] = &pp_test;
@@ -110,7 +98,7 @@ void autonomous() {
 		chassis.set_position(knights::Pos(-58, -15, knights::to_rad(180))); // only works b/c -180 == 180
 	} else if (package.get_value() == "Red2" || package.get_value() == "Blue2") {
 		chassis.set_position(knights::Pos(-55.1,37.5,0)); // only works b/c -0 == 0
-	} else if (package.get_value() == "Blue4") {
+	} else if (package.get_value() == "Skills0") {
 		chassis.set_position(knights::Pos(-59, 0, 0));
 	}
 
@@ -168,7 +156,7 @@ void autonomous() {
 
 void opcontrol() {
 	// need to find a way to do this dynamically
-	chassis.set_position(knights::Pos(12.0_in, 12.0_in, knights::to_rad(90)));
+	chassis.set_position(knights::Pos(12, 12, knights::to_rad(90)));
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();
@@ -212,6 +200,9 @@ void opcontrol() {
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_DOWN, lady_brown_load2,false); //assign lady brown position load 1 to controller button left
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_RIGHT,lady_brown_load1,false); //assign lady brown position load 2 to controller button right
 
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X, change_color, false);
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, toggle_color_sort, false);
+
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_toggle, false); //assign clamp toggle to controller button R2
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doinker_toggle, false); //assign doinker toggle to controller button R1
 
@@ -241,6 +232,9 @@ void opcontrol() {
 
 		// Delay to let other tasks run
 		pros::delay(10);
+		
+		//color_sort();
+
 
 		// Loop through all values in input map
 		input.execute_actions(master_controller);

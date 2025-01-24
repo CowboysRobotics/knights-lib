@@ -88,7 +88,7 @@ static void event_handler(lv_event_t * e) {
     }
 }
 
-static const char* type_map[] = {"Red", "Blue", ""};
+static const char* type_map[] = {"Red", "Blue", "Skills", ""};
 
 static const char* num_map[] = {"1", "2", "3", "4", ""};
 
