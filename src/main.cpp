@@ -70,7 +70,7 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// // Different autons, skills is the default auton
-	auton_map["None0"] = &skills;
+	auton_map["None0"] = &rush_4_ring;
 	chassis.set_position(knights::Pos(-58,0,knights::to_rad(0)));
 	
 	//chassis.set_position(knights::Pos(-60,0,0));
@@ -230,11 +230,13 @@ void opcontrol() {
 			right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))
 		);
 
+
+
 		// Delay to let other tasks run
 		pros::delay(10);
 		
-		//color_sort();
-
+		red_color_sort();
+		blue_color_sort();
 
 		// Loop through all values in input map
 		input.execute_actions(master_controller);

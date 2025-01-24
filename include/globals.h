@@ -46,6 +46,7 @@ extern pros::Rotation lady_brown_rotation;
 // Intake Mechanism
 extern pros::Motor intake;
 
+
 // Distance Sensor
 extern pros::Distance redirect;
 
@@ -96,7 +97,7 @@ void doinker_toggle();
 void toggle_rush_mech();
 void change_color();
 void toggle_color_sort();
-void color_sort();
-
+void red_color_sort();
+void blue_color_sort();
 
 #endif // ROBOT_CONFIG_H

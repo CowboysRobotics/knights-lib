@@ -97,9 +97,9 @@ void intake_out() {
 }
 
 #define LADY_BROWN_VELOCITY 127.0
-#define LADY_BROWN_kP 2.1
+#define LADY_BROWN_kP 1.75
 #define LADY_BROWN_kI 0.000
-#define LADY_BROWN_kD 0.0017
+#define LADY_BROWN_kD 0.5
 
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
@@ -175,11 +175,13 @@ void lady_brown_to_angle(float angle, int timeout, bool async = true) { // angle
         pros::delay(20);
     }
 
-    lady_brown.move(0);
+   	lady_brown.brake();
 	printf("error: %F \n", error);
 	printf("position: %i \n", lady_brown_rotation.get_angle());
 
 }
+
+
 
 void lady_brown_down() {
     lady_brown_to_angle(LADY_BROWN_DOWN, 1500);
@@ -230,8 +232,8 @@ void toggle_rush_mech() {
 
 
 bool color_sorting = true;
-bool blue_alliance = false;
-bool red_alliance = true;
+bool blue_alliance = true;
+bool red_alliance = false;
 
 void toggle_color_sort(){
 	if (color_sorting == false){
@@ -259,21 +261,19 @@ void change_color(){
 }
 
 
-void color_sort() {
-	if (colors.get_hue() < 25 && color_sorting == true && blue_alliance == true){
+void red_color_sort() {
+	if (colors.get_hue() < 40 && blue_alliance == true){
 		intake.move(0);
-		pros::delay(200);
-		intake.move(INTAKE_VELOCITY);
+		intake_spinning = false;
 		printf("get rid of red %f \n", colors.get_hue());
 	
 	}
-	else if (colors.get_hue() > 200 && color_sorting == true && red_alliance == true){
+}
+
+void blue_color_sort(){
+	if (colors.get_hue() > 140 && red_alliance == true){
 		intake.move(0);
-		pros::delay(200);
-		intake.move(INTAKE_VELOCITY);
+		intake_spinning = false;
 		printf("get rid of blue %f \n", colors.get_hue());
-	}
-	else {
-		return;
 	}
 }

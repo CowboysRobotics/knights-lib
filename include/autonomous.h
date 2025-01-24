@@ -27,6 +27,11 @@ void blue_right_elim(knights::RobotChassis *chassis);
 void blue_rush_left_elim(knights::RobotChassis *chassis);
 
 
+void right_safe_no_wait(knights::RobotChassis *chassis);
+
+
+void rush_4_ring(knights::RobotChassis *chassis);
+
 void mogo_red_rush(knights::RobotChassis *chassis);
 
 #endif
