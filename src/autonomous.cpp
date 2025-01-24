@@ -221,13 +221,13 @@ void skills(knights::RobotChassis *chassis) {
 
 	lady_brown_load1();
 
-	lateralController.lateral_move(16); w;
+	lateralController.lateral_move(17); w;
 
 	tw(7);
 
 	lady_brown_score(); tw(4);
 
-	lateralController.lateral_move(-20); w;
+	lateralController.lateral_move(-21); w;
 
 	w; lady_brown_rev(); lady_brown_rev();
 
