@@ -9,7 +9,7 @@ def dist_between(x1, y1, x2, y2):
 def lerp(start, end, step):
   return start + (end-start) * step
 
-def generate_motion_profile(max_acceleration, max_velocity, distance):
+def generate_motion_profile(max_acceleration, max_velocity, distance, track_width):
   # Calculate the time it takes to accelerate to max velocity
   acceleration_dt = max_velocity / max_acceleration
 
@@ -41,6 +41,9 @@ def generate_motion_profile(max_acceleration, max_velocity, distance):
   dist_arr = []
   vel_arr = []
 
+  side_vel_arr = []
+  omega = []
+
   for elapsed_time in t:
     # Distance Calculations
     if (elapsed_time > entire_dt):
@@ -67,13 +70,22 @@ def generate_motion_profile(max_acceleration, max_velocity, distance):
       # use the kinematic equations to calculate the instantaneous desired position
       dist_arr.append( acceleration_distance + cruise_distance + max_velocity * (elapsed_time - deceleration_time) - 0.5 * max_acceleration * (elapsed_time - deceleration_time) ** 2)
     
+    velocity = 0
+
     # Velocity Calculations
     if elapsed_time < acceleration_dt:
+      velocity = lerp(0, max_velocity, elapsed_time/acceleration_dt)
       vel_arr.append(lerp(0, max_velocity, elapsed_time/acceleration_dt))
     elif elapsed_time > acceleration_dt and elapsed_time < acceleration_dt + cruise_dt:
+      velocity = max_velocity
       vel_arr.append(max_velocity)
     else:
+      velocity = lerp(max_velocity, 0, (elapsed_time-(acceleration_dt + cruise_dt))/acceleration_dt)
       vel_arr.append(lerp(max_velocity, 0, (elapsed_time-(acceleration_dt + cruise_dt))/acceleration_dt))
+    
+    # Angular Calculations
+    dtheta = np.mod(, 2*np.pi)
+
   
   return [t, dist_arr, vel_arr]
 
@@ -94,6 +106,8 @@ h4 = lambda t: t**3 - t**2
 
 x_val = h1(t) * curr[0] + h2(t) * target[0] + h3(t) * curr_tangent[0] + h4(t) * target_tangent[0]
 y_val = h1(t) * curr[1] + h2(t) * target[1] + h3(t) * curr_tangent[1] + h4(t) * target_tangent[1]
+theta_val = np.arctan2(np.gradient(y_val, t), np.gradient(x_val, t))
+
 
 curr_pos = [curr[0], curr[1]]
 
@@ -106,13 +120,14 @@ DESIRED_VOLTAGE = 120
 MAX_VOLTAGE = 127
 WHEEL_DIAMETER = 2.75
 RPM = 450
+TRACK_WIDTH = 0.381
 
 max_acceleration = 300 # arbitrary constant
 max_velocity = (DESIRED_VOLTAGE/MAX_VOLTAGE) * np.pi * WHEEL_DIAMETER * (RPM / 60.0)
 
 print(max_velocity, max_acceleration)
 
-result = generate_motion_profile(max_acceleration, max_velocity, total_dist)
+result = generate_motion_profile(max_acceleration, max_velocity, total_dist, TRACK_WIDTH)
 
 axis[0][1].plot(result[0], result[2])
 axis[0][1].set_title("Velocity")
@@ -122,6 +137,16 @@ axis[0][0].set_title("Distance Travelled")
 
 axis[1][0].plot(x_val, y_val)
 axis[1][0].set_title("Path")
+
+# # Add arrows at select points - debugging
+# arrow_scale = 3  # Scale factor for arrow length
+# for i in range(0, len(t), 10):  # Adjust step size for fewer/more arrows
+#     axis[1][0].arrow(
+#         x_val[i], y_val[i], 
+#         arrow_scale * np.cos(theta_val[i]),  # Arrow's x-component
+#         arrow_scale * np.sin(theta_val[i]),  # Arrow's y-component
+#         head_width=0.05, head_length=0.1, fc='blue', ec='blue'
+#     )
 
 plt.show()
 
