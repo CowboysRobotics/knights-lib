@@ -1,4 +1,6 @@
 #include "main.h"
+#include "autonomous.h"
+#include "knights/display.hpp"
 #include "knights/logger/logger.hpp"
 #include "knights/util/calculation.hpp"
 #include "globals.h"
@@ -12,9 +14,6 @@
 #include <unordered_map>
 
 pros::Task *odomTask = nullptr;
-
-// Create a map that maps autonomous to selection packages
-std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -30,14 +29,14 @@ void initialize() {
 	knights::logger::blue("Initialization Begin");
 
 	// // Different autons, None0 is the default auton
-	auton_map["None0"] = &alt_skills;
+	auton_map["None0"] = knights::Auton(&alt_skills, knights::Pos(-60, 0, 0));
 
-	auton_map["Red1"] = &red_rush_right_wp;
-	auton_map["Red2"] = &red_left_wp;
-	auton_map["Blue1"] = &blue_rush_left_wp;
-	auton_map["Blue2"] = &blue_right_wp;
+	auton_map["Red1"] = knights::Auton(&red_rush_right_wp, knights::Pos(-58, -15, M_PI));
+	auton_map["Red2"] = knights::Auton(&red_left_wp, knights::Pos(-55.1,37.5,0));
+	auton_map["Blue1"] = knights::Auton(&blue_rush_left_wp, knights::Pos(-58, -15, M_PI));
+	auton_map["Blue2"] = knights::Auton(&blue_right_wp, knights::Pos(-55.1,37.5,0));
 
-	auton_map["Blue4"] = &skills;
+	auton_map["Skills0"] = knights::Auton(&skills, knights::Pos(-60, 0, 0));
 
 	lv_display();
 
@@ -71,15 +70,12 @@ void autonomous() {
 	// Query display for the selected buttons
 	knights::display::AutonSelectionPackage package = knights::display::get_selected_auton();
 
-	if (package.get_value() == "Red1" || package.get_value() == "Blue1") {
-		chassis.set_position(knights::Pos(-58, -15, knights::to_rad(180))); // only works b/c -180 == 180
-	} else if (package.get_value() == "Red2" || package.get_value() == "Blue2") {
-		chassis.set_position(knights::Pos(-55.1,37.5,0)); // only works b/c -0 == 0
-	} else if (package.get_value() == "Blue4") {
-		chassis.set_position(knights::Pos(-59, 0, 0));
+	chassis.set_position(0,0,0);
+
+	if (auton_map.contains(package.get_value())) {
+		chassis.set_position(auton_map[package.get_value()].start);
 	}
 
-	// need to find a way to do this dynamically
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();
@@ -110,8 +106,9 @@ void autonomous() {
 		}};
 
 	// Run the chosen auton
-	if (auton_map.contains(package.get_value()))
-		auton_map[package.get_value()](&chassis);
+	if (auton_map.contains(package.get_value())) {
+		auton_map[package.get_value()].function(&chassis);
+	}
 
 }
 
