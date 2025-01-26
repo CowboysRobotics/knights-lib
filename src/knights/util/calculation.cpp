@@ -12,6 +12,10 @@ float knights::to_deg(float radians) {
     return radians * (180.0 / M_PI);
 };
 
+float knights::lerp(float start, float end, float t) {
+    return start + t * (end - start);
+}
+
 float knights::normalize_angle(float angle, bool rad) {
     if (rad)
         return std::fmod(std::fmod(angle, (2*M_PI)) + (8*M_PI), 2*M_PI);

@@ -42,19 +42,18 @@ namespace knights {
     };
 
     class ProfileGenerator {
-        // assumed differential drive
-        float max_accel;
-        float max_velocity;
-        float track_width;
+        public:
+            // assumed differential drive
+            float max_accel;
+            float max_velocity;
+            float track_width;
 
-        ProfileGenerator(knights::Drivetrain drivetrain, float max_accel);
+            ProfileGenerator(knights::Drivetrain drivetrain, float max_accel);
 
-        ProfileGenerator(float max_velocity, float track_width, float max_accel);
+            ProfileGenerator(float max_velocity, float track_width, float max_accel);
 
-        std::vector<ProfileTimestamp> generate(knights::Pos start, knights::Pos end);
-
-    }
-
+            std::vector<ProfileTimestamp> generate(knights::Pos start, knights::Pos end);
+    };
 }
 
 #endif

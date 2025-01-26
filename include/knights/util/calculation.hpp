@@ -24,6 +24,16 @@ namespace knights {
     float to_deg(float radians);
 
     /**
+     * @brief Linearly interpolate between two values
+     * 
+     * @param start 
+     * @param end 
+     * @param t 
+     * @return float 
+     */
+    float lerp(float start, float end, float t);
+
+    /**
     * @brief normalize an angle within the domain of [0,2pi) or [0,360)
     * @param angle the angle to normalize
     * @param rad whether or not the angle is in radians (if false, it is in degrees)
