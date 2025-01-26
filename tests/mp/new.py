@@ -216,7 +216,7 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
 curr = [0, 0, np.radians(90)]
 target = [24, 24, np.radians(90)]
 
-dist = np.hypot(target[0]-curr[0], target[1]-curr[1]) * 2
+dist = np.hypot(target[0]-curr[0], target[1]-curr[1])
 
 curr_tangent = (np.cos(curr[2]) * dist, np.sin(curr[2]) * dist)
 target_tangent = (np.cos(target[2]) * dist, np.sin(target[2]) * dist)

@@ -80,3 +80,16 @@ float knights::to_meters(float inches) {
 float knights::to_inches(float meters) {
     return meters*39.37;
 }
+
+// https://stackoverflow.com/questions/55102504/populate-a-vector-with-linearly-increased-values
+std::vector<float> knights::linspace(float start, float end, int points)
+{
+  std::vector<float> res(points);
+  float step = (end - start) / (points - 1);
+  size_t i = 0;
+  for (auto& e : res)
+  {
+    e = start + step * i++;
+  }
+  return res;
+}

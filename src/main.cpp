@@ -27,13 +27,22 @@ void initialize() {
 		pros::delay(10);
 	}
 	//make sure that the imu sensor is accurate before the start of a match
-	//knights::logger::blue("Initialization Begin");
+	knights::logger::blue("Initialization Begin");
+
+	// // Different autons, None0 is the default auton
+	auton_map["None0"] = &alt_skills;
+
+	auton_map["Red1"] = &red_rush_right_wp;
+	auton_map["Red2"] = &red_left_wp;
+	auton_map["Blue1"] = &blue_rush_left_wp;
+	auton_map["Blue2"] = &blue_right_wp;
+
+	auton_map["Blue4"] = &skills;
 
 	lv_display();
 
-	// wait until everything is cali-brated
+	// wait until everything is calibrated
 	pros::delay(2000);
-
 
 	knights::logger::blue("Initialization End");
 
@@ -59,34 +68,8 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-
 	// Query display for the selected buttons
 	knights::display::AutonSelectionPackage package = knights::display::get_selected_auton();
-
-	// // Different autons, None0 is the default auton
-	auton_map["None0"] = &alt_skills;
-	chassis.set_position(knights::Pos(-55.1,0,0));
-	
-	//chassis.set_position(knights::Pos(-60,0,0));
-	//chassis.set_position(knights::Pos(-58, -15,knights::to_rad(180)));
-
-	// // auton_map["None0"] = &skills;
-    // // chassis.set_position(knights::Pos(-59, 0, 0));
-
-	auton_map["Red1"] = &red_rush_right_wp;
-	auton_map["Red2"] = &red_left_wp;
-	auton_map["Blue1"] = &blue_rush_left_wp;
-	auton_map["Blue2"] = &blue_right_wp;
-
-	auton_map["Blue4"] = &skills;
-    // //  chassis.set_position(knights::Pos(38, 48, 4.081));
-
-	// auton_map["None0"] = &pp_test;
-	// chassis.set_position(knights::Pos(-60,0,knights::to_rad(0)));
-
-	//chassis.set_position(knights::Pos(59, 0, 0));
-
-	// chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
 
 	if (package.get_value() == "Red1" || package.get_value() == "Blue1") {
 		chassis.set_position(knights::Pos(-58, -15, knights::to_rad(180))); // only works b/c -180 == 180
@@ -102,7 +85,6 @@ void autonomous() {
 	midOdom.reset();
 	backOdom.reset();
 
-
 	// run odometry loop
 	if (odomTask == nullptr)
 		pros::Task *odomTask = new pros::Task {[=] {
@@ -116,7 +98,6 @@ void autonomous() {
 				stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
 				stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
 				std::string s = stream.str();
-				// printf("curr pos: %lf %lf %lf\n", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading);
 
 				// Set the display label to the current position
 				knights::display::set_pos_label(s);
@@ -216,6 +197,7 @@ void opcontrol() {
 
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
+		// Reversed b/c david uses the back of the robot as the front
 		drivetrain.velocity_command(
 			left_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)),
 			right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))

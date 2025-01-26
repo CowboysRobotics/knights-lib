@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #ifndef _PROFILE_H
 #define _PROFILE_H
 
@@ -10,32 +11,49 @@
 
 namespace knights {
 
+    class HermiteSpline {
+        private:
+            knights::Point curr;
+            knights::Point target;
+            knights::Point curr_tangent;
+            knights::Point target_tangent;
+
+        public:
+            HermiteSpline(knights::Point curr, knights::Point target, knights::Point curr_tangent, knights::Point target_tangent);
+
+            knights::Pos position(double t);
+
+            knights::Pos derivatives(double t);
+
+            knights::Point second_derivatives(double t);
+    };
+
     struct ProfileTimestamp {
         knights::Pos position;
-        float expected_velocity;
+        float linear_velocity;
+        float angular_velocity;
+        float curr_distance;
         float time;
         float right_speed;
         float left_speed;
 
-        ProfileTimestamp(knights::Pos position, float expected_velocity, float time,
-            float right_speed, float left_speed);
+        ProfileTimestamp(knights::Pos position, float linear_velocity, float angular_velocity, float curr_distance, 
+            float time, float right_speed, float left_speed);
     };
 
     class ProfileGenerator {
-        private:
-            float rpm = 0;
-            float wheel_diameter = 0;
-            knights::Drivetrain *drivetrain = nullptr;
-        public:
-            float speed = 0;
+        // assumed differential drive
+        float max_accel;
+        float max_velocity;
+        float track_width;
 
-            ProfileGenerator(knights::Drivetrain* drivetrain);
+        ProfileGenerator(knights::Drivetrain drivetrain, float max_accel);
 
-            ProfileGenerator(float rpm, float wheel_diameter);
+        ProfileGenerator(float max_velocity, float track_width, float max_accel);
 
-            std::vector<ProfileTimestamp> generate_profile(knights::Route route, knights::Pos start, knights::Drivetrain* drivetrain, 
-                float lookahead, float speed_max, float speed_min, float interval);
-    };
+        std::vector<ProfileTimestamp> generate(knights::Pos start, knights::Pos end);
+
+    }
 
 }
 

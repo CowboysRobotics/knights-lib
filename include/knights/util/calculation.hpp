@@ -127,6 +127,8 @@ namespace knights {
     float to_meters(float inches);
     float to_inches(float meters);
 
+    std::vector<float> linspace(float start, float end, int points);
+
 }
 
 /**
