@@ -13,6 +13,9 @@
 
 pros::Task *odomTask = nullptr;
 
+// Create a map that maps autonomous to selection packages
+std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
+
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -51,35 +54,14 @@ void initialize() {
 	lady_brown.set_reversed(true);
 }
 
-/**
- * Runs while the robot is in the disabled state of Field Management System or
- * the VEX Competition Switch, following either autonomous or opcontrol. When
- * the robot is enabled, this task will exit.
- */
 void disabled() {}
 
-/**
- * Runs after initialize(), and before autonomous when connected to the Field
- * Management System or the VEX Competition Switch. This is intended for
- * competition-specific initialization routines, such as an autonomous selector
- * on the LCD.
- *
- * This task will exit when the robot is enabled and autonomous or opcontrol
- * starts.
- */
 void competition_initialize() {}
 
-
-/**
- * Runs the user autonomous code.
- */
 void autonomous() {
 
 	// Query display for the selected buttons
 	knights::display::AutonSelectionPackage package = knights::display::get_selected_auton();
-	
-	// Create a map that maps autonomous to selection packages
-	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// // Different autons, None0 is the default auton
 	auton_map["None0"] = &alt_skills;

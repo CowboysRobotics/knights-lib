@@ -40,6 +40,18 @@ class HermiteSplinePath:
     def h4_prime(self, t):
         return 3 * t**2 - 2 * t
 
+    def h1_prime2(self, t):
+        return 12 * t - 6
+
+    def h2_prime2(self, t):
+        return -12 * t + 6
+
+    def h3_prime2(self, t):
+        return 6 * t - 4
+
+    def h4_prime2(self, t):
+        return 6 * t - 2
+
     def position(self, t):
         """
         Computes the (x, y) position on the spline at parameter t.
@@ -58,7 +70,7 @@ class HermiteSplinePath:
             self.h3(t) * self.curr_tangent[1] +
             self.h4(t) * self.target_tangent[1]
         )
-        dx,dy = self.derivatives(t)
+        dx,dy,_ = self.derivatives(t)
         theta = (
           np.arctan2(dy, dx)
         )
@@ -82,7 +94,29 @@ class HermiteSplinePath:
             self.h3_prime(t) * self.curr_tangent[1] +
             self.h4_prime(t) * self.target_tangent[1]
         )
-        return dx, dy
+        dx2, dy2 = self.second_derivatives(t)
+        omega = (dy2 * dx - dy * dx2) / (1 + (dy/dx)**2)
+        return dx, dy, omega
+
+    def second_derivatives(self, t):
+        """
+        Computes the second derivatives (d2x/dt2, d2y/dt2) at parameter t.
+        :param t: Parameter in [0, 1]
+        :return: (d2x/dt2, d2y/dt2) tuple
+        """
+        dx2 = (
+            self.h1_prime2(t) * self.curr[0] +
+            self.h2_prime2(t) * self.target[0] +
+            self.h3_prime2(t) * self.curr_tangent[0] +
+            self.h4_prime2(t) * self.target_tangent[0]
+        )
+        dy2 = (
+            self.h1_prime2(t) * self.curr[1] +
+            self.h2_prime2(t) * self.target[1] +
+            self.h3_prime2(t) * self.curr_tangent[1] +
+            self.h4_prime2(t) * self.target_tangent[1]
+        )
+        return dx2, dy2
 
 def dist_between(x1, y1, x2, y2):
   return np.hypot(x2-x1, y2-y1)
@@ -124,6 +158,7 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
 
   side_vel_arr = []
   omega_arr = []
+  position_arr = []
 
   for elapsed_time in t:
 
@@ -165,9 +200,10 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     
     # Angular Calculations
     x,y,theta = path.position(curr_dist/total_dist)
-    dx_ds, dy_ds = path.derivatives(curr_dist/total_dist)
-    omega = np.arctan2(dy_ds, dx_ds) * velocity
+    dx_ds, dy_ds, omega = path.derivatives(curr_dist/total_dist)
+    # omega = np.arctan2(dy_ds, dx_ds) * velocity
     omega_arr.append(omega)
+    position_arr.append((x,y,theta))
 
     left_vel = velocity - (omega * track_width / 2)
     right_vel = velocity + (omega * track_width / 2)
@@ -175,7 +211,7 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     side_vel_arr.append((left_vel, right_vel))
 
   
-  return [t, dist_arr, vel_arr, omega_arr, side_vel_arr]
+  return [t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
 
 curr = [0, 0, np.radians(90)]
 target = [24, 24, np.radians(90)]
@@ -209,7 +245,7 @@ max_velocity = (DESIRED_VOLTAGE/MAX_VOLTAGE) * np.pi * WHEEL_DIAMETER * (RPM / 6
 
 print(max_velocity, max_acceleration)
 
-t, dist_arr, vel_arr, omega_arr, side_vel_arr = generate_motion_profile(max_acceleration, max_velocity, total_dist, TRACK_WIDTH, path)
+t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr = generate_motion_profile(max_acceleration, max_velocity, total_dist, TRACK_WIDTH, path)
 
 figure, axis = plt.subplots(3, 2)
 
