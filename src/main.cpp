@@ -5,6 +5,8 @@
 #include "knights/logger/logger.hpp"
 #include "knights/util/calculation.hpp"
 #include "globals.h"
+#include "knights/util/position.hpp"
+#include "liblvgl/misc/lv_color.h"
 #include "pros/misc.h"
 
 #include <cstdio>
@@ -65,8 +67,25 @@ void initialize() {
 
 	// #### TEST AREA ####
 
+	// path test
+    float dist = distance_btwn(knights::Point(0, 0), knights::Point(48, 24));
+    knights::HermiteSpline path(
+        knights::Point(0, 0),
+        knights::Point(48, 2448),
+        knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist),
+        knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist)
+    );
+
+	auto t = knights::linspace(0, 1, 20);
+	for (auto value : t) {
+		knights::display::MapDot dot(5, 5, lv_palette_darken(LV_PALETTE_CYAN, 2));
+		dot.set_field_pos(path.position(value));
+	}
+
+
+	// motion profile test
 	knights::ProfileGenerator generator(drivetrain, 100);
-	std::vector<knights::ProfileTimestamp> profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 90_deg));
+	std::vector<knights::ProfileTimestamp> profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(48, 24, 90_deg));
 
 	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 

@@ -89,7 +89,7 @@ std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate(knigh
     std::cout << this->max_velocity << " " << this->max_accel << " " << this->track_width << "\n";
 
     // first, generate the path
-    float dist = 2 * distance_btwn(start, end);
+    float dist = distance_btwn(start, end); // * 2
 
     knights::HermiteSpline path(
         knights::Point(start.x, start.y),
@@ -112,7 +112,7 @@ std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate(knigh
     float accel_dist = 0.5 * max_accel * (accel_time * accel_time);
 
     if (accel_dist > halfway_dist) {
-        accel_time = sqrtf((halfway_dist) / (0.5 * max_accel));
+        accel_time = sqrt(halfway_dist / (0.5 * max_accel));
     }
 
     float max_velocity = max_accel * accel_time;
@@ -134,10 +134,13 @@ std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate(knigh
         if (elapsed_time > entire_time) {
             curr_dist = total_dist;
         } else if (elapsed_time < accel_time) {
-            curr_dist = 0.5 * max_accel * elapsed_time * elapsed_time;
+            curr_dist = 0.5 * max_accel * (elapsed_time * elapsed_time);
         } else if (elapsed_time < deaccel_time) {
+            accel_dist = 0.5 * max_accel * (accel_time * accel_time);
             curr_dist = accel_dist + max_velocity * (elapsed_time - accel_time);
         } else {
+            accel_dist = 0.5 * max_accel * (accel_time * accel_time);
+            cruise_dist = max_velocity * cruise_time;
             float time_since_deaccel = elapsed_time - deaccel_time;
             curr_dist = accel_dist + cruise_dist + 
                 max_velocity * time_since_deaccel 
@@ -148,7 +151,7 @@ std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate(knigh
         float velocity = 0;
         if (elapsed_time < accel_time) {
             velocity = knights::lerp(0, max_velocity, elapsed_time / accel_time);
-        } else if (elapsed_time < accel_time + cruise_time) {
+        } else if (elapsed_time < accel_time + cruise_time && accel_dist > accel_time) {
             velocity = max_velocity;
         } else {
             velocity = lerp(max_velocity, 0, (elapsed_time - (accel_time + cruise_time)) / accel_time);
