@@ -83,7 +83,6 @@ void initialize() {
 		dot.set_field_pos(path.position(value));
 	}
 
-
 	// motion profile test
 	knights::ProfileGenerator generator(drivetrain, 100);
 	std::vector<knights::ProfileTimestamp> profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(48, 24, 90_deg));

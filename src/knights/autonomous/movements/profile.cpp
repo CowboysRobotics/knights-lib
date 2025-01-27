@@ -159,12 +159,13 @@ std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate(knigh
 
         // Calculate Angular Velocity and Position
         Pos curr = path.position(curr_dist/total_dist);
-        Pos deriv_curr = path.derivatives(curr_dist/total_dist);
+        // Pos deriv_curr = path.derivatives(curr_dist/total_dist);
+        float omega = (path.position(elapsed_time+(entire_time/300)).heading - path.position(elapsed_time-(entire_time/300)).heading) / (2*(entire_time/300));
 
-        float left_vel = velocity - (deriv_curr.heading * track_width/2.0);
-        float right_vel = velocity + (deriv_curr.heading * track_width/2.0);
+        float left_vel = velocity - (omega * track_width/2.0);
+        float right_vel = velocity + (omega * track_width/2.0);
 
-        output.emplace_back(curr, velocity, deriv_curr.heading, curr_dist, elapsed_time, right_vel, left_vel);
+        output.emplace_back(curr, velocity, omega, curr_dist, elapsed_time, right_vel, left_vel);
     }
 
     return output;
