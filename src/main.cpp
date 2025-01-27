@@ -71,14 +71,15 @@ void initialize() {
     float dist = distance_btwn(knights::Point(0, 0), knights::Point(48, 24));
     knights::HermiteSpline path(
         knights::Point(0, 0),
-        knights::Point(48, 2448),
+        knights::Point(48, 24),
         knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist),
         knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist)
     );
 
-	auto t = knights::linspace(0, 1, 20);
+	auto t = knights::linspace(0, 1, 10);
 	for (auto value : t) {
 		knights::display::MapDot dot(5, 5, lv_palette_darken(LV_PALETTE_CYAN, 2));
+		std::cout << "pt: " << path.position(value).x << " " << path.position(value).y << " " << path.position(value).heading << "\n";
 		dot.set_field_pos(path.position(value));
 	}
 
