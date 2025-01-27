@@ -45,10 +45,10 @@ void knights::PIDController::add_constant(float key, PIDConstants constants) {
 
 void knights::PIDController::switch_values(float target_val) {
     float min_diff = 1e8;
-    PIDConstants best_constants;
+    PIDConstants best_constants(this->kP, this->kI, this->kD);
 
     for (auto const [key, value] : this->avaliable_constants) {
-        if (fabsf(key - target_val) > min_diff) {
+        if (fabsf(key - target_val) < min_diff) {
             min_diff = fabsf(key - target_val);
             best_constants = value;
         }
@@ -76,12 +76,12 @@ knights::RamseteConstants::RamseteConstants(const float &damping, const float &p
     : damping(damping), proportional(proportional) {
 }
 
-knights::RobotController::RobotController(RobotChassis *chassis, PIDController *pid_controller, RamseteConstants *ramsete_constants, bool use_motor_encoders)
-    : chassis(chassis), pid_controller(pid_controller), ramsete_constants(ramsete_constants), use_motor_encoders(use_motor_encoders) {
+knights::RobotController::RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *angular_pid, RamseteConstants *ramsete_constants, bool use_motor_encoders)
+    : chassis(chassis), lateral_pid(lateral_pid), angular_pid(angular_pid), ramsete_constants(ramsete_constants), use_motor_encoders(use_motor_encoders) {
 }
 
-knights::RobotController::RobotController(RobotChassis *chassis, PIDController *pid_controller, bool use_motor_encoders)
-    : chassis(chassis), pid_controller(pid_controller), use_motor_encoders(use_motor_encoders) {
+knights::RobotController::RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *angular_pid, bool use_motor_encoders)
+    : chassis(chassis), lateral_pid(lateral_pid), angular_pid(angular_pid), use_motor_encoders(use_motor_encoders) {
 }
 
 

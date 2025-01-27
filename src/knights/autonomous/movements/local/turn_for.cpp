@@ -16,7 +16,7 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
         float speed,error;
         float prev_error = fabsf(to_rad(angle)); float total_error = 0.0;
 
-        this->pid_controller->reset();
+        this->angular_pid->reset();
 
         if (this->use_motor_encoders) {
             // use circumfrence of circle divided by 360 times degrees to calculate how much one side would need to rotate
@@ -44,14 +44,14 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
                 error = this->chassis->drivetrain->position_to_distance(fabsf(desired_position) - fabsf((right_pos + left_pos)/2));
 
                 // use pid formula to calculate speed
-                speed = this->pid_controller->update(error);
+                speed = this->angular_pid->update(error);
 
                 // update positions of motors
                 right_pos = knights::avg(this->chassis->drivetrain->right_mtrs->get_position_all());
                 left_pos = knights::avg(this->chassis->drivetrain->left_mtrs->get_position_all());
 
                 // send command to drivetrain
-                this->chassis->drivetrain->velocity_command(signum(angle) * speed, -signum(angle) * speed);
+                this->chassis->drivetrain->voltage_command(signum(angle) * speed, -signum(angle) * speed);
 
                 // delay
                 pros::delay(10);
@@ -67,6 +67,10 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
                 desired_angle = normalize_angle(this->chassis->curr_position.heading + to_rad(angle), true);
             }
 
+            this->angular_pid->switch_values(
+                std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true))
+            );
+
             while(std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true)) > end_tolerance) {
 
                 // if we are over alloted time, end the function
@@ -76,9 +80,9 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
 
                 // calculate using PID formula
                 error = std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true));\
-                speed = this->pid_controller->update(error);
+                speed = this->angular_pid->update(error);
 
-                this->chassis->drivetrain->velocity_command(-signum(angle) * speed, signum(angle) * speed);
+                this->chassis->drivetrain->voltage_command(-signum(angle) * speed, signum(angle) * speed);
 
                 // if (fabs(speed) < this->pid_controller->get_min_speed()) {
                 //     break;
@@ -88,7 +92,7 @@ void knights::RobotController::turn_for(const float angle, float end_tolerance, 
             }
 
             // stop the robot
-            this->chassis->drivetrain->velocity_command(0, 0);
+            this->chassis->drivetrain->voltage_command(0, 0);
             
         }
     } else {

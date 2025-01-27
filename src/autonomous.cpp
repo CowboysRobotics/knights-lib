@@ -29,24 +29,17 @@ void pid_tuning(knights::RobotChassis *chassis) {
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
-	knights::RobotController lateralController(chassis, &lateralPID);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 
-	knights::PIDController turnPID_45(TURN_kP_45, TURN_kI_45, TURN_kD_45, 10.0, 127.0);
-	knights::RobotController turnController_45(chassis, &turnPID_45);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
 
-	knights::PIDController turnPID_90(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
-	knights::RobotController turnController_90(chassis, &turnPID_90);
+	robotControl.turn_to_angle(270, 0);
 
-	knights::PIDController turnPID_135(TURN_kP_135, TURN_kI_135, TURN_kD_135, 10.0, 127.0);
-	knights::RobotController turnController_135(chassis, &turnPID_135);
-
-	knights::PIDController turnPID_180(TURN_kP_180, TURN_kI_180, TURN_kD_180, 10.0, 127.0);
-	knights::RobotController turnController_180(chassis, &turnPID_180);
-
-	// lateralController.lateral_move(24);
-	turnController_90.turn_to_angle(270, 0);
-
-	turnController_180.turn_to_angle(90, 0);
+	robotControl.turn_to_angle(90, 0);
 }
 
 
@@ -63,20 +56,14 @@ void pp_test(knights::RobotChassis *chassis) {
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 100.0);
-	knights::RobotController lateralController(chassis, &lateralPID);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 
-	knights::PIDController turnPID_45(TURN_kP_45, TURN_kI_45, TURN_kD_45, 10.0, 127.0);
-	knights::RobotController turnController_45(chassis, &turnPID_45);
-
-	knights::PIDController turnPID_90(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
-	knights::RobotController turnController_90(chassis, &turnPID_90);
-
-	knights::PIDController turnPID_135(TURN_kP_135, TURN_kI_135, TURN_kD_135, 10.0, 127.0);
-	knights::RobotController turnController_135(chassis, &turnPID_135);
-
-	knights::PIDController turnPID_180(TURN_kP_180, TURN_kI_180, TURN_kD_180, 10.0, 127.0);
-	knights::RobotController turnController_180(chassis, &turnPID_180);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
 	
 	knights::input::AutonomousInputMap inputMap;
     inputMap.bind_action("intakeRev", intake_out);
@@ -87,7 +74,7 @@ void pp_test(knights::RobotChassis *chassis) {
 	inputMap.bind_action("lbScore", lady_brown_score);
 	inputMap.bind_action("rushMech", toggle_rush_mech);
 
-	test_route.execute(chassis, &lateralPID, &turnPID_90, &inputMap);
+	test_route.execute(chassis, &lateralPID, &turnPID, &inputMap);
 }
 
 #define WAIT 140
@@ -103,23 +90,16 @@ void skills(knights::RobotChassis *chassis) {
 	for (auto pos : otherside_1.positions) {
 		printf("pos %lf %lf read\n", pos.x, pos.y);
 	}
-
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
-	knights::RobotController lateralController(chassis, &lateralPID);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 
-	knights::PIDController turnPID_45(TURN_kP_45, TURN_kI_45, TURN_kD_45, 10.0, 127.0);
-	knights::RobotController turnController_45(chassis, &turnPID_45);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
 
-	knights::PIDController turnPID_90(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
-	knights::RobotController turnController_90(chassis, &turnPID_90);
-
-	knights::PIDController turnPID_135(TURN_kP_135, TURN_kI_135, TURN_kD_135, 10.0, 127.0);
-	knights::RobotController turnController_135(chassis, &turnPID_135);
-
-	knights::PIDController turnPID_180(TURN_kP_180, TURN_kI_180, TURN_kD_180, 10.0, 127.0);
-	knights::RobotController turnController_180(chassis, &turnPID_180);
-
-	lateralController.lateral_move(-8); w;
+	robotControl.lateral_move(-8); w;
 
 	intake_in();
 
@@ -127,104 +107,104 @@ void skills(knights::RobotChassis *chassis) {
 
 	intake_in();
 
-	lateralController.lateral_move(11); w;
+	robotControl.lateral_move(11); w;
 
-	turnController_90.turn_to_angle(90); w;
+	robotControl.turn_to_angle(90); w;
 
-	lateralController.lateral_move(-12); tw(1); lateralController.lateral_move(-12); tw(2);
+	robotControl.lateral_move(-12); tw(1); robotControl.lateral_move(-12); tw(2);
 
 	clamp_toggle(); tw(2);
 	intake_in();
 
-	turnController_90.turn_to_angle(0); w;
+	robotControl.turn_to_angle(0); w;
 
-	lateralController.lateral_move(23); w;
+	robotControl.lateral_move(23); w;
 
-	turnController_90.turn_to_angle(270); w;
+	robotControl.turn_to_angle(270); w;
 
-	lateralController.lateral_move(20); w;
+	robotControl.lateral_move(20); w;
 
-	turnController_90.turn_to_angle(180); w;
+	robotControl.turn_to_angle(180); w;
 
-	lateralController.lateral_move(18); w;
+	robotControl.lateral_move(18); w;
 
-	lateralController.lateral_move(16); w;
-
-	pros::delay(800);
-
-	lateralController.lateral_move(-12); w;
-
-	turnController_90.turn_to_angle(270); w;
-
-	lateralController.lateral_move(12); w;
+	robotControl.lateral_move(16); w;
 
 	pros::delay(800);
 
-	lateralController.lateral_move(-16); w;
+	robotControl.lateral_move(-12); w;
 
-	turnController_135.turn_to_angle(40); w;
+	robotControl.turn_to_angle(270); w;
 
-	lateralController.lateral_move(-20); w;
+	robotControl.lateral_move(12); w;
+
+	pros::delay(800);
+
+	robotControl.lateral_move(-16); w;
+
+	robotControl.turn_to_angle(40); w;
+
+	robotControl.lateral_move(-20); w;
 
 	clamp_toggle();
 
 	pros::delay(600);
 
-	lateralController.lateral_move(13); w;
+	robotControl.lateral_move(13); w;
 
-	turnController_135.turn_to_angle(270); w;
+	robotControl.turn_to_angle(270); w;
 
-	lateralController.lateral_move(-48, 3.0, 1250); w;
+	robotControl.lateral_move(-48, 3.0, 1250); w;
 
-	lateralController.lateral_move(-14); w;
+	robotControl.lateral_move(-14); w;
 
 	clamp_toggle();
 
-	turnController_90.turn_to_angle(0); w;
+	robotControl.turn_to_angle(0); w;
 
-	lateralController.lateral_move(23); w;
+	robotControl.lateral_move(23); w;
 
-	turnController_90.turn_to_angle(-270); w;
+	robotControl.turn_to_angle(-270); w;
 
-	lateralController.lateral_move(20); w;
+	robotControl.lateral_move(20); w;
 
-	turnController_90.turn_to_angle(-180); w;
+	robotControl.turn_to_angle(-180); w;
 
-	lateralController.lateral_move(18); w;
+	robotControl.lateral_move(18); w;
 
-	lateralController.lateral_move(16); w;
-
-	pros::delay(800);
-
-	lateralController.lateral_move(-12); w;
-
-	turnController_90.turn_to_angle(-270); w;
-
-	lateralController.lateral_move(12); w;
+	robotControl.lateral_move(16); w;
 
 	pros::delay(800);
 
-	lateralController.lateral_move(-16); w;
+	robotControl.lateral_move(-12); w;
 
-	turnController_135.turn_to_angle(-40); w;
+	robotControl.turn_to_angle(-270); w;
 
-	lateralController.lateral_move(-20); w;
+	robotControl.lateral_move(12); w;
+
+	pros::delay(800);
+
+	robotControl.lateral_move(-16); w;
+
+	robotControl.turn_to_angle(-40); w;
+
+	robotControl.lateral_move(-20); w;
 
 	clamp_toggle();
 
 	pros::delay(600);
 
-	lateralController.lateral_move(10); w;
+	robotControl.lateral_move(10); w;
 
-	// turnController_45.turn_to_angle(315); w;
+	// robotControl.turn_to_angle(315); w;
 
 	// lady_brown_load1();
 
-	// lateralController.lateral_move(28); w;
+	// robotControl.lateral_move(28); w;
 
-	// turnController_45.turn_to_angle(270);
+	// robotControl.turn_to_angle(270);
 
-	// lateralController.lateral_move(16); w;
+	// robotControl.lateral_move(16); w;
 
 	// pros::delay(1000);
 
@@ -232,49 +212,49 @@ void skills(knights::RobotChassis *chassis) {
 
 	// pros::delay(1000);
 
-	// lateralController.lateral_move(-6); w;
+	// robotControl.lateral_move(-6); w;
 
 	// lady_brown_down(); intake_in(); w;
 
-	// turnController_90.turn_to_angle(180); w;
+	// robotControl.turn_to_angle(180); w;
 
-	// lateralController.lateral_move(34, 3.0, 1250); w;
+	// robotControl.lateral_move(34, 3.0, 1250); w;
 
-	// lateralController.lateral_move(-12); w;
+	// robotControl.lateral_move(-12); w;
 
-	// turnController_90.turn_to_angle(270); w;
+	// robotControl.turn_to_angle(270); w;
 
-	// lateralController.lateral_move(16); pros::delay(800);
+	// robotControl.lateral_move(16); pros::delay(800);
 
-	// turnController_90.turn_to_angle(20); w;
+	// robotControl.turn_to_angle(20); w;
 
-	// lateralController.lateral_move(-8); w;
+	// robotControl.lateral_move(-8); w;
 
 	// clamp_toggle(); tw(3);
 
-	// lateralController.lateral_move(8); w;
+	// robotControl.lateral_move(8); w;
 
-// 	turnController_90.turn_to_angle(275); w;
+// 	robotControl.turn_to_angle(275); w;
 
-// 	lateralController.lateral_move(-50, 3.0, 1400); tw(1);
+// 	robotControl.lateral_move(-50, 3.0, 1400); tw(1);
 
-//     lateralController.lateral_move(-25, 3.0, 1400); tw(1);
+//     robotControl.lateral_move(-25, 3.0, 1400); tw(1);
 
 //     clamp_toggle(); tw(3);
 
-//     turnController_90.turn_to_angle(0); w;
+//     robotControl.turn_to_angle(0); w;
 
-//    lateralController.lateral_move(22); w;
+//    robotControl.lateral_move(22); w;
 
-//    turnController_90.turn_to_angle(90); w;
+//    robotControl.turn_to_angle(90); w;
 
-//    lateralController.lateral_move(24); w;
+//    robotControl.lateral_move(24); w;
 
-//    turnController_90.turn_to_angle(180); w;
+//    robotControl.turn_to_angle(180); w;
    
-//    lateralController.lateral_move(20); w;
+//    robotControl.lateral_move(20); w;
 
-//    lateralController.lateral_move(13); w;
+//    robotControl.lateral_move(13); w;
 
 
 
@@ -284,46 +264,40 @@ void red_left_wp(knights::RobotChassis *chassis) {
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 100.0);
-	knights::RobotController lateralController(chassis, &lateralPID);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 
-	knights::PIDController turnPID_45(TURN_kP_45, TURN_kI_45, TURN_kD_45, 10.0, 127.0);
-	knights::RobotController turnController_45(chassis, &turnPID_45);
-
-	knights::PIDController turnPID_90(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
-	knights::RobotController turnController_90(chassis, &turnPID_90);
-
-	knights::PIDController turnPID_135(TURN_kP_135, TURN_kI_135, TURN_kD_135, 10.0, 127.0);
-	knights::RobotController turnController_135(chassis, &turnPID_135);
-
-	knights::PIDController turnPID_180(TURN_kP_180, TURN_kI_180, TURN_kD_180, 10.0, 127.0);
-	knights::RobotController turnController_180(chassis, &turnPID_180);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
 	
 	toggle_rush_mech();
 
-	lateralController.lateral_move(20);
+	robotControl.lateral_move(20);
 
 	pros::delay(WAIT);
 
-	turnController_45.turn_to_angle(27, 0);
+	robotControl.turn_to_angle(27, 0);
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(19);
+	robotControl.lateral_move(19);
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(-14);
+	robotControl.lateral_move(-14);
 
 	pros::delay(WAIT);
 
 	toggle_rush_mech();
 
-	turnController_90.turn_to_angle(100, 0);
+	robotControl.turn_to_angle(100, 0);
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(-13);
+	robotControl.lateral_move(-13);
 
 	clamp_toggle();
 
@@ -333,62 +307,62 @@ void red_left_wp(knights::RobotChassis *chassis) {
 
 	pros::delay(2*WAIT);
 
-	turnController_45.turn_to_angle(28,0);
+	robotControl.turn_to_angle(28,0);
 
 	w;
 
-	lateralController.lateral_move(11);
+	robotControl.lateral_move(11);
 
 	w;
 	
-	turnController_45.turn_to_angle(80);
+	robotControl.turn_to_angle(80);
 	
 	w;
 
-	lateralController.lateral_move(19);
+	robotControl.lateral_move(19);
 
 	w;
 
     pros::delay(500);
 
-    lateralController.lateral_move(13);
+    robotControl.lateral_move(13);
 
 	w;
 
-    lateralController.lateral_move(-20);
-
-	w;
-
-
-	turnController_45.turn_to_angle(157,0);
-
-	w;
-
-	lateralController.lateral_move(30);
-
-	w;
-	turnController_45.turn_to_angle(195,0);
-
-	w;
-
-	turnController_45.turn_to_angle(136,0);
-
-	w;
-
-	lateralController.lateral_move(17);
-
-	w;
-
-    lateralController.lateral_move(4);
+    robotControl.lateral_move(-20);
 
 	w;
 
 
-	lateralController.lateral_move(-10);
+	robotControl.turn_to_angle(157,0);
 
 	w;
 
-	turnController_135.turn_to_angle(270, 0);
+	robotControl.lateral_move(30);
+
+	w;
+	robotControl.turn_to_angle(195,0);
+
+	w;
+
+	robotControl.turn_to_angle(136,0);
+
+	w;
+
+	robotControl.lateral_move(17);
+
+	w;
+
+    robotControl.lateral_move(4);
+
+	w;
+
+
+	robotControl.lateral_move(-10);
+
+	w;
+
+	robotControl.turn_to_angle(270, 0);
 
 	w;
 
@@ -396,15 +370,15 @@ void red_left_wp(knights::RobotChassis *chassis) {
 
 	w;
 
-	lateralController.lateral_move(29);
+	robotControl.lateral_move(29);
 
 	w;
 
-	turnController_45.turn_to_angle(226,0);
+	robotControl.turn_to_angle(226,0);
 
 	w;
 
-	lateralController.lateral_move(10);
+	robotControl.lateral_move(10);
 
 	w;
 
@@ -418,61 +392,55 @@ void red_rush_right_wp(knights::RobotChassis *chassis) {
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
-	knights::RobotController lateralController(chassis, &lateralPID);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 
-	knights::PIDController turnPID_45(TURN_kP_45, TURN_kI_45, TURN_kD_45, 10.0, 127.0);
-	knights::RobotController turnController_45(chassis, &turnPID_45);
-
-	knights::PIDController turnPID_90(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
-	knights::RobotController turnController_90(chassis, &turnPID_90);
-
-	knights::PIDController turnPID_135(TURN_kP_135, TURN_kI_135, TURN_kD_135, 10.0, 127.0);
-	knights::RobotController turnController_135(chassis, &turnPID_135);
-
-	knights::PIDController turnPID_180(TURN_kP_180, TURN_kI_180, TURN_kD_180, 10.0, 127.0);
-	knights::RobotController turnController_180(chassis, &turnPID_180);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
     
 	lady_brown_load1(); w; intake_in();
 
-	turnController_45.turn_to_angle(135); w;
+	robotControl.turn_to_angle(135); w;
 
 	intake_in(); w;
 
-	lateralController.lateral_move(9); w;
+	robotControl.lateral_move(9); w;
 
 	// lady_brown_score();
 	lady_brown_alliance(); tw(5); lady_brown.move(0);
 
-	lateralController.lateral_move(-6); w;
+	robotControl.lateral_move(-6); w;
 
 	tw(4); lady_brown.move(-127);
-	turnController_45.turn_to_angle(165); w;
+	robotControl.turn_to_angle(165); w;
 
-	lateralController.lateral_move(-18); w; lateralController.lateral_move(-15); tw(2);
+	robotControl.lateral_move(-18); w; robotControl.lateral_move(-15); tw(2);
 
 	clamp_toggle(); w; lady_brown.move(0); w;
 
-	turnController_90.turn_to_angle(270); w;
+	robotControl.turn_to_angle(270); w;
 
 	intake_in(); w;
 
-	lateralController.lateral_move(26); w;
+	robotControl.lateral_move(26); w;
 
-	turnController_90.turn_to_angle(195); w;
+	robotControl.turn_to_angle(195); w;
 
-	lateralController.lateral_move(28); w;
+	robotControl.lateral_move(28); w;
 
-	turnController_45.turn_to_angle(223); w;
+	robotControl.turn_to_angle(223); w;
 
-	drivetrain.velocity_command(50, 50);
+	drivetrain.voltage_command(50, 50);
 
 	pros::delay(1000);
 
-	drivetrain.velocity_command(0, 0);
+	drivetrain.voltage_command(0, 0);
 
-	lateralController.lateral_move(-12); pros::delay(1000);
+	robotControl.lateral_move(-12); pros::delay(1000);
 
-	turnController_180.turn_to_angle(45); w;
+	robotControl.turn_to_angle(45); w;
 
 	pros::delay(250);
 
@@ -482,9 +450,9 @@ void red_rush_right_wp(knights::RobotChassis *chassis) {
 
 	// lady_brown_score();
 
-	lateralController.lateral_move(36);
+	robotControl.lateral_move(36);
 
-	lateralController.lateral_move(16); w;
+	robotControl.lateral_move(16); w;
 
 	// intake_in(); tw(2);
 }
@@ -499,21 +467,15 @@ void alt_skills(knights::RobotChassis *chassis) {
 	}
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
-	knights::RobotController lateralController(chassis, &lateralPID);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 
-	knights::PIDController turnPID_45(TURN_kP_45, TURN_kI_45, TURN_kD_45, 10.0, 127.0);
-	knights::RobotController turnController_45(chassis, &turnPID_45);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
 
-	knights::PIDController turnPID_90(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
-	knights::RobotController turnController_90(chassis, &turnPID_90);
-
-	knights::PIDController turnPID_135(TURN_kP_135, TURN_kI_135, TURN_kD_135, 10.0, 127.0);
-	knights::RobotController turnController_135(chassis, &turnPID_135);
-
-	knights::PIDController turnPID_180(TURN_kP_180, TURN_kI_180, TURN_kD_180, 10.0, 127.0);
-	knights::RobotController turnController_180(chassis, &turnPID_180);
-
-	lateralController.lateral_move(-8); w;
+	robotControl.lateral_move(-8); w;
 
 	intake_in();
 
@@ -521,77 +483,77 @@ void alt_skills(knights::RobotChassis *chassis) {
 
 	intake_in();
 
-	lateralController.lateral_move(11); w;
+	robotControl.lateral_move(11); w;
 
-	turnController_90.turn_to_angle(90, 0); w;
+	robotControl.turn_to_angle(90, 0); w;
 
-	lateralController.lateral_move(-12); tw(1); lateralController.lateral_move(-12); tw(2);
+	robotControl.lateral_move(-12); tw(1); robotControl.lateral_move(-12); tw(2);
 
 	clamp_toggle(); tw(2);
 
 	intake_in();
 
-	turnController_90.turn_to_angle(0, 0); w;
+	robotControl.turn_to_angle(0, 0); w;
 
-	turnController_45.turn_to_angle(315, 0); w;
+	robotControl.turn_to_angle(315, 0); w;
 
-	lateralController.lateral_move(27); w;
+	robotControl.lateral_move(27); w;
 
-	lateralController.lateral_move(27); w;
+	robotControl.lateral_move(27); w;
 
-	turnController_45.turn_to_angle(270,0); w;
+	robotControl.turn_to_angle(270,0); w;
 
-	turnController_90.turn_to_angle(180,0); w;
+	robotControl.turn_to_angle(180,0); w;
 
-	lateralController.lateral_move(24); w;
+	robotControl.lateral_move(24); w;
 
-	lateralController.lateral_move(24); w;
+	robotControl.lateral_move(24); w;
 
-	lateralController.lateral_move(-12); w;
+	robotControl.lateral_move(-12); w;
 
-	turnController_90.turn_to_angle(270, 0); w;
+	robotControl.turn_to_angle(270, 0); w;
 
-	lateralController.lateral_move(12); w;
+	robotControl.lateral_move(12); w;
 
-	lateralController.lateral_move(-24); w;
+	robotControl.lateral_move(-24); w;
 
-	turnController_45.turn_to_angle(225,0); w;
+	robotControl.turn_to_angle(225,0); w;
 
-	lateralController.lateral_move(26); w;
-
-	clamp_toggle(); tw(2);
-
-	lateralController.lateral_move(-26); w;
-
-	turnController_45.turn_to_angle(270,0); w;
-
-	lateralController.lateral_move(-24); w;
-
-	lateralController.lateral_move(-24); w;
-
-	lateralController.lateral_move(-24); w;
+	robotControl.lateral_move(26); w;
 
 	clamp_toggle(); tw(2);
 
-	turnController_90.turn_to_angle(0); w;
+	robotControl.lateral_move(-26); w;
 
-	turnController_45.turn_to_angle(45); w;
+	robotControl.turn_to_angle(270,0); w;
 
-	lateralController.lateral_move(27); w;
+	robotControl.lateral_move(-24); w;
 
-	lateralController.lateral_move(27); w;
+	robotControl.lateral_move(-24); w;
 
-	turnController_45.turn_to_angle(90); w;
+	robotControl.lateral_move(-24); w;
 
-	turnController_90.turn_to_angle(180); w;
+	clamp_toggle(); tw(2);
 
-	lateralController.lateral_move(24); w;
+	robotControl.turn_to_angle(0); w;
 
-	lateralController.lateral_move(24); w;
+	robotControl.turn_to_angle(45); w;
 
-	lateralController.lateral_move(-12); w;
+	robotControl.lateral_move(27); w;
 
-	turnController_90.turn_to_angle(90);
+	robotControl.lateral_move(27); w;
+
+	robotControl.turn_to_angle(90); w;
+
+	robotControl.turn_to_angle(180); w;
+
+	robotControl.lateral_move(24); w;
+
+	robotControl.lateral_move(24); w;
+
+	robotControl.lateral_move(-12); w;
+
+	robotControl.turn_to_angle(90);
 }
 
 
@@ -599,19 +561,13 @@ void red_rush_right_elim(knights::RobotChassis *chassis) {
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
-	knights::RobotController lateralController(chassis, &lateralPID);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 
-	knights::PIDController turnPID_45(TURN_kP_45, TURN_kI_45, TURN_kD_45, 10.0, 127.0);
-	knights::RobotController turnController_45(chassis, &turnPID_45);
-
-	knights::PIDController turnPID_90(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
-	knights::RobotController turnController_90(chassis, &turnPID_90);
-
-	knights::PIDController turnPID_135(TURN_kP_135, TURN_kI_135, TURN_kD_135, 10.0, 127.0);
-	knights::RobotController turnController_135(chassis, &turnPID_135);
-
-	knights::PIDController turnPID_180(TURN_kP_180, TURN_kI_180, TURN_kD_180, 10.0, 127.0);
-	knights::RobotController turnController_180(chassis, &turnPID_180);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
     
 	intake.set_reversed(false,0);
 	intake.set_reversed(true, 1);
@@ -622,46 +578,40 @@ void blue_right_wp(knights::RobotChassis *chassis) {
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 100.0);
-	knights::RobotController lateralController(chassis, &lateralPID);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 
-	knights::PIDController turnPID_45(TURN_kP_45, TURN_kI_45, TURN_kD_45, 10.0, 127.0);
-	knights::RobotController turnController_45(chassis, &turnPID_45);
-
-	knights::PIDController turnPID_90(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
-	knights::RobotController turnController_90(chassis, &turnPID_90);
-
-	knights::PIDController turnPID_135(TURN_kP_135, TURN_kI_135, TURN_kD_135, 10.0, 127.0);
-	knights::RobotController turnController_135(chassis, &turnPID_135);
-
-	knights::PIDController turnPID_180(TURN_kP_180, TURN_kI_180, TURN_kD_180, 10.0, 127.0);
-	knights::RobotController turnController_180(chassis, &turnPID_180);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
 	
 	toggle_rush_mech();
 
-	lateralController.lateral_move(20);
+	robotControl.lateral_move(20);
 
 	pros::delay(WAIT);
 
-	turnController_45.turn_to_angle(-1*27, 0);
+	robotControl.turn_to_angle(-1*27, 0);
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(19);
+	robotControl.lateral_move(19);
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(-14);
+	robotControl.lateral_move(-14);
 
 	pros::delay(WAIT);
 
 	toggle_rush_mech();
 
-	turnController_90.turn_to_angle(-1*100, 0);
+	robotControl.turn_to_angle(-1*100, 0);
 
 	pros::delay(WAIT);
 
-	lateralController.lateral_move(-13);
+	robotControl.lateral_move(-13);
 
 	clamp_toggle();
 
@@ -671,62 +621,62 @@ void blue_right_wp(knights::RobotChassis *chassis) {
 
 	pros::delay(2*WAIT);
 
-	turnController_45.turn_to_angle(-1*28,0);
+	robotControl.turn_to_angle(-1*28,0);
 
 	w;
 
-	lateralController.lateral_move(11);
+	robotControl.lateral_move(11);
 
 	w;
 	
-	turnController_45.turn_to_angle(-1*80);
+	robotControl.turn_to_angle(-1*80);
 	
 	w;
 
-	lateralController.lateral_move(19);
+	robotControl.lateral_move(19);
 
 	w;
 
     pros::delay(500);
 
-    lateralController.lateral_move(13);
+    robotControl.lateral_move(13);
 
 	w;
 
-    lateralController.lateral_move(-20);
-
-	w;
-
-
-	turnController_45.turn_to_angle(-1*157,0);
-
-	w;
-
-	lateralController.lateral_move(30);
-
-	w;
-	turnController_45.turn_to_angle(-1*195,0);
-
-	w;
-
-	turnController_45.turn_to_angle(-1*136,0);
-
-	w;
-
-	lateralController.lateral_move(17);
-
-	w;
-
-    lateralController.lateral_move(4);
+    robotControl.lateral_move(-20);
 
 	w;
 
 
-	lateralController.lateral_move(-10);
+	robotControl.turn_to_angle(-1*157,0);
 
 	w;
 
-	turnController_135.turn_to_angle(-1*270, 0);
+	robotControl.lateral_move(30);
+
+	w;
+	robotControl.turn_to_angle(-1*195,0);
+
+	w;
+
+	robotControl.turn_to_angle(-1*136,0);
+
+	w;
+
+	robotControl.lateral_move(17);
+
+	w;
+
+    robotControl.lateral_move(4);
+
+	w;
+
+
+	robotControl.lateral_move(-10);
+
+	w;
+
+	robotControl.turn_to_angle(-1*270, 0);
 
 	w;
 
@@ -734,15 +684,15 @@ void blue_right_wp(knights::RobotChassis *chassis) {
 
 	w;
 
-	lateralController.lateral_move(29);
+	robotControl.lateral_move(29);
 
 	w;
 
-	turnController_45.turn_to_angle(-1*226,0);
+	robotControl.turn_to_angle(-1*226,0);
 
 	w;
 
-	lateralController.lateral_move(10);
+	robotControl.lateral_move(10);
 
 	w;
 
@@ -756,61 +706,55 @@ void blue_rush_left_wp(knights::RobotChassis *chassis) {
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
-	knights::RobotController lateralController(chassis, &lateralPID);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 
-	knights::PIDController turnPID_45(TURN_kP_45, TURN_kI_45, TURN_kD_45, 10.0, 127.0);
-	knights::RobotController turnController_45(chassis, &turnPID_45);
-
-	knights::PIDController turnPID_90(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
-	knights::RobotController turnController_90(chassis, &turnPID_90);
-
-	knights::PIDController turnPID_135(TURN_kP_135, TURN_kI_135, TURN_kD_135, 10.0, 127.0);
-	knights::RobotController turnController_135(chassis, &turnPID_135);
-
-	knights::PIDController turnPID_180(TURN_kP_180, TURN_kI_180, TURN_kD_180, 10.0, 127.0);
-	knights::RobotController turnController_180(chassis, &turnPID_180);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
     
 	lady_brown_load1(); w; intake_in();
 
-	turnController_45.turn_to_angle(-1*135); w;
+	robotControl.turn_to_angle(-1*135); w;
 
 	intake_in(); w;
 
-	lateralController.lateral_move(9); w;
+	robotControl.lateral_move(9); w;
 
 	// lady_brown_score();
 	lady_brown_alliance(); tw(5); lady_brown.move(0);
 
-	lateralController.lateral_move(-6); w;
+	robotControl.lateral_move(-6); w;
 
 	tw(4); lady_brown.move(-127);
-	turnController_45.turn_to_angle(-1*165); w;
+	robotControl.turn_to_angle(-1*165); w;
 
-	lateralController.lateral_move(-18); w; lateralController.lateral_move(-15); tw(2);
+	robotControl.lateral_move(-18); w; robotControl.lateral_move(-15); tw(2);
 
 	clamp_toggle(); w; lady_brown.move(0); w;
 
-	turnController_90.turn_to_angle(-1*270); w;
+	robotControl.turn_to_angle(-1*270); w;
 
 	intake_in(); w;
 
-	lateralController.lateral_move(26); w;
+	robotControl.lateral_move(26); w;
 
-	turnController_90.turn_to_angle(-1*195); w;
+	robotControl.turn_to_angle(-1*195); w;
 
-	lateralController.lateral_move(28); w;
+	robotControl.lateral_move(28); w;
 
-	turnController_45.turn_to_angle(-1*223); w;
+	robotControl.turn_to_angle(-1*223); w;
 
-	drivetrain.velocity_command(50, 50);
+	drivetrain.voltage_command(50, 50);
 
 	pros::delay(1000);
 
-	drivetrain.velocity_command(0, 0);
+	drivetrain.voltage_command(0, 0);
 
-	lateralController.lateral_move(-12); pros::delay(1000);
+	robotControl.lateral_move(-12); pros::delay(1000);
 
-	turnController_180.turn_to_angle(-1*45); w;
+	robotControl.turn_to_angle(-1*45); w;
 
 	pros::delay(250);
 
@@ -820,29 +764,24 @@ void blue_rush_left_wp(knights::RobotChassis *chassis) {
 
 	// lady_brown_score();
 
-	lateralController.lateral_move(36);
+	robotControl.lateral_move(36);
 
-	lateralController.lateral_move(16); w;
+	robotControl.lateral_move(16); w;
 
 	// intake_in(); tw(2);
 }
 
 void blue_right_elim(knights::RobotChassis *chassis) {
     knights::RamseteConstants ramsete_constants(1, 0.5);
+
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
-	knights::RobotController lateralController(chassis, &lateralPID);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 
-	knights::PIDController turnPID_45(TURN_kP_45, TURN_kI_45, TURN_kD_45, 10.0, 127.0);
-	knights::RobotController turnController_45(chassis, &turnPID_45);
-
-	knights::PIDController turnPID_90(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
-	knights::RobotController turnController_90(chassis, &turnPID_90);
-
-	knights::PIDController turnPID_135(TURN_kP_135, TURN_kI_135, TURN_kD_135, 10.0, 127.0);
-	knights::RobotController turnController_135(chassis, &turnPID_135);
-
-	knights::PIDController turnPID_180(TURN_kP_180, TURN_kI_180, TURN_kD_180, 10.0, 127.0);
-	knights::RobotController turnController_180(chassis, &turnPID_180);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
     
 	intake.set_reversed(false,0);
 	intake.set_reversed(true, 1);
@@ -854,19 +793,13 @@ void blue_left_rush_elim(knights::RobotChassis *chassis) {
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
-	knights::RobotController lateralController(chassis, &lateralPID);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 
-	knights::PIDController turnPID_45(TURN_kP_45, TURN_kI_45, TURN_kD_45, 10.0, 127.0);
-	knights::RobotController turnController_45(chassis, &turnPID_45);
-
-	knights::PIDController turnPID_90(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
-	knights::RobotController turnController_90(chassis, &turnPID_90);
-
-	knights::PIDController turnPID_135(TURN_kP_135, TURN_kI_135, TURN_kD_135, 10.0, 127.0);
-	knights::RobotController turnController_135(chassis, &turnPID_135);
-
-	knights::PIDController turnPID_180(TURN_kP_180, TURN_kI_180, TURN_kD_180, 10.0, 127.0);
-	knights::RobotController turnController_180(chassis, &turnPID_180);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
     
 	intake.set_reversed(false,0);
 	intake.set_reversed(true, 1);

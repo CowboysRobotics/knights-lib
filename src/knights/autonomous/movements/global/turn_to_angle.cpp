@@ -39,7 +39,11 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
     this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
     this->chassis->drivetrain->left_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
 
-    this->pid_controller->reset();
+    this->angular_pid->reset();
+
+    this->angular_pid->switch_values(
+        std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true))
+    );
 
     while(std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true)) > end_tolerance) {
 
@@ -49,11 +53,11 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
         // calculate w/ PID formula
         error = std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true));
 
-        speed = this->pid_controller->update(error);
+        speed = this->angular_pid->update(error);
 
         knights::logger::green(knights::logger::string_format("des angle: %lf, curr angle %lf, error %lf, speed: %lf\n", desired_angle, this->chassis->curr_position.heading, error, speed));
 
-        this->chassis->drivetrain->velocity_command(-sign * speed, sign * speed);
+        this->chassis->drivetrain->voltage_command(-sign * speed, sign * speed);
 
         if (speed < MIN_SPEED) {
             break;
@@ -62,7 +66,7 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
         pros::delay(10);
     }
 
-    this->chassis->drivetrain->velocity_command(0, 0);
+    this->chassis->drivetrain->voltage_command(0, 0);
 
     this->in_motion = false;
     return;

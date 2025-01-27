@@ -15,7 +15,7 @@ void knights::RobotController::lateral_move(const float distance, const float en
     this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
     this->chassis->drivetrain->left_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
 
-    this->pid_controller->reset();
+    this->lateral_pid->reset();
 
     // lateral move the chassis of a robot
     if (this->chassis->drivetrain != nullptr) {
@@ -45,14 +45,14 @@ void knights::RobotController::lateral_move(const float distance, const float en
                 error = this->chassis->drivetrain->position_to_distance(fabsf(desired_position) - fabsf((right_pos + left_pos)/2));
 
                 // use pid formula to calculate speed
-                speed = this->pid_controller->update(error) * knights::signum(distance);
+                speed = this->lateral_pid->update(error) * knights::signum(distance);
 
                 // update positions of motors
                 right_pos = knights::avg(this->chassis->drivetrain->right_mtrs->get_position_all());
                 left_pos = knights::avg(this->chassis->drivetrain->left_mtrs->get_position_all());
 
                 // send command to drivetrain
-                this->chassis->drivetrain->velocity_command(speed,speed);
+                this->chassis->drivetrain->voltage_command(speed,speed);
 
                 // delay
                 pros::delay(10);
@@ -72,7 +72,7 @@ void knights::RobotController::lateral_move(const float distance, const float en
                 error = knights::distance_btwn(this->chassis->curr_position, desired_position);
 
                 // use pid formula to calculate speed
-                speed = this->pid_controller->update(error) * knights::signum(distance);
+                speed = this->lateral_pid->update(error) * knights::signum(distance);
 
                 // if (fabs(speed) <= this->pid_controller->min_velocity-10) {
                 //     break;
@@ -93,7 +93,7 @@ void knights::RobotController::lateral_move(const float distance, const float en
                 // }
 
                 // send command to drivetrain
-                this->chassis->drivetrain->velocity_command(speed,speed);
+                this->chassis->drivetrain->voltage_command(speed,speed);
 
                 // delay
                 pros::delay(10);

@@ -73,7 +73,7 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
     float max_lookahead = lookahead_distance;
     float angular_curve;
 
-    this->pid_controller->reset();
+    this->lateral_pid->reset();
 
     // While the robot has not reached the desired point and is not at the end of the route
     while (error > end_tolerance && closest_i != route.positions.size()-1 ) {
@@ -124,12 +124,12 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
             target_speed *= (distance_btwn(curr_position, target_point)/max_lookahead) * 3;
         }
 
-        if (target_speed < this->pid_controller->get_min_speed())
+        if (target_speed < this->lateral_pid->get_min_speed())
             break;
 
         // determine speed based on PID if selected to use
         if (use_pid) {
-            target_speed = this->pid_controller->update(error);
+            target_speed = this->lateral_pid->update(error);
         }
 
         // calculate right and left speed based on curvature
@@ -145,9 +145,9 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
 
         // apply calculated velocities to motors
         if (forwards)
-            this->chassis->drivetrain->velocity_command(r_speed, l_speed);
+            this->chassis->drivetrain->voltage_command(r_speed, l_speed);
         else
-            this->chassis->drivetrain->velocity_command(-l_speed, -r_speed);
+            this->chassis->drivetrain->voltage_command(-l_speed, -r_speed);
 
         // log for debugging
         if (std::fmod(timeout, 75) == 0) {
@@ -166,7 +166,7 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
     }
 
     // stop motors after route over
-    this->chassis->drivetrain->velocity_command(0, 0);
+    this->chassis->drivetrain->voltage_command(0, 0);
 
     this->in_motion = false;
     return;

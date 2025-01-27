@@ -242,7 +242,7 @@ void opcontrol() {
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
 		// Reversed b/c david uses the back of the robot as the front
-		drivetrain.velocity_command(
+		drivetrain.voltage_command(
 			left_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)),
 			right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))
 		);

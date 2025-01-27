@@ -9,7 +9,7 @@ knights::Drivetrain::Drivetrain(pros::MotorGroup *right_mtrs, pros::MotorGroup *
     : right_mtrs(right_mtrs), left_mtrs(left_mtrs), track_width(track_width), rpm(rpm), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio) {
 }
 
-void knights::Drivetrain::velocity_command(int rightMtrs, int leftMtrs) {
+void knights::Drivetrain::voltage_command(int rightMtrs, int leftMtrs) {
     this->right_mtrs->move(rightMtrs);
     this->left_mtrs->move(leftMtrs);
 }
