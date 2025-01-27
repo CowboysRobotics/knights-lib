@@ -1,5 +1,6 @@
 #include "main.h"
 #include "autonomous.h"
+#include "knights/autonomous/profile.hpp"
 #include "knights/display.hpp"
 #include "knights/logger/logger.hpp"
 #include "knights/util/calculation.hpp"
@@ -12,6 +13,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <fstream>
 
 pros::Task *odomTask = nullptr;
 
@@ -60,6 +62,32 @@ void initialize() {
 	// intake.set_reversed(false, 0);
 	// intake.set_reversed(true, 1);
 	lady_brown.set_reversed(true);
+
+	// #### TEST AREA ####
+
+	knights::ProfileGenerator generator(drivetrain, 100);
+	std::vector<knights::ProfileTimestamp> profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 90_deg));
+
+	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
+
+	for (knights::ProfileTimestamp timestamp : profile) {
+		write_file << "time: " << timestamp.time << "\n";
+		write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << "\n";
+		write_file << "lin vel: " << timestamp.linear_velocity << "\n";
+		write_file << "angular vel: " << timestamp.angular_velocity << "\n";
+		write_file << "dist: " << timestamp.curr_distance << "\n";
+		write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << "\n";
+		write_file << "end timestamp\n";
+
+		std::cout << "time: " << timestamp.time << " ";
+		std::cout << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+		std::cout << "lin vel: " << timestamp.linear_velocity << " ";
+		std::cout << "angular vel: " << timestamp.angular_velocity << " ";
+		std::cout << "dist: " << timestamp.curr_distance << " ";
+		std::cout << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+		std::cout << "end timestamp\n";
+	}
+
 }
 
 void disabled() {}

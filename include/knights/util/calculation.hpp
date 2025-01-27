@@ -166,6 +166,14 @@ inline constexpr long double operator"" _deg(long double degrees) {
 }
 
 /**
+ * @brief Declare value as degrees - therefore it will be converted to radians
+ * 
+ */
+inline constexpr unsigned long long int operator"" _deg(unsigned long long int degrees) {
+    return static_cast<long double>(degrees/180.0 * M_PI);
+}
+
+/**
  * @brief Declare value as radians
  * 
  */

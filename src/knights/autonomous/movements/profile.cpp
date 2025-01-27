@@ -86,6 +86,8 @@ knights::ProfileGenerator::ProfileGenerator(float max_velocity, float track_widt
     max_velocity(max_velocity), max_accel(max_accel), track_width(track_width) {}
 
 std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate(knights::Pos start, knights::Pos end) {
+    std::cout << this->max_velocity << " " << this->max_accel << " " << this->track_width << "\n";
+
     // first, generate the path
     float dist = 2 * distance_btwn(start, end);
 
@@ -162,4 +164,5 @@ std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate(knigh
         output.emplace_back(curr, velocity, deriv_curr.heading, curr_dist, elapsed_time, right_vel, left_vel);
     }
 
+    return output;
 };
