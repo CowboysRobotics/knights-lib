@@ -68,10 +68,10 @@ void initialize() {
 	// #### TEST AREA ####
 
 	// path test
-    float dist = distance_btwn(knights::Point(0, 0), knights::Point(48, 24));
+    float dist = distance_btwn(knights::Point(0, 0), knights::Point(0, 24));
     knights::HermiteSpline path(
         knights::Point(0, 0),
-        knights::Point(48, 24),
+        knights::Point(0, 24),
         knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist),
         knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist)
     );
@@ -85,7 +85,7 @@ void initialize() {
 
 	// motion profile test
 	knights::ProfileGenerator generator(drivetrain, 100);
-	std::vector<knights::ProfileTimestamp> profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(48, 24, 90_deg));
+	std::vector<knights::ProfileTimestamp> profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(0, 24, 90_deg));
 
 	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 
