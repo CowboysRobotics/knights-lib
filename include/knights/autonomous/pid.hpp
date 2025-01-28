@@ -104,7 +104,7 @@ namespace knights {
              * @param error desired value - current value
              * @return a speed that is calculated with the PID formula
              */
-            float update(float error);
+            float update(float error, bool clamp = true);
 
             /**
              * @brief Reset the internal values (total and previous error) of the PID controller

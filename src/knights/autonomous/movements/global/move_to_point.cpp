@@ -26,76 +26,85 @@ void knights::RobotController::move_to_point(const Pos desired_position, float l
 
     bool needs_reverse = false;
 
-    float target_dist_error = distance_btwn(this->chassis->get_position(), desired_position);
+    float distance_error = distance_btwn(this->chassis->get_position(), desired_position);
 
     float angular_error;
-    float end_theta = desired_position.heading;
 
     // #### DEBUG
     std::fstream write_file("/usd/boomerang_output.txt", std::ios_base::out);
 
-    while (target_dist_error > end_tolerance) {
-        knights::Pos curr_position = this->chassis->curr_position;
+    while (distance_error > end_tolerance) {
+        Pos current_pos = this->chassis->get_position();
 
-        target_dist_error = distance_btwn(curr_position, desired_position);
+        double dx = desired_position.x - current_pos.x;
+        double dy = desired_position.y - current_pos.y;
 
-        knights::Pos carrot(
-            desired_position.x - target_dist_error * cos(end_theta) * lead,
-            desired_position.y - target_dist_error * sin(end_theta) * lead,
-            desired_position.heading
-        );
+        double distance_error = sqrt(dx * dx + dy * dy);
+        double at = desired_position.heading;
 
-        float dx = carrot.x - curr_position.x;
-        float dy = carrot.y - curr_position.y;
+        Pos carrot(desired_position.x - distance_error * cos(at) * lead,
+                            desired_position.y - distance_error * sin(at) * lead,
+                            desired_position.heading);
 
+        dx = carrot.x - current_pos.x;
+        dy = carrot.y - current_pos.y;
+
+        double current_angle = current_pos.heading;
+
+        double angle_error;
         if (forwards) {
-            angular_error = knights::ref_angle(atan2(dy, dx) - curr_position.heading);
+            angle_error = atan2(dy, dx) - current_angle;
         } else {
-            angular_error = knights::ref_angle(atan2(-dy, -dx) - curr_position.heading);
+            angle_error = atan2(-dy, -dx) - current_angle;
         }
 
-        write_file << "Test angular error: " << angular_error << "\n";
+        angle_error = knights::ref_angle(angle_error);
 
-        float linear_vel = this->lateral_pid->update(target_dist_error) * direction;
+        double lin_speed = this->lateral_pid->update(distance_error);
 
-        float target_angular_error = knights::ref_angle(desired_position.heading - curr_position.heading);
+        lin_speed *= direction;
 
-        double angular_vel;
-        if (target_dist_error < correction_dist) {
+        double pose_error = knights::ref_angle(desired_position.heading - current_angle);
+
+        double ang_speed;
+        if (distance_error < correction_dist) {
             needs_reverse = true;
-            angular_vel = angular_pid->update(target_angular_error);
-        } else if (target_dist_error < 2 * correction_dist) {
-            double scale_factor = (target_dist_error - correction_dist) / correction_dist;
-            double scaled_angle_error = knights::ref_angle(
-                scale_factor * angular_error + (1 - scale_factor) * target_angular_error);
 
-            angular_vel = angular_pid->update(scaled_angle_error);
+            ang_speed = angular_pid->update(pose_error);
+        } else if (distance_error < 2 * correction_dist) {
+            double scale_factor = (distance_error - correction_dist) / correction_dist;
+            double scaled_angle_error = knights::ref_angle(
+                scale_factor * angle_error + (1 - scale_factor) * pose_error);
+
+            ang_speed = angular_pid->update(scaled_angle_error);
         } else {
-            if (fabs(angular_error) > M_PI/2 && needs_reverse) {
-                angular_error =
-                    angular_error - (angular_error / fabs(angular_error)) * M_PI;
-                linear_vel = -linear_vel;
+            if (fabs(angle_error) > M_PI_2 && needs_reverse) {
+                angle_error =
+                    angle_error - (angle_error / fabs(angle_error)) * M_PI;
+                lin_speed = -lin_speed;
             }
 
-            angular_vel = angular_pid->update(angular_error);
+            ang_speed = angular_pid->update(angle_error);
         }
 
-        linear_vel *= std::cos(angular_error);
-        linear_vel = knights::clamp(linear_vel, -127.0, 127.0);
+        lin_speed *= cos(angle_error);
 
-        chassis->drivetrain->voltage_command(linear_vel - angular_vel, linear_vel + angular_vel);
+        lin_speed = knights::clamp((float)lin_speed, -127.0, 127.0);
+
+        chassis->drivetrain->voltage_command(lin_speed + ang_speed, lin_speed - ang_speed);
 
         // DEBUG
         write_file << knights::logger::string_format(
-            "Current: %lf %lf %lf , Carrot: %lf %lf %lf , Final: %lf %lf %lf , LinearVel: %lf , AngularVel %lf , DistError %lf , AngularError %lf",
-            curr_position.x, curr_position.y, curr_position.heading, desired_position.x, desired_position.y, desired_position.heading, carrot.x, carrot.y, carrot.heading, linear_vel, angular_vel, target_dist_error, angular_error
+            "Current: %lf %lf %lf , Carrot: %lf %lf %lf , Final: %lf %lf %lf , LinearVel: %lf , AngularVel %lf , DistError %lf , AngularError %lf , R/L: %lf %lf",
+            current_pos.x, current_pos.y, current_pos.heading, carrot.x, carrot.y, carrot.heading, desired_position.x, desired_position.y, desired_position.heading, lin_speed, 
+            ang_speed, distance_error, angular_error, lin_speed - ang_speed, lin_speed + ang_speed
         ) << "\n";
 
         pros::delay(20);
     }
 
-    write_file << "end at error " << target_dist_error << "\n";
-    std::cout << "end at error " << target_dist_error << "\n";
+    write_file << "end at error " << distance_error << "\n";
+    std::cout << "end at error " << distance_error << "\n";
 
     this->in_motion = false;
     return;
