@@ -26,10 +26,10 @@
 #define TURN_kD_180 0.24
 
 void pid_tuning(knights::RobotChassis *chassis) {
-    knights::RamseteConstants ramsete_constants(1, 0.5);
+    knights::RamseteConstants ramsete_constants;
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
-	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
 	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
 	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
@@ -37,9 +37,7 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
 
-	robotControl.turn_to_angle(270, 0);
-
-	robotControl.turn_to_angle(90, 0);
+	robotControl.move_to_point(knights::Pos(24, 24, 0), 0.7);
 }
 
 

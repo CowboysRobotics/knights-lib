@@ -60,6 +60,8 @@ namespace knights {
      */
     float angular_error(float start, float target, int dir, bool rad = true);
 
+    float ref_angle(float angle, bool rad = true);
+
     /**
      * @brief Get he direction between the two angles
      * 

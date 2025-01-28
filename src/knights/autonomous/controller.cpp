@@ -34,7 +34,11 @@ knights::PIDController::PIDController()
 
 float knights::PIDController::update(float error) {
     total_error += error;
-    float result = knights::clamp(this->kP * error + this->kI * total_error + this->kD * (error - prev_error), this->min_velocity, this->max_velocity);
+    float result = knights::clamp(
+        std::fabs(this->kP * error + this->kI * total_error + this->kD * (error - prev_error)), 
+        this->min_velocity, 
+        this->max_velocity
+    ) * knights::signum(this->kP * error + this->kI * total_error + this->kD * (error - prev_error));
     prev_error = error;
     return result;
 }

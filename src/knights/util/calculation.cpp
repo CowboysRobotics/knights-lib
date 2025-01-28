@@ -1,6 +1,7 @@
 #include "knights/util/calculation.hpp"
 #include "knights/robot/drivetrain.hpp"
 
+#include <cmath>
 #include <math.h>
 #include <numeric>
 
@@ -22,6 +23,11 @@ float knights::normalize_angle(float angle, bool rad) {
     else
         return std::fmod(std::fmod(angle, 360) + 4*360, 360);
 };
+
+float knights::ref_angle(float angle, bool rad) {
+    float max = rad ? M_PI*2 : 360.0;
+    return std::remainder(angle, max);
+}
 
 float knights::min_angle(float start, float target, bool rad) {
     float max = rad ? M_PI*2 : 360.0;

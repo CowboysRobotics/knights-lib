@@ -1,5 +1,6 @@
 #include "main.h"
 #include "autonomous.h"
+#include "knights/autonomous/pid.hpp"
 #include "knights/autonomous/profile.hpp"
 #include "knights/display.hpp"
 #include "knights/logger/logger.hpp"
@@ -13,6 +14,7 @@
 #include <cstring>
 #include <functional>
 #include <iostream>
+#include <math.h>
 #include <string>
 #include <unordered_map>
 #include <fstream>
@@ -33,7 +35,7 @@ void initialize() {
 	knights::logger::blue("Initialization Begin");
 
 	// // Different autons, None0 is the default auton
-	auton_map["None0"] = knights::Auton(&alt_skills, knights::Pos(-60, 0, 0));
+	auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(0, 0, knights::to_rad(90)));
 
 	auton_map["Red1"] = knights::Auton(&red_rush_right_wp, knights::Pos(-58, -15, M_PI));
 	auton_map["Red2"] = knights::Auton(&red_left_wp, knights::Pos(-55.1,37.5,0));
