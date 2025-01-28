@@ -6,10 +6,11 @@
 #include "knights/util/calculation.hpp"
 
 #include "knights/logger/logger.hpp"
+#include "knights/util/position.hpp"
 
 #define MIN_SPEED 20
 
-void knights::RobotController::turn_to_angle(const float angle, int direction, float end_tolerance, float timeout, bool rad) {
+void knights::RobotController::turn_to_angle(const float angle, int direction, float end_tolerance, int timeout, bool rad) {
     if (this->in_motion) return;
     this->in_motion = true;
 
@@ -70,4 +71,14 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
 
     this->in_motion = false;
     return;
+}
+
+void knights::RobotController::turn_to_point(knights::Pos point, int direction, float end_tolerance, int timeout) {
+    return this->turn_to_angle(
+        std::atan2(this->chassis->get_position().y - point.y, this->chassis->get_position().x - point.x),
+        direction,
+        end_tolerance,
+        timeout,
+        true
+    );
 }

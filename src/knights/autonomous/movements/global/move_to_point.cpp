@@ -12,7 +12,7 @@
 #include <fstream>
 
 // Using math from VOSS's implementation
-void knights::RobotController::move_to_point(const Pos desired_position, float lead, float correction_dist, const float &end_tolerance, const bool forwards, float timeout) {
+void knights::RobotController::move_to_position(const Pos desired_position, float lead, float correction_dist, const float &end_tolerance, const bool forwards, float timeout) {
     if (this->in_motion) return;
     this->in_motion = true;
 
@@ -66,10 +66,10 @@ void knights::RobotController::move_to_point(const Pos desired_position, float l
                 scale_factor * angular_error + (1 - scale_factor) * desired_error);
             angular_speed = angular_pid->update(scaled_angular_error, false);
         } else {
-            if (fabs(angular_error) > M_PI/2 && needs_reverse) {
+            if (fabs(angular_error) > M_PI_2 && needs_reverse) {
                 angular_error =
                     angular_error - (angular_error / fabs(angular_error)) * M_PI;
-                lin_speed *= -1;
+                lin_speed = -lin_speed;
             }
             angular_speed = angular_pid->update(angular_error, false);
         }
@@ -94,4 +94,12 @@ void knights::RobotController::move_to_point(const Pos desired_position, float l
 
     this->in_motion = false;
     return;
+}
+
+void knights::RobotController::lateral_to_position(const Pos desired_position, const float end_tolerance, const int timeout) {
+    this->turn_to_point(desired_position, 0, end_tolerance, timeout);
+    pros::delay(140);
+    this->lateral_move(distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
+    pros::delay(140);
+    this->turn_to_angle(desired_position.heading, 0, end_tolerance, timeout);
 }

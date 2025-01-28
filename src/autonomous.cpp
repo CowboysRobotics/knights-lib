@@ -37,7 +37,13 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
 
-	robotControl.move_to_point(knights::Pos(24, 24, 0), 0.5);
+	robotControl.lateral_to_position(knights::Pos(24, 24, 0));
+
+	pros::delay(2000);
+
+	robotControl.move_to_position(knights::Pos(0,0,M_PI_2), 0.5, 2.0, false);
+
+	// robotControl.move_to_position(knights::Pos(24, 24, 0), 0.5);
 }
 
 
