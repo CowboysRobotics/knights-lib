@@ -11,7 +11,7 @@
 
 #include <fstream>
 
-
+// Using math from VOSS's implementation
 void knights::RobotController::move_to_point(const Pos desired_position, float lead, float correction_dist, const float &end_tolerance, const bool forwards, float timeout) {
     if (this->in_motion) return;
     this->in_motion = true;
@@ -36,68 +36,54 @@ void knights::RobotController::move_to_point(const Pos desired_position, float l
     while (distance_error > end_tolerance) {
         Pos current_pos = this->chassis->get_position();
 
-        double dx = desired_position.x - current_pos.x;
-        double dy = desired_position.y - current_pos.y;
+        float distance_error = distance_btwn(desired_position, current_pos);
 
-        double distance_error = sqrt(dx * dx + dy * dy);
-        double at = desired_position.heading;
-
-        Pos carrot(desired_position.x - distance_error * cos(at) * lead,
-                            desired_position.y - distance_error * sin(at) * lead,
+        Pos carrot(desired_position.x - distance_error * cos(desired_position.heading) * lead,
+                            desired_position.y - distance_error * sin(desired_position.heading) * lead,
                             desired_position.heading);
 
-        dx = carrot.x - current_pos.x;
-        dy = carrot.y - current_pos.y;
+        float dx = carrot.x - current_pos.x;
+        float dy = carrot.y - current_pos.y;
 
-        double current_angle = current_pos.heading;
-
-        double angle_error;
+        float angular_error;
         if (forwards) {
-            angle_error = atan2(dy, dx) - current_angle;
+            angular_error = knights::ref_angle(atan2(dy, dx) - current_pos.heading);
         } else {
-            angle_error = atan2(-dy, -dx) - current_angle;
+            angular_error = knights::ref_angle(atan2(-dy, -dx) - current_pos.heading);
         }
 
-        angle_error = knights::ref_angle(angle_error);
+        float lin_speed = this->lateral_pid->update(distance_error) * direction;
 
-        double lin_speed = this->lateral_pid->update(distance_error);
+        float desired_error = knights::ref_angle(desired_position.heading - current_pos.heading);
 
-        lin_speed *= direction;
-
-        double pose_error = knights::ref_angle(desired_position.heading - current_angle);
-
-        double ang_speed;
+        float angular_speed;
         if (distance_error < correction_dist) {
             needs_reverse = true;
-
-            ang_speed = angular_pid->update(pose_error);
+            angular_speed = angular_pid->update(desired_error, false);
         } else if (distance_error < 2 * correction_dist) {
-            double scale_factor = (distance_error - correction_dist) / correction_dist;
-            double scaled_angle_error = knights::ref_angle(
-                scale_factor * angle_error + (1 - scale_factor) * pose_error);
-
-            ang_speed = angular_pid->update(scaled_angle_error);
+            float scale_factor = (distance_error - correction_dist) / correction_dist;
+            float scaled_angular_error = knights::ref_angle(
+                scale_factor * angular_error + (1 - scale_factor) * desired_error);
+            angular_speed = angular_pid->update(scaled_angular_error, false);
         } else {
-            if (fabs(angle_error) > M_PI_2 && needs_reverse) {
-                angle_error =
-                    angle_error - (angle_error / fabs(angle_error)) * M_PI;
-                lin_speed = -lin_speed;
+            if (fabs(angular_error) > M_PI/2 && needs_reverse) {
+                angular_error =
+                    angular_error - (angular_error / fabs(angular_error)) * M_PI;
+                lin_speed *= -1;
             }
-
-            ang_speed = angular_pid->update(angle_error);
+            angular_speed = angular_pid->update(angular_error, false);
         }
 
-        lin_speed *= cos(angle_error);
-
+        lin_speed *= cos(angular_error);
         lin_speed = knights::clamp((float)lin_speed, -127.0, 127.0);
 
-        chassis->drivetrain->voltage_command(lin_speed + ang_speed, lin_speed - ang_speed);
+        chassis->drivetrain->voltage_command(lin_speed + angular_speed, lin_speed - angular_speed);
 
         // DEBUG
         write_file << knights::logger::string_format(
             "Current: %lf %lf %lf , Carrot: %lf %lf %lf , Final: %lf %lf %lf , LinearVel: %lf , AngularVel %lf , DistError %lf , AngularError %lf , R/L: %lf %lf",
             current_pos.x, current_pos.y, current_pos.heading, carrot.x, carrot.y, carrot.heading, desired_position.x, desired_position.y, desired_position.heading, lin_speed, 
-            ang_speed, distance_error, angular_error, lin_speed - ang_speed, lin_speed + ang_speed
+            angular_speed, distance_error, angular_error, lin_speed + angular_speed, lin_speed - angular_speed
         ) << "\n";
 
         pros::delay(20);
