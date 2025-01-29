@@ -35,7 +35,7 @@ void initialize() {
 	knights::logger::blue("Initialization Begin");
 
 	// // Different autons, None0 is the default auton
-	auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(0, 0, knights::to_rad(90)));
+	auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(12, 12, knights::to_rad(90)));
 
 	auton_map["Red1"] = knights::Auton(&red_rush_right_wp, knights::Pos(-58, -15, M_PI));
 	auton_map["Red2"] = knights::Auton(&red_left_wp, knights::Pos(-55.1,37.5,0));
@@ -69,45 +69,45 @@ void initialize() {
 
 	// #### TEST AREA ####
 
-	// path test
-    float dist = distance_btwn(knights::Point(0, 0), knights::Point(0, 24));
-    knights::HermiteSpline path(
-        knights::Point(0, 0),
-        knights::Point(0, 24),
-        knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist),
-        knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist)
-    );
+	// // path test
+    // float dist = distance_btwn(knights::Point(0, 0), knights::Point(0, 24));
+    // knights::HermiteSpline path(
+    //     knights::Point(0, 0),
+    //     knights::Point(0, 24),
+    //     knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist),
+    //     knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist)
+    // );
 
-	auto t = knights::linspace(0, 1, 10);
-	for (auto value : t) {
-		knights::display::MapDot dot(5, 5, lv_palette_darken(LV_PALETTE_CYAN, 2));
-		std::cout << "pt: " << path.position(value).x << " " << path.position(value).y << " " << path.position(value).heading << "\n";
-		dot.set_field_pos(path.position(value));
-	}
+	// auto t = knights::linspace(0, 1, 10);
+	// for (auto value : t) {
+	// 	knights::display::MapDot dot(5, 5, lv_palette_darken(LV_PALETTE_CYAN, 2));
+	// 	std::cout << "pt: " << path.position(value).x << " " << path.position(value).y << " " << path.position(value).heading << "\n";
+	// 	dot.set_field_pos(path.position(value));
+	// }
 
-	// motion profile test
-	knights::ProfileGenerator generator(drivetrain, 100);
-	std::vector<knights::ProfileTimestamp> profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(0, 24, 90_deg));
+	// // motion profile test
+	// knights::ProfileGenerator generator(drivetrain, 100);
+	// std::vector<knights::ProfileTimestamp> profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(0, 24, 90_deg));
 
-	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
+	// std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 
-	for (knights::ProfileTimestamp timestamp : profile) {
-		write_file << "time: " << timestamp.time << "\n";
-		write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << "\n";
-		write_file << "lin vel: " << timestamp.linear_velocity << "\n";
-		write_file << "angular vel: " << timestamp.angular_velocity << "\n";
-		write_file << "dist: " << timestamp.curr_distance << "\n";
-		write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << "\n";
-		write_file << "end timestamp\n";
+	// for (knights::ProfileTimestamp timestamp : profile) {
+	// 	write_file << "time: " << timestamp.time << "\n";
+	// 	write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << "\n";
+	// 	write_file << "lin vel: " << timestamp.linear_velocity << "\n";
+	// 	write_file << "angular vel: " << timestamp.angular_velocity << "\n";
+	// 	write_file << "dist: " << timestamp.curr_distance << "\n";
+	// 	write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << "\n";
+	// 	write_file << "end timestamp\n";
 
-		std::cout << "time: " << timestamp.time << " ";
-		std::cout << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
-		std::cout << "lin vel: " << timestamp.linear_velocity << " ";
-		std::cout << "angular vel: " << timestamp.angular_velocity << " ";
-		std::cout << "dist: " << timestamp.curr_distance << " ";
-		std::cout << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
-		std::cout << "end timestamp\n";
-	}
+	// 	std::cout << "time: " << timestamp.time << " ";
+	// 	std::cout << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+	// 	std::cout << "lin vel: " << timestamp.linear_velocity << " ";
+	// 	std::cout << "angular vel: " << timestamp.angular_velocity << " ";
+	// 	std::cout << "dist: " << timestamp.curr_distance << " ";
+	// 	std::cout << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+	// 	std::cout << "end timestamp\n";
+	// }
 
 }
 
@@ -244,9 +244,14 @@ void opcontrol() {
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
 		// Reversed b/c david uses the back of the robot as the front
+		// drivetrain.voltage_command(
+		// 	left_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)),
+		// 	right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))
+		// );
+
 		drivetrain.voltage_command(
-			left_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)),
-			right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))
+			right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)),
+			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y))
 		);
 
 		// Delay to let other tasks run

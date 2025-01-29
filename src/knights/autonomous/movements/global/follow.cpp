@@ -11,6 +11,7 @@
 #include "pros/motors.h"
 
 #include <math.h>
+#include <fstream>
 
 
 float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights::Pos curr, float lookahead_distance) {
@@ -60,7 +61,7 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         end_tolerance = fabs(end_tolerance);
     }
 
-    // make sure motors are on break - prevent drift at end
+    // make sure motors are on brake - prevent drift at end
     this->chassis->drivetrain->right_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
     this->chassis->drivetrain->left_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 
@@ -74,6 +75,12 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
     float angular_curve;
 
     this->lateral_pid->reset();
+
+    if (this->angular_pid != nullptr) {
+        this->angular_pid->reset();
+    }
+
+    std::fstream write_file("/usd/pure_pursuit.txt", std::ios_base::out);
 
     // While the robot has not reached the desired point and is not at the end of the route
     while (error > end_tolerance && closest_i != route.positions.size()-1 ) {
@@ -118,10 +125,21 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         float target_speed = std::fmin(2/curvature(route.positions[closest_i], route.positions[closest_i+1], route.positions[closest_i+2]), max_speed);
         angular_curve = curvature(curr_position, target_point);
 
+        float angular_velocity = 0;
+
         // decrease angular curve if the target point is at the end of the path
         if (distance_btwn(curr_position, target_point)/max_lookahead < 0.3 && distance_btwn(curr_position, route.positions.back()) < max_lookahead) {
-            angular_curve *= ((distance_btwn(curr_position, target_point)/max_lookahead) * 0.1);
+            angular_curve = 0;
             target_speed *= (distance_btwn(curr_position, target_point)/max_lookahead) * 3;
+        } else if (distance_btwn(curr_position, target_point)/max_lookahead < 0.9 && distance_btwn(curr_position, route.positions.back()) < max_lookahead) {
+            angular_curve *= ((distance_btwn(curr_position, target_point)/max_lookahead) * 0.01);
+            target_speed *= (distance_btwn(curr_position, target_point)/max_lookahead);
+        }
+
+        // curve to update angular velocity
+        if (this->angular_pid != nullptr) {
+            write_file << "angular error: " << angular_error(curr_position.heading, route.positions[closest_i].heading, 0) << "\n";
+            angular_velocity = this->angular_pid->update(angular_error(curr_position.heading, route.positions[closest_i].heading, 0), false);
         }
 
         if (target_speed < this->lateral_pid->get_min_speed())
@@ -133,8 +151,8 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
         }
 
         // calculate right and left speed based on curvature
-        float r_speed = target_speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;
-        float l_speed = target_speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2;
+        float r_speed = target_speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2 - angular_velocity;
+        float l_speed = target_speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2 + angular_velocity;
 
         // calculate if one is over max alloted speed (might need to be 127.0 - max speed in pros)
         float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / max_speed; 
@@ -150,13 +168,12 @@ void knights::RobotController::follow_route_pursuit(knights::Route &route, float
             this->chassis->drivetrain->voltage_command(-l_speed, -r_speed);
 
         // log for debugging
-        if (std::fmod(timeout, 75) == 0) {
-            logger::green(logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , used angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d closest_i: %lf %lf %d , end pt: %lf %lf %d, real angular_curve: %lf, timeout: %lf, curr lhd: %lf, calculated lhd: %lf", 
-                target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
-                target_speed, angular_curve, r_speed, l_speed, error, forwards, route.positions[closest_i].x, route.positions[closest_i].y, closest_i, 
-                route.positions.back().x, route.positions.back().y, route.positions.size(), angular_curve/((distance_btwn(curr_position, target_point)/max_lookahead) * 0.1), timeout, lookahead_distance, distance_btwn(this->chassis->curr_position, target_point)/max_lookahead
-            ));
-        }
+        write_file << logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , used angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d closest_i: %lf %lf %d , end pt: %lf %lf %d, real angular_curve: %lf, timeout: %lf, curr lhd: %lf, calculated lhd: %lf, angular vel: %lf, angular max: %lf", 
+            target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
+            target_speed, angular_curve, r_speed, l_speed, error, forwards, route.positions[closest_i].x, route.positions[closest_i].y, closest_i, 
+            route.positions.back().x, route.positions.back().y, route.positions.size(), angular_curve/((distance_btwn(curr_position, target_point)/max_lookahead) * 0.1), 
+            timeout, lookahead_distance, distance_btwn(this->chassis->curr_position, target_point)/max_lookahead, angular_velocity, angular_pid->get_max_speed()
+        ) << "\n";
 
         // wait for next iteration of loop
         pros::delay(10);

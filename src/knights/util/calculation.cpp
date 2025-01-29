@@ -51,8 +51,16 @@ int knights::direction(float init_heading, float des_heading, bool rad) {
 }
 
 float knights::angular_error(float start, float target, int dir, bool rad) {
-    // unimplmented yet
-    return target-start;
+    float max = rad ? M_PI*2 : 360.0; 
+    start = normalize_angle(start, rad);
+    target = normalize_angle(target, rad);
+
+    if (dir == 1) // clockwise
+        return (target - start) < 0 ? (target - start) - max : (target - start);
+    else if (dir == -1) // counterclockwise
+        return (target - start) < 0 ? (target - start) + max : (target - start);
+    else
+        return ref_angle(target-start, rad);
 }
 
 float knights::signum(float num) {

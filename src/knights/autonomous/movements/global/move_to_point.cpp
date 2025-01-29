@@ -11,8 +11,13 @@
 
 #include <fstream>
 
+#define MIN_MOVE_VOLTAGE 20
+
 // Using math from VOSS's implementation
 void knights::RobotController::move_to_position(const Pos desired_position, float lead, float correction_dist, const float &end_tolerance, const bool forwards, float timeout) {
+    if (this->angular_pid == nullptr) {
+        knights::logger::red("Move to Position requires an angular PID Controller! Please add one to this object!");
+    }
     if (this->in_motion) return;
     this->in_motion = true;
 
@@ -36,7 +41,7 @@ void knights::RobotController::move_to_position(const Pos desired_position, floa
     while (distance_error > end_tolerance) {
         Pos current_pos = this->chassis->get_position();
 
-        float distance_error = distance_btwn(desired_position, current_pos);
+        distance_error = distance_btwn(current_pos, desired_position);
 
         Pos carrot(desired_position.x - distance_error * cos(desired_position.heading) * lead,
                             desired_position.y - distance_error * sin(desired_position.heading) * lead,
@@ -45,7 +50,6 @@ void knights::RobotController::move_to_position(const Pos desired_position, floa
         float dx = carrot.x - current_pos.x;
         float dy = carrot.y - current_pos.y;
 
-        float angular_error;
         if (forwards) {
             angular_error = knights::ref_angle(atan2(dy, dx) - current_pos.heading);
         } else {
@@ -55,16 +59,19 @@ void knights::RobotController::move_to_position(const Pos desired_position, floa
         float lin_speed = this->lateral_pid->update(distance_error) * direction;
 
         float desired_error = knights::ref_angle(desired_position.heading - current_pos.heading);
+        float used_error;
 
         float angular_speed;
         if (distance_error < correction_dist) {
             needs_reverse = true;
             angular_speed = angular_pid->update(desired_error, false);
+            used_error = desired_error;
         } else if (distance_error < 2 * correction_dist) {
             float scale_factor = (distance_error - correction_dist) / correction_dist;
             float scaled_angular_error = knights::ref_angle(
                 scale_factor * angular_error + (1 - scale_factor) * desired_error);
             angular_speed = angular_pid->update(scaled_angular_error, false);
+            desired_error = scaled_angular_error;
         } else {
             if (fabs(angular_error) > M_PI_2 && needs_reverse) {
                 angular_error =
@@ -72,18 +79,22 @@ void knights::RobotController::move_to_position(const Pos desired_position, floa
                 lin_speed = -lin_speed;
             }
             angular_speed = angular_pid->update(angular_error, false);
+            used_error = angular_error;
         }
 
         lin_speed *= cos(angular_error);
         lin_speed = knights::clamp((float)lin_speed, -127.0, 127.0);
 
-        chassis->drivetrain->voltage_command(lin_speed + angular_speed, lin_speed - angular_speed);
+        // if (fabsf(lin_speed) < MIN_MOVE_VOLTAGE)
+        //     break;
+
+        chassis->drivetrain->voltage_command(lin_speed - angular_speed, lin_speed + angular_speed);
 
         // DEBUG
         write_file << knights::logger::string_format(
             "Current: %lf %lf %lf , Carrot: %lf %lf %lf , Final: %lf %lf %lf , LinearVel: %lf , AngularVel %lf , DistError %lf , AngularError %lf , R/L: %lf %lf",
             current_pos.x, current_pos.y, current_pos.heading, carrot.x, carrot.y, carrot.heading, desired_position.x, desired_position.y, desired_position.heading, lin_speed, 
-            angular_speed, distance_error, angular_error, lin_speed + angular_speed, lin_speed - angular_speed
+            angular_speed, distance_error, used_error, lin_speed - angular_speed, lin_speed + angular_speed
         ) << "\n";
 
         pros::delay(20);

@@ -6,6 +6,10 @@
 
 #include "knights/util/calculation.hpp"
 
+#include <fstream>
+
+std::fstream write_file("/usd/pid_output.txt", std::ios_base::out);
+
 knights::PIDConstants::PIDConstants(float kP, float kI, float kD)
     : kP(kP), kI(kI), kD(kD) {}
 
@@ -13,7 +17,7 @@ knights::PIDConstants::PIDConstants()
     : kP(0.0), kI(0.0), kD(0.0) {}
 
 knights::PIDController::PIDController(PIDConstants constants) 
-    : kP(constants.kP), kI(constants.kI), kD(constants.kD), min_velocity(0.0), max_velocity(127.0) {
+    : kP(constants.kP), kI(constants.kI), kD(constants.kD), min_velocity(-127.0), max_velocity(127.0) {
 }
 
 knights::PIDController::PIDController(PIDConstants constants, float min_velocity, float max_velocity) 
@@ -21,7 +25,7 @@ knights::PIDController::PIDController(PIDConstants constants, float min_velocity
 }
 
 knights::PIDController::PIDController(float kP, float kI, float kD) 
-    : kP(kP), kI(kI), kD(kD), min_velocity(0.0), max_velocity(127.0) {
+    : kP(kP), kI(kI), kD(kD), min_velocity(-127.0), max_velocity(127.0) {
 }
 
 knights::PIDController::PIDController(float kP, float kI, float kD, float min_velocity, float max_velocity) 
@@ -29,19 +33,20 @@ knights::PIDController::PIDController(float kP, float kI, float kD, float min_ve
 }
 
 knights::PIDController::PIDController() 
-    : kP(0.0), kI(0.0), kD(0.0), min_velocity(0.0), max_velocity(127.0) {
+    : kP(0.0), kI(0.0), kD(0.0), min_velocity(-127.0), max_velocity(127.0) {
 }
 
 float knights::PIDController::update(float error, bool clamp) {
     total_error += error;
     float result;
-    if (clamp)
+    if (clamp) {
         result = knights::clamp(
             std::fabs(this->kP * error + this->kI * total_error + this->kD * (error - prev_error)), 
             this->min_velocity, 
             this->max_velocity
         ) * knights::signum(this->kP * error + this->kI * total_error + this->kD * (error - prev_error));
-    else
+        write_file << "lateral result: " << result << "\n";
+    } else
         result = std::fabs(this->kP * error + this->kI * total_error + this->kD * (error - prev_error));
     prev_error = error;
     return result;
@@ -84,12 +89,20 @@ knights::RamseteConstants::RamseteConstants(const float &damping, const float &p
     : damping(damping), proportional(proportional) {
 }
 
-knights::RobotController::RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *angular_pid, RamseteConstants *ramsete_constants, bool use_motor_encoders)
-    : chassis(chassis), lateral_pid(lateral_pid), angular_pid(angular_pid), ramsete_constants(ramsete_constants), use_motor_encoders(use_motor_encoders) {
+knights::RobotController::RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, RamseteConstants *ramsete_constants, bool use_motor_encoders)
+    : chassis(chassis), lateral_pid(lateral_pid), turn_pid(turn_pid), angular_pid(nullptr), ramsete_constants(ramsete_constants), use_motor_encoders(use_motor_encoders) {
 }
 
-knights::RobotController::RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *angular_pid, bool use_motor_encoders)
-    : chassis(chassis), lateral_pid(lateral_pid), angular_pid(angular_pid), use_motor_encoders(use_motor_encoders) {
+knights::RobotController::RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, PIDController *angular_pid, RamseteConstants *ramsete_constants, bool use_motor_encoders)
+    : chassis(chassis), lateral_pid(lateral_pid), turn_pid(turn_pid), angular_pid(nullptr), ramsete_constants(ramsete_constants), use_motor_encoders(use_motor_encoders) {
 }
+
+knights::RobotController::RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, bool use_motor_encoders)
+    : chassis(chassis), lateral_pid(lateral_pid), turn_pid(turn_pid), angular_pid(nullptr), use_motor_encoders(use_motor_encoders) {
+}
+
+knights::RobotController::RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, PIDController *angular_pid, bool use_motor_encoders)
+    : chassis(chassis), lateral_pid(lateral_pid), turn_pid(turn_pid), angular_pid(angular_pid), use_motor_encoders(use_motor_encoders) {
+};
 
 

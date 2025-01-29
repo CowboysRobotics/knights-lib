@@ -15,12 +15,15 @@ namespace knights {
     class RobotController {
         private:
             PIDController *lateral_pid;
+            PIDController *turn_pid;
             PIDController *angular_pid;
             RamseteConstants *ramsete_constants;
             RobotChassis *chassis;
             bool use_motor_encoders = false;
 
             bool in_motion = false;
+
+            friend class AdvancedRoute;
 
         public:
             /**
@@ -31,7 +34,9 @@ namespace knights {
              * @param ramsete_constants 
              * @param use_motor_encoders 
              */
-            RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *angular_pid, RamseteConstants *ramsete_constants, bool use_motor_encoders = false);
+            RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, RamseteConstants *ramsete_constants, bool use_motor_encoders = false);
+
+            RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, PIDController *angular_pid, RamseteConstants *ramsete_constants, bool use_motor_encoders = false);
 
             /**
              * @brief Construct a new Robot Controller object
@@ -40,7 +45,9 @@ namespace knights {
              * @param pid_controller 
              * @param use_motor_encoders 
              */
-            RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *angular_pid, bool use_motor_encoders = false);
+            RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, bool use_motor_encoders = false);
+
+            RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, PIDController *angular_pid, bool use_motor_encoders = false);
 
             /**
              * @brief Follow a route that has been read into the route memory of the robot

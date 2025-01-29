@@ -1,6 +1,6 @@
 #include "autonomous.h" 
 #include "globals.h"
-#include "knights/autonomous/path.hpp"
+#include "knights/api.hpp"
 
 #define RIGHT 1
 #define LEFT -1
@@ -34,14 +34,15 @@ void pid_tuning(knights::RobotChassis *chassis) {
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
 	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
 	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
+	knights::PIDController angularPID(20, 0.01,10);
 
-	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 
-	robotControl.lateral_to_position(knights::Pos(24, 24, 0));
+	// robotControl.lateral_to_position(knights::Pos(24, 24, 0));
 
-	pros::delay(2000);
+	// pros::delay(2000);
 
-	robotControl.move_to_position(knights::Pos(0,0,M_PI_2), 0.5, 2.0, false);
+	// robotControl.move_to_position(knights::Pos(24,24,0), 0.7, 4.0);
 
 	// robotControl.move_to_position(knights::Pos(24, 24, 0), 0.5);
 }
@@ -49,7 +50,7 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
 void pp_test(knights::RobotChassis *chassis) {
 
-	std::string s = "test-skills.txt";
+	std::string s = "output.txt";
 
 	knights::AdvancedRoute test_route = advanced_route_from_file(s);
 	// for (auto route : test_route.routes) {
@@ -60,14 +61,15 @@ void pp_test(knights::RobotChassis *chassis) {
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 100.0);
 	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
 	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
 	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
 	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
+	knights::PIDController angularPID(50, 0.01, 10, -100.0, 100.0);
 
-	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 	
 	knights::input::AutonomousInputMap inputMap;
     inputMap.bind_action("intakeRev", intake_out);
@@ -78,7 +80,7 @@ void pp_test(knights::RobotChassis *chassis) {
 	inputMap.bind_action("lbScore", lady_brown_score);
 	inputMap.bind_action("rushMech", toggle_rush_mech);
 
-	test_route.execute(chassis, &lateralPID, &turnPID, &inputMap);
+	test_route.execute(chassis, &robotControl, &inputMap);
 }
 
 #define WAIT 140
