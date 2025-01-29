@@ -67,7 +67,7 @@ void pp_test(knights::RobotChassis *chassis) {
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
 	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
 	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
-	knights::PIDController angularPID(50, 0.01, 10, -100.0, 100.0);
+	knights::PIDController angularPID(50, 0.01, 10, -50.0, 50.0);
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 	
