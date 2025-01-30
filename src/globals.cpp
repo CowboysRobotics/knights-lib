@@ -49,6 +49,10 @@ pros::Rotation lady_brown_rotation(7);
 //assign ports to intake, leftside first, rightside second
 pros::MotorGroup intake({20, 5}, pros::MotorGears::blue);
 
+pros::Motor intake_bottom(5, pros::v5::MotorGears::blue);
+
+pros::Motor intake_top(20,pros::v5::MotorGears::blue);
+
 //assign port to distance sensor for redirect
 pros::Optical colors(15);
 
@@ -96,137 +100,6 @@ void intake_out() {
 	}
 }
 
-#define LADY_BROWN_VELOCITY 127.0
-#define LADY_BROWN_kP 1.75
-#define LADY_BROWN_kI 0.000
-#define LADY_BROWN_kD 0.5
-
-knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
-
-#define LADY_BROWN_DOWN 0
-#define LADY_BROWN_LOAD1 339
-#define LADY_BROWN_LOAD2 339
-#define LADY_BROWN_SCORE 213
-#define LADY_BROWN_ALLIANCE 165
-#define LADY_BROWN_END_TOLERANCE 1.0
-
-bool lady_brown_spinning = false;
-bool lady_brown_forward = false;
-
-void lady_brown_fwd() {
-	if (lady_brown_spinning == true && lady_brown_forward == true) { // If intake is on or in wrong direction
-		lady_brown.move(0); // stop intake
-		lady_brown_spinning = false;
-	} else {
-		lady_brown.move(-LADY_BROWN_VELOCITY); // Spin intake forward
-		lady_brown_spinning = true;
-		lady_brown_forward = true;
-	}
-}
-
-void lady_brown_rev() {
-	if (lady_brown_spinning == true && lady_brown_forward == false) { // If intake is spinning or in the wrong direction
-		lady_brown.move(0); // stop intake
-		lady_brown_spinning = false;
-	} else { 
-		lady_brown.move(INTAKE_VELOCITY); // Spin the intake in reverse
-		lady_brown_spinning = true;
-		lady_brown_forward = false;
-	}
-}
-
-void lady_brown_to_angle(float angle, int timeout, bool async = true) { // angle in 0-360 deg
-	if (async) {
-		pros::Task task([&]() {
-			lady_brown_to_angle(angle, timeout, false);
-		});
-		pros::delay(20);
-		return;
-	}
-
-    float error = angle - lady_brown_rotation.get_angle()/100.0;
-
-    lady_brown_PID.reset();
-    lady_brown.set_brake_mode(pros::MotorBrake::hold);
-    lady_brown_spinning = true;
-
-    while (fabsf(error) > LADY_BROWN_END_TOLERANCE && lady_brown_spinning) {
-        error = fabs(angle - lady_brown_rotation.get_angle()/100.0);
-
-		if (error > 180) {
-			error = 360-error;
-		}
-
-		float speed = lady_brown_PID.update(error);
-
-		printf("speed: %lf, error: %lf, dir %d, curr: %lf, des: %lf\n", speed, error, knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false), lady_brown_rotation.get_angle()/100.0, angle);
-
-        lady_brown.move(
-            speed * 
-            -knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false)
-        );
-
-
-        timeout -= 20;
-        if (timeout < 0) {
-            break;
-        }
-
-        pros::delay(20);
-    }
-
-   	lady_brown.brake();
-	printf("error: %F \n", error);
-	printf("position: %i \n", lady_brown_rotation.get_angle());
-
-}
-
-
-
-void lady_brown_down() {
-    lady_brown_to_angle(LADY_BROWN_DOWN, 1500);
-}
-
-void lady_brown_load1() {
-    lady_brown_to_angle(LADY_BROWN_LOAD1, 1500);
-}
-
-void lady_brown_load2() {
-    lady_brown_to_angle(LADY_BROWN_LOAD2, 1500);
-}
-
-void lady_brown_score() {;
-	intake_spinning = false;
-	intake.move(0);
-    lady_brown_to_angle(LADY_BROWN_SCORE, 1500);
-}
-
-void lady_brown_alliance() {
-	intake_spinning = false;
-	intake.move(0);
-    lady_brown_to_angle(LADY_BROWN_ALLIANCE, 1500);
-}
-
-bool clamp_down = false;
-
-void clamp_toggle() {
-	clamp_down = !clamp_down; //toggle whether active or inactive mode
-	clamp.set_value(clamp_down); //activate clamp if inactive or deactivate clamp if active
-}
-
-bool doinker_activate = false;
-
-void doinker_toggle() {
-	doinker_activate = !doinker_activate; //toggle whether active or inactive mode
-	doinker.set_value(doinker_activate); //extend doinker if inactive or retract clamp if active
-}
-
-bool rush_mech_down = false;
-
-void toggle_rush_mech() {
-	rush_mech_down = !rush_mech_down;
-	rush_mech.set_value(rush_mech_down);
-}
 
 
 
@@ -262,18 +135,164 @@ void change_color(){
 
 
 void red_color_sort() {
-	if (colors.get_hue() < 40 && blue_alliance == true){
-		intake.move(0);
-		intake_spinning = false;
+	if (colors.get_hue() < 40 && blue_alliance == true && color_sorting == true){
+		pros::delay(20);
+		intake_top.move(0);
 		printf("get rid of red %f \n", colors.get_hue());
-	
+		pros::delay(100);
+		intake_top.move(INTAKE_VELOCITY);
 	}
 }
 
 void blue_color_sort(){
-	if (colors.get_hue() > 140 && red_alliance == true){
-		intake.move(0);
-		intake_spinning = false;
+	if (colors.get_hue() > 140 && red_alliance == true && color_sorting ==  true){
+		pros::delay(20);
+		intake_top.move(0);
 		printf("get rid of blue %f \n", colors.get_hue());
+		pros::delay(100);
+		intake_top.move(INTAKE_VELOCITY);
 	}
+}
+
+
+
+
+
+#define LADY_BROWN_VELOCITY 127.0
+#define LADY_BROWN_kP 1.75
+#define LADY_BROWN_kI 0.000
+#define LADY_BROWN_kD 0.5
+
+knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
+
+#define LADY_BROWN_DOWN 0
+#define LADY_BROWN_LOAD1 339
+#define LADY_BROWN_LOAD2 160
+#define LADY_BROWN_SCORE 213
+#define LADY_BROWN_ALLIANCE 165
+#define LADY_BROWN_END_TOLERANCE 1.0
+
+bool lady_brown_spinning = false;
+bool lady_brown_forward = false;
+
+void lady_brown_fwd() {
+	if (lady_brown_spinning == true && lady_brown_forward == true) { // If intake is on or in wrong direction
+		lady_brown.move(0); // stop intake
+		lady_brown_spinning = false;
+	} else {
+		lady_brown.move(-LADY_BROWN_VELOCITY); // Spin intake forward
+		lady_brown_spinning = true;
+		lady_brown_forward = true;
+	}
+}
+
+void lady_brown_rev() {
+	if (lady_brown_spinning == true && lady_brown_forward == false) { // If intake is spinning or in the wrong direction
+		lady_brown.move(0); // stop intake
+		lady_brown_spinning = false;
+	} else { 
+		lady_brown.move(INTAKE_VELOCITY); // Spin the intake in reverse
+		lady_brown_spinning = true;
+		lady_brown_forward = false;
+	}
+}
+
+void lady_brown_to_angle(float angle, int timeout, bool async = true, int dir = 0) { // angle in 0-360 deg
+	if (async) {
+		pros::Task task([&]() {
+			lady_brown_to_angle(angle, timeout, false, dir);
+		});
+		pros::delay(20);
+		return;
+	}
+
+    float error = angle - lady_brown_rotation.get_angle()/100.0;
+	int curr_direction;
+
+    lady_brown_PID.reset();
+    lady_brown.set_brake_mode(pros::MotorBrake::hold);
+    lady_brown_spinning = true;
+
+    while (fabsf(error) > LADY_BROWN_END_TOLERANCE && lady_brown_spinning) {
+        error = fabs(angle - lady_brown_rotation.get_angle()/100.0);
+
+		if (error > 180) {
+			error = 360-error;
+		}
+
+		if (dir == 0)
+			curr_direction = knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false);
+		else
+			curr_direction = dir;
+
+		float speed = lady_brown_PID.update(error);
+
+		printf("speed: %lf, error: %lf, dir %d, curr: %lf, des: %lf\n", speed, error, knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false), lady_brown_rotation.get_angle()/100.0, angle);
+
+        lady_brown.move(
+            speed * -curr_direction
+        );
+
+
+        timeout -= 20;
+        if (timeout < 0) {
+            break;
+        }
+
+        pros::delay(20);
+    }
+
+   	lady_brown.brake();
+	printf("error: %F \n", error);
+	printf("position: %i \n", lady_brown_rotation.get_angle());
+
+}
+
+
+
+void lady_brown_down() {
+    lady_brown_to_angle(LADY_BROWN_DOWN, 1500, true, -1);
+}
+
+void lady_brown_load1() {
+	toggle_color_sort();
+    lady_brown_to_angle(LADY_BROWN_LOAD1, 1500, true);
+}
+
+void lady_brown_load2() {
+	lady_brown_to_angle(LADY_BROWN_LOAD2, 1500, true, 1);
+}
+
+void lady_brown_score() {;
+	toggle_color_sort();
+	intake_spinning = false;
+	intake.move(0);
+    lady_brown_to_angle(LADY_BROWN_SCORE, 1500, true);
+}
+
+void lady_brown_alliance() {
+	intake_spinning = false;
+	intake.move(0);
+    lady_brown_to_angle(LADY_BROWN_ALLIANCE, 750, true);
+}
+
+bool clamp_down = false;
+
+void clamp_toggle() {
+	clamp_down = !clamp_down; //toggle whether active or inactive mode
+	clamp.set_value(clamp_down); //activate clamp if inactive or deactivate clamp if active
+}
+
+bool doinker_activate = false;
+
+void doinker_toggle() {
+	doinker_activate = !doinker_activate; //toggle whether active or inactive mode
+	doinker.set_value(doinker_activate); //extend doinker if inactive or retract clamp if active
+}
+
+bool rush_mech_down = false;
+
+void toggle_rush_mech() {
+	rush_mech_down = !rush_mech_down;
+	rush_mech.set_value(rush_mech_down);
 }

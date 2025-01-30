@@ -44,8 +44,9 @@ extern pros::Motor lady_brown;
 extern pros::Rotation lady_brown_rotation;
 
 // Intake Mechanism
-extern pros::Motor intake;
-
+extern pros::MotorGroup intake;
+extern pros::Motor intake_bottom;
+extern pros::Motor intake_top;
 
 // Distance Sensor
 extern pros::Distance redirect;
@@ -56,6 +57,7 @@ extern pros::adi::Pneumatics doinker;
 
 // Velocity Formula
 #define velocity_formula(x) (160 * (1 / (1 + std::pow(M_E, -0.1 * (x) + 5))) + 20)
+
 
 // Constants
 #define INTAKE_VELOCITY 300
@@ -68,6 +70,7 @@ extern pros::adi::Pneumatics doinker;
 #define LADY_BROWN_LOAD2 32
 #define LADY_BROWN_SCORE 150
 #define LADY_BROWN_END_TOLERANCE 1.0
+
 
 // Flags
 extern bool intake_spinning;

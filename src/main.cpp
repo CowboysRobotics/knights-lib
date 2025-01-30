@@ -70,7 +70,7 @@ void autonomous() {
 	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
 
 	// // Different autons, skills is the default auton
-	auton_map["None0"] = &rush_4_ring;
+	auton_map["None0"] = &mogo_red_rush;
 	chassis.set_position(knights::Pos(-58,0,knights::to_rad(0)));
 	
 	//chassis.set_position(knights::Pos(-60,0,0));
@@ -83,6 +83,9 @@ void autonomous() {
 	auton_map["Red2"] = &red_left_wp;
 	auton_map["Blue1"] = &blue_rush_left_wp;
 	auton_map["Blue2"] = &blue_right_wp;
+	auton_map["Red3"] = &mogo_red_rush;
+	auton_map["Blue3"] = &mogo_blue_rush;
+
 
 	auton_map["Skills0"] = &skills;
     // //  chassis.set_position(knights::Pos(38, 48, 4.081));
@@ -98,6 +101,9 @@ void autonomous() {
 		chassis.set_position(knights::Pos(-58, -15, knights::to_rad(180))); // only works b/c -180 == 180
 	} else if (package.get_value() == "Red2" || package.get_value() == "Blue2") {
 		chassis.set_position(knights::Pos(-55.1,37.5,0)); // only works b/c -0 == 0
+	} else if (package.get_value() == "Red3" || package.get_value() == "Blue3") {
+		chassis.set_position(knights::Pos(-55.1,37.5,0));
+
 	} else if (package.get_value() == "Skills0") {
 		chassis.set_position(knights::Pos(-59, 0, 0));
 	}
