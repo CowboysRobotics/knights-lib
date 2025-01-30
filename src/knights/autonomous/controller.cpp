@@ -40,7 +40,7 @@ float knights::PIDController::update(float error, bool clamp) {
     total_error += error;
     float result;
     if (clamp) {
-        result = knights::clamp(
+        result = knights::clampf(
             std::fabs(this->kP * error + this->kI * total_error + this->kD * (error - prev_error)), 
             this->min_velocity, 
             this->max_velocity

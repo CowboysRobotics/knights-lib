@@ -95,7 +95,7 @@ class HermiteSplinePath:
             self.h4_prime(t) * self.target_tangent[1]
         )
         dx2, dy2 = self.second_derivatives(t)
-        omega = (dy2 * dx - dy * dx2) / (1 + (dy/dx)**2)
+        omega = (dy2 * dx - dy * dx2) / ((1 + (dy/dx)**2) * dx**2)
         return dx, dy, omega
 
     def second_derivatives(self, t):
@@ -214,7 +214,7 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
   return [t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
 
 curr = [0, 0, np.radians(90)]
-target = [48, 24, np.radians(90)]
+target = [24, 24, np.radians(90)]
 
 dist = np.hypot(target[0]-curr[0], target[1]-curr[1])
 
@@ -238,7 +238,7 @@ DESIRED_VOLTAGE = 120
 MAX_VOLTAGE = 127
 WHEEL_DIAMETER = 2.75
 RPM = 450
-TRACK_WIDTH = 0.381
+TRACK_WIDTH = 15
 
 max_acceleration = 300 # arbitrary constant
 max_velocity = (DESIRED_VOLTAGE/MAX_VOLTAGE) * np.pi * WHEEL_DIAMETER * (RPM / 60.0)

@@ -114,7 +114,7 @@ namespace knights {
     @param min minimum limit
     @return min if num < min, max if num > max, num if else
     */
-    float clamp(float num, float min, float max);
+    float clampf(float num, float min, float max);
 
     /**
     @brief restrict a number to a range of [min, max]
