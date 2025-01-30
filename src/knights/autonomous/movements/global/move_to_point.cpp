@@ -2,71 +2,115 @@
 #include "knights/autonomous/pid.hpp"
 #include "knights/autonomous/pathgen.hpp"
 
+#include "knights/logger/logger.hpp"
 #include "knights/robot/chassis.hpp"
 
 #include "knights/util/calculation.hpp"
 
 #include "knights/util/position.hpp"
 
-void knights::RobotController::move_to_point(const Pos desired_position, const bool forwards, const float &end_tolerance, float timeout) {
-    
-    // lateral move the chassis of a robot
-    if (this->chassis->drivetrain != nullptr) {
-        // move function for differential drive
-        float speed,error;
+#include <fstream>
 
-        this->pid_controller->reset();
-        
-        while (knights::distance_btwn(this->chassis->curr_position, desired_position) > end_tolerance || 
-            knights::distance_btwn(this->chassis->prev_position, desired_position) < knights::distance_btwn(this->chassis->curr_position, desired_position)) {
-            // decrease timeout and break if went over
-            timeout -= 10;
-            if (timeout < 0) break;
+#define MIN_MOVE_VOLTAGE 20
 
-            // calculate error
-            error = knights::distance_btwn(this->chassis->curr_position, desired_position);
+// Using math from VOSS's implementation
+void knights::RobotController::move_to_position(const Pos desired_position, float lead, float correction_dist, const float &end_tolerance, const bool forwards, float timeout) {
+    if (this->angular_pid == nullptr) {
+        knights::logger::red("Move to Position requires an angular PID Controller! Please add one to this object!");
+    }
+    if (this->in_motion) return;
+    this->in_motion = true;
 
-            // use pid formula to calculate speed
-            speed = this->pid_controller->update(error);
+    int direction = forwards ? 1 : -1;
 
-            // end if speed below minimum
-            if (fabs(speed) <= this->pid_controller->min_velocity) {
-                break;
-            }
+    this->chassis->drivetrain->right_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    this->chassis->drivetrain->left_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 
-            // reverse speed to move backward
-            if (!forwards)
-                speed *= -1;
+    this->lateral_pid->reset();
+    this->angular_pid->reset();
 
-            // calculate angular curve to point we want to go at
-            float angular_curve = curvature(this->chassis->curr_position, desired_position);
-            if (!forwards) {
-                angular_curve = curvature(Pos(this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading-M_PI), desired_position);
-            }
-            
-            // calculate right and left speed based on curvature
-            float r_speed = speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;
-            float l_speed = speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2;
+    bool needs_reverse = false;
 
-            // calculate if one is over max alloted speed (might need to be 127.0 - max speed in pros)
-            float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / this->pid_controller->max_velocity; 
-            if (max_curr_speed > 1) {
-                r_speed /= max_curr_speed;
-                l_speed /= max_curr_speed;
-            }
+    float distance_error = distance_btwn(this->chassis->get_position(), desired_position);
 
-            // send command to drivetrain
-            this->chassis->drivetrain->velocity_command(r_speed,l_speed);
+    float angular_error;
 
-            // delay
-            pros::delay(10);
+    // #### DEBUG
+    std::fstream write_file("/usd/boomerang_output.txt", std::ios_base::out);
+
+    while (distance_error > end_tolerance) {
+        Pos current_pos = this->chassis->get_position();
+
+        distance_error = distance_btwn(current_pos, desired_position);
+
+        Pos carrot(desired_position.x - distance_error * cos(desired_position.heading) * lead,
+                            desired_position.y - distance_error * sin(desired_position.heading) * lead,
+                            desired_position.heading);
+
+        float dx = carrot.x - current_pos.x;
+        float dy = carrot.y - current_pos.y;
+
+        if (forwards) {
+            angular_error = knights::ref_angle(atan2(dy, dx) - current_pos.heading);
+        } else {
+            angular_error = knights::ref_angle(atan2(-dy, -dx) - current_pos.heading);
         }
 
-        // stop drivetrain 
-        this->chassis->drivetrain->right_mtrs->move(0);
-        this->chassis->drivetrain->left_mtrs->move(0);
+        float lin_speed = this->lateral_pid->update(distance_error) * direction;
 
+        float desired_error = knights::ref_angle(desired_position.heading - current_pos.heading);
+        float used_error;
+
+        float angular_speed;
+        if (distance_error < correction_dist) {
+            needs_reverse = true;
+            angular_speed = angular_pid->update(desired_error, false);
+            used_error = desired_error;
+        } else if (distance_error < 2 * correction_dist) {
+            float scale_factor = (distance_error - correction_dist) / correction_dist;
+            float scaled_angular_error = knights::ref_angle(
+                scale_factor * angular_error + (1 - scale_factor) * desired_error);
+            angular_speed = angular_pid->update(scaled_angular_error, false);
+            desired_error = scaled_angular_error;
+        } else {
+            if (fabs(angular_error) > M_PI_2 && needs_reverse) {
+                angular_error =
+                    angular_error - (angular_error / fabs(angular_error)) * M_PI;
+                lin_speed = -lin_speed;
+            }
+            angular_speed = angular_pid->update(angular_error, false);
+            used_error = angular_error;
+        }
+
+        lin_speed *= cos(angular_error);
+        lin_speed = knights::clamp((float)lin_speed, -127.0, 127.0);
+
+        // if (fabsf(lin_speed) < MIN_MOVE_VOLTAGE)
+        //     break;
+
+        chassis->drivetrain->voltage_command(lin_speed - angular_speed, lin_speed + angular_speed);
+
+        // DEBUG
+        write_file << knights::logger::string_format(
+            "Current: %lf %lf %lf , Carrot: %lf %lf %lf , Final: %lf %lf %lf , LinearVel: %lf , AngularVel %lf , DistError %lf , AngularError %lf , R/L: %lf %lf",
+            current_pos.x, current_pos.y, current_pos.heading, carrot.x, carrot.y, carrot.heading, desired_position.x, desired_position.y, desired_position.heading, lin_speed, 
+            angular_speed, distance_error, used_error, lin_speed - angular_speed, lin_speed + angular_speed
+        ) << "\n";
+
+        pros::delay(20);
     }
 
+    write_file << "end at error " << distance_error << "\n";
+    std::cout << "end at error " << distance_error << "\n";
+
+    this->in_motion = false;
     return;
+}
+
+void knights::RobotController::lateral_to_position(const Pos desired_position, const float end_tolerance, const int timeout) {
+    this->turn_to_point(desired_position, 0, end_tolerance, timeout);
+    pros::delay(140);
+    this->lateral_move(distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
+    pros::delay(140);
+    this->turn_to_angle(desired_position.heading, 0, end_tolerance, timeout);
 }

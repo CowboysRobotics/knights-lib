@@ -38,7 +38,7 @@ namespace knights {
              * @param rightMtrs velocity for the right motors
              * @param leftMtrs velocity for the left motors
              */
-            void velocity_command(int rightMtrs, int leftMtrs);
+            void voltage_command(int rightMtrs, int leftMtrs);
 
             /**
              * @brief Conversion function from distance to motor position (in degrees)

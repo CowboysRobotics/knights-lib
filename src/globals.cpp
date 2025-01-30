@@ -100,10 +100,6 @@ void intake_out() {
 	}
 }
 
-
-
-
-
 bool color_sorting = true;
 bool blue_alliance = true;
 bool red_alliance = false;
@@ -154,11 +150,8 @@ void blue_color_sort(){
 	}
 }
 
-
-
-
-
 #define LADY_BROWN_VELOCITY 127.0
+#define LADY_BROWN_kP 1.75
 #define LADY_BROWN_kP 1.75
 #define LADY_BROWN_kI 0.000
 #define LADY_BROWN_kD 0.5
@@ -181,6 +174,7 @@ void lady_brown_fwd() {
 		lady_brown_spinning = false;
 	} else {
 		lady_brown.move(-LADY_BROWN_VELOCITY); // Spin intake forward
+		lady_brown.move(-LADY_BROWN_VELOCITY); // Spin intake forward
 		lady_brown_spinning = true;
 		lady_brown_forward = true;
 	}
@@ -191,6 +185,7 @@ void lady_brown_rev() {
 		lady_brown.move(0); // stop intake
 		lady_brown_spinning = false;
 	} else { 
+		lady_brown.move(INTAKE_VELOCITY); // Spin the intake in reverse
 		lady_brown.move(INTAKE_VELOCITY); // Spin the intake in reverse
 		lady_brown_spinning = true;
 		lady_brown_forward = false;
@@ -205,11 +200,11 @@ void lady_brown_to_angle(float angle, int timeout, bool async = true, int dir = 
 		pros::delay(20);
 		return;
 	}
-
     float error = angle - lady_brown_rotation.get_angle()/100.0;
 	int curr_direction;
 
     lady_brown_PID.reset();
+    lady_brown.set_brake_mode(pros::MotorBrake::hold);
     lady_brown.set_brake_mode(pros::MotorBrake::hold);
     lady_brown_spinning = true;
 
@@ -232,8 +227,6 @@ void lady_brown_to_angle(float angle, int timeout, bool async = true, int dir = 
         lady_brown.move(
             speed * -curr_direction
         );
-
-
         timeout -= 20;
         if (timeout < 0) {
             break;
@@ -243,12 +236,11 @@ void lady_brown_to_angle(float angle, int timeout, bool async = true, int dir = 
     }
 
    	lady_brown.brake();
+   	lady_brown.brake();
 	printf("error: %F \n", error);
 	printf("position: %i \n", lady_brown_rotation.get_angle());
 
 }
-
-
 
 void lady_brown_down() {
     lady_brown_to_angle(LADY_BROWN_DOWN, 1500, true, -1);
@@ -296,3 +288,47 @@ void toggle_rush_mech() {
 	rush_mech_down = !rush_mech_down;
 	rush_mech.set_value(rush_mech_down);
 }
+
+// bool color_sorting = true;
+// bool blue_alliance = true;
+// bool red_alliance = false;
+
+// void toggle_color_sort(){
+// 	if (color_sorting == false){
+// 		color_sorting = true;
+// 	}
+// 	else if (color_sorting == true){
+// 		color_sorting = false;
+// 	}
+// 	printf("color toggle: %d \n", color_sorting);
+// }
+
+// void change_color(){
+// 	if (blue_alliance == false && red_alliance == true){
+// 		blue_alliance = true;
+// 		red_alliance = false;
+// 	}
+// 	else if (red_alliance == false && blue_alliance == true){
+// 		blue_alliance = false;
+// 		red_alliance = true;
+// 	}
+// 	printf("blue alliance: %d \n", blue_alliance);
+// 	printf("red alliance: %d \n", red_alliance);
+// }
+
+// void red_color_sort() {
+// 	if (colors.get_hue() < 40 && blue_alliance == true){
+// 		intake.move(0);
+// 		intake_spinning = false;
+// 		printf("get rid of red %f \n", colors.get_hue());
+	
+// 	}
+// }
+
+// void blue_color_sort(){
+// 	if (colors.get_hue() > 140 && red_alliance == true){
+// 		intake.move(0);
+// 		intake_spinning = false;
+// 		printf("get rid of blue %f \n", colors.get_hue());
+// 	}
+// }

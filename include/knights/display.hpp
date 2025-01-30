@@ -45,6 +45,10 @@ namespace knights::display {
         * @param pos Position to set the dot to, in field positions
         */
         void set_field_pos(knights::Pos pos);
+
+        void hide();
+
+        void show();
     };
 
     struct AutonSelectionPackage {
@@ -76,5 +80,18 @@ namespace knights::display {
     void change_curr_pos_dot(Pos pos);
 
 }
+
+namespace knights {
+    struct Auton {
+        std::function<void(knights::RobotChassis*)> function;
+        knights::Pos start;
+
+        Auton(std::function<void(knights::RobotChassis*)> function, knights::Pos start);
+
+        Auton();
+    };
+}
+
+extern std::unordered_map<std::string, knights::Auton> auton_map;
 
 #endif

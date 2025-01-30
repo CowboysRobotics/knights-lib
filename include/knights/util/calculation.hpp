@@ -24,6 +24,16 @@ namespace knights {
     float to_deg(float radians);
 
     /**
+     * @brief Linearly interpolate between two values
+     * 
+     * @param start 
+     * @param end 
+     * @param t 
+     * @return float 
+     */
+    float lerp(float start, float end, float t);
+
+    /**
     * @brief normalize an angle within the domain of [0,2pi) or [0,360)
     * @param angle the angle to normalize
     * @param rad whether or not the angle is in radians (if false, it is in degrees)
@@ -49,6 +59,8 @@ namespace knights {
      * @return Angular error from the start angle to the target angle 
      */
     float angular_error(float start, float target, int dir, bool rad = true);
+
+    float ref_angle(float angle, bool rad = true);
 
     /**
      * @brief Get he direction between the two angles
@@ -102,7 +114,7 @@ namespace knights {
     @param min minimum limit
     @return min if num < min, max if num > max, num if else
     */
-    float clamp(float num, float min, float max);
+    float clampf(float num, float min, float max);
 
     /**
     @brief restrict a number to a range of [min, max]
@@ -127,6 +139,8 @@ namespace knights {
     float to_meters(float inches);
     float to_inches(float meters);
 
+    std::vector<float> linspace(float start, float end, int points);
+
 }
 
 /**
@@ -150,6 +164,14 @@ inline constexpr long double operator"" _m(long double meters) {
  * 
  */
 inline constexpr long double operator"" _deg(long double degrees) {
+    return static_cast<long double>(degrees/180.0 * M_PI);
+}
+
+/**
+ * @brief Declare value as degrees - therefore it will be converted to radians
+ * 
+ */
+inline constexpr unsigned long long int operator"" _deg(unsigned long long int degrees) {
     return static_cast<long double>(degrees/180.0 * M_PI);
 }
 

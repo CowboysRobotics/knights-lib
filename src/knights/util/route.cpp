@@ -1,12 +1,4 @@
-#include "knights/util/calculation.hpp"
-#include "knights/autonomous/path.hpp"
-#include "knights/logger/logger.hpp"
-#include "knights/util/position.hpp"
-#include "knights/driver/input.hpp"
-#include "knights/robot/chassis.hpp"
-#include "knights/autonomous/pid.hpp"
-#include "knights/autonomous/controller.hpp"
-
+#include "knights/api.hpp"
 #include "api.h"
 
 #include <fstream>
@@ -74,10 +66,10 @@ knights::Route knights::init_route_from_sd(std::string route_name) {
         if (read_file) {
             std::vector<knights::Pos> positions;
 
-            float x,y;
+            float x,y,z;
 
-            while (read_file >> x && read_file >> y) {
-                positions.emplace_back(x,y,0);
+            while (read_file >> x && read_file >> y && read_file >> z) {
+                positions.emplace_back(x,y,z);
             }
 
             return knights::Route(positions);
@@ -116,8 +108,8 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
                     while (identifier != "re") {
                         read_file >> identifier;
                         if (identifier == "p") {
-                            read_file >> x >> y;
-                            positions.emplace_back(x, y, 0);
+                            read_file >> x >> y >> z;
+                            positions.emplace_back(x, y, z);
                         }
                     }
                     ar_actions.emplace_back(knights::action_type::FOLLOW, std::to_string(route_amt), end_tol, timeout, lookahead);
@@ -162,27 +154,22 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
     }
 }
 
-void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::PIDController *lateral_pid, knights::PIDController *turn_pid, knights::input::AutonomousInputMap *input_map) {
+void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::RobotController *robotControl, knights::input::AutonomousInputMap *input_map) {
     
-    knights::RamseteConstants ramsete_constants(1, 0.5);
-
-    knights::RobotController lateralController(chassis, lateral_pid, &ramsete_constants, false);
-    knights::RobotController turnController(chassis, turn_pid, &ramsete_constants, false);
-
     for (RouteAction curr_action : this->actions) {
         if (curr_action.type == knights::action_type::LATERAL) {
-            lateralController.lateral_move(curr_action.specific, curr_action.end_tolerance, curr_action.timeout);
+            robotControl->lateral_move(curr_action.specific, curr_action.end_tolerance, curr_action.timeout);
             knights::logger::red(knights::logger::string_format("lateral %lf", curr_action.specific));
         }
         else if (curr_action.type == knights::action_type::TURN) {
-            turnController.turn_to_angle(curr_action.specific, 0,curr_action.end_tolerance, curr_action.timeout, true);
+            robotControl->turn_to_angle(curr_action.specific, 0,curr_action.end_tolerance, curr_action.timeout, true);
             knights::logger::green(knights::logger::string_format("turn %lf", curr_action.specific));
         }
         else if (curr_action.type == knights::action_type::FOLLOW && this->routes.contains(curr_action.route_name)) {
-            lateralController.follow_route_pursuit(
+            robotControl->follow_route_pursuit(
                 this->routes[curr_action.route_name], 
                 curr_action.lookahead, 
-                lateral_pid->get_max_speed(), 
+                robotControl->lateral_pid->get_max_speed(), 
                 knights::signum(curr_action.lookahead),
                 curr_action.end_tolerance, 
                 curr_action.timeout

@@ -7,8 +7,10 @@
 #include <cstring>
 #include <functional>
 #include <iostream>
+#include <math.h>
 #include <string>
 #include <unordered_map>
+#include <fstream>
 
 pros::Task *odomTask = nullptr;
 
@@ -23,97 +25,94 @@ void initialize() {
 		pros::delay(10);
 	}
 	//make sure that the imu sensor is accurate before the start of a match
-	//knights::logger::blue("Initialization Begin");
+	knights::logger::blue("Initialization Begin");
+
+	// // Different autons, None0 is the default auton
+	auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(12, 12, knights::to_rad(90)));
+
+	auton_map["Red1"] = knights::Auton(&red_rush_right_wp, knights::Pos(-58, -15, M_PI));
+	auton_map["Red2"] = knights::Auton(&red_left_wp, knights::Pos(-55.1,37.5,0));
+	auton_map["Blue1"] = knights::Auton(&blue_rush_left_wp, knights::Pos(-58, -15, M_PI));
+	auton_map["Blue2"] = knights::Auton(&blue_right_wp, knights::Pos(-55.1,37.5,0));
+	auton_map["Red3"] = knights::Auton(&mogo_red_rush, knights::Pos(-55.1,37.5,0));
+	auton_map["Blue3"] = knights::Auton(&mogo_blue_rush, knights::Pos(-55.1,37.5,0));
+
+	auton_map["Skills0"] = knights::Auton(&skills, knights::Pos(-59, 0, 0));
 
 	lv_display();
 
-	// wait until everything is cali-brated
+	// wait until everything is calibrated
 	pros::delay(2000);
-
 
 	knights::logger::blue("Initialization End");
 
 
 	// intake.set_reversed(false, 0);
 	// intake.set_reversed(true, 1);
-	// lady_brown.set_reversed(true);
+	lady_brown.set_reversed(true);
+
+	// #### TEST AREA ####
+
+	// // path test
+    // float dist = distance_btwn(knights::Point(0, 0), knights::Point(0, 24));
+    // knights::HermiteSpline path(
+    //     knights::Point(0, 0),
+    //     knights::Point(0, 24),
+    //     knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist),
+    //     knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist)
+    // );
+
+	// auto t = knights::linspace(0, 1, 10);
+	// for (auto value : t) {
+	// 	knights::display::MapDot dot(5, 5, lv_palette_darken(LV_PALETTE_CYAN, 2));
+	// 	std::cout << "pt: " << path.position(value).x << " " << path.position(value).y << " " << path.position(value).heading << "\n";
+	// 	dot.set_field_pos(path.position(value));
+	// }
+
+	// // motion profile test
+	// knights::ProfileGenerator generator(drivetrain, 100);
+	// std::vector<knights::ProfileTimestamp> profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(0, 24, 90_deg));
+
+	// std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
+
+	// for (knights::ProfileTimestamp timestamp : profile) {
+	// 	write_file << "time: " << timestamp.time << "\n";
+	// 	write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << "\n";
+	// 	write_file << "lin vel: " << timestamp.linear_velocity << "\n";
+	// 	write_file << "angular vel: " << timestamp.angular_velocity << "\n";
+	// 	write_file << "dist: " << timestamp.curr_distance << "\n";
+	// 	write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << "\n";
+	// 	write_file << "end timestamp\n";
+
+	// 	std::cout << "time: " << timestamp.time << " ";
+	// 	std::cout << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+	// 	std::cout << "lin vel: " << timestamp.linear_velocity << " ";
+	// 	std::cout << "angular vel: " << timestamp.angular_velocity << " ";
+	// 	std::cout << "dist: " << timestamp.curr_distance << " ";
+	// 	std::cout << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+	// 	std::cout << "end timestamp\n";
+	// }
+
 }
 
-/**
- * Runs while the robot is in the disabled state of Field Management System or
- * the VEX Competition Switch, following either autonomous or opcontrol. When
- * the robot is enabled, this task will exit.
- */
 void disabled() {}
 
-/**
- * Runs after initialize(), and before autonomous when connected to the Field
- * Management System or the VEX Competition Switch. This is intended for
- * competition-specific initialization routines, such as an autonomous selector
- * on the LCD.
- *
- * This task will exit when the robot is enabled and autonomous or opcontrol
- * starts.
- */
 void competition_initialize() {}
 
-
-/**
- * Runs the user autonomous code.
- */
 void autonomous() {
-
 	// Query display for the selected buttons
 	knights::display::AutonSelectionPackage package = knights::display::get_selected_auton();
 	
-	// Create a map that maps autonomous to selection packages
-	std::unordered_map<std::string, std::function<void(knights::RobotChassis*)>> auton_map;
+	chassis.set_position(0,0,0);
 
-	// // Different autons, skills is the default auton
-	auton_map["None0"] = &mogo_red_rush;
-	chassis.set_position(knights::Pos(-58,0,knights::to_rad(0)));
-	
-	//chassis.set_position(knights::Pos(-60,0,0));
-	//chassis.set_position(knights::Pos(-58, -15,knights::to_rad(180)));
-
-	// // auton_map["None0"] = &skills;
-    // // chassis.set_position(knights::Pos(-59, 0, 0));
-
-	auton_map["Red1"] = &red_rush_right_wp;
-	auton_map["Red2"] = &red_left_wp;
-	auton_map["Blue1"] = &blue_rush_left_wp;
-	auton_map["Blue2"] = &blue_right_wp;
-	auton_map["Red3"] = &mogo_red_rush;
-	auton_map["Blue3"] = &mogo_blue_rush;
-
-
-	auton_map["Skills0"] = &skills;
-    // //  chassis.set_position(knights::Pos(38, 48, 4.081));
-
-	// auton_map["None0"] = &pp_test;
-	// chassis.set_position(knights::Pos(-60,0,knights::to_rad(0)));
-
-	//chassis.set_position(knights::Pos(59, 0, 0));
-
-	// chassis.set_position(knights::Pos(-36, -60, 3*M_PI/2));
-
-	if (package.get_value() == "Red1" || package.get_value() == "Blue1") {
-		chassis.set_position(knights::Pos(-58, -15, knights::to_rad(180))); // only works b/c -180 == 180
-	} else if (package.get_value() == "Red2" || package.get_value() == "Blue2") {
-		chassis.set_position(knights::Pos(-55.1,37.5,0)); // only works b/c -0 == 0
-	} else if (package.get_value() == "Red3" || package.get_value() == "Blue3") {
-		chassis.set_position(knights::Pos(-55.1,37.5,0));
-
-	} else if (package.get_value() == "Skills0") {
-		chassis.set_position(knights::Pos(-59, 0, 0));
+	if (auton_map.contains(package.get_value())) {
+		chassis.set_position(auton_map[package.get_value()].start);
 	}
 
-	// need to find a way to do this dynamically
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();
 	backOdom.reset();
-
 
 	// run odometry loop
 	if (odomTask == nullptr)
@@ -128,7 +127,6 @@ void autonomous() {
 				stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
 				stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
 				std::string s = stream.str();
-				// printf("curr pos: %lf %lf %lf\n", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading);
 
 				// Set the display label to the current position
 				knights::display::set_pos_label(s);
@@ -141,8 +139,9 @@ void autonomous() {
 		}};
 
 	// Run the chosen auton
-	if (auton_map.contains(package.get_value()))
-		auton_map[package.get_value()](&chassis);
+	if (auton_map.contains(package.get_value())) {
+		auton_map[package.get_value()].function(&chassis);
+	}
 
 }
 
@@ -231,7 +230,7 @@ void opcontrol() {
 
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
-		drivetrain.velocity_command(
+		drivetrain.voltage_command(
 			left_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)),
 			right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))
 		);

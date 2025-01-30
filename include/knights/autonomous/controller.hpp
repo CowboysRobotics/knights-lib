@@ -1,5 +1,6 @@
 #pragma once
 
+#include "knights/util/position.hpp"
 #ifndef _CONTROLLER_H
 #define _CONTROLLER_H
 
@@ -13,23 +14,29 @@ namespace knights {
 
     class RobotController {
         private:
-            PIDController *pid_controller;
+            PIDController *lateral_pid;
+            PIDController *turn_pid;
+            PIDController *angular_pid;
             RamseteConstants *ramsete_constants;
             RobotChassis *chassis;
             bool use_motor_encoders = false;
 
             bool in_motion = false;
 
+            friend class AdvancedRoute;
+
         public:
             /**
              * @brief Construct a new Robot Controller object
              * 
              * @param chassis 
-             * @param pid_controller 
+             * @param lateral_pid 
              * @param ramsete_constants 
              * @param use_motor_encoders 
              */
-            RobotController(RobotChassis *chassis, PIDController *pid_controller, RamseteConstants *ramsete_constants, bool use_motor_encoders = false);
+            RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, RamseteConstants *ramsete_constants, bool use_motor_encoders = false);
+
+            RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, PIDController *angular_pid, RamseteConstants *ramsete_constants, bool use_motor_encoders = false);
 
             /**
              * @brief Construct a new Robot Controller object
@@ -38,7 +45,9 @@ namespace knights {
              * @param pid_controller 
              * @param use_motor_encoders 
              */
-            RobotController(RobotChassis *chassis, PIDController *pid_controller, bool use_motor_encoders = false);
+            RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, bool use_motor_encoders = false);
+
+            RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, PIDController *angular_pid, bool use_motor_encoders = false);
 
             /**
              * @brief Follow a route that has been read into the route memory of the robot
@@ -52,8 +61,9 @@ namespace knights {
              */
             void follow_route_pursuit(knights::Route &route, float lookahead_distance = 15.0, const float max_speed = 127.0, bool forwards = true, float end_tolerance = 8.0, float timeout = 5000, float use_pid = false);
 
+            void lateral_to_position(const Pos desired_position, const float end_tolerance = 2.0, const int timeout = 1000);
 
-            void move_to_point(const Pos desired_position, const bool forwards = true, const float &end_tolerance = 2.0, float timeout = 1000);
+            void move_to_position(const Pos desired_position, float lead = 0.5, float correction_dist = 8.0, const float &end_tolerance = 2.0, const bool forwards = true, float timeout = 1000);
 
             /**
              * @brief Turn the robot to a specific angle
@@ -65,7 +75,17 @@ namespace knights {
              * @param timeout Amount of time to wait before exiting the movement
              * @param rad Whether the provided angle is in radians or not
              */
-            void turn_to_angle(const float angle, int direction = 0, float end_tolerance = 3.0, float timeout = 1000, bool rad = false); // DEGREES
+            void turn_to_angle(const float angle, int direction = 0, float end_tolerance = 3.0, int timeout = 2000, bool rad = false); // DEGREES
+
+            /**
+             * @brief 
+             * 
+             * @param point 
+             * @param direction 
+             * @param end_tolerance 
+             * @param timeout 
+             */
+            void turn_to_point(knights::Pos point, int direction = 0, float end_tolerance = 3.0, int timeout = 2000); // DEGREES
 
             /**
              * @brief Move in a straight line, forwards or backwards
