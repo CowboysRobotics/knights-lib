@@ -28,7 +28,8 @@ void initialize() {
 	knights::logger::blue("Initialization Begin");
 
 	// // Different autons, None0 is the default auton
-	auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(12, 12, knights::to_rad(90)));
+	// auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(-50, -64, knights::to_rad(180)));
+	auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(-64, 0, knights::to_rad(0)));
 
 	auton_map["Red1"] = knights::Auton(&red_rush_right_wp, knights::Pos(-58, -15, M_PI));
 	auton_map["Red2"] = knights::Auton(&red_left_wp, knights::Pos(-55.1,37.5,0));
@@ -234,8 +235,6 @@ void opcontrol() {
 			left_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)),
 			right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))
 		);
-
-
 
 		// Delay to let other tasks run
 		pros::delay(10);

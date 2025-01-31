@@ -112,5 +112,5 @@ void knights::RobotController::lateral_to_position(const Pos desired_position, c
     pros::delay(140);
     this->lateral_move(distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
     pros::delay(140);
-    this->turn_to_angle(desired_position.heading, 0, end_tolerance, timeout);
+    this->turn_to_angle(knights::to_deg(desired_position.heading), 0, end_tolerance, timeout);
 }
