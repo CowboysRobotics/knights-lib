@@ -73,12 +73,21 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
     return;
 }
 
-void knights::RobotController::turn_to_point(knights::Pos point, int direction, float end_tolerance, int timeout) {
-    return this->turn_to_angle(
-        std::atan2(this->chassis->get_position().y - point.y, this->chassis->get_position().x - point.x),
-        direction,
-        end_tolerance,
-        timeout,
-        true
-    );
+void knights::RobotController::turn_to_point(knights::Pos point, bool forwards, int direction, float end_tolerance, int timeout) {
+    if (forwards)
+        return this->turn_to_angle(
+            std::atan2(point.y - this->chassis->get_position().y, point.x - this->chassis->get_position().x),
+            direction,
+            knights::to_rad(end_tolerance),
+            timeout,
+            true
+        );
+    else
+        return this->turn_to_angle(
+            std::atan2(this->chassis->get_position().y - point.y, this->chassis->get_position().x - point.x),
+            direction,
+            knights::to_rad(end_tolerance),
+            timeout,
+            true
+        );
 }
