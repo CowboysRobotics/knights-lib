@@ -41,15 +41,17 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 
-	knights::Pos start = chassis->get_position();
+	// knights::Pos start = chassis->get_position();
 
-	float target = 24;
+	// float target = 24;
 
-	robotControl.lateral_move(target);
+	// robotControl.lateral_move(target);
 
-	pros::delay(500);
+	// pros::delay(500);
 
-	knights::logger::red(knights::logger::string_format("error: %lf\n", target-knights::distance_btwn(start, chassis->get_position())));
+	// knights::logger::red(knights::logger::string_format("error: %lf\n", target-knights::distance_btwn(start, chassis->get_position())));
+
+	robotControl.lateral_to_position(knights::Pos(-48,-24,0));
 }
 
 
@@ -90,6 +92,7 @@ void pp_test(knights::RobotChassis *chassis) {
 
 #define WAIT 140
 #define kPos knights::Pos
+#define rad(x) knights::to_rad(x)
 
 #define w pros::delay(WAIT)
 #define tw(x) pros::delay((x)*WAIT)
@@ -129,9 +132,53 @@ void redone_skills(knights::RobotChassis *chassis) {
 
 	robotControl.lateral_to_position(knights::Pos(-50, 0, knights::to_rad(90))); w;
 
-	robotControl.lateral_move(-12); robotControl.lateral_move(-12); tw(2); clamp_toggle(); tw(2);
+	robotControl.lateral_move(-12); robotControl.lateral_move(-12); tw(2); clamp_toggle(); tw(2); intake_in();
 
-	robotControl.lateral_to_position(kPos(-24, -24, knights::to_rad(270)));
+	robotControl.lateral_to_point(kPos(-22, -24, 0)); w;
+
+	robotControl.lateral_to_point(kPos(24, -45, 0), 1, 2.0, 2000);  w;
+
+	pros::delay(300); // grab ring
+
+	robotControl.lateral_to_position(kPos(-2, -45, rad(270))); 
+
+	lady_brown_load1(); w;
+
+	robotControl.lateral_move(12);
+
+	pros::delay(1200);
+
+	lady_brown_score();
+
+	pros::delay(1200);
+
+	lady_brown_down(); w;
+
+	intake_in();
+
+	robotControl.lateral_move(-12); w;
+
+	robotControl.lateral_to_position(kPos(-48, -48, rad(180)), 1, 2.0, 2000); 
+
+	pros::delay(300);
+
+	robotControl.lateral_move(12); w;
+
+	robotControl.lateral_to_position(kPos(-48, -48, rad(270)), false); w;
+
+	robotControl.lateral_move(12); pros::delay(300);
+
+	robotControl.lateral_move(-12); w;
+
+	robotControl.turn_to_angle(rad(135)); w;
+
+	clamp_toggle(); w;
+
+	robotControl.lateral_move(-18); w;
+
+	pros::delay(300);
+
+	robotControl.move_to_position(kPos(-48, -48, rad(270)));
 
 
 

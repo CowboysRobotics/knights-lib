@@ -107,10 +107,28 @@ void knights::RobotController::move_to_position(const Pos desired_position, floa
     return;
 }
 
-void knights::RobotController::lateral_to_position(const Pos desired_position, const float end_tolerance, const int timeout) {
-    this->turn_to_point(desired_position, 0, end_tolerance, timeout);
-    pros::delay(140);
-    this->lateral_move(distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
+void knights::RobotController::lateral_to_position(const Pos desired_position, const bool forwards, const float end_tolerance, const int timeout) {
+    if (fabsf(min_angle(this->chassis->curr_position.heading, std::atan2(desired_position.y - this->chassis->get_position().y, desired_position.x - this->chassis->get_position().x))) < M_PI_2) {
+        this->turn_to_point(desired_position, true, 0, end_tolerance, timeout);
+        pros::delay(140);
+        this->lateral_move(distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
+    } else {
+        this->turn_to_point(desired_position, false, 0, end_tolerance, timeout);
+        pros::delay(140);
+        this->lateral_move(-distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
+    }
     pros::delay(140);
     this->turn_to_angle(knights::to_deg(desired_position.heading), 0, end_tolerance, timeout);
+}
+
+void knights::RobotController::lateral_to_point(const Pos desired_position, const bool forwards, const float end_tolerance, const int timeout) {
+    if (forwards) {
+        this->turn_to_point(desired_position, true, 0, end_tolerance, timeout);
+        pros::delay(140);
+        this->lateral_move(distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
+    } else {
+        this->turn_to_point(desired_position, false, 0, end_tolerance, timeout);
+        pros::delay(140);
+        this->lateral_move(-distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
+    }
 }

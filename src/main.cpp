@@ -29,7 +29,7 @@ void initialize() {
 
 	// // Different autons, None0 is the default auton
 	// auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(-50, -64, knights::to_rad(180)));
-	auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(-64, 0, knights::to_rad(0)));
+	auton_map["None0"] = knights::Auton(&redone_skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
 
 	auton_map["Red1"] = knights::Auton(&red_rush_right_wp, knights::Pos(-58, -15, M_PI));
 	auton_map["Red2"] = knights::Auton(&red_left_wp, knights::Pos(-55.1,37.5,0));
@@ -38,6 +38,7 @@ void initialize() {
 	auton_map["Red3"] = knights::Auton(&mogo_red_rush, knights::Pos(-55.1,37.5,0));
 	auton_map["Blue3"] = knights::Auton(&mogo_blue_rush, knights::Pos(-55.1,37.5,0));
 
+	auton_map["Skills0"] = knights::Auton(&redone_skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
 	auton_map["Skills0"] = knights::Auton(&skills, knights::Pos(-59, 0, 0));
 
 	lv_display();
@@ -50,7 +51,6 @@ void initialize() {
 
 	// intake.set_reversed(false, 0);
 	// intake.set_reversed(true, 1);
-	lady_brown.set_reversed(true);
 
 	// #### TEST AREA ####
 

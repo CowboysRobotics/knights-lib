@@ -64,7 +64,6 @@ void knights::PIDController::switch_values(float target_val) {
         if (fabsf(key - target_val) < min_diff) {
             min_diff = fabsf(key - target_val);
             best_constants = value;
-            printf("used\n");
         }
     }
 

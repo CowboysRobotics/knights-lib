@@ -56,8 +56,6 @@ pros::Motor intake_top(20,pros::v5::MotorGears::blue);
 //assign port to distance sensor for redirect
 pros::Optical colors(15);
 
-
-
 //assign ports for pneumatics
 pros::adi::Pneumatics clamp(1, false); //clamp solenoid
 pros::adi::Pneumatics doinker(3, false); //doinker solenoid
@@ -129,7 +127,6 @@ void change_color(){
 
 }
 
-
 void red_color_sort() {
 	if (colors.get_hue() < 40 && blue_alliance == true && color_sorting == true){
 		pros::delay(20);
@@ -174,7 +171,6 @@ void lady_brown_fwd() {
 		lady_brown_spinning = false;
 	} else {
 		lady_brown.move(-LADY_BROWN_VELOCITY); // Spin intake forward
-		lady_brown.move(-LADY_BROWN_VELOCITY); // Spin intake forward
 		lady_brown_spinning = true;
 		lady_brown_forward = true;
 	}
@@ -185,7 +181,6 @@ void lady_brown_rev() {
 		lady_brown.move(0); // stop intake
 		lady_brown_spinning = false;
 	} else { 
-		lady_brown.move(INTAKE_VELOCITY); // Spin the intake in reverse
 		lady_brown.move(INTAKE_VELOCITY); // Spin the intake in reverse
 		lady_brown_spinning = true;
 		lady_brown_forward = false;
@@ -235,8 +230,8 @@ void lady_brown_to_angle(float angle, int timeout, bool async = true, int dir = 
         pros::delay(20);
     }
 
-   	lady_brown.brake();
-   	lady_brown.brake();
+   	lady_brown.move(0);
+	lady_brown.brake();
 	printf("error: %F \n", error);
 	printf("position: %i \n", lady_brown_rotation.get_angle());
 
