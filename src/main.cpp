@@ -29,7 +29,7 @@ void initialize() {
 
 	// // Different autons, None0 is the default auton
 	// auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(-50, -64, knights::to_rad(180)));
-	auton_map["None0"] = knights::Auton(&redone_skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
+	auton_map["None0"] = knights::Auton(&right_safe_no_wait, knights::Pos(-53, -30, knights::to_rad(-7.5)));
 
 	auton_map["Red1"] = knights::Auton(&red_rush_right_wp, knights::Pos(-58, -15, M_PI));
 	auton_map["Red2"] = knights::Auton(&red_left_wp, knights::Pos(-55.1,37.5,0));
@@ -38,7 +38,7 @@ void initialize() {
 	auton_map["Red3"] = knights::Auton(&mogo_red_rush, knights::Pos(-55.1,37.5,0));
 	auton_map["Blue3"] = knights::Auton(&mogo_blue_rush, knights::Pos(-55.1,37.5,0));
 
-	auton_map["Skills0"] = knights::Auton(&redone_skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
+	auton_map["None0"] = knights::Auton(&redone_skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
 	auton_map["Skills0"] = knights::Auton(&skills, knights::Pos(-59, 0, 0));
 
 	lv_display();
@@ -132,8 +132,8 @@ void autonomous() {
 				// Set the display label to the current position
 				knights::display::set_pos_label(s);
 
-				// Move the current position dot to the desired position
-				knights::display::change_curr_pos_dot(chassis.get_position());
+				// // Move the current position dot to the desired position
+				// knights::display::change_curr_pos_dot(chassis.get_position());
 
 				pros::delay(10);
 			}
@@ -186,8 +186,8 @@ void opcontrol() {
 				// Set the display label to the current position
 				knights::display::set_pos_label(s);
 
-				// Move the current position dot to the desired position
-				knights::display::change_curr_pos_dot(chassis.get_position());
+				// // Move the current position dot to the desired position
+				// knights::display::change_curr_pos_dot(chassis.get_position());
 
 				pros::delay(10);
 			}

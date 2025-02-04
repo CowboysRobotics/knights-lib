@@ -98,18 +98,19 @@ void intake_out() {
 	}
 }
 
-bool color_sorting = true;
-bool blue_alliance = true;
-bool red_alliance = false;
+bool color_sorting = false;
+bool blue_alliance = false;
+bool red_alliance = true;
 
 void toggle_color_sort(){
 	if (color_sorting == false){
 		color_sorting = true;
+		colors.set_led_pwm(100);
 	}
 	else if (color_sorting == true){
 		color_sorting = false;
+		colors.set_led_pwm(0);
 	}
-	printf("color toggle: %d \n", color_sorting);
 }
 
 void change_color(){
@@ -121,27 +122,22 @@ void change_color(){
 		blue_alliance = false;
 		red_alliance = true;
 	}
-	printf("blue alliance: %d \n", blue_alliance);
-	printf("red alliance: %d \n", red_alliance);
-
 
 }
 
 void red_color_sort() {
-	if (colors.get_hue() < 40 && blue_alliance == true && color_sorting == true){
+	if (colors.get_hue() < 40 && blue_alliance == true && color_sorting == true && colors.get_proximity() > 100){
 		pros::delay(20);
 		intake_top.move(0);
-		printf("get rid of red %f \n", colors.get_hue());
 		pros::delay(100);
 		intake_top.move(INTAKE_VELOCITY);
 	}
 }
 
 void blue_color_sort(){
-	if (colors.get_hue() > 140 && red_alliance == true && color_sorting ==  true){
+	if (colors.get_hue() > 140 && red_alliance == true && color_sorting == true && colors.get_proximity() > 100){
 		pros::delay(20);
 		intake_top.move(0);
-		printf("get rid of blue %f \n", colors.get_hue());
 		pros::delay(100);
 		intake_top.move(INTAKE_VELOCITY);
 	}
@@ -250,7 +246,7 @@ void lady_brown_load2() {
 	lady_brown_to_angle(LADY_BROWN_LOAD2, 1500, true, 1);
 }
 
-void lady_brown_score() {;
+void lady_brown_score() {
 	toggle_color_sort();
 	intake_spinning = false;
 	intake.move(0);
@@ -283,47 +279,3 @@ void toggle_rush_mech() {
 	rush_mech_down = !rush_mech_down;
 	rush_mech.set_value(rush_mech_down);
 }
-
-// bool color_sorting = true;
-// bool blue_alliance = true;
-// bool red_alliance = false;
-
-// void toggle_color_sort(){
-// 	if (color_sorting == false){
-// 		color_sorting = true;
-// 	}
-// 	else if (color_sorting == true){
-// 		color_sorting = false;
-// 	}
-// 	printf("color toggle: %d \n", color_sorting);
-// }
-
-// void change_color(){
-// 	if (blue_alliance == false && red_alliance == true){
-// 		blue_alliance = true;
-// 		red_alliance = false;
-// 	}
-// 	else if (red_alliance == false && blue_alliance == true){
-// 		blue_alliance = false;
-// 		red_alliance = true;
-// 	}
-// 	printf("blue alliance: %d \n", blue_alliance);
-// 	printf("red alliance: %d \n", red_alliance);
-// }
-
-// void red_color_sort() {
-// 	if (colors.get_hue() < 40 && blue_alliance == true){
-// 		intake.move(0);
-// 		intake_spinning = false;
-// 		printf("get rid of red %f \n", colors.get_hue());
-	
-// 	}
-// }
-
-// void blue_color_sort(){
-// 	if (colors.get_hue() > 140 && red_alliance == true){
-// 		intake.move(0);
-// 		intake_spinning = false;
-// 		printf("get rid of blue %f \n", colors.get_hue());
-// 	}
-// }
