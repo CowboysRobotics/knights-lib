@@ -8,8 +8,6 @@
 
 #include <fstream>
 
-std::fstream write_file("/usd/pid_output.txt", std::ios_base::out);
-
 knights::PIDConstants::PIDConstants(float kP, float kI, float kD)
     : kP(kP), kI(kI), kD(kD) {}
 
@@ -45,7 +43,6 @@ float knights::PIDController::update(float error, bool clamp) {
             this->min_velocity, 
             this->max_velocity
         ) * knights::signum(this->kP * error + this->kI * total_error + this->kD * (error - prev_error));
-        write_file << "lateral result: " << result << "\n";
     } else
         result = std::fabs(this->kP * error + this->kI * total_error + this->kD * (error - prev_error));
     prev_error = error;

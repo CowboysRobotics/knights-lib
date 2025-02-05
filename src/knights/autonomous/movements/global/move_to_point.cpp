@@ -108,18 +108,18 @@ void knights::RobotController::move_to_position(const Pos desired_position, floa
 }
 
 void knights::RobotController::lateral_to_position(const Pos desired_position, const bool forwards, const float end_tolerance, const int timeout) {
-    this->turn_to_point(desired_position, forwards, 0, 2.0, timeout);
+    this->turn_to_point(desired_position, forwards, 0, 2.0, 750);
     pros::delay(140);
     if (forwards)
         this->lateral_move(distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
     else
         this->lateral_move(-distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
     pros::delay(140);
-    this->turn_to_angle(knights::to_deg(desired_position.heading), 0, 2.0, timeout);
+    this->turn_to_angle(knights::to_deg(desired_position.heading), 0, 2.0, 750);
 }
 
 void knights::RobotController::lateral_to_point(const Pos desired_position, const bool forwards, const float end_tolerance, const int timeout) {
-    this->turn_to_point(desired_position, forwards, 0, 2.0, timeout);
+    this->turn_to_point(desired_position, forwards, 0, 2.0, 750);
     pros::delay(140);
     if (forwards)
         this->lateral_move(distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
