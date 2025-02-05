@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.integrate as integrate
+import scipy.special as special
 
-class HermiteSplinePath:
+class QuinticPath:
     def __init__(self, curr, target, curr_tangent, target_tangent, curr_acceleration, target_acceleration):
         """
         Initializes the Hermite spline path.
@@ -10,6 +12,9 @@ class HermiteSplinePath:
         :param target: (x, y) coordinates of the target point
         :param curr_tangent: (dx, dy) tangent vector at the current point
         :param target_tangent: (dx, dy) tangent vector at the target point
+        :param curr_acceleration: (a) acceleration at current point
+        :param target_acceleration: (a) acceleration at target point
+
         """
         self.curr = curr
         self.target = target
@@ -67,44 +72,54 @@ class HermiteSplinePath:
         :return: (x, y) tuple
         """
         x = (
-            self.h1(t) * self.curr[0] +
-            self.h2(t) * self.target[0] +
-            self.h3(t) * self.curr_tangent[0] +
-            self.h4(t) * self.target_tangent[0]
+            self.p00 * ((1 - t) ** 5) +
+            self.p01 * 5 * ((1 - t) ** 4) * (t) +
+            self.p02 * 10 * ((1 - t) ** 3) * (t ** 2) +
+            self.p03 * 10 * ((1 - t) ** 2) * (t ** 3) +
+            self.p04 * 5 * ((1 - t)) * (t ** 4) +
+            self.p05 * (t ** 5)        
         )
         y = (
-            self.h1(t) * self.curr[1] +
-            self.h2(t) * self.target[1] +
-            self.h3(t) * self.curr_tangent[1] +
-            self.h4(t) * self.target_tangent[1]
+            self.p10 * ((1 - t) ** 5) +
+            self.p11 * 5 * ((1 - t) ** 4) * (t) +
+            self.p12 * 10 * ((1 - t) ** 3) * (t ** 2) +
+            self.p13 * 10 * ((1 - t) ** 2) * (t ** 3) +
+            self.p14 * 5 * ((1 - t)) * (t ** 4) +
+            self.p15 * (t ** 5)
         )
-        dx,dy,_ = self.derivatives(t)
-        theta = (
-          np.arctan2(dy, dx)
-        )
-        return x, y, theta
+
 
     def derivatives(self, t):
         """
-        Computes the derivatives (dx/dt, dy/dt) at parameter t.
+        Computes the (dx, dy) position on the spline at parameter t.
         :param t: Parameter in [0, 1]
-        :return: (dx/dt, dy/dt) tuple
+        :return: (dx, dy) tuple
         """
         dx = (
-            self.h1_prime(t) * self.curr[0] +
-            self.h2_prime(t) * self.target[0] +
-            self.h3_prime(t) * self.curr_tangent[0] +
-            self.h4_prime(t) * self.target_tangent[0]
+            self.p01 * 5 * ((1 - t) ** 4) - 
+            self.p00 * 5 * ((1 - t) ** 4) +
+            self.p02 * 20 * ((1 - t) ** 3) * (t) - 
+            self.p01 * 20 * ((1 - t) ** 3) * (t) +
+            self.p03 * 30 * ((1 - t) ** 2) * (t ** 2) - 
+            self.p02 * 30 * ((1 - t) ** 2) * (t ** 2) +
+            self.p04 * 20 * ((1 - t)) * (t ** 3) - 
+            self.p03 * 20 * ((1 - t)) * (t ** 3) +
+            self.p05 * 5 * (t ** 4) - 
+            self.p04 * 5 * (t ** 4)
         )
         dy = (
-            self.h1_prime(t) * self.curr[1] +
-            self.h2_prime(t) * self.target[1] +
-            self.h3_prime(t) * self.curr_tangent[1] +
-            self.h4_prime(t) * self.target_tangent[1]
+            self.p11 * 5 * ((1 - t) ** 4) - 
+            self.p10 * 5 * ((1 - t) ** 4) +
+            self.p12 * 20 * ((1 - t) ** 3) * (t) - 
+            self.p11 * 20 * ((1 - t) ** 3) * (t) +
+            self.p13 * 30 * ((1 - t) ** 2) * (t ** 2) - 
+            self.p12 * 30 * ((1 - t) ** 2) * (t ** 2) +
+            self.p14 * 20 * ((1 - t)) * (t ** 3) - 
+            self.p13 * 20 * ((1 - t)) * (t ** 3) +
+            self.p15 * 5 * (t ** 4) - 
+            self.p14 * 5 * (t ** 4)
         )
-        dx2, dy2 = self.second_derivatives(t)
-        omega = (dy2 * dx - dy * dx2) / ((1 + (dy/dx)**2) * dx**2)
-        return dx, dy, omega
+
 
     def second_derivatives(self, t):
         """
@@ -113,18 +128,18 @@ class HermiteSplinePath:
         :return: (d2x/dt2, d2y/dt2) tuple
         """
         dx2 = (
-            self.h1_prime2(t) * self.curr[0] +
-            self.h2_prime2(t) * self.target[0] +
-            self.h3_prime2(t) * self.curr_tangent[0] +
-            self.h4_prime2(t) * self.target_tangent[0]
+            20(self.p02 - 2 * self.p01 + self.p00) * ((1 - t) ** 3) +
+            60(self.p03 - 2 * self.p02 + self.p01) * ((1 - t) ** 2) * t +
+            60(self.p04 - 2 * self.p03 + self.p02) * ((1 - t)) * (t ** 2) +
+            20(self.p05 - 2 * self.p04 + self.p03) * (t **3)          
         )
         dy2 = (
-            self.h1_prime2(t) * self.curr[1] +
-            self.h2_prime2(t) * self.target[1] +
-            self.h3_prime2(t) * self.curr_tangent[1] +
-            self.h4_prime2(t) * self.target_tangent[1]
+            20(self.p12 - 2 * self.p11 + self.p10) * ((1 - t) ** 3) +
+            60(self.p13 - 2 * self.p12 + self.p11) * ((1 - t) ** 2) * t +
+            60(self.p14 - 2 * self.p13 + self.p12) * ((1 - t)) * (t ** 2) +
+            20(self.p15 - 2 * self.p14 + self.p13) * (t **3)
         )
-        return dx2, dy2
+
 
 def dist_between(x1, y1, x2, y2):
   return np.hypot(x2-x1, y2-y1)
@@ -134,11 +149,10 @@ def lerp(start, end, step):
 
 def generate_motion_profile(max_acceleration, max_velocity, distance, track_width, path):
   # Calculate the time it takes to accelerate to max velocity
-  acceleration_dt = max_velocity / max_acceleration
+  acceleration_time = max_velocity / max_acceleration
 
   # If we can't accelerate to max velocity in the given distance, we'll accelerate as much as possible
   halfway_distance = distance / 2
-  acceleration_distance = 0.5 * max_acceleration * acceleration_dt ** 2
 
   if (acceleration_distance > halfway_distance):
     acceleration_dt = np.sqrt(halfway_distance / (0.5 * max_acceleration))
@@ -166,7 +180,11 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
 
   side_vel_arr = []
   omega_arr = []
+  theta_arr = []
   position_arr = []
+  first_derivative_arr = []
+  second_derivative_arr = []
+
 
   for elapsed_time in t:
 
@@ -207,11 +225,18 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     vel_arr.append(velocity)
     
     # Angular Calculations
-    x,y,theta = path.position(curr_dist/total_dist)
-    dx_ds, dy_ds, omega = path.derivatives(curr_dist/total_dist)
+    x,y = path.position(curr_dist/total_dist)
+    dx,dy = path.derivatives(curr_dist/total_dist)
+    dx2,dy2 = path.second_derivatives(curr_dist/total_dist)
+
+    theta = np.arctan2(dy,dx)
+    omega = (dy2 * dx - dy * dx2) / (((dx) ** 2) * (1 + ((dy / dx)) ** 2))
+
     # omega = np.arctan2(dy_ds, dx_ds) * velocity
     omega_arr.append(omega)
-    position_arr.append((x,y,theta))
+    position_arr.append((x,y))
+    first_derivative_arr.append((dx,dy))
+    second_derivative_arr.append((dx2,dy2))
 
     left_vel = velocity - (omega * track_width / 2)
     right_vel = velocity + (omega * track_width / 2)
@@ -219,17 +244,31 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     side_vel_arr.append((left_vel, right_vel))
 
   
-  return [t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
+  return [t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr, first_derivative_arr]
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 curr = [0, 0, np.radians(90), 0]
-target = [24, 24, np.radians(90), 0]
+target = [24, 24, np.radians(0), 0]
 
-dist = np.hypot(target[0]-curr[0], target[1]-curr[1])
+dist = np.sqrt(((target[0]-curr[0]) ** 2) + ((target[1]-curr[1]) ** 2))
+
 
 curr_tangent = (np.cos(curr[2]) * dist, np.sin(curr[2]) * dist)
 target_tangent = (np.cos(target[2]) * dist, np.sin(target[2]) * dist)
 
-path = HermiteSplinePath((curr[0], curr[1]), (target[0], target[1]), curr_tangent, target_tangent)
+path = QuinticPath((curr[0], curr[1]), (target[0], target[1]), curr_tangent, target_tangent)
 
 curr_pos = [curr[0], curr[1]]
 
@@ -237,11 +276,15 @@ curr_acceleration = dist * curr[3]
 target_acceleration = dist * target[3]
 
 t = np.linspace(0, 1, 300)
-x_vals,y_vals,theta_vals = path.position(t)
+x_vals,y_vals = path.position(t)
+dx,dy = path.derivatives(t)
+dx2,dy2 = path.second_derivatives(t)
 
 total_dist = 0 
 for val in t:
-    x,y,theta = path.position(val)
+    x,y = path.position(val)
+    dx,dy = path.derivatives(val)
+    dx2,dy2 = path.second_derivatives(val)
     total_dist += dist_between(curr_pos[0], curr_pos[1], x, y)
     curr_pos = [x, y]
 
