@@ -26,6 +26,8 @@ extern pros::MotorGroup left_mtrs;
 extern pros::Rotation mid_odom;
 extern pros::Rotation back_odom;
 extern pros::IMU imu;
+extern pros::Optical colors;
+
 
 // Position Trackers
 extern knights::PositionTracker midOdom;
@@ -41,7 +43,9 @@ extern pros::Motor lady_brown;
 extern pros::Rotation lady_brown_rotation;
 
 // Intake Mechanism
-extern pros::Motor intake;
+extern pros::MotorGroup intake;
+extern pros::Motor intake_bottom;
+extern pros::Motor intake_top;
 
 // Distance Sensor
 extern pros::Distance redirect;
@@ -52,6 +56,7 @@ extern pros::adi::Pneumatics doinker;
 
 // Velocity Formula
 #define velocity_formula(x) (160 * (1 / (1 + std::pow(M_E, -0.1 * (x) + 5))) + 20)
+
 
 // Constants
 #define INTAKE_VELOCITY 300
@@ -65,6 +70,7 @@ extern pros::adi::Pneumatics doinker;
 #define LADY_BROWN_SCORE 150
 #define LADY_BROWN_END_TOLERANCE 1.0
 
+
 // Flags
 extern bool intake_spinning;
 extern bool intake_forward;
@@ -72,6 +78,10 @@ extern bool lady_brown_spinning;
 extern bool lady_brown_forward;
 extern bool clamp_down;
 extern bool doinker_activate;
+extern bool color_sorting;
+extern bool blue_alliance;
+extern bool red_alliance;
+
 
 // Function Prototypes
 void intake_in();
@@ -86,6 +96,10 @@ void lady_brown_score();
 void lady_brown_alliance();
 void clamp_toggle();
 void doinker_toggle();
-void toggle_rush_mech();
+void doinker_toggle2();
+void change_color();
+void toggle_color_sort();
+void red_color_sort();
+void blue_color_sort();
 
 #endif // ROBOT_CONFIG_H

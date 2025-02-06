@@ -31,10 +31,10 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
     if (sign == 0) // if we're taking best direction
         sign = knights::direction(this->chassis->curr_position.heading, desired_angle); // calculate direction
     
-    if (sign == 1)
-        knights::logger::yellow("clockwise");
-    else
-        knights::logger::yellow("counterclockwise");
+    // if (sign == 1)
+    //     knights::logger::yellow("clockwise");
+    // else
+    //     knights::logger::yellow("counterclockwise");
     
     // set brake mode to stop so we don't overshoot
     this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
@@ -48,6 +48,9 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
 
     while(std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true)) > end_tolerance) {
 
+        if (sign == 0) // if we're taking best direction
+            sign = knights::direction(this->chassis->curr_position.heading, desired_angle); // calculate direction
+
         timeout -= 10;
         if (timeout < 0) break;
 
@@ -56,13 +59,13 @@ void knights::RobotController::turn_to_angle(const float angle, int direction, f
 
         speed = this->turn_pid->update(error);
 
-        knights::logger::green(knights::logger::string_format("des angle: %lf, curr angle %lf, error %lf, speed: %lf\n", desired_angle, this->chassis->curr_position.heading, error, speed));
+        // knights::logger::green(knights::logger::string_format("des angle: %lf, curr angle %lf, error %lf, speed: %lf", desired_angle, this->chassis->curr_position.heading, error, speed));
 
         this->chassis->drivetrain->voltage_command(-sign * speed, sign * speed);
 
-        if (speed < MIN_SPEED) {
-            break;
-        }
+        // if (speed < MIN_SPEED) {
+        //     break;
+        // }
 
         pros::delay(10);
     }

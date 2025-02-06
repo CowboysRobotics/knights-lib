@@ -3,24 +3,25 @@
 #include "pros/abstract_motor.hpp"
 #include "pros/motors.hpp"
 #include "pros/adi.hpp"
+#include "pros/optical.hpp"
 #include "pros/rotation.hpp"
 #include "pros/imu.hpp"
 #include "pros/distance.hpp"
 #include "knights/robot/position_tracker.hpp"
 #include "knights/robot/drivetrain.hpp"
 #include "knights/robot/chassis.hpp"
+#include "pros/rtos.hpp"
 
 #include <cmath>
 #include <cstdio>
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
-
 // // Competition Robot
 // //front of bot is intake side
 // //assign ports to right side drive-train
-// pros::MotorGroup left_mtrs({2,3,4}, pros::MotorGears::blue); // no reverse
+// pros::MotorGroup left_mtrs({2,3,-4}, pros::MotorGears::blue); // no reverse
 // //assign ports to left side drive-train
-// pros::MotorGroup right_mtrs({14,16,13}, pros::MotorGears::blue); // no reverse
+// pros::MotorGroup right_mtrs({-14,-16,13}, pros::MotorGears::blue); // no reverse
 // //assign ports to odom pods for position tracking
 // pros::Rotation mid_odom(8); // parallel tracking
 // pros::Rotation back_odom(	11); // perpendicular tracking
@@ -33,7 +34,7 @@ pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
 // #### Test Robot
 pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
-pros::MotorGroup left_mtrs({-4,-5,-6}, pros::MotorGears::blue);
+pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
 pros::Rotation mid_odom(18);
 pros::Rotation back_odom(14);
 pros::IMU imu(15);
@@ -46,17 +47,19 @@ pros::Motor lady_brown(21, pros::MotorGears::green);
 pros::Rotation lady_brown_rotation(7);
 
 //assign ports to intake, leftside first, rightside second
-pros::Motor intake(20, pros::MotorGears::blue);
+pros::MotorGroup intake({20, 5}, pros::MotorGears::blue);
+
+pros::Motor intake_bottom(5, pros::v5::MotorGears::blue);
+
+pros::Motor intake_top(20,pros::v5::MotorGears::blue);
 
 //assign port to distance sensor for redirect
-pros::Distance redirect(6);
-
 pros::Optical colors(15);
 
 //assign ports for pneumatics
 pros::adi::Pneumatics clamp(1, false); //clamp solenoid
 pros::adi::Pneumatics doinker(3, false); //doinker solenoid
-pros::adi::Pneumatics rush_mech(2, false); //rush mech solenoid
+pros::adi::Pneumatics doinker2(2, false); //rush mech solenoid
 
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 3.25, 3/4);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
@@ -95,7 +98,53 @@ void intake_out() {
 	}
 }
 
+bool color_sorting = false;
+bool blue_alliance = false;
+bool red_alliance = true;
+
+void toggle_color_sort(){
+	if (color_sorting == false){
+		color_sorting = true;
+		colors.set_led_pwm(100);
+	}
+	else if (color_sorting == true){
+		color_sorting = false;
+		colors.set_led_pwm(0);
+	}
+}
+
+void change_color(){
+	if (blue_alliance == false && red_alliance == true){
+		blue_alliance = true;
+		red_alliance = false;
+	}
+	else if (red_alliance == false && blue_alliance == true){
+		blue_alliance = false;
+		red_alliance = true;
+	}
+
+}
+
+void red_color_sort() {
+	if (colors.get_hue() < 40 && blue_alliance == true && color_sorting == true && colors.get_proximity() > 100){
+		pros::delay(20);
+		intake_top.move(0);
+		pros::delay(100);
+		intake_top.move(INTAKE_VELOCITY);
+	}
+}
+
+void blue_color_sort(){
+	if (colors.get_hue() > 140 && red_alliance == true && color_sorting == true && colors.get_proximity() > 100){
+		pros::delay(20);
+		intake_top.move(0);
+		pros::delay(100);
+		intake_top.move(INTAKE_VELOCITY);
+	}
+}
+
 #define LADY_BROWN_VELOCITY 127.0
+#define LADY_BROWN_kP 1.75
 #define LADY_BROWN_kP 1.75
 #define LADY_BROWN_kI 0.000
 #define LADY_BROWN_kD 0.5
@@ -104,7 +153,7 @@ knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_k
 
 #define LADY_BROWN_DOWN 0
 #define LADY_BROWN_LOAD1 339
-#define LADY_BROWN_LOAD2 339
+#define LADY_BROWN_LOAD2 160
 #define LADY_BROWN_SCORE 213
 #define LADY_BROWN_ALLIANCE 165
 #define LADY_BROWN_END_TOLERANCE 1.0
@@ -134,28 +183,40 @@ void lady_brown_rev() {
 	}
 }
 
-void lady_brown_to_angle(float angle, int timeout, bool async = true) { // angle in 0-360 deg
+void lady_brown_to_angle(float angle, int timeout, bool async = true, int dir = 0, int end_tol = LADY_BROWN_END_TOLERANCE) { // angle in 0-360 deg
 	if (async) {
 		pros::Task task([&]() {
-			lady_brown_to_angle(angle, timeout, false);
+			lady_brown_to_angle(angle, timeout, false, dir);
 		});
 		pros::delay(20);
 		return;
 	}
     float error = angle - lady_brown_rotation.get_angle()/100.0;
+	int curr_direction;
+
     lady_brown_PID.reset();
+    lady_brown.set_brake_mode(pros::MotorBrake::hold);
     lady_brown.set_brake_mode(pros::MotorBrake::hold);
     lady_brown_spinning = true;
 
     while (fabsf(error) > LADY_BROWN_END_TOLERANCE && lady_brown_spinning) {
         error = fabs(angle - lady_brown_rotation.get_angle()/100.0);
+
 		if (error > 180) {
 			error = 360-error;
 		}
+
+		if (dir == 0)
+			curr_direction = knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false);
+		else
+			curr_direction = dir;
+
 		float speed = lady_brown_PID.update(error);
+
+		printf("speed: %lf, error: %lf, dir %d, curr: %lf, des: %lf\n", speed, error, knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false), lady_brown_rotation.get_angle()/100.0, angle);
+
         lady_brown.move(
-            speed * 
-            -knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false)
+            speed * -curr_direction
         );
         timeout -= 20;
         if (timeout < 0) {
@@ -165,36 +226,37 @@ void lady_brown_to_angle(float angle, int timeout, bool async = true) { // angle
         pros::delay(20);
     }
 
-   	lady_brown.brake();
+   	lady_brown.move(0);
+	lady_brown.brake();
 	printf("error: %F \n", error);
 	printf("position: %i \n", lady_brown_rotation.get_angle());
 
 }
 
-
-
 void lady_brown_down() {
-    lady_brown_to_angle(LADY_BROWN_DOWN, 1500);
+    lady_brown_to_angle(LADY_BROWN_DOWN, 1500, true, -1);
 }
 
 void lady_brown_load1() {
-    lady_brown_to_angle(LADY_BROWN_LOAD1, 1500);
+	toggle_color_sort();
+    lady_brown_to_angle(LADY_BROWN_LOAD1, 1500, true);
 }
 
 void lady_brown_load2() {
-    lady_brown_to_angle(LADY_BROWN_LOAD2, 1500);
+	lady_brown_to_angle(LADY_BROWN_LOAD2, 1500, true, 1);
 }
 
-void lady_brown_score() {;
+void lady_brown_score() {
+	toggle_color_sort();
 	intake_spinning = false;
 	intake.move(0);
-    lady_brown_to_angle(LADY_BROWN_SCORE, 1500);
+    lady_brown_to_angle(LADY_BROWN_SCORE, 1500, true);
 }
 
 void lady_brown_alliance() {
 	intake_spinning = false;
 	intake.move(0);
-    lady_brown_to_angle(LADY_BROWN_ALLIANCE, 1500);
+    lady_brown_to_angle(LADY_BROWN_ALLIANCE, 750, true, 5.0);
 }
 
 bool clamp_down = false;
@@ -211,53 +273,9 @@ void doinker_toggle() {
 	doinker.set_value(doinker_activate); //extend doinker if inactive or retract clamp if active
 }
 
-bool rush_mech_down = false;
+bool doinker_activate2 = false;
 
-void toggle_rush_mech() {
-	rush_mech_down = !rush_mech_down;
-	rush_mech.set_value(rush_mech_down);
-}
-
-bool color_sorting = true;
-bool blue_alliance = true;
-bool red_alliance = false;
-
-void toggle_color_sort(){
-	if (color_sorting == false){
-		color_sorting = true;
-	}
-	else if (color_sorting == true){
-		color_sorting = false;
-	}
-	printf("color toggle: %d \n", color_sorting);
-}
-
-void change_color(){
-	if (blue_alliance == false && red_alliance == true){
-		blue_alliance = true;
-		red_alliance = false;
-	}
-	else if (red_alliance == false && blue_alliance == true){
-		blue_alliance = false;
-		red_alliance = true;
-	}
-	printf("blue alliance: %d \n", blue_alliance);
-	printf("red alliance: %d \n", red_alliance);
-}
-
-void red_color_sort() {
-	if (colors.get_hue() < 40 && blue_alliance == true){
-		intake.move(0);
-		intake_spinning = false;
-		printf("get rid of red %f \n", colors.get_hue());
-	
-	}
-}
-
-void blue_color_sort(){
-	if (colors.get_hue() > 140 && red_alliance == true){
-		intake.move(0);
-		intake_spinning = false;
-		printf("get rid of blue %f \n", colors.get_hue());
-	}
+void doinker_toggle2() {
+	doinker_activate2 = !doinker_activate2; //toggle whether active or inactive mode
+	doinker2.set_value(doinker_activate2); //extend doinker if inactive or retract clamp if active
 }

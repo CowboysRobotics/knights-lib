@@ -5,6 +5,7 @@
 #include "knights/robot/drivetrain.hpp"
 
 #include "knights/util/calculation.hpp"
+#include "knights/util/position.hpp"
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
 
@@ -62,8 +63,15 @@ void knights::RobotController::lateral_move(const float distance, const float en
             Pos desired_position(cos(this->chassis->curr_position.heading) * distance + this->chassis->curr_position.x, 
                 sin(this->chassis->curr_position.heading) * distance + this->chassis->curr_position.y, this->chassis->curr_position.heading);
             
-            while (knights::distance_btwn(this->chassis->curr_position, desired_position) > end_tolerance || 
-                knights::distance_btwn(this->chassis->prev_position, desired_position) < knights::distance_btwn(this->chassis->curr_position, desired_position)) {
+            Pos start_pos(this->chassis->curr_position);
+
+            float max_dist = distance_btwn(start_pos, desired_position) + end_tolerance;
+
+            while (knights::distance_btwn(this->chassis->curr_position, desired_position) > end_tolerance 
+                || knights::distance_btwn(this->chassis->prev_position, desired_position) < knights::distance_btwn(this->chassis->curr_position, desired_position)
+                || distance_btwn(start_pos, this->chassis->curr_position) > max_dist
+                ) {
+                
                 // decrease timeout and break if went over
                 timeout -= 10;
                 if (timeout < 0) break;

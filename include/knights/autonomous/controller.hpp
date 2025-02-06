@@ -61,9 +61,9 @@ namespace knights {
              */
             void follow_route_pursuit(knights::Route &route, float lookahead_distance = 15.0, const float max_speed = 127.0, bool forwards = true, float end_tolerance = 8.0, float timeout = 5000, float use_pid = false);
 
-            void lateral_to_position(const Pos desired_position, const bool forwards = true, const float end_tolerance = 2.0, const int timeout = 1000);
+            void lateral_to_position(const Pos desired_position, const bool forwards = true, const float end_tolerance = 3.5, const int timeout = 1000);
 
-            void lateral_to_point(const Pos desired_position, const bool forwards = true, const float end_tolerance = 2.0, const int timeout = 1000);
+            void lateral_to_point(const Pos desired_position, const bool forwards = true, const float end_tolerance = 3.5, const int timeout = 1000);
 
             void move_to_position(const Pos desired_position, float lead = 0.5, float correction_dist = 8.0, const float &end_tolerance = 2.0, const bool forwards = true, float timeout = 1000);
 
@@ -97,7 +97,7 @@ namespace knights {
              *                      - this is used to account for the center of the bot not being the front
              * @param timeout Amount of time to wait before exiting the move
              */
-            void lateral_move(const float distance, float end_tolerance = 3.0, float timeout = 750);
+            void lateral_move(const float distance, float end_tolerance = 3.0, float timeout = 1500);
 
             /**
              * @brief Turn the robot left or right for a certain angle

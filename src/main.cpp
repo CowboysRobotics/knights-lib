@@ -1,13 +1,6 @@
 #include "main.h"
-#include "autonomous.h"
-#include "knights/autonomous/pid.hpp"
-#include "knights/autonomous/profile.hpp"
-#include "knights/display.hpp"
-#include "knights/logger/logger.hpp"
-#include "knights/util/calculation.hpp"
 #include "globals.h"
-#include "knights/util/position.hpp"
-#include "liblvgl/misc/lv_color.h"
+#include "knights/api.hpp"
 #include "pros/misc.h"
 
 #include <cstdio>
@@ -35,14 +28,18 @@ void initialize() {
 	knights::logger::blue("Initialization Begin");
 
 	// // Different autons, None0 is the default auton
-	auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(12, 12, knights::to_rad(90)));
+	// auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(-50, -64, knights::to_rad(180)));
+	auton_map["None0"] = knights::Auton(&right_safe_no_wait, knights::Pos(-53, -30, knights::to_rad(-7.5)));
 
 	auton_map["Red1"] = knights::Auton(&red_rush_right_wp, knights::Pos(-58, -15, M_PI));
 	auton_map["Red2"] = knights::Auton(&red_left_wp, knights::Pos(-55.1,37.5,0));
 	auton_map["Blue1"] = knights::Auton(&blue_rush_left_wp, knights::Pos(-58, -15, M_PI));
 	auton_map["Blue2"] = knights::Auton(&blue_right_wp, knights::Pos(-55.1,37.5,0));
+	auton_map["Red3"] = knights::Auton(&mogo_red_rush, knights::Pos(-55.1,37.5,0));
+	auton_map["Blue3"] = knights::Auton(&mogo_blue_rush, knights::Pos(-55.1,37.5,0));
 
-	auton_map["Skills0"] = knights::Auton(&skills, knights::Pos(-60, 0, 0));
+	auton_map["None0"] = knights::Auton(&redone_skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
+	auton_map["Skills0"] = knights::Auton(&skills, knights::Pos(-59, 0, 0));
 
 	lv_display();
 
@@ -51,21 +48,9 @@ void initialize() {
 
 	knights::logger::blue("Initialization End");
 
-	// // #### Competition Robot
-	// //front of the bot is intake
-	// //assign direction to left side drive-train motors 
-	// left_mtrs.set_reversed(false, 0);
-	// left_mtrs.set_reversed(false, 1);
-	// left_mtrs.set_reversed(true, 2);
-	// //assign direction to right side drive-train motors
-	// right_mtrs.set_reversed(true, 0);
-	// right_mtrs.set_reversed(true, 1);
-	// right_mtrs.set_reversed(false, 2);
-	// // ####
 
 	// intake.set_reversed(false, 0);
 	// intake.set_reversed(true, 1);
-	lady_brown.set_reversed(true);
 
 	// #### TEST AREA ####
 
@@ -118,7 +103,7 @@ void competition_initialize() {}
 void autonomous() {
 	// Query display for the selected buttons
 	knights::display::AutonSelectionPackage package = knights::display::get_selected_auton();
-
+	
 	chassis.set_position(0,0,0);
 
 	if (auton_map.contains(package.get_value())) {
@@ -147,8 +132,8 @@ void autonomous() {
 				// Set the display label to the current position
 				knights::display::set_pos_label(s);
 
-				// Move the current position dot to the desired position
-				knights::display::change_curr_pos_dot(chassis.get_position());
+				// // Move the current position dot to the desired position
+				// knights::display::change_curr_pos_dot(chassis.get_position());
 
 				pros::delay(10);
 			}
@@ -177,7 +162,7 @@ void autonomous() {
 
 void opcontrol() {
 	// need to find a way to do this dynamically
-	chassis.set_position(knights::Pos(12.0_in, 12.0_in, knights::to_rad(90)));
+	chassis.set_position(knights::Pos(12, 12, knights::to_rad(90)));
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();
@@ -201,8 +186,8 @@ void opcontrol() {
 				// Set the display label to the current position
 				knights::display::set_pos_label(s);
 
-				// Move the current position dot to the desired position
-				knights::display::change_curr_pos_dot(chassis.get_position());
+				// // Move the current position dot to the desired position
+				// knights::display::change_curr_pos_dot(chassis.get_position());
 
 				pros::delay(10);
 			}
@@ -221,8 +206,12 @@ void opcontrol() {
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_DOWN, lady_brown_load2,false); //assign lady brown position load 1 to controller button left
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_RIGHT,lady_brown_load1,false); //assign lady brown position load 2 to controller button right
 
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X, change_color, false);
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A, toggle_color_sort, false);
+
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_toggle, false); //assign clamp toggle to controller button R2
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doinker_toggle, false); //assign doinker toggle to controller button R1
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, doinker_toggle, false); //assign doinker toggle to controller button R1
 
 
 	while (true) {
@@ -243,19 +232,16 @@ void opcontrol() {
 
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
-		// Reversed b/c david uses the back of the robot as the front
-		// drivetrain.voltage_command(
-		// 	left_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)),
-		// 	right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))
-		// );
-
 		drivetrain.voltage_command(
-			right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)),
-			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y))
+			left_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)),
+			right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))
 		);
 
 		// Delay to let other tasks run
 		pros::delay(10);
+		
+		red_color_sort();
+		blue_color_sort();
 
 		// Loop through all values in input map
 		input.execute_actions(master_controller);
