@@ -68,8 +68,8 @@ void pp_test(knights::RobotChassis *chassis) {
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 80.0);
-	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
 	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
 	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
@@ -85,7 +85,6 @@ void pp_test(knights::RobotChassis *chassis) {
 	inputMap.bind_action("lbDown", lady_brown_down);
 	inputMap.bind_action("lbLoad1", lady_brown_load1);
 	inputMap.bind_action("lbScore", lady_brown_score);
-	inputMap.bind_action("rushMech", toggle_rush_mech);
 
 	test_route.execute(chassis, &robotControl, &inputMap);
 }
@@ -105,8 +104,9 @@ void redone_skills(knights::RobotChassis *chassis) {
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 110.0);
-	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 25.0, 115.0);
+
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 120.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
 	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
 	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
@@ -122,7 +122,6 @@ void redone_skills(knights::RobotChassis *chassis) {
 	inputMap.bind_action("lbDown", lady_brown_down);
 	inputMap.bind_action("lbLoad1", lady_brown_load1);
 	inputMap.bind_action("lbScore", lady_brown_score);
-	inputMap.bind_action("rushMech", toggle_rush_mech);
 
 	intake_in();
 
@@ -140,11 +139,11 @@ void redone_skills(knights::RobotChassis *chassis) {
 
 	pros::delay(300); // grab ring
 
-	robotControl.lateral_to_position(kPos(-5, -48, rad(270))); 
+	robotControl.lateral_to_position(kPos(-4, -48, rad(270))); 
 
 	lady_brown_load1(); w;
 
-	robotControl.lateral_move(20);
+	robotControl.lateral_move(17);
 
 	pros::delay(600);
 
@@ -152,32 +151,39 @@ void redone_skills(knights::RobotChassis *chassis) {
 
 	pros::delay(900);
 
-	robotControl.lateral_to_position(kPos(0, -48, rad(180)), false); 
+	robotControl.lateral_move(-10);
 
 	lady_brown_down(); w;
 
 	intake_in();
 
+	robotControl.lateral_to_position(kPos(-24, -48, rad(180)), 1, 2.0, 1500); 
 
-	robotControl.lateral_to_point(kPos(-54, -48, rad(180)), 1, 3.0, 1250); 
+	robotControl.lateral_move(30);
 
 	pros::delay(300);
 
-	robotControl.lateral_to_position(kPos(-48, -48, rad(270)), false); 
+	// robotControl.lateral_to_position(kPos(-48, -48, rad(270)), false); 
 
-	robotControl.lateral_move(14); w;
+	robotControl.lateral_move(-10); w; robotControl.turn_to_angle(270); w;
 
-	robotControl.lateral_move(-18); w; robotControl.turn_to_angle(45); w;
+	robotControl.lateral_move(10); w;
+
+	robotControl.lateral_to_position(kPos(-45, -46, rad(45)), false);  w;
 
 	intake_in();
 
 	clamp_toggle();
 
-	robotControl.lateral_move(-24); w; robotControl.lateral_move(8); w;
+	robotControl.lateral_move(-24); w; robotControl.lateral_move(12); w;
 
-	robotControl.lateral_to_position(kPos(-46, 12, rad(270)), false); w;
+	robotControl.lateral_to_position(kPos(-47, -24, rad(270))); w;
 
-	robotControl.lateral_move(-10); w;
+	robotControl.lateral_to_point(kPos(-47, 0, rad(270)), false); w;
+
+	robotControl.turn_to_point(kPos(-48, 24, 0), false);
+	
+	robotControl.lateral_move(-16); w;
 
 	clamp_toggle(); 
 	
@@ -187,15 +193,15 @@ void redone_skills(knights::RobotChassis *chassis) {
 
 	robotControl.lateral_to_position(kPos(-24, 24, rad(90))); w;
 
-	robotControl.lateral_to_position(kPos(-24, 50, rad(180))); w;
+	robotControl.lateral_to_position(kPos(-24, 47, rad(180))); w;
 
-	robotControl.lateral_to_point(kPos(-60, 48, 0)); w;
+	robotControl.lateral_to_point(kPos(-52, 47, 0)); w;
 
 	robotControl.lateral_to_position(kPos(-48, 48, rad(90)), false); w;
 
-	robotControl.lateral_move(14); w;
+	robotControl.lateral_move(8); w;
 
-	robotControl.lateral_move(-18); w; robotControl.turn_to_angle(315); w;
+	robotControl.lateral_move(-14); w; robotControl.turn_to_angle(315); w;
 
 	clamp_toggle();
 
@@ -203,11 +209,11 @@ void redone_skills(knights::RobotChassis *chassis) {
 
 	robotControl.lateral_move(12); w;
 
-	robotControl.lateral_to_point(kPos(0, 48, rad(90)), true, 6.0, 1250); w;
+	robotControl.lateral_to_position(kPos(-3, 38, rad(90)), true, 4.0, 1250); w;
 
 	lady_brown_load1(); w;
 
-	robotControl.lateral_move(20);
+	robotControl.lateral_move(24);
 
 	pros::delay(600);
 
@@ -229,15 +235,17 @@ void redone_skills(knights::RobotChassis *chassis) {
 	
 	// intake_in(); w;
 
-	robotControl.lateral_to_position(kPos(28, 8, rad(160)), false);
+	robotControl.lateral_to_point(kPos(28, 8, rad(160)), false);
 
 	intake_in();
 
 	robotControl.lateral_move(-12); w; clamp_toggle();
 
-	pros::delay(200);
+	pros::delay(300);
 
-	robotControl.lateral_to_position(kPos(53, 0, 10)); w;
+	robotControl.lateral_move(12);
+
+	robotControl.lateral_to_point(kPos(51, 0, rad(0)), true); 
 
 	lady_brown_alliance();
 
@@ -247,23 +255,23 @@ void redone_skills(knights::RobotChassis *chassis) {
 
 	lady_brown_down(); intake_in();
 
-	robotControl.lateral_to_position(kPos(24, 50, rad(0))); w;
+	// robotControl.lateral_to_position(kPos(24, 50, rad(0))); w;
 
-	robotControl.lateral_move(36); w;
+	// robotControl.lateral_move(36); w;
 
-	robotControl.turn_to_angle(240); clamp_toggle(); w;
+	// robotControl.turn_to_angle(240); clamp_toggle(); w;
 
-	robotControl.lateral_move(-12); w; robotControl.lateral_move(12);
+	// robotControl.lateral_move(-12); w; robotControl.lateral_move(12);
 
-	robotControl.lateral_to_point(kPos(24, 24, 0));
+	// robotControl.lateral_to_point(kPos(24, 24, 0));
 
-	robotControl.lateral_to_position(kPos(50, -12, rad(270))); w;
+	// robotControl.lateral_to_position(kPos(50, -12, rad(270))); w;
 
-	robotControl.lateral_move(50); w; robotControl.lateral_move(-12); robotControl.lateral_move(24);
+	// robotControl.lateral_move(50); w; robotControl.lateral_move(-12); robotControl.lateral_move(24);
 
-	robotControl.lateral_to_position(kPos(24, -24, rad(-135)));
+	// robotControl.lateral_to_position(kPos(24, -24, rad(-135)));
 
-	lady_brown_score(); w; drivetrain.voltage_command(-60, -60);
+	// lady_brown_score(); w; drivetrain.voltage_command(-60, -60);
 
 
 
@@ -477,8 +485,6 @@ void red_left_wp(knights::RobotChassis *chassis) {
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
 	
-	toggle_rush_mech();
-
 	robotControl.lateral_move(20);
 
 	pros::delay(WAIT);
@@ -494,8 +500,6 @@ void red_left_wp(knights::RobotChassis *chassis) {
 	robotControl.lateral_move(-14);
 
 	pros::delay(WAIT);
-
-	toggle_rush_mech();
 
 	robotControl.turn_to_angle(100, 0);
 
@@ -707,8 +711,6 @@ void blue_right_wp(knights::RobotChassis *chassis) {
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
 	
-	toggle_rush_mech();
-
 	robotControl.lateral_move(20);
 
 	pros::delay(WAIT);
@@ -725,8 +727,6 @@ void blue_right_wp(knights::RobotChassis *chassis) {
 	robotControl.lateral_move(-14);
 
 	pros::delay(WAIT);
-
-	toggle_rush_mech();
 
 	robotControl.turn_to_angle(-1*100, 0);
 

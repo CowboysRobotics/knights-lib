@@ -1,6 +1,5 @@
 #pragma once
 
-#include "pros/optical.hpp"
 #ifndef ROBOT_CONFIG_H
 #define ROBOT_CONFIG_H
 
@@ -97,7 +96,7 @@ void lady_brown_score();
 void lady_brown_alliance();
 void clamp_toggle();
 void doinker_toggle();
-void toggle_rush_mech();
+void doinker_toggle2();
 void change_color();
 void toggle_color_sort();
 void red_color_sort();

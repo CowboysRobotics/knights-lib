@@ -59,7 +59,7 @@ pros::Optical colors(15);
 //assign ports for pneumatics
 pros::adi::Pneumatics clamp(1, false); //clamp solenoid
 pros::adi::Pneumatics doinker(3, false); //doinker solenoid
-pros::adi::Pneumatics rush_mech(2, false); //rush mech solenoid
+pros::adi::Pneumatics doinker2(2, false); //rush mech solenoid
 
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 3.25, 3/4);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
@@ -183,7 +183,7 @@ void lady_brown_rev() {
 	}
 }
 
-void lady_brown_to_angle(float angle, int timeout, bool async = true, int dir = 0) { // angle in 0-360 deg
+void lady_brown_to_angle(float angle, int timeout, bool async = true, int dir = 0, int end_tol = LADY_BROWN_END_TOLERANCE) { // angle in 0-360 deg
 	if (async) {
 		pros::Task task([&]() {
 			lady_brown_to_angle(angle, timeout, false, dir);
@@ -256,7 +256,7 @@ void lady_brown_score() {
 void lady_brown_alliance() {
 	intake_spinning = false;
 	intake.move(0);
-    lady_brown_to_angle(LADY_BROWN_ALLIANCE, 750, true);
+    lady_brown_to_angle(LADY_BROWN_ALLIANCE, 750, true, 5.0);
 }
 
 bool clamp_down = false;
@@ -273,9 +273,9 @@ void doinker_toggle() {
 	doinker.set_value(doinker_activate); //extend doinker if inactive or retract clamp if active
 }
 
-bool rush_mech_down = false;
+bool doinker_activate2 = false;
 
-void toggle_rush_mech() {
-	rush_mech_down = !rush_mech_down;
-	rush_mech.set_value(rush_mech_down);
+void doinker_toggle2() {
+	doinker_activate2 = !doinker_activate2; //toggle whether active or inactive mode
+	doinker2.set_value(doinker_activate2); //extend doinker if inactive or retract clamp if active
 }

@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.integrate as integrate
-import scipy.special as special
+
 
 class QuinticPath:
     def __init__(self, curr, target, curr_tangent, target_tangent, curr_acceleration, target_acceleration):
@@ -147,6 +146,8 @@ def dist_between(x1, y1, x2, y2):
 def lerp(start, end, step):
   return start + (end-start) * step
 
+
+
 def generate_motion_profile(max_acceleration, max_velocity, distance, track_width, path):
   # Calculate the time it takes to accelerate to max velocity
   acceleration_time = max_velocity / max_acceleration
@@ -155,25 +156,30 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
   halfway_distance = distance / 2
 
   if (acceleration_distance > halfway_distance):
-    acceleration_dt = np.sqrt(halfway_distance / (0.5 * max_acceleration))
+    acceleration_time = np.sqrt(halfway_distance / (0.5 * max_acceleration))
+    cruise_time = 0
+    total_time = 2 * acceleration_time
+  else:
+    cruise_time = distance / max_velocity - acceleration_time
+    total_time = cruise_time + 2 * acceleration_time
+  
+  acceleration_distance = 0.5 * max_acceleration * acceleration_time ** 2
 
-  acceleration_distance = 0.5 * max_acceleration * acceleration_dt ** 2
-
-  # recalculate max velocity based on the time we have to accelerate and decelerate
-  max_velocity = max_acceleration * acceleration_dt
 
   # we decelerate at the same rate as we accelerate
-  deceleration_dt = acceleration_dt
+  deceleration_time = acceleration_time
+
+  deceleration_distance = 0.5 * max_acceleration * deceleration_time ** 2
 
   # calculate the time that we're at max velocity
-  cruise_distance = distance - 2 * acceleration_distance
-  cruise_dt = cruise_distance / max_velocity
-  deceleration_time = acceleration_dt + cruise_dt
+  cruise_distance = max_velocity * cruise_time
 
   # check if we're still in the motion profile
-  entire_dt = acceleration_dt + cruise_dt + deceleration_dt
+  
+  n_t_values = round(total_time, 2) * 500
 
-  t = np.linspace(0, entire_dt, 200)
+
+  t = np.linspace(0, total_time, n_t_values)
 
   dist_arr = []
   vel_arr = []
@@ -182,69 +188,66 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
   omega_arr = []
   theta_arr = []
   position_arr = []
-  first_derivative_arr = []
-  second_derivative_arr = []
-
 
   for elapsed_time in t:
 
     curr_dist = 0
 
     # Distance Calculations
-    if (elapsed_time > entire_dt):
+    if (elapsed_time > total_time):
       curr_dist = distance
+      curr_velocity = 0
     # if we're accelerating
-    elif (elapsed_time < acceleration_dt):
+    elif (elapsed_time < acceleration_time):
       # use the kinematic equation for acceleration
       curr_dist = 0.5 * max_acceleration * elapsed_time ** 2
+      curr_velocity = max_acceleration * elapsed_time
     # if we're cruising
-    elif (elapsed_time < deceleration_time):
-      acceleration_distance = 0.5 * max_acceleration * acceleration_dt ** 2
-      cruise_current_dt = elapsed_time - acceleration_dt
+    elif (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)):
+      acceleration_distance = 0.5 * max_acceleration * acceleration_time ** 2
+      cruise_current_time = elapsed_time - acceleration_time
+
       # use the kinematic equation for constant velocity
-      curr_dist = acceleration_distance + max_velocity * cruise_current_dt
+      curr_dist = acceleration_distance + max_velocity * cruise_time
+      curr_velocity = max_velocity
     # if we're decelerating
     else:
-      acceleration_distance = 0.5 * max_acceleration * acceleration_dt ** 2
-      cruise_distance = max_velocity * cruise_dt
+      acceleration_distance = 0.5 * max_acceleration * acceleration_time ** 2
+      cruise_distance = max_velocity * cruise_time
+      deceleration_curr_time = (elapsed_time - acceleration_time - cruise_time)
+          
       # use the kinematic equations to calculate the instantaneous desired position
-      curr_dist = acceleration_distance + cruise_distance + max_velocity * (elapsed_time - deceleration_time) - 0.5 * max_acceleration * (elapsed_time - deceleration_time) ** 2
-    
-    dist_arr.append(curr_dist)
-    
-    velocity = 0
-
-    # Velocity Calculations
-    if elapsed_time < acceleration_dt:
-      velocity = lerp(0, max_velocity, elapsed_time/acceleration_dt)
-    elif elapsed_time > acceleration_dt and elapsed_time < acceleration_dt + cruise_dt:
-      velocity = max_velocity
-    else:
-      velocity = lerp(max_velocity, 0, (elapsed_time-(acceleration_dt + cruise_dt))/acceleration_dt)
-    
-    vel_arr.append(velocity)
+      curr_dist = acceleration_distance + cruise_distance + max_velocity * deceleration_curr_time - max_acceleration * (deceleration_curr_time ** 2) / 2
+      curr_velocity = max_velocity - max_acceleration * (deceleration_curr_time)
     
     # Angular Calculations
-    x,y = path.position(curr_dist/total_dist)
-    dx,dy = path.derivatives(curr_dist/total_dist)
-    dx2,dy2 = path.second_derivatives(curr_dist/total_dist)
+    dx,dy = path.derivatives(elapsed_time / total_time)
+    dx2,dy2 = path.second_derivatives(elapsed_time / total_time)
 
-    theta = np.arctan2(dy,dx)
-    omega = (dy2 * dx - dy * dx2) / (((dx) ** 2) * (1 + ((dy / dx)) ** 2))
+    theta = np.arctan2(dy,dx) / total_time
+    omega = (dy2 * dx - dy * dx2) / (((dx) ** 2) * (1 + ((dy / dx)) ** 2)) / total_time
 
-    # omega = np.arctan2(dy_ds, dx_ds) * velocity
+
+
+    dist_arr.append(curr_dist)
+    vel_arr.append(curr_velocity)
     omega_arr.append(omega)
-    position_arr.append((x,y))
-    first_derivative_arr.append((dx,dy))
-    second_derivative_arr.append((dx2,dy2))
+    theta_arr.append(theta)
 
-    left_vel = velocity - (omega * track_width / 2)
-    right_vel = velocity + (omega * track_width / 2)
+    
+    # omega = np.arctan2(dy_ds, dx_ds) * velocity
+    x += curr_velocity * np.cos(theta)
+    y += curr_velocity * np.sin(theta)
+    
+    position_arr.append((x,y))
+    
+    left_vel = curr_velocity - (omega * track_width / 2)
+    right_vel = curr_velocity + (omega * track_width / 2)
 
     side_vel_arr.append((left_vel, right_vel))
 
   
-  return [t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr, first_derivative_arr]
+  return [t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
 
 
 
@@ -268,7 +271,10 @@ dist = np.sqrt(((target[0]-curr[0]) ** 2) + ((target[1]-curr[1]) ** 2))
 curr_tangent = (np.cos(curr[2]) * dist, np.sin(curr[2]) * dist)
 target_tangent = (np.cos(target[2]) * dist, np.sin(target[2]) * dist)
 
-path = QuinticPath((curr[0], curr[1]), (target[0], target[1]), curr_tangent, target_tangent)
+curr_acceleration = dist * curr[3]
+target_acceleration = dist * target[3]
+
+path = QuinticPath((curr[0], curr[1]), (target[0], target[1]), curr_tangent, target_tangent, curr_acceleration, target_acceleration)
 
 curr_pos = [curr[0], curr[1]]
 
@@ -294,7 +300,7 @@ WHEEL_DIAMETER = 2.75
 RPM = 450
 TRACK_WIDTH = 15
 
-max_acceleration = 300 # arbitrary constant
+max_acceleration = 178 # arbitrary constant
 max_velocity = (DESIRED_VOLTAGE/MAX_VOLTAGE) * np.pi * WHEEL_DIAMETER * (RPM / 60.0)
 
 print(max_velocity, max_acceleration)
@@ -324,4 +330,3 @@ axis[2][1].plot(t, right_vels)
 axis[2][1].set_title("Right Velocities")
 
 plt.show()
-

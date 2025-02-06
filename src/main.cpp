@@ -211,6 +211,7 @@ void opcontrol() {
 
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_toggle, false); //assign clamp toggle to controller button R2
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doinker_toggle, false); //assign doinker toggle to controller button R1
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, doinker_toggle, false); //assign doinker toggle to controller button R1
 
 
 	while (true) {
