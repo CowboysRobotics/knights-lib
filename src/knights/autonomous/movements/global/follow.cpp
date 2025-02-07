@@ -12,6 +12,8 @@
 #include "pros/motors.h"
 
 #include <cmath>
+#include <cstdio>
+#include <iostream>
 #include <math.h>
 #include <fstream>
 
@@ -358,22 +360,27 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
     float time = 0;
     int curr_i = 0;
 
-    while (distance_btwn(this->chassis->curr_position, profile.timestamps.back().position) > end_tolerance) {
+    std::fstream write_file("/usd/ramsete_output.txt", std::ios_base::out);
+
+    printf("Ramsete started with state vars: max_vel %lf \n", profile.max_velocity);
+
+    while (distance_btwn(this->chassis->curr_position, profile.timestamps.back().position) > end_tolerance && time <= profile.timestamps.back().time) {
         knights::Pos curr_position = this->chassis->curr_position;
 
         // find closest timestamp to current
-        float prev_time_error = 1e8;
-        for ( ; curr_i < profile.timestamps.size(); curr_i++) {
-            if (prev_time_error > fabsf(profile.timestamps[curr_i].time - time)) {
-                break;
+        float closest_t = 1e5;
+        for (int i = curr_i; i < profile.timestamps.size(); i++) {
+            if (fabs(profile.timestamps[i].time - time) < closest_t) {
+                closest_t = fabs(profile.timestamps[i].time - time);
+                curr_i = i;
             }
-            prev_time_error = fabsf(profile.timestamps[curr_i].time - time);
         }
 
         // obtain error values
-        float error_x = profile.timestamps[curr_i].position.x - curr_position.x;
-        float error_y = profile.timestamps[curr_i].position.y - curr_position.y;
-        float error_theta = profile.timestamps[curr_i].position.heading - curr_position.heading;
+        // BUG: something wrong here i think
+        float error_x = knights::to_meters(profile.timestamps[curr_i].position.x - curr_position.x);
+        float error_y = knights::to_meters(profile.timestamps[curr_i].position.y - curr_position.y);
+        float error_theta = knights::angular_error(profile.timestamps[curr_i].position.heading, curr_position.heading, 0);
 
         float local_error_x = cos(curr_position.heading) * error_x + sin(curr_position.heading) * error_y;
         float local_error_y = -sin(curr_position.heading) * error_x + cos(curr_position.heading) * error_y;
@@ -390,16 +397,26 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
 
         // calculate output velocities
         float curr_lin_vel = lin_vel * cos(error_theta) + gain * local_error_x;
-        float curr_ang_vel = ang_vel + gain * error_theta + (this->ramsete_constants->proportional * lin_vel * sin(error_theta) * error_y) / error_theta;
+        float curr_ang_vel = ang_vel + gain * error_theta + (this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y) / error_theta;
 
         // convert output to something usable
-        float output_lin_vel = (curr_lin_vel / profile.max_velocity) * 127;
-        float output_ang_vel = (curr_lin_vel / profile.max_velocity) * 127;
+        float output_lin_vel = ((knights::to_inches(curr_lin_vel) / (this->chassis->drivetrain->wheel_diameter * M_PI)) / profile.max_velocity) * 127;
+        float output_ang_vel = (knights::to_inches(curr_ang_vel) / profile.max_velocity) * 127;
+
+        write_file << knights::logger::string_format(
+            "closest %d errors %lf %lf %lf lin/ang vel %lf %lf gain %lf output lin/ang %lf %lf time %lf t_error %lf\n",
+            curr_i, local_error_x, local_error_y, error_theta, lin_vel, ang_vel, gain, output_lin_vel, output_ang_vel, time, closest_t
+        );
+
+        std::cout << knights::logger::string_format(
+            "closest %d errors %lf %lf %lf lin/ang vel %lf %lf gain %lf output lin/ang %lf %lf time %lf t_error %lf\n",
+            curr_i, local_error_x, local_error_y, error_theta, lin_vel, ang_vel, gain, output_lin_vel, output_ang_vel, time, closest_t
+        );
 
         // send command to motors
         this->chassis->drivetrain->voltage_command(output_lin_vel - output_ang_vel, output_lin_vel + output_ang_vel);
 
-        time += 0.001;
+        time += 0.01;
         pros::delay(10);
     }
 

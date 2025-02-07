@@ -41,17 +41,10 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 
-	// knights::Pos start = chassis->get_position();
+	knights::ProfileGenerator generator(drivetrain, 300);
+	knights::MotionProfile profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 90_deg), 120, 0, 0);
 
-	// float target = 24;
-
-	// robotControl.lateral_move(target);
-
-	// pros::delay(500);
-
-	// knights::logger::red(knights::logger::string_format("error: %lf\n", target-knights::distance_btwn(start, chassis->get_position())));
-
-	robotControl.lateral_to_position(knights::Pos(-48,-24,0));
+	robotControl.follow_profile_ramsete(profile);
 }
 
 

@@ -34,7 +34,7 @@ pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 
 // #### Test Robot
 pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
-pros::MotorGroup left_mtrs({4,5,6}, pros::MotorGears::blue);
+pros::MotorGroup left_mtrs({-4,-5,-6}, pros::MotorGears::blue);
 pros::Rotation mid_odom(18);
 pros::Rotation back_odom(14);
 pros::IMU imu(15);
