@@ -94,10 +94,20 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     QuinticPath path(start, end, curr_tangent, target_tangent, curr_accel, target_accel);
 
+    Pos curr;
+    float total_dist = 0;
+    for (float val : knights::linspace(0, 1, 300)) {
+        Pos p = path.position(val);
+        Pos deriv = path.derivatives(val);
+        Pos deriv2 = path.second_derivatives(val);
+        total_dist += distance_btwn(curr, p);
+        curr = p;
+    }
+
     // Calculate the time it takes to accelerate to max velocity
     float acceleration_time = max_velocity / max_acceleration;
 
-    float halfway_distance = distance / 2;
+    float halfway_distance = total_dist / 2;
     float acceleration_distance = 0.5 * max_acceleration * acceleration_time * acceleration_time;
 
     if (acceleration_distance > halfway_distance) {
@@ -108,20 +118,15 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
     float total_time = 2 * acceleration_time;
 
     if (acceleration_distance <= halfway_distance) {
-        cruise_time = (distance / max_velocity) - acceleration_time;
+        cruise_time = (total_dist / max_velocity) - acceleration_time;
         total_time = cruise_time + 2 * acceleration_time;
     }
 
     float deceleration_time = acceleration_time;
     float deceleration_distance = 0.5 * max_acceleration * deceleration_time * deceleration_time;
     float cruise_distance = max_velocity * cruise_time;
-    float total_dist = distance;
 
-    int n_t_values = static_cast<int>(std::round(total_time * 300));
-    std::vector<float> t(n_t_values);
-    for (int i = 0; i < n_t_values; ++i) {
-        t[i] = i * total_time / (n_t_values - 1);
-    }
+    std::vector<float> t = knights::linspace(0, total_time, 300);
 
     std::vector<ProfileTimestamp> timestamps;
     float x = 0, y = 0;
@@ -131,7 +136,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
         float curr_velocity = 0;
 
         if (elapsed_time > total_time) {
-            curr_dist = distance;
+            curr_dist = total_dist;
             curr_velocity = 0;
         } else if (elapsed_time < acceleration_time) {
             curr_dist = 0.5 * max_acceleration * elapsed_time * elapsed_time;
