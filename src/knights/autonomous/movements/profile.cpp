@@ -6,167 +6,168 @@
 #include <cmath>
 #include <vector>
 
-// Hermite basis functions
-#define H1(t) (2 * (t) * (t) * (t) - 3 * (t) * (t) + 1)
-#define H2(t) (-2 * (t) * (t) * (t) + 3 * (t) * (t))
-#define H3(t) ((t) * (t) * (t) - 2 * (t) * (t) + (t))
-#define H4(t) ((t) * (t) * (t) - (t) * (t))
+#define PROS_MAX_VOLTAGE 127
 
-// First derivatives
-#define H1_PRIME(t) (6 * (t) * (t) - 6 * (t))
-#define H2_PRIME(t) (-6 * (t) * (t) + 6 * (t))
-#define H3_PRIME(t) (3 * (t) * (t) - 4 * (t) + 1)
-#define H4_PRIME(t) (3 * (t) * (t) - 2 * (t))
+knights::QuinticPath::QuinticPath(knights::Pos curr, knights::Pos target, knights::Pos curr_tangent, knights::Pos target_tangent, 
+    float curr_acceleration, float target_acceleration) : 
+    curr(curr), target(target), curr_tangent(curr_tangent), target_tangent(target_tangent), 
+    curr_acceleration(curr_acceleration), target_acceleration(target_acceleration) {};
 
-// Second derivatives
-#define H1_PRIME2(t) (12 * (t) - 6)
-#define H2_PRIME2(t) (-12 * (t) + 6)
-#define H3_PRIME2(t) (6 * (t) - 4)
-#define H4_PRIME2(t) (6 * (t) - 2)
-
-knights::HermiteSpline::HermiteSpline(knights::Point curr, knights::Point target, knights::Point curr_tangent, knights::Point target_tangent)
- : curr(curr), target(target), curr_tangent(curr_tangent), target_tangent(target_tangent) {};
-
-knights::Pos knights::HermiteSpline::position(double t) {
-    double x = H1(t) * curr.x +
-            H2(t) * target.x +
-            H3(t) * curr_tangent.x +
-            H4(t) * target_tangent.x;
-
-    double y = H1(t) * curr.y +
-            H2(t) * target.y +
-            H3(t) * curr_tangent.y +
-            H4(t) * target_tangent.y;
-
-    knights::Pos deriv = derivatives(t);
-    double theta = std::atan2(deriv.y, deriv.x);
-
-    return knights::Pos(x, y, theta);
-}
-
-knights::Pos knights::HermiteSpline::derivatives(double t) {
-    double dx = H1_PRIME(t) * curr.x +
-                H2_PRIME(t) * target.x +
-                H3_PRIME(t) * curr_tangent.x +
-                H4_PRIME(t) * target_tangent.x;
-
-    double dy = H1_PRIME(t) * curr.y +
-                H2_PRIME(t) * target.y +
-                H3_PRIME(t) * curr_tangent.y +
-                H4_PRIME(t) * target_tangent.y;
-
-    knights::Point deriv2 = second_derivatives(t);
-    double omega = (deriv2.y * dx - dy * deriv2.x) / (1 + std::pow(dy / dx, 2));
-
-    return knights::Pos(dx, dy, omega);
-}
-
-knights::Point knights::HermiteSpline::second_derivatives(double t) {
-    double dx2 = H1_PRIME2(t) * curr.x +
-                H2_PRIME2(t) * target.x +
-                H3_PRIME2(t) * curr_tangent.x +
-                H4_PRIME2(t) * target_tangent.x;
-
-    double dy2 = H1_PRIME2(t) * curr.y +
-                H2_PRIME2(t) * target.y +
-                H3_PRIME2(t) * curr_tangent.y +
-                H4_PRIME2(t) * target_tangent.y;
-
-    return knights::Point(dx2, dy2);
-}
+knights::MotionProfile::MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity) :
+    timestamps(timestamps), path(path), max_accel(max_accel), max_velocity(max_velocity) {}
 
 knights::ProfileTimestamp::ProfileTimestamp(knights::Pos position, float linear_velocity, float angular_velocity, float curr_distance, 
     float time, float right_speed, float left_speed) : position(position), linear_velocity(linear_velocity), angular_velocity(angular_velocity),
     curr_distance(curr_distance), time(time), right_speed(right_speed), left_speed(left_speed) {};
 
-knights::ProfileGenerator::ProfileGenerator(knights::Drivetrain drivetrain, float max_accel) :
-    max_velocity(drivetrain.max_velocity()), max_accel(max_accel), track_width(drivetrain.track_width) {}
+knights::ProfileGenerator::ProfileGenerator(knights::Drivetrain drivetrain, float max_acceleration) :
+    max_velocity(drivetrain.max_velocity()), max_acceleration(max_acceleration), track_width(drivetrain.track_width) {}
 
-knights::ProfileGenerator::ProfileGenerator(float max_velocity, float track_width, float max_accel) :
-    max_velocity(max_velocity), max_accel(max_accel), track_width(track_width) {}
+knights::ProfileGenerator::ProfileGenerator(float max_velocity, float track_width, float max_acceleration) :
+    max_velocity(max_velocity), max_acceleration(max_acceleration), track_width(track_width) {}
 
-std::vector<knights::ProfileTimestamp> knights::ProfileGenerator::generate(knights::Pos start, knights::Pos end) {
-    std::cout << this->max_velocity << " " << this->max_accel << " " << this->track_width << "\n";
+float knights::QuinticPath::p00() { return this->curr.x; }
+float knights::QuinticPath::p01() { return this->p00() + this->curr_tangent.x / 5; }
+float knights::QuinticPath::p02() { return this->curr_acceleration / 20 + 2 * this->p01() - this->p00(); }
+float knights::QuinticPath::p03() { return this->target_acceleration / 20 + 2 * this->p04() - this->p05(); }
+float knights::QuinticPath::p04() { return this->p05() - this->target_tangent.x / 5; }
+float knights::QuinticPath::p05() { return this->target.x; }
 
-    // first, generate the path
-    float dist = distance_btwn(start, end); // * 2
+float knights::QuinticPath::p10() { return this->curr.y; }
+float knights::QuinticPath::p11() { return this->p10() + this->curr_tangent.y / 5; }
+float knights::QuinticPath::p12() { return this->curr_acceleration / 20 + 2 * this->p11() - this->p10(); }
+float knights::QuinticPath::p13() { return this->target_acceleration / 20 + 2 * this->p14() - this->p15(); }
+float knights::QuinticPath::p14() { return this->p15() - this->target_tangent.y / 5; }
+float knights::QuinticPath::p15() { return this->target.y; }
 
-    knights::HermiteSpline path(
-        knights::Point(start.x, start.y),
-        knights::Point(end.x, end.y),
-        knights::Point(std::cos(start.heading) * dist, std::sin(start.heading) * dist),
-        knights::Point(std::cos(end.heading) * dist, std::sin(end.heading) * dist)
-    );
+knights::Pos knights::QuinticPath::position(float t) {
+    float x = p00() * pow((1 - t), 5) + p01() * 5 * pow((1 - t), 4) * t +
+               p02() * 10 * pow((1 - t), 3) * pow(t, 2) + p03() * 10 * pow((1 - t), 2) * pow(t, 3) +
+               p04() * 5 * (1 - t) * pow(t, 4) + p05() * pow(t, 5);
 
-    // get total distance
-    std::vector<float> path_t = knights::linspace(0, 1, 300);
-    float total_dist = 0;
-
-    for (int i = 1; i < path_t.size(); i++) {
-        total_dist += distance_btwn(path.position(path_t[i]), path.position(path_t[i-1]));
-    }
-
-    // start with necessary values for motion profile
-    float accel_time = max_velocity / max_accel;
-    float halfway_dist = total_dist / 2;
-    float accel_dist = 0.5 * max_accel * (accel_time * accel_time);
-
-    if (accel_dist > halfway_dist) {
-        accel_time = sqrt(halfway_dist / (0.5 * max_accel));
-    }
-
-    float max_velocity = max_accel * accel_time;
-
-    float cruise_dist = total_dist - 2 * accel_dist;
-    float cruise_time = cruise_dist / max_velocity;
-
-    double deaccel_time = accel_time + cruise_time;
-    double entire_time = 2*accel_time + cruise_time;
+    float y = p10() * pow((1 - t), 5) + p11() * 5 * pow((1 - t), 4) * t +
+               p12() * 10 * pow((1 - t), 3) * pow(t, 2) + p13() * 10 * pow((1 - t), 2) * pow(t, 3) +
+               p14() * 5 * (1 - t) * pow(t, 4) + p15() * pow(t, 5);
     
-    std::vector<float> times_t = knights::linspace(0, entire_time, 300);
+    Pos deriv = this->derivatives(t);
+    
+    float theta = atan2(deriv.y, deriv.x);
 
-    std::vector<knights::ProfileTimestamp> output;
+    return Pos(x, y, theta);
+}
 
-    for (float elapsed_time : times_t) {
+knights::Pos knights::QuinticPath::derivatives(float t) {
+    float dx = p01() * 5 * pow((1 - t), 4) - p00() * 5 * pow((1 - t), 4) +
+                p02() * 20 * pow((1 - t), 3) * t - p01() * 20 * pow((1 - t), 3) * t +
+                p03() * 30 * pow((1 - t), 2) * pow(t, 2) - p02() * 30 * pow((1 - t), 2) * pow(t, 2) +
+                p04() * 20 * (1 - t) * pow(t, 3) - p03() * 20 * (1 - t) * pow(t, 3) +
+                p05() * 5 * pow(t, 4) - p04() * 5 * pow(t, 4);
 
-        // Calculate distance
-        float curr_dist = 0;
-        if (elapsed_time > entire_time) {
-            curr_dist = total_dist;
-        } else if (elapsed_time < accel_time) {
-            curr_dist = 0.5 * max_accel * (elapsed_time * elapsed_time);
-        } else if (elapsed_time < deaccel_time) {
-            accel_dist = 0.5 * max_accel * (accel_time * accel_time);
-            curr_dist = accel_dist + max_velocity * (elapsed_time - accel_time);
-        } else {
-            accel_dist = 0.5 * max_accel * (accel_time * accel_time);
-            cruise_dist = max_velocity * cruise_time;
-            float time_since_deaccel = elapsed_time - deaccel_time;
-            curr_dist = accel_dist + cruise_dist + 
-                max_velocity * time_since_deaccel 
-                - 0.5 * max_accel * time_since_deaccel * time_since_deaccel;
-        }
+    float dy = p11() * 5 * pow((1 - t), 4) - p10() * 5 * pow((1 - t), 4) +
+                p12() * 20 * pow((1 - t), 3) * t - p11() * 20 * pow((1 - t), 3) * t +
+                p13() * 30 * pow((1 - t), 2) * pow(t, 2) - p12() * 30 * pow((1 - t), 2) * pow(t, 2) +
+                p14() * 20 * (1 - t) * pow(t, 3) - p13() * 20 * (1 - t) * pow(t, 3) +
+                p15() * 5 * pow(t, 4) - p14() * 5 * pow(t, 4);
 
-        // Calculate velocity
-        float velocity = 0;
-        if (elapsed_time < accel_time) {
-            velocity = knights::lerp(0, max_velocity, elapsed_time / accel_time);
-        } else if (elapsed_time < accel_time + cruise_time && accel_dist > accel_time) {
-            velocity = max_velocity;
-        } else {
-            velocity = lerp(max_velocity, 0, (elapsed_time - (accel_time + cruise_time)) / accel_time);
-        }
+    return Pos(dx, dy, 0);
+}
 
-        // Calculate Angular Velocity and Position
-        Pos curr = path.position(curr_dist/total_dist); // smth wrong with this
-        // Pos deriv_curr = path.derivatives(curr_dist/total_dist);
-        float omega = (path.position(elapsed_time+(entire_time/300)).heading - path.position(elapsed_time-(entire_time/300)).heading) / (2*(entire_time/300));
+knights::Pos knights::QuinticPath::second_derivatives(float t) {
+    float dx2 = 20 * (p02() - 2 * p01() + p00()) * pow((1 - t), 3) +
+                 60 * (p03() - 2 * p02() + p01()) * pow((1 - t), 2) * t +
+                 60 * (p04() - 2 * p03() + p02()) * (1 - t) * pow(t, 2) +
+                 20 * (p05() - 2 * p04() + p03()) * pow(t, 3);
 
-        float left_vel = velocity - (omega * track_width/2.0);
-        float right_vel = velocity + (omega * track_width/2.0);
+    float dy2 = 20 * (p12() - 2 * p11() + p10()) * pow((1 - t), 3) +
+                 60 * (p13() - 2 * p12() + p11()) * pow((1 - t), 2) * t +
+                 60 * (p14() - 2 * p13() + p12()) * (1 - t) * pow(t, 2) +
+                 20 * (p15() - 2 * p14() + p13()) * pow(t, 3);
 
-        output.emplace_back(curr, velocity, omega, curr_dist, elapsed_time, right_vel, left_vel);
+    return Pos(dx2, dy2, 0);
+}
+
+knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, knights::Pos end, float desired_voltage, float curr_accel, float target_accel) {
+
+    float distance = distance_btwn(start, end);
+    knights::Pos curr_tangent(std::cos(start.heading) * distance, std::sin(start.heading) * distance, 0);
+    knights::Pos target_tangent(std::cos(end.heading) * distance, std::sin(end.heading) * distance, 0);
+
+    QuinticPath path(start, end, curr_tangent, target_tangent, curr_accel, target_accel);
+
+    // Calculate max velocity
+    const float DESIRED_VOLTAGE = 120;
+    const float MAX_VOLTAGE = 127;
+    const float WHEEL_DIAMETER = 2.75;
+    const float RPM = 450;
+    const float TRACK_WIDTH = 15;
+
+    float max_acceleration = 178;
+    float max_velocity = (DESIRED_VOLTAGE / MAX_VOLTAGE) * M_PI * WHEEL_DIAMETER * (RPM / 60.0);
+
+    // Calculate the time it takes to accelerate to max velocity
+    float acceleration_time = max_velocity / max_acceleration;
+
+    float halfway_distance = distance / 2;
+    float acceleration_distance = 0.5 * max_acceleration * acceleration_time * acceleration_time;
+
+    if (acceleration_distance > halfway_distance) {
+        acceleration_time = std::sqrt(halfway_distance / (0.5 * max_acceleration));
     }
 
-    return output;
-};
+    float cruise_time = 0;
+    float total_time = 2 * acceleration_time;
+
+    if (acceleration_distance <= halfway_distance) {
+        cruise_time = (distance / max_velocity) - acceleration_time;
+        total_time = cruise_time + 2 * acceleration_time;
+    }
+
+    float deceleration_time = acceleration_time;
+    float deceleration_distance = 0.5 * max_acceleration * deceleration_time * deceleration_time;
+    float cruise_distance = max_velocity * cruise_time;
+    float total_dist = distance;
+
+    int n_t_values = static_cast<int>(std::round(total_time * 500));
+    std::vector<float> t(n_t_values);
+    for (int i = 0; i < n_t_values; ++i) {
+        t[i] = i * total_time / (n_t_values - 1);
+    }
+
+    std::vector<ProfileTimestamp> timestamps;
+    float x = 0, y = 0;
+
+    for (float elapsed_time : t) {
+        float curr_dist = 0;
+        float curr_velocity = 0;
+
+        if (elapsed_time > total_time) {
+            curr_dist = distance;
+            curr_velocity = 0;
+        } else if (elapsed_time < acceleration_time) {
+            curr_dist = 0.5 * max_acceleration * elapsed_time * elapsed_time;
+            curr_velocity = max_acceleration * elapsed_time;
+        } else if (cruise_time > 0 && elapsed_time < (acceleration_time + cruise_time)) {
+            float cruise_current_time = elapsed_time - acceleration_time;
+            curr_dist = acceleration_distance + max_velocity * cruise_current_time;
+            curr_velocity = max_velocity;
+        } else {
+            float deceleration_curr_time = (elapsed_time - acceleration_time - cruise_time);
+            curr_dist = acceleration_distance + cruise_distance + max_velocity * deceleration_curr_time - max_acceleration * (deceleration_curr_time * deceleration_curr_time) / 2;
+            curr_velocity = max_velocity - max_acceleration * deceleration_curr_time;
+        }
+
+        Pos pt = path.position(elapsed_time / total_time);
+        Pos deriv = path.derivatives(elapsed_time / total_time);
+        Pos deriv2 = path.second_derivatives(elapsed_time / total_time);
+
+        float theta = std::atan2(deriv.y, deriv.x) / total_time;
+        float omega = ((deriv2.y * deriv.x - deriv.y * deriv2.x) / ((deriv.x * deriv.x) * (1 + (deriv.y / deriv.x) * (deriv.y / deriv.x)))) / total_time;
+
+        float right_speed = curr_velocity + (omega * track_width / 2);
+        float left_speed = curr_velocity - (omega * track_width / 2);
+
+        timestamps.emplace_back(pt, curr_velocity, omega, curr_dist, elapsed_time, right_speed, left_speed);
+    }
+
+    return MotionProfile(timestamps, path, max_acceleration, max_velocity);
+}

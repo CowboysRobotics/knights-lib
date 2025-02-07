@@ -14,14 +14,18 @@ namespace knights {
     * @param degrees amt of degrees to convert
     * @return the provided value in radians
     */
-    float to_rad(float degrees);
+    inline constexpr float to_rad(float degrees) {
+        return degrees * (M_PI / 180.0);
+    };
 
     /**
     * @brief convert radians to degrees
     * @param degrees amt of radians to convert
     * @return the provided value in degrees
     */
-    float to_deg(float radians);
+    inline constexpr float to_deg(float radians) {
+        return radians * (180.0 / M_PI);
+    };
 
     /**
      * @brief Linearly interpolate between two values

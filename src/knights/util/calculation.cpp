@@ -5,14 +5,6 @@
 #include <math.h>
 #include <numeric>
 
-float knights::to_rad(float degrees) {
-    return degrees * (M_PI / 180.0);
-};
-
-float knights::to_deg(float radians) {
-    return radians * (180.0 / M_PI);
-};
-
 float knights::lerp(float start, float end, float t) {
     return start + t * (end - start);
 }
