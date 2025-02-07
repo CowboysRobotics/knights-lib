@@ -1,6 +1,7 @@
 #include "main.h"
 #include "globals.h"
 #include "knights/api.hpp"
+#include "knights/autonomous/profile.hpp"
 #include "pros/misc.h"
 
 #include <cstdio>
@@ -53,46 +54,37 @@ void initialize() {
 	// intake.set_reversed(true, 1);
 
 	// #### TEST AREA ####
+	// motion profile test
+	knights::ProfileGenerator generator(drivetrain, 100);
+	knights::MotionProfile profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(0, 24, 90_deg), 120, 0, 0);
 
-	// // path test
-    // float dist = distance_btwn(knights::Point(0, 0), knights::Point(0, 24));
-    // knights::HermiteSpline path(
-    //     knights::Point(0, 0),
-    //     knights::Point(0, 24),
-    //     knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist),
-    //     knights::Point(std::cos(90_deg) * dist, std::sin(90_deg) * dist)
-    // );
+	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 
-	// auto t = knights::linspace(0, 1, 10);
-	// for (auto value : t) {
-	// 	knights::display::MapDot dot(5, 5, lv_palette_darken(LV_PALETTE_CYAN, 2));
-	// 	std::cout << "pt: " << path.position(value).x << " " << path.position(value).y << " " << path.position(value).heading << "\n";
-	// 	dot.set_field_pos(path.position(value));
-	// }
+	for (knights::ProfileTimestamp timestamp : profile.timestamps) {
+		write_file << "time: " << timestamp.time << "\n";
+		write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << "\n";
+		write_file << "lin vel: " << timestamp.linear_velocity << "\n";
+		write_file << "angular vel: " << timestamp.angular_velocity << "\n";
+		write_file << "dist: " << timestamp.curr_distance << "\n";
+		write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << "\n";
+		write_file << "end timestamp\n";
 
-	// // motion profile test
-	// knights::ProfileGenerator generator(drivetrain, 100);
-	// std::vector<knights::ProfileTimestamp> profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(0, 24, 90_deg));
+		std::cout << "time: " << timestamp.time << " ";
+		std::cout << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+		std::cout << "lin vel: " << timestamp.linear_velocity << " ";
+		std::cout << "angular vel: " << timestamp.angular_velocity << " ";
+		std::cout << "dist: " << timestamp.curr_distance << " ";
+		std::cout << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+		std::cout << "end timestamp\n";
+	}
 
-	// std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
+	auto t = knights::linspace(0, 1, 10);
+	for (auto value : t) {
+		knights::display::MapDot dot(5, 5, lv_palette_darken(LV_PALETTE_CYAN, 2));
+		std::cout << "pt: " << profile.path.position(value).x << " " << profile.path.position(value).y << " " << profile.path.position(value).heading << "\n";
+		dot.set_field_pos(profile.path.position(value));
+	}
 
-	// for (knights::ProfileTimestamp timestamp : profile) {
-	// 	write_file << "time: " << timestamp.time << "\n";
-	// 	write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << "\n";
-	// 	write_file << "lin vel: " << timestamp.linear_velocity << "\n";
-	// 	write_file << "angular vel: " << timestamp.angular_velocity << "\n";
-	// 	write_file << "dist: " << timestamp.curr_distance << "\n";
-	// 	write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << "\n";
-	// 	write_file << "end timestamp\n";
-
-	// 	std::cout << "time: " << timestamp.time << " ";
-	// 	std::cout << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
-	// 	std::cout << "lin vel: " << timestamp.linear_velocity << " ";
-	// 	std::cout << "angular vel: " << timestamp.angular_velocity << " ";
-	// 	std::cout << "dist: " << timestamp.curr_distance << " ";
-	// 	std::cout << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
-	// 	std::cout << "end timestamp\n";
-	// }
 
 }
 
