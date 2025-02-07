@@ -356,7 +356,6 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
     this->in_motion = true;
 
     float time = 0;
-
     int curr_i = 0;
 
     while (distance_btwn(this->chassis->curr_position, profile.timestamps.back().position) > end_tolerance) {
@@ -371,9 +370,34 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
             prev_time_error = fabsf(profile.timestamps[curr_i].time - time);
         }
 
+        // obtain error values
+        float error_x = profile.timestamps[curr_i].position.x - curr_position.x;
+        float error_y = profile.timestamps[curr_i].position.y - curr_position.y;
+        float error_theta = profile.timestamps[curr_i].position.heading - curr_position.heading;
 
+        float local_error_x = cos(curr_position.heading) * error_x + sin(curr_position.heading) * error_y;
+        float local_error_y = -sin(curr_position.heading) * error_x + cos(curr_position.heading) * error_y;
 
+        // convert velocities to meters -> ensure default constants work
+        float lin_vel = knights::to_meters(profile.timestamps[curr_i].linear_velocity);
+        float ang_vel = knights::to_meters(profile.timestamps[curr_i].angular_velocity);
 
+        // calculate gain
+        float gain = 2 * this->ramsete_constants->damping * std::sqrt(
+            ang_vel * ang_vel + 
+            this->ramsete_constants->proportional * lin_vel * lin_vel
+        );
+
+        // calculate output velocities
+        float curr_lin_vel = lin_vel * cos(error_theta) + gain * local_error_x;
+        float curr_ang_vel = ang_vel + gain * error_theta + (this->ramsete_constants->proportional * lin_vel * sin(error_theta) * error_y) / error_theta;
+
+        // convert output to something usable
+        float output_lin_vel = (curr_lin_vel / profile.max_velocity) * 127;
+        float output_ang_vel = (curr_lin_vel / profile.max_velocity) * 127;
+
+        // send command to motors
+        this->chassis->drivetrain->voltage_command(output_lin_vel - output_ang_vel, output_lin_vel + output_ang_vel);
 
         time += 0.001;
         pros::delay(10);
