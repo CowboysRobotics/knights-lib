@@ -94,16 +94,6 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     QuinticPath path(start, end, curr_tangent, target_tangent, curr_accel, target_accel);
 
-    // Calculate max velocity
-    const float DESIRED_VOLTAGE = 120;
-    const float MAX_VOLTAGE = 127;
-    const float WHEEL_DIAMETER = 2.75;
-    const float RPM = 450;
-    const float TRACK_WIDTH = 15;
-
-    float max_acceleration = 178;
-    float max_velocity = (DESIRED_VOLTAGE / MAX_VOLTAGE) * M_PI * WHEEL_DIAMETER * (RPM / 60.0);
-
     // Calculate the time it takes to accelerate to max velocity
     float acceleration_time = max_velocity / max_acceleration;
 
@@ -127,7 +117,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
     float cruise_distance = max_velocity * cruise_time;
     float total_dist = distance;
 
-    int n_t_values = static_cast<int>(std::round(total_time * 500));
+    int n_t_values = static_cast<int>(std::round(total_time * 300));
     std::vector<float> t(n_t_values);
     for (int i = 0; i < n_t_values; ++i) {
         t[i] = i * total_time / (n_t_values - 1);

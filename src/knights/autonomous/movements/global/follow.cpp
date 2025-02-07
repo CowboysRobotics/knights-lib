@@ -15,6 +15,8 @@
 #include <math.h>
 #include <fstream>
 
+#define PROS_MAX_VOLTAGE 127
+
 
 float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights::Pos curr, float lookahead_distance) {
     knights::Pos dir = nxt - prev;
@@ -290,9 +292,9 @@ void knights::RobotController::follow_profile_pursuit(const knights::MotionProfi
 
         // determine the speed and angular curvature to use for calculating ratio of motor velocities
         // float target_speed = std::fmin(3/curvature(route.positions[closest_i], route.positions[closest_i+1], route.positions[closest_i+2]), max_speed);
-        float target_speed = profile.timestamps[closest_i].linear_velocity;
+        float target_speed = (profile.timestamps[closest_i].linear_velocity/profile.max_velocity) * PROS_MAX_VOLTAGE;
         angular_curve = curvature(curr_position, target_point);
-        float angular_velocity = profile.timestamps[closest_i].angular_velocity;
+        float angular_velocity = (profile.timestamps[closest_i].angular_velocity/profile.max_velocity) * PROS_MAX_VOLTAGE;
 
         // decrease angular curve if the target point is at the end of the path
         if (distance_btwn(curr_position, target_point)/max_lookahead < 0.3 && distance_btwn(curr_position, profile.timestamps.back().position) < max_lookahead) {
@@ -346,4 +348,41 @@ void knights::RobotController::follow_profile_pursuit(const knights::MotionProfi
     this->in_motion = false;
     return;
     
+}
+
+void knights::RobotController::follow_profile_ramsete(const knights::MotionProfile &profile, float end_tolerance, bool forwards) {
+    // make sure this is only movement running and route is valid
+    if (this->in_motion || profile.timestamps.size() < 2) return;
+    this->in_motion = true;
+
+    float time = 0;
+
+    int curr_i = 0;
+
+    while (distance_btwn(this->chassis->curr_position, profile.timestamps.back().position) > end_tolerance) {
+        knights::Pos curr_position = this->chassis->curr_position;
+
+        // find closest timestamp to current
+        float prev_time_error = 1e8;
+        for ( ; curr_i < profile.timestamps.size(); curr_i++) {
+            if (prev_time_error > fabsf(profile.timestamps[curr_i].time - time)) {
+                break;
+            }
+            prev_time_error = fabsf(profile.timestamps[curr_i].time - time);
+        }
+
+
+
+
+
+        time += 0.001;
+        pros::delay(10);
+    }
+
+
+    // stop motors after route over
+    this->chassis->drivetrain->voltage_command(0, 0);
+
+    this->in_motion = false;
+    return;
 }

@@ -64,6 +64,8 @@ namespace knights {
 
             void follow_profile_pursuit(const knights::MotionProfile &profile, float lookahead_distance = 15.0, const float max_speed = 127.0, bool forwards = true, float end_tolerance = 4.0, float timeout = 5000);
 
+            void follow_profile_ramsete(const knights::MotionProfile &profile, float end_tolerance = 3.0, bool forwards = true);
+
             void lateral_to_position(const Pos desired_position, const bool forwards = true, const float end_tolerance = 3.5, const int timeout = 1000);
 
             void lateral_to_point(const Pos desired_position, const bool forwards = true, const float end_tolerance = 3.5, const int timeout = 1000);
