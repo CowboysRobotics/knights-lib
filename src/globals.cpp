@@ -61,7 +61,7 @@ pros::adi::Pneumatics clamp(1, false); //clamp solenoid
 pros::adi::Pneumatics doinker(3, false); //doinker solenoid
 pros::adi::Pneumatics doinker2(2, false); //rush mech solenoid
 
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 3.25, 3/4);
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 16, 450.0, 3.25, 0.75);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
 
 knights::RobotChassis chassis(

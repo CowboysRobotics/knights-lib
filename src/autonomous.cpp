@@ -5,6 +5,8 @@
 #include "knights/util/calculation.hpp"
 #include "knights/util/position.hpp"
 
+#include <fstream>
+
 #define RIGHT 1
 #define LEFT -1
 
@@ -44,7 +46,35 @@ void pid_tuning(knights::RobotChassis *chassis) {
 	knights::ProfileGenerator generator(drivetrain, 600);
 	knights::MotionProfile profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 0), 80, 0, 0);
 
+	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
+
+	for (knights::ProfileTimestamp timestamp : profile.timestamps) {
+		write_file << "time: " << timestamp.time << " ";
+		write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+		write_file << "lin vel: " << timestamp.linear_velocity << " ";
+		write_file << "angular vel: " << timestamp.angular_velocity << " ";
+		write_file << "dist: " << timestamp.curr_distance << " ";
+		write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+		write_file << "end timestamp\n";
+
+		std::cout << "time: " << timestamp.time << " ";
+		std::cout << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+		std::cout << "lin vel: " << timestamp.linear_velocity << " ";
+		std::cout << "angular vel: " << timestamp.angular_velocity << " ";
+		std::cout << "dist: " << timestamp.curr_distance << " ";
+		std::cout << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+		std::cout << "end timestamp\n";
+	}
+
+	auto t = knights::linspace(0, 1, 10);
+	for (auto value : t) {
+		knights::display::MapDot dot(5, 5, lv_palette_darken(LV_PALETTE_CYAN, 2));
+		std::cout << "pt: " << profile.path.position(value).x << " " << profile.path.position(value).y << " " << profile.path.position(value).heading << "\n";
+		dot.set_field_pos(profile.path.position(value));
+	}
+
 	// robotControl.follow_profile_pursuit(profile, 18.0);
+	robotControl.follow_profile_ramsete(profile);
 }
 
 

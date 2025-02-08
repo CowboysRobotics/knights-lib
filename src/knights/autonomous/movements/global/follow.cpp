@@ -18,6 +18,7 @@
 #include <fstream>
 
 #define PROS_MAX_VOLTAGE 127
+#define MOTOR_VOLTS 11.0f
 
 
 float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights::Pos curr, float lookahead_distance) {
@@ -368,26 +369,25 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         knights::Pos curr_position = this->chassis->curr_position;
 
         // find closest timestamp to current
-        float closest_t = 1e5;
-        for (int i = curr_i; i < profile.timestamps.size(); i++) {
-            if (fabs(profile.timestamps[i].time - time) < closest_t) {
-                closest_t = fabs(profile.timestamps[i].time - time);
-                curr_i = i;
-            }
+        while (curr_i < profile.timestamps.size() - 1 && profile.timestamps[curr_i+1].time < time) {
+            curr_i++;
         }
 
         // obtain error values
-        // BUG: something wrong here i think
         float error_x = knights::to_meters(profile.timestamps[curr_i].position.x - curr_position.x);
         float error_y = knights::to_meters(profile.timestamps[curr_i].position.y - curr_position.y);
         float error_theta = knights::angular_error(profile.timestamps[curr_i].position.heading, curr_position.heading, 0);
+
+        if (error_theta == 0) {
+            error_theta = 1e-6;
+        }
 
         float local_error_x = cos(curr_position.heading) * error_x - sin(curr_position.heading) * error_y;
         float local_error_y = sin(curr_position.heading) * error_x + cos(curr_position.heading) * error_y;
 
         // convert velocities to meters -> ensure default constants work
         float lin_vel = knights::to_meters(profile.timestamps[curr_i].linear_velocity);
-        float ang_vel = knights::to_meters(profile.timestamps[curr_i].angular_velocity);
+        float ang_vel = profile.timestamps[curr_i].angular_velocity;
 
         // calculate gain
         float gain = 2 * this->ramsete_constants->damping * std::sqrt(
@@ -400,25 +400,36 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float curr_ang_vel = ang_vel + gain * error_theta + (this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y) / error_theta;
 
         // convert output to something usable
-        float output_lin_vel = ((knights::to_inches(curr_lin_vel) / (this->chassis->drivetrain->wheel_diameter * M_PI)) / profile.max_velocity) * PROS_MAX_VOLTAGE;
-        float output_ang_vel = (knights::to_inches(curr_ang_vel) / profile.max_velocity) * PROS_MAX_VOLTAGE;
+        float output_lin_vel = (knights::to_inches(curr_lin_vel) / profile.max_velocity) * PROS_MAX_VOLTAGE;
+        // float output_ang_vel = (this->chassis->drivetrain->gear_ratio * curr_ang_vel) * (60 / (this->chassis->drivetrain->rpm)) * MOTOR_VOLTS;
 
+        float motor_rad_per_sec = this->chassis->drivetrain->gear_ratio * curr_ang_vel; // Convert to motor rad/s
+        float motor_free_rad_per_sec = (this->chassis->drivetrain->rpm * 2 * M_PI) / 60; // Convert rpm to rad/s
+
+        float output_ang_vel = (motor_rad_per_sec / motor_free_rad_per_sec) * PROS_MAX_VOLTAGE;
+        
         write_file << knights::logger::string_format(
-            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang output lin/ang %lf %lf time %lf t_error %lf\n",
-            curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, time, closest_t
+            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n GR: %lf , RPM: %lf V: %lf \n",
+            curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, time, 
+            this->chassis->drivetrain->gear_ratio, this->chassis->drivetrain->rpm, MOTOR_VOLTS
         );
 
         std::cout << knights::logger::string_format(
-            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf lin/ang %lf %lf time %lf t_error %lf\n",
-            curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, time, closest_t
+            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n",
+            curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, time
         );
 
+        // get direction
+        int dir = forwards ? 1 : -1;
+
         // send command to motors
-        this->chassis->drivetrain->voltage_command(output_lin_vel - output_ang_vel, output_lin_vel + output_ang_vel);
+        this->chassis->drivetrain->voltage_command(dir * (output_lin_vel - output_ang_vel), dir * (output_lin_vel + output_ang_vel));
 
         time += 0.01;
         pros::delay(10);
     }
+
+    write_file.close();
 
 
     // stop motors after route over
