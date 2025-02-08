@@ -254,7 +254,7 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
   return [t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
 
 curr = [0, 0, np.radians(90), 0]
-target = [72, 72, np.radians(0), 0]
+target = [24, 24, np.radians(0), 0]
 
 dist = np.sqrt(((target[0]-curr[0]) ** 2) + ((target[1]-curr[1]) ** 2))
 

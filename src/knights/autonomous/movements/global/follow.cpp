@@ -297,7 +297,13 @@ void knights::RobotController::follow_profile_pursuit(const knights::MotionProfi
         // float target_speed = std::fmin(3/curvature(route.positions[closest_i], route.positions[closest_i+1], route.positions[closest_i+2]), max_speed);
         float target_speed = std::fmax((profile.timestamps[closest_i].linear_velocity/this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE, this->lateral_pid->min_velocity);
         angular_curve = curvature(curr_position, target_point);
-        float angular_velocity = (profile.timestamps[closest_i].angular_velocity/this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE;
+
+        float curr_ang_vel = profile.timestamps[closest_i].angular_velocity;
+
+        float motor_rad_per_sec = this->chassis->drivetrain->gear_ratio * curr_ang_vel; // Convert to motor rad/s
+        float motor_free_rad_per_sec = (this->chassis->drivetrain->rpm * 2 * M_PI) / 60; // Convert rpm to rad/s
+
+        float angular_velocity = (motor_rad_per_sec / motor_free_rad_per_sec) * PROS_MAX_VOLTAGE;
 
         // decrease angular curve if the target point is at the end of the path
         if (distance_btwn(curr_position, target_point)/max_lookahead < 0.3 && distance_btwn(curr_position, profile.timestamps.back().position) < max_lookahead) {
@@ -411,7 +417,7 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         write_file << knights::logger::string_format(
             "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n GR: %lf , RPM: %lf V: %lf \n",
             curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, time, 
-            this->chassis->drivetrain->gear_ratio, this->chassis->drivetrain->rpm, MOTOR_VOLTS
+            this->chassis->drivetrain->gear_ratio, this->chassis->drivetrain->rpm, PROS_MAX_VOLTAGE
         );
 
         std::cout << knights::logger::string_format(
