@@ -36,15 +36,15 @@ void pid_tuning(knights::RobotChassis *chassis) {
 	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
 	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
-	// turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 	knights::PIDController angularPID(15, 0.01,10);
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 
-	knights::ProfileGenerator generator(drivetrain, 300);
-	knights::MotionProfile profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 90_deg), 120, 0, 0);
+	knights::ProfileGenerator generator(drivetrain, 600);
+	knights::MotionProfile profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 0), 80, 0, 0);
 
-	robotControl.follow_profile_ramsete(profile);
+	// robotControl.follow_profile_pursuit(profile, 18.0);
 }
 
 
@@ -79,7 +79,12 @@ void pp_test(knights::RobotChassis *chassis) {
 	inputMap.bind_action("lbLoad1", lady_brown_load1);
 	inputMap.bind_action("lbScore", lady_brown_score);
 
-	test_route.execute(chassis, &robotControl, &inputMap);
+	knights::ProfileGenerator generator(drivetrain, 600);
+	knights::MotionProfile profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 0), 80, 0, 0);
+
+	robotControl.follow_route_pursuit(knights::Route(profile), 18.0, 100.0);
+
+	// test_route.execute(chassis, &robotControl, &inputMap);
 }
 
 #define WAIT 140

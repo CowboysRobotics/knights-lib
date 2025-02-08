@@ -29,7 +29,7 @@ void initialize() {
 	knights::logger::blue("Initialization Begin");
 
 	// // Different autons, None0 is the default auton
-	auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(0, 0, knights::to_rad(90)));
+	auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(0, 0, knights::to_rad(90)));
 
 	auton_map["Red1"] = knights::Auton(&red_rush_right_wp, knights::Pos(-58, -15, M_PI));
 	auton_map["Red2"] = knights::Auton(&red_left_wp, knights::Pos(-55.1,37.5,0));
@@ -54,8 +54,8 @@ void initialize() {
 
 	// #### TEST AREA ####
 	// motion profile test
-	knights::ProfileGenerator generator(drivetrain, 300);
-	knights::MotionProfile profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 90_deg), 120, 0, 0);
+	knights::ProfileGenerator generator(drivetrain, 600);
+	knights::MotionProfile profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 0), 120, 0, 0);
 
 	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 

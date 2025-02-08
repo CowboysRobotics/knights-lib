@@ -6,8 +6,6 @@
 
 #include "knights/robot/drivetrain.hpp"
 #include "knights/util/position.hpp"
-#include "knights/autonomous/path.hpp"
-
 
 namespace knights {
 

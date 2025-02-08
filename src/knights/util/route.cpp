@@ -1,5 +1,6 @@
 #include "knights/api.hpp"
 #include "api.h"
+#include "knights/autonomous/profile.hpp"
 
 #include <fstream>
 #include <string>
@@ -10,6 +11,13 @@ knights::Route::Route(std::vector<Pos> positions) {
 
 knights::Route::Route() {
     this->positions = {};
+}
+
+knights::Route::Route(knights::MotionProfile profile) {
+    this->positions = {};
+    for (auto timestamp : profile.timestamps) {
+        this->positions.emplace_back(timestamp.position.x, timestamp.position.y, timestamp.position.heading);
+    }
 }
 
 float knights::Route::length_dist() {

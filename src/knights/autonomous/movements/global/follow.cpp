@@ -243,7 +243,7 @@ void knights::RobotController::follow_profile_pursuit(const knights::MotionProfi
         this->angular_pid->reset();
     }
 
-    // std::fstream write_file("/usd/pure_pursuit.txt", std::ios_base::out);
+    std::fstream write_file("/usd/pure_pursuit_profile.txt", std::ios_base::out);
 
     // While the robot has not reached the desired point and is not at the end of the route
     while (error > end_tolerance && closest_i != profile.timestamps.size()-1 ) {
@@ -294,9 +294,9 @@ void knights::RobotController::follow_profile_pursuit(const knights::MotionProfi
 
         // determine the speed and angular curvature to use for calculating ratio of motor velocities
         // float target_speed = std::fmin(3/curvature(route.positions[closest_i], route.positions[closest_i+1], route.positions[closest_i+2]), max_speed);
-        float target_speed = (profile.timestamps[closest_i].linear_velocity/profile.max_velocity) * PROS_MAX_VOLTAGE;
+        float target_speed = std::fmax((profile.timestamps[closest_i].linear_velocity/this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE, this->lateral_pid->min_velocity);
         angular_curve = curvature(curr_position, target_point);
-        float angular_velocity = (profile.timestamps[closest_i].angular_velocity/profile.max_velocity) * PROS_MAX_VOLTAGE;
+        float angular_velocity = (profile.timestamps[closest_i].angular_velocity/this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE;
 
         // decrease angular curve if the target point is at the end of the path
         if (distance_btwn(curr_position, target_point)/max_lookahead < 0.3 && distance_btwn(curr_position, profile.timestamps.back().position) < max_lookahead) {
@@ -330,12 +330,12 @@ void knights::RobotController::follow_profile_pursuit(const knights::MotionProfi
             this->chassis->drivetrain->voltage_command(-l_speed, -r_speed);
 
         // log for debugging
-        // write_file << logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , used angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d closest_i: %lf %lf %lf , end pt: %lf %lf %d, real angular_curve: %lf, timeout: %lf, curr lhd: %lf, calculated lhd: %lf, angular vel: %lf, angular max: %lf", 
-        //     target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
-        //     target_speed, angular_curve, r_speed, l_speed, error, forwards, route.positions[closest_i].x, route.positions[closest_i].y, route.positions[closest_i].heading, 
-        //     route.positions.back().x, route.positions.back().y, route.positions.size(), angular_curve/((distance_btwn(curr_position, target_point)/max_lookahead) * 0.1), 
-        //     timeout, lookahead_distance, distance_btwn(this->chassis->curr_position, target_point), angular_velocity, angular_pid->get_max_speed()
-        // ) << "\n";
+        write_file << logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , used angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d closest_i: %lf %lf %lf , end pt: %lf %lf %d, real angular_curve: %lf, timeout: %lf, curr lhd: %lf, calculated lhd: %lf, angular vel: %lf, angular max: %lf", 
+            target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
+            target_speed, angular_curve, r_speed, l_speed, error, forwards, profile.timestamps[closest_i].position.x, profile.timestamps[closest_i].position.y, profile.timestamps[closest_i].position.heading, 
+            profile.timestamps.back().position.x, profile.timestamps.back().position.y, profile.timestamps.size(), angular_curve/((distance_btwn(curr_position, target_point)/max_lookahead) * 0.1), 
+            timeout, lookahead_distance, distance_btwn(this->chassis->curr_position, target_point), angular_velocity, angular_pid->get_max_speed()
+        ) << "\n";
 
         // wait for next iteration of loop
         pros::delay(10);
@@ -382,8 +382,8 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float error_y = knights::to_meters(profile.timestamps[curr_i].position.y - curr_position.y);
         float error_theta = knights::angular_error(profile.timestamps[curr_i].position.heading, curr_position.heading, 0);
 
-        float local_error_x = cos(curr_position.heading) * error_x + sin(curr_position.heading) * error_y;
-        float local_error_y = -sin(curr_position.heading) * error_x + cos(curr_position.heading) * error_y;
+        float local_error_x = cos(curr_position.heading) * error_x - sin(curr_position.heading) * error_y;
+        float local_error_y = sin(curr_position.heading) * error_x + cos(curr_position.heading) * error_y;
 
         // convert velocities to meters -> ensure default constants work
         float lin_vel = knights::to_meters(profile.timestamps[curr_i].linear_velocity);
@@ -400,17 +400,17 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float curr_ang_vel = ang_vel + gain * error_theta + (this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y) / error_theta;
 
         // convert output to something usable
-        float output_lin_vel = ((knights::to_inches(curr_lin_vel) / (this->chassis->drivetrain->wheel_diameter * M_PI)) / profile.max_velocity) * 127;
-        float output_ang_vel = (knights::to_inches(curr_ang_vel) / profile.max_velocity) * 127;
+        float output_lin_vel = ((knights::to_inches(curr_lin_vel) / (this->chassis->drivetrain->wheel_diameter * M_PI)) / profile.max_velocity) * PROS_MAX_VOLTAGE;
+        float output_ang_vel = (knights::to_inches(curr_ang_vel) / profile.max_velocity) * PROS_MAX_VOLTAGE;
 
         write_file << knights::logger::string_format(
-            "closest %d errors %lf %lf %lf lin/ang vel %lf %lf gain %lf output lin/ang %lf %lf time %lf t_error %lf\n",
-            curr_i, local_error_x, local_error_y, error_theta, lin_vel, ang_vel, gain, output_lin_vel, output_ang_vel, time, closest_t
+            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang output lin/ang %lf %lf time %lf t_error %lf\n",
+            curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, time, closest_t
         );
 
         std::cout << knights::logger::string_format(
-            "closest %d errors %lf %lf %lf lin/ang vel %lf %lf gain %lf output lin/ang %lf %lf time %lf t_error %lf\n",
-            curr_i, local_error_x, local_error_y, error_theta, lin_vel, ang_vel, gain, output_lin_vel, output_ang_vel, time, closest_t
+            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf lin/ang %lf %lf time %lf t_error %lf\n",
+            curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, time, closest_t
         );
 
         // send command to motors
