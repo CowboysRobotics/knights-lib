@@ -18,7 +18,8 @@ namespace knights {
         LATERAL,
         TURN,
         FOLLOW,
-        COMMAND
+        COMMAND,
+        LATERAL_TO_POS
     };
 
     struct RouteAction { 
@@ -29,6 +30,7 @@ namespace knights {
        int timeout;
        float lookahead;
        std::string function_name;
+       knights::Pos move_to;
 
         /**
          * @brief Construct a new Route Action object - presumed with follow type
@@ -50,6 +52,8 @@ namespace knights {
          * @param timeout timeout for movement - only used if it is a lateral, turn, or follow
          */
        RouteAction(action_type type, float specific, float end_tolerance, int timeout);
+
+       RouteAction(action_type type, float x, float y, float theta, float end_tolerance, int timeout);
 
         /**
          * @brief Construct a new Route Action object - presumed with command type
