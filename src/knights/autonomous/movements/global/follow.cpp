@@ -294,16 +294,10 @@ void knights::RobotController::follow_profile_pursuit(const knights::MotionProfi
         // }
 
         // determine the speed and angular curvature to use for calculating ratio of motor velocities
-        // float target_speed = std::fmin(3/curvature(route.positions[closest_i], route.positions[closest_i+1], route.positions[closest_i+2]), max_speed);
-        float target_speed = std::fmax((profile.timestamps[closest_i].linear_velocity/this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE, this->lateral_pid->min_velocity);
+        // float target_speed = std::fmax((profile.timestamps[closest_i].linear_velocity/this->chassis->drivetrain->max_velocity()) * 127.0, this->lateral_pid->min_velocity);
+        float target_speed = (profile.timestamps[closest_i].linear_velocity/this->chassis->drivetrain->max_velocity()) * 127.0;
         angular_curve = curvature(curr_position, target_point);
-
-        float curr_ang_vel = profile.timestamps[closest_i].angular_velocity;
-
-        float motor_rad_per_sec = this->chassis->drivetrain->gear_ratio * curr_ang_vel; // Convert to motor rad/s
-        float motor_free_rad_per_sec = (this->chassis->drivetrain->rpm * 2 * M_PI) / 60; // Convert rpm to rad/s
-
-        float angular_velocity = (motor_rad_per_sec / motor_free_rad_per_sec) * PROS_MAX_VOLTAGE;
+        float angular_velocity = (profile.timestamps[closest_i].angular_velocity * this->chassis->drivetrain->track_width / 2 / this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE;
 
         // decrease angular curve if the target point is at the end of the path
         if (distance_btwn(curr_position, target_point)/max_lookahead < 0.3 && distance_btwn(curr_position, profile.timestamps.back().position) < max_lookahead) {
@@ -314,10 +308,6 @@ void knights::RobotController::follow_profile_pursuit(const knights::MotionProfi
             angular_curve *= ((distance_btwn(curr_position, target_point)/lookahead_distance) * 0.01);
             // target_speed = std::fmin(target_speed * (distance_btwn(curr_position, target_point)/lookahead_distance), target_speed);
         }
-
-
-        // if (target_speed < this->lateral_pid->get_min_speed())
-        //     break;
 
         // calculate right and left speed based on curvature
         float r_speed = target_speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2 + angular_velocity;
@@ -364,6 +354,10 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
     if (this->in_motion || profile.timestamps.size() < 2) return;
     this->in_motion = true;
 
+    // make sure motors are on brake - prevent drift at end
+    this->chassis->drivetrain->right_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    this->chassis->drivetrain->left_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+
     float time = 0;
     int curr_i = 0;
 
@@ -388,8 +382,8 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
             error_theta = 1e-6;
         }
 
-        float local_error_x = cos(curr_position.heading) * error_x - sin(curr_position.heading) * error_y;
-        float local_error_y = sin(curr_position.heading) * error_x + cos(curr_position.heading) * error_y;
+        float local_error_x = cos(curr_position.heading) * error_x + sin(curr_position.heading) * error_y;
+        float local_error_y = -sin(curr_position.heading) * error_x + cos(curr_position.heading) * error_y;
 
         // convert velocities to meters -> ensure default constants work
         float lin_vel = knights::to_meters(profile.timestamps[curr_i].linear_velocity);
@@ -404,20 +398,17 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         // calculate output velocities
         float curr_lin_vel = lin_vel * cos(error_theta) + gain * local_error_x;
         float curr_ang_vel = ang_vel + gain * error_theta + (this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y) / error_theta;
+        // float curr_lin_vel = lin_vel;
+        // float curr_ang_vel = ang_vel;
 
         // convert output to something usable
-        float output_lin_vel = (knights::to_inches(curr_lin_vel) / profile.max_velocity) * PROS_MAX_VOLTAGE;
-        // float output_ang_vel = (this->chassis->drivetrain->gear_ratio * curr_ang_vel) * (60 / (this->chassis->drivetrain->rpm)) * MOTOR_VOLTS;
-
-        float motor_rad_per_sec = this->chassis->drivetrain->gear_ratio * curr_ang_vel; // Convert to motor rad/s
-        float motor_free_rad_per_sec = (this->chassis->drivetrain->rpm * 2 * M_PI) / 60; // Convert rpm to rad/s
-
-        float output_ang_vel = (motor_rad_per_sec / motor_free_rad_per_sec) * PROS_MAX_VOLTAGE;
+        float output_lin_vel = (knights::to_inches(curr_lin_vel) / this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE;
+        float output_ang_vel = ((curr_ang_vel * this->chassis->drivetrain->track_width / 2) / this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE;
         
         write_file << knights::logger::string_format(
-            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n GR: %lf , RPM: %lf V: %lf \n",
+            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n MV: %lf \n",
             curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, time, 
-            this->chassis->drivetrain->gear_ratio, this->chassis->drivetrain->rpm, PROS_MAX_VOLTAGE
+            this->chassis->drivetrain->max_velocity()
         );
 
         std::cout << knights::logger::string_format(
@@ -429,7 +420,7 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         int dir = forwards ? 1 : -1;
 
         // send command to motors
-        this->chassis->drivetrain->voltage_command(dir * (output_lin_vel - output_ang_vel), dir * (output_lin_vel + output_ang_vel));
+        this->chassis->drivetrain->voltage_command(dir * (output_lin_vel + output_ang_vel), dir * (output_lin_vel - output_ang_vel));
 
         time += 0.01;
         pros::delay(10);
@@ -440,6 +431,8 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
 
     // stop motors after route over
     this->chassis->drivetrain->voltage_command(0, 0);
+    this->chassis->drivetrain->right_mtrs->brake();
+    this->chassis->drivetrain->left_mtrs->brake();
 
     this->in_motion = false;
     return;

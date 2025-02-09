@@ -107,13 +107,13 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
     float path_max_velocity = (this->max_velocity) * (desired_voltage / PROS_MAX_VOLTAGE);
 
     // Calculate the time it takes to accelerate to max velocity
-    float acceleration_time = path_max_velocity / max_acceleration;
+    float acceleration_time = path_max_velocity / this->max_acceleration;
 
     float halfway_distance = total_dist / 2;
-    float acceleration_distance = 0.5 * max_acceleration * acceleration_time * acceleration_time;
+    float acceleration_distance = 0.5 * this->max_acceleration * acceleration_time * acceleration_time;
 
     if (acceleration_distance > halfway_distance) {
-        acceleration_time = std::sqrt(halfway_distance / (0.5 * max_acceleration));
+        acceleration_time = std::sqrt(halfway_distance / (0.5 * this->max_acceleration));
     }
 
     float cruise_time = 0;
@@ -125,7 +125,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
     }
 
     float deceleration_time = acceleration_time;
-    float deceleration_distance = 0.5 * max_acceleration * deceleration_time * deceleration_time;
+    float deceleration_distance = 0.5 * this->max_acceleration * deceleration_time * deceleration_time;
     float cruise_distance = path_max_velocity * cruise_time;
 
     std::vector<float> t = knights::linspace(0, total_time, 300);
@@ -141,16 +141,16 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
             curr_dist = total_dist;
             curr_velocity = 0;
         } else if (elapsed_time < acceleration_time) {
-            curr_dist = 0.5 * max_acceleration * elapsed_time * elapsed_time;
-            curr_velocity = max_acceleration * elapsed_time;
+            curr_dist = 0.5 * this->max_acceleration * elapsed_time * elapsed_time;
+            curr_velocity = this->max_acceleration * elapsed_time;
         } else if (cruise_time > 0 && elapsed_time < (acceleration_time + cruise_time)) {
             float cruise_current_time = elapsed_time - acceleration_time;
             curr_dist = acceleration_distance + path_max_velocity * cruise_current_time;
             curr_velocity = path_max_velocity;
         } else {
             float deceleration_curr_time = (elapsed_time - acceleration_time - cruise_time);
-            curr_dist = acceleration_distance + cruise_distance + path_max_velocity * deceleration_curr_time - max_acceleration * (deceleration_curr_time * deceleration_curr_time) / 2;
-            curr_velocity = path_max_velocity - max_acceleration * deceleration_curr_time;
+            curr_dist = acceleration_distance + cruise_distance + path_max_velocity * deceleration_curr_time - this->max_acceleration * (deceleration_curr_time * deceleration_curr_time) / 2;
+            curr_velocity = path_max_velocity - this->max_acceleration * deceleration_curr_time;
         }
 
         Pos pt = path.position(elapsed_time / total_time);
@@ -166,5 +166,5 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
         timestamps.emplace_back(pt, curr_velocity, omega, curr_dist, elapsed_time, right_speed, left_speed);
     }
 
-    return MotionProfile(timestamps, path, max_acceleration, path_max_velocity);
+    return MotionProfile(timestamps, path, this->max_acceleration, path_max_velocity);
 }

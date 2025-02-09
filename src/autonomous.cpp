@@ -43,7 +43,7 @@ void pid_tuning(knights::RobotChassis *chassis) {
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 
-	knights::ProfileGenerator generator(drivetrain, 600);
+	knights::ProfileGenerator generator(drivetrain, 100);
 	knights::MotionProfile profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 0), 80, 0, 0);
 
 	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
@@ -73,8 +73,8 @@ void pid_tuning(knights::RobotChassis *chassis) {
 		dot.set_field_pos(profile.path.position(value));
 	}
 
-	// robotControl.follow_profile_pursuit(profile, 18.0);
-	robotControl.follow_profile_ramsete(profile);
+	robotControl.follow_profile_pursuit(profile, 18.0);
+	// robotControl.follow_profile_ramsete(profile);
 }
 
 
