@@ -39,6 +39,9 @@ knights::RouteAction::RouteAction(knights::action_type type, std::string route_n
 knights::RouteAction::RouteAction(action_type type, float specific, float end_tolerance, int timeout) :
     type(type), end_tolerance(end_tolerance), timeout(timeout), specific(specific) {}
 
+knights::RouteAction::RouteAction(action_type type, float x, float y, float theta, float end_tolerance, int timeout) :
+    type(type), end_tolerance(end_tolerance), timeout(timeout), move_to(Pos(x, y, theta)) {}
+
 knights::RouteAction::RouteAction(action_type type, std::string function_name) :
     type(type), function_name(function_name) {}
 
@@ -142,6 +145,12 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
                     read_file >> x >> y >> z;
                     ar_actions.emplace_back(knights::action_type::TURN, x, y, z);
                 }
+                else if (read_string == "lps") { // turn to angle
+                    // x = angle, y = end_tolerance, z = timeout
+                    float a,b;
+                    read_file >> x >> y >> z >> a >> b;
+                    ar_actions.emplace_back(knights::action_type::LATERAL_TO_POS, x, y, z, a, b);
+                }
                 else if (read_string == "cs") { // command start
                     // logic for commands here
                     read_file >> identifier;
@@ -178,7 +187,7 @@ void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::Ro
                 this->routes[curr_action.route_name], 
                 curr_action.lookahead, 
                 robotControl->lateral_pid->get_max_speed(), 
-                knights::signum(curr_action.lookahead),
+                true,
                 curr_action.end_tolerance, 
                 curr_action.timeout
             );
@@ -188,6 +197,10 @@ void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::Ro
             // for (knights::Pos pos : this->routes[curr_action.route_name].positions) {
             //     // knights::logger::yellow(knights::logger::string_format("p: %lf %lf %lf", pos.x, pos.y, pos.heading));
             // }
+        }
+        else if (curr_action.type == knights::action_type::LATERAL_TO_POS) {
+            int dir = (curr_action.end_tolerance >= 0) ? 1 : -1;
+            robotControl->lateral_to_position(curr_action.move_to, dir, fabs(curr_action.end_tolerance), curr_action.timeout);
         }
         else if (curr_action.type == knights::action_type::COMMAND) {
             input_map->execute_action(curr_action.function_name);
