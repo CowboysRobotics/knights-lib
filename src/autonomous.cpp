@@ -7,6 +7,8 @@
 #include "knights/util/calculation.hpp"
 #include "knights/util/position.hpp"
 
+#include <fstream>
+
 #define RIGHT 1
 #define LEFT -1
 
@@ -39,22 +41,43 @@ void pid_tuning(knights::RobotChassis *chassis) {
 	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
 	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
-	// turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 	knights::PIDController angularPID(15, 0.01,10);
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 
-	// knights::Pos start = chassis->get_position();
+	knights::ProfileGenerator generator(drivetrain, 100);
+	knights::MotionProfile profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 0), 80, 0, 0);
 
-	// float target = 24;
+	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 
-	// robotControl.lateral_move(target);
+	for (knights::ProfileTimestamp timestamp : profile.timestamps) {
+		write_file << "time: " << timestamp.time << " ";
+		write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+		write_file << "lin vel: " << timestamp.linear_velocity << " ";
+		write_file << "angular vel: " << timestamp.angular_velocity << " ";
+		write_file << "dist: " << timestamp.curr_distance << " ";
+		write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+		write_file << "end timestamp\n";
 
-	// pros::delay(500);
+		std::cout << "time: " << timestamp.time << " ";
+		std::cout << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+		std::cout << "lin vel: " << timestamp.linear_velocity << " ";
+		std::cout << "angular vel: " << timestamp.angular_velocity << " ";
+		std::cout << "dist: " << timestamp.curr_distance << " ";
+		std::cout << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+		std::cout << "end timestamp\n";
+	}
 
-	// knights::logger::red(knights::logger::string_format("error: %lf\n", target-knights::distance_btwn(start, chassis->get_position())));
+	auto t = knights::linspace(0, 1, 10);
+	for (auto value : t) {
+		knights::display::MapDot dot(5, 5, lv_palette_darken(LV_PALETTE_CYAN, 2));
+		std::cout << "pt: " << profile.path.position(value).x << " " << profile.path.position(value).y << " " << profile.path.position(value).heading << "\n";
+		dot.set_field_pos(profile.path.position(value));
+	}
 
-	robotControl.lateral_to_position(knights::Pos(-48,-24,0));
+	robotControl.follow_profile_pursuit(profile, 18.0);
+	// robotControl.follow_profile_ramsete(profile);
 }
 
 
@@ -89,7 +112,12 @@ void pp_test(knights::RobotChassis *chassis) {
 	inputMap.bind_action("lbLoad1", lady_brown_load1);
 	inputMap.bind_action("lbScore", lady_brown_score);
 
-	test_route.execute(chassis, &robotControl, &inputMap);
+	knights::ProfileGenerator generator(drivetrain, 600);
+	knights::MotionProfile profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 0), 80, 0, 0);
+
+	robotControl.follow_route_pursuit(knights::Route(profile), 18.0, 100.0);
+
+	// test_route.execute(chassis, &robotControl, &inputMap);
 }
 
 #define WAIT 170

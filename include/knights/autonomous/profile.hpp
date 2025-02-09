@@ -6,26 +6,36 @@
 
 #include "knights/robot/drivetrain.hpp"
 #include "knights/util/position.hpp"
-#include "knights/autonomous/path.hpp"
-
 
 namespace knights {
 
-    class HermiteSpline {
-        private:
-            knights::Point curr;
-            knights::Point target;
-            knights::Point curr_tangent;
-            knights::Point target_tangent;
+    struct QuinticPath {
+        knights::Pos curr, target, curr_tangent, target_tangent;
+        float curr_acceleration, target_acceleration;
 
-        public:
-            HermiteSpline(knights::Point curr, knights::Point target, knights::Point curr_tangent, knights::Point target_tangent);
+        QuinticPath(knights::Pos curr, knights::Pos target,
+            knights::Pos curr_tangent, knights::Pos target_tangent,
+            float curr_acceleration, float target_acceleration);
 
-            knights::Pos position(double t);
+        float p00();
+        float p01();
+        float p02();
+        float p03();
+        float p04();
+        float p05();
 
-            knights::Pos derivatives(double t);
+        float p10();
+        float p11();
+        float p12();
+        float p13();
+        float p14();
+        float p15();
 
-            knights::Point second_derivatives(double t);
+        knights::Pos position(float t);
+
+        knights::Pos derivatives(float t);
+
+        knights::Pos second_derivatives(float t);
     };
 
     struct ProfileTimestamp {
@@ -41,18 +51,29 @@ namespace knights {
             float time, float right_speed, float left_speed);
     };
 
+    struct MotionProfile {
+        std::vector<ProfileTimestamp> timestamps;
+        QuinticPath path;
+
+        // initial conditions
+        float max_accel;
+        float max_velocity;
+
+        MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity);
+    };
+
     class ProfileGenerator {
         public:
             // assumed differential drive
-            float max_accel;
+            float max_acceleration;
             float max_velocity;
             float track_width;
 
             ProfileGenerator(knights::Drivetrain drivetrain, float max_accel);
 
-            ProfileGenerator(float max_velocity, float track_width, float max_accel);
+            ProfileGenerator(float max_velocity, float track_width, float max_acceleration);
 
-            std::vector<ProfileTimestamp> generate(knights::Pos start, knights::Pos end);
+            MotionProfile generate(knights::Pos start, knights::Pos end, float desired_voltage, float curr_accel, float target_accel);
     };
 }
 

@@ -8,9 +8,7 @@
 #include <map>
 
 #include "knights/util/position.hpp"
-#include "knights/driver/input.hpp"
-#include "knights/robot/chassis.hpp"
-#include "knights/autonomous/pid.hpp"
+#include "knights/autonomous/profile.hpp"
 #include "knights/asset.hpp"
 
 
@@ -31,6 +29,8 @@ namespace knights {
          * 
          */
         Route();
+
+        Route(knights::MotionProfile profile);
 
         float length_dist();
 

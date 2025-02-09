@@ -13,6 +13,13 @@ knights::Route::Route() {
     this->positions = {};
 }
 
+knights::Route::Route(knights::MotionProfile profile) {
+    this->positions = {};
+    for (auto timestamp : profile.timestamps) {
+        this->positions.emplace_back(timestamp.position.x, timestamp.position.y, timestamp.position.heading);
+    }
+}
+
 float knights::Route::length_dist() {
     if (this->positions.size() < 2)
         return 0.0;
