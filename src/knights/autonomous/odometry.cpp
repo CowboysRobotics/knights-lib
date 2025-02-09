@@ -31,17 +31,10 @@ void knights::RobotChassis::update_position() {
         this->prevBack = this->pos_trackers->back_tracker->get_distance_travelled();
     }
 
-    // printf("right odom: %lf %lf\n", this->pos_trackers->right_tracker->get_distance_travelled(), this->prevRight);
-    // printf("imu %lf %lf\n", this->pos_trackers->inertial->get_heading(), prev_position.heading);
-
     if (deltaRight && deltaLeft) {
         deltaHeading = ((deltaLeft - deltaRight)/(this->pos_trackers->right_tracker->get_offset() + this->pos_trackers->left_tracker->get_offset()));
         newHeading = curr_position.heading - deltaHeading;
     } else if (this->pos_trackers->inertial != nullptr) {
-        // // old 11.15
-        // newHeading = knights::normalize_angle(-knights::to_rad(this->pos_trackers->inertial->get_heading()-180), true);
-        
-        // new 11.15
         newHeading = knights::normalize_angle((knights::to_rad(-this->pos_trackers->inertial->get_heading())), true);
         
         deltaHeading = newHeading - prev_position.heading;
@@ -81,15 +74,7 @@ void knights::RobotChassis::update_position() {
         localX = cnst * (deltaX / deltaHeading + this->pos_trackers->back_tracker->get_offset());
         localY = cnst * (deltaY / deltaHeading + deltaYOffset); // using right wheel for vertical tracking
     }
-    // printf("lx+y %lf %lf, dPos %lf %lf %lf\n", localX, localY, deltaX, deltaY, deltaHeading);
 
-    // // using old bot
-    // // calculate global x
-    // curr_position.x += localX * sin(averageHeading) + localY * -cos(averageHeading);
-    // // calculate global y
-    // curr_position.y += localX * cos(averageHeading) + localY * -sin(averageHeading);
-
-    // using new bot
     // calculate global x
     curr_position.x += localX * -sin(averageHeading) + localY * cos(averageHeading);
     // calculate global y

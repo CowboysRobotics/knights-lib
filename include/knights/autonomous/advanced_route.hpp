@@ -12,6 +12,7 @@
 #include "knights/driver/input.hpp"
 #include "knights/robot/chassis.hpp"
 #include "knights/autonomous/pid.hpp"
+#include "knights/asset.hpp"
 
 namespace knights {
     enum action_type {
@@ -99,6 +100,8 @@ namespace knights {
  * @return knights::AdvancedRoute 
  */
 knights::AdvancedRoute advanced_route_from_file(std::string file_name);
+
+knights::AdvancedRoute advanced_route_from_asset(AssetStream &buffer);
 
 
 #endif

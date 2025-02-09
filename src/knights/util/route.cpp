@@ -60,6 +60,23 @@ knights::Route knights::operator-(knights::Route r1, const int &amt) {
     return r1;
 }
 
+knights::Route knights::init_route_from_asset(AssetStream &buffer) {
+    if (buffer) {
+        std::vector<knights::Pos> positions;
+
+        float x,y,z;
+
+        while (buffer >> x && buffer >> y && buffer >> z) {
+            positions.emplace_back(x,y,z);
+        }
+
+        return knights::Route(positions);
+
+    } else {
+        return knights::Route();
+    }
+}
+
 knights::Route knights::init_route_from_sd(std::string route_name) {
 
     if (pros::usd::is_installed()) {
@@ -160,6 +177,73 @@ knights::AdvancedRoute advanced_route_from_file(std::string file_name) {
         }
     } else {
         printf("SD card not found\n");
+        return knights::AdvancedRoute();
+    }
+}
+
+knights::AdvancedRoute advanced_route_from_asset(AssetStream &buffer) {
+    if (buffer) {
+        std::vector<knights::RouteAction> ar_actions;
+        std::map<std::string, knights::Route> ar_routes;
+
+        std::string read_string;
+        int route_amt = 0;
+        while (buffer >> read_string) {
+            std::string identifier; float x, y, z;
+            if (read_string == "rs") { // follow route
+                // x and y are position points in route
+                // need to add route title
+                buffer >> x >> y >> z;
+                std::cout << x << y << z << "\n";
+                float end_tol = x; int timeout = y; float lookahead = z;
+                std::vector<knights::Pos> positions;
+                while (identifier != "re") {
+                    buffer >> identifier;
+                    if (identifier == "p") {
+                        buffer >> x >> y >> z;
+                        positions.emplace_back(x, y, z);
+                    }
+                }
+                ar_actions.emplace_back(knights::action_type::FOLLOW, std::to_string(route_amt), end_tol, timeout, lookahead);
+                ar_routes[std::to_string(route_amt)] = knights::Route(positions);
+                route_amt++;
+            }
+            else if (read_string == "ps") { // move for distance
+                // x = distance, y = end_tolerance, z = timeout
+                buffer >> x >> y >> z;
+
+                knights::RouteAction new_action(knights::action_type::LATERAL, x, y, z);
+
+                ar_actions.push_back(new_action);
+
+                knights::logger::red(knights::logger::string_format("lateral: %lf %lf %lf", 
+                    x, y, z));
+                // printf("lateral: %lf %lf %d\n", 
+                //         new_action.specific, new_action.end_tolerance, new_action.timeout);
+            }
+            else if (read_string == "ts") { // turn to angle
+                // x = angle, y = end_tolerance, z = timeout
+                buffer >> x >> y >> z;
+                ar_actions.emplace_back(knights::action_type::TURN, x, y, z);
+            }
+            else if (read_string == "lps") { // turn to angle
+                // x = angle, y = end_tolerance, z = timeout
+                float a,b;
+                buffer >> x >> y >> z >> a >> b;
+                ar_actions.emplace_back(knights::action_type::LATERAL_TO_POS, x, y, z, a, b);
+            }
+            else if (read_string == "cs") { // command start
+                // logic for commands here
+                buffer >> identifier;
+                ar_actions.emplace_back(knights::action_type::COMMAND, identifier);
+            }
+            else if (read_string == "eof")
+                break;
+        }
+
+        return knights::AdvancedRoute(ar_routes, ar_actions);
+
+    } else {
         return knights::AdvancedRoute();
     }
 }

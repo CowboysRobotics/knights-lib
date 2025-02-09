@@ -38,8 +38,9 @@ void initialize() {
 	auton_map["Red3"] = knights::Auton(&mogo_red_rush, knights::Pos(-55.1,37.5,0));
 	auton_map["Blue3"] = knights::Auton(&mogo_blue_rush, knights::Pos(-55.1,37.5,0));
 
-	auton_map["None0"] = knights::Auton(&redone_skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
-	auton_map["Skills0"] = knights::Auton(&redone_skills, knights::Pos(-59, 0, 0));
+	auton_map["None0"] = knights::Auton(&pp_skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
+	auton_map["Skills0"] = knights::Auton(&redone_skills, knights::Pos(-62.5, 0, 0));
+	// auton_map["None0"] = knights::Auton(&pp_skills, knights::Pos(-57.5, -12.75, knights::to_rad(180-49)));
 
 	lv_display();
 
@@ -121,16 +122,16 @@ void autonomous() {
 			while (true) {
 				chassis.update_position(); // query odometry system for position
 				
-				// Convoluted method of inputting everything to a string
-				std::stringstream stream;
-				stream << "Curr Pos: ";
-				stream << std::fixed << std::setprecision(2) << chassis.get_position().x << " ";
-				stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
-				stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
-				std::string s = stream.str();
+				// // Convoluted method of inputting everything to a string
+				// std::stringstream stream;
+				// stream << "Curr Pos: ";
+				// stream << std::fixed << std::setprecision(2) << chassis.get_position().x << " ";
+				// stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
+				// stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
+				// std::string s = stream.str();
 
-				// Set the display label to the current position
-				knights::display::set_pos_label(s);
+				// // Set the display label to the current position
+				// knights::display::set_pos_label(s);
 
 				// // Move the current position dot to the desired position
 				// knights::display::change_curr_pos_dot(chassis.get_position());

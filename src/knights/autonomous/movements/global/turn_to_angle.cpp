@@ -8,7 +8,7 @@
 #include "knights/logger/logger.hpp"
 #include "knights/util/position.hpp"
 
-#define MIN_SPEED 20
+#define MIN_SPEED 10
 
 void knights::RobotController::turn_to_angle(const float angle, int direction, float end_tolerance, int timeout, bool rad) {
     if (this->in_motion) return;

@@ -11,6 +11,8 @@
 #include "knights/driver/input.hpp"
 #include "knights/robot/chassis.hpp"
 #include "knights/autonomous/pid.hpp"
+#include "knights/asset.hpp"
+
 
 namespace knights {
 
@@ -67,6 +69,8 @@ namespace knights {
      * @param route_name The name and extension of the file to look for (ex. "file.txt")
      */
     Route init_route_from_sd(std::string route_name);
+
+    Route init_route_from_asset(AssetStream &buffer);
 }
 
 #endif

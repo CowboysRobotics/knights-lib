@@ -1,6 +1,8 @@
 #include "autonomous.h" 
 #include "globals.h"
 #include "knights/api.hpp"
+#include "knights/autonomous/advanced_route.hpp"
+#include "knights/autonomous/path.hpp"
 #include "knights/logger/logger.hpp"
 #include "knights/util/calculation.hpp"
 #include "knights/util/position.hpp"
@@ -14,7 +16,7 @@
 
 #define TURN_kP_45 98
 #define TURN_kI_45 0.0
-#define TURN_kD_45 650
+#define TURN_kD_45 675
 
 #define TURN_kP_90 78 // 75 - 45 // 48 - 90 // 38 - 135 // 34 - 180
 #define TURN_kI_90 0.0 // 0.017 - 45 // 0.017 - 90 // 0.017 - 135 // 0.017 - 180
@@ -27,6 +29,7 @@
 #define TURN_kP_180 78
 #define TURN_kI_180 0.0
 #define TURN_kD_180 700
+
 
 void pid_tuning(knights::RobotChassis *chassis) {
     knights::RamseteConstants ramsete_constants;
@@ -89,7 +92,7 @@ void pp_test(knights::RobotChassis *chassis) {
 	test_route.execute(chassis, &robotControl, &inputMap);
 }
 
-#define WAIT 140
+#define WAIT 170
 #define kPos knights::Pos
 #define rad(x) knights::to_rad(x)
 
@@ -273,6 +276,158 @@ void redone_skills(knights::RobotChassis *chassis) {
 
 	// lady_brown_score(); w; drivetrain.voltage_command(-60, -60);
 
+
+
+}
+
+void w400ms() {
+	pros::delay(400);
+}
+
+void w800ms() {
+	pros::delay(800);
+}
+
+void w1s() {
+	pros::delay(1000);
+}
+
+ASSET(first_txt)
+ASSET(second_txt)
+
+void pp_skills(knights::RobotChassis *chassis) {
+
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 110.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
+	knights::PIDController angularPID(50, 0, 10, -60.0, 60.0);
+
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
+	
+	knights::input::AutonomousInputMap inputMap;
+    inputMap.bind_action("intakeRev", intake_out);
+    inputMap.bind_action("intakeFwd", intake_in);
+    inputMap.bind_action("clamp", clamp_toggle);
+	inputMap.bind_action("lbDown", lady_brown_down);
+	inputMap.bind_action("lbLoad1", lady_brown_load1);
+	inputMap.bind_action("lbScore", lady_brown_score);
+	inputMap.bind_action("lbAlliance", lady_brown_alliance);
+	inputMap.bind_action("wait1000", w1s);
+	inputMap.bind_action("wait800", w400ms);
+	inputMap.bind_action("wait400", w800ms);
+
+	AssetStream first(first_txt);
+	auto first_route = knights::init_route_from_asset(first);
+
+	AssetStream second(second_txt);
+	auto second_route = knights::init_route_from_asset(second);
+
+	intake_in();
+
+	pros::delay(350);
+
+	intake_in();
+
+	robotControl.lateral_to_point(knights::Pos(-48, 0, knights::to_rad(90)), 1, 2.0, 500); w;
+
+	robotControl.lateral_to_point(knights::Pos(-48, -18, knights::to_rad(0)), false); w;
+	
+	clamp_toggle(); w; intake_in();
+
+	robotControl.turn_to_angle(0); w;
+
+	// route from first mogo to other side ring
+	robotControl.follow_route_pursuit(
+		first_route, 18.0, 100
+	);
+
+
+	pros::delay(500);
+
+	lady_brown_load1();
+
+	// get 2nd ring for lb
+	robotControl.lateral_to_point(kPos(19, -24, rad(225)), true, 5.0, 750); w;
+
+	// turn to place for wall stake
+	robotControl.turn_to_point(kPos(0, -33, 0)); w;
+
+	// get into place for wall stake
+	robotControl.lateral_move(22, 4.0, 750); w;
+
+	intake_in(); // stop
+
+	robotControl.turn_to_angle(270); w;
+
+	intake_bottom.move(70); w;
+
+	robotControl.lateral_move(20); w;
+
+	lady_brown_score();
+
+	pros::delay(500);
+
+	lady_brown_load1();
+
+	pros::delay(500);
+
+	lady_brown_load1();
+
+	pros::delay(500);
+
+	intake_in();
+
+	pros::delay(500);
+
+	lady_brown_score();
+
+	pros::delay(300);
+
+	intake_in();
+
+	robotControl.lateral_move(-10); w;
+
+	lady_brown_down();
+
+	robotControl.lateral_to_position(kPos(-48, -48, rad(180))); w;
+
+	robotControl.lateral_move(12); w;
+
+	robotControl.lateral_move(-12); w;
+
+	robotControl.turn_to_angle(270); w;
+
+	robotControl.lateral_move(8); w;
+
+	robotControl.lateral_move(-12); w;
+
+	intake_in();
+
+	robotControl.turn_to_angle(40); clamp_toggle(); w;
+
+	robotControl.lateral_move(-20); w;
+
+	robotControl.lateral_move(8); w;
+	robotControl.lateral_to_point(kPos(-48, 0, rad(270))); w;
+
+	// first mogo is scored in corner
+
+	robotControl.lateral_to_point(kPos(-48, 24, 0), false); w;
+
+	clamp_toggle(); w; intake_in(); w;
+
+	robotControl.turn_to_angle(0);
+
+	// use second pp route here
+
+	robotControl.follow_route_pursuit(
+		second_route, 15.0, 100, true, 4.0, 1500
+	);
 
 
 }

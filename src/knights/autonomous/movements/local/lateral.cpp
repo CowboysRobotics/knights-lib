@@ -101,7 +101,7 @@ void knights::RobotController::lateral_move(const float distance, const float en
                 // }
 
                 // send command to drivetrain
-                this->chassis->drivetrain->voltage_command(speed,speed);
+                this->chassis->drivetrain->voltage_command(speed, speed);
 
                 // delay
                 pros::delay(10);

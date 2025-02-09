@@ -24,4 +24,6 @@
 
 #include "knights/logger/logger.hpp"
 
+#include "knights/asset.hpp"
+
 #endif
