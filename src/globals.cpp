@@ -238,7 +238,7 @@ void lady_brown_down() {
 }
 
 void lady_brown_load1() {
-	toggle_color_sort();
+	color_sorting = false;
     lady_brown_to_angle(LADY_BROWN_LOAD1, 1500, true);
 }
 
@@ -247,7 +247,7 @@ void lady_brown_load2() {
 }
 
 void lady_brown_score() {
-	toggle_color_sort();
+	color_sorting = true;
 	intake_spinning = false;
 	intake.move(0);
     lady_brown_to_angle(LADY_BROWN_SCORE, 1500, true);
