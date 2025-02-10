@@ -41,7 +41,7 @@ void initialize() {
 	auton_map["Red3"] = knights::Auton(&mogo_red_rush, knights::Pos(-55.1,37.5,0));
 	auton_map["Blue3"] = knights::Auton(&mogo_blue_rush, knights::Pos(-55.1,37.5,0));
 
-	auton_map["None0"] = knights::Auton(&pp_skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
+	auton_map["None0"] = knights::Auton(&skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
 	auton_map["Skills0"] = knights::Auton(&redone_skills, knights::Pos(-62.5, 0, 0));
 	// auton_map["None0"] = knights::Auton(&pp_skills, knights::Pos(-57.5, -12.75, knights::to_rad(180-49)));
 

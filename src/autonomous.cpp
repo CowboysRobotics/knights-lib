@@ -323,7 +323,7 @@ void w1s() {
 ASSET(first_txt)
 ASSET(second_txt)
 
-void pp_skills(knights::RobotChassis *chassis) {
+void skills(knights::RobotChassis *chassis) {
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
@@ -460,7 +460,7 @@ void pp_skills(knights::RobotChassis *chassis) {
 
 }
 
-void skills(knights::RobotChassis *chassis) {
+void na_skills(knights::RobotChassis *chassis) {
 	knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::Route otherside_1 = knights::init_route_from_sd("os_skills.txt");
@@ -468,12 +468,12 @@ void skills(knights::RobotChassis *chassis) {
 	for (auto pos : otherside_1.positions) {
 		printf("pos %lf %lf read\n", pos.x, pos.y);
 	}
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
-	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
-	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
-	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
-	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
-	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
+	knights::PIDController lateralPID(4, 0, 0.0065, 10.0, 127.0);
+	knights::PIDController turnPID(38, 0, 25, 15.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(60, 0, 8));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(38, 0, 25));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(38, 0.017, 225));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(30, 0.017, 85));
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
 
@@ -643,15 +643,6 @@ void skills(knights::RobotChassis *chassis) {
 	robotControl.lateral_move(20);
 
 	robotControl.lateral_move(-30);
-
-
-
-
-
-
-
-
-
 
 }
 

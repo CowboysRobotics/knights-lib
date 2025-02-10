@@ -12,7 +12,7 @@ void pp_test(knights::RobotChassis *chassis);
 
 void skills(knights::RobotChassis *chassis);
 void redone_skills(knights::RobotChassis *chassis);
-void pp_skills(knights::RobotChassis *chassis);
+void na_skills(knights::RobotChassis *chassis);
 
 void red_left_wp_new(knights::RobotChassis *chassis);
 void blue_right_wp_new(knights::RobotChassis *chassis);
@@ -28,9 +28,7 @@ void red_rush_right_elim(knights::RobotChassis *chassis);
 void blue_right_elim(knights::RobotChassis *chassis);
 void blue_rush_left_elim(knights::RobotChassis *chassis);
 
-
 void right_safe_no_wait(knights::RobotChassis *chassis);
-
 
 void rush_4_ring(knights::RobotChassis *chassis);
 
