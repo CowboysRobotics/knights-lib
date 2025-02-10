@@ -81,7 +81,7 @@ void autonomous() {
 
 	// run odometry loop
 	if (odomTask == nullptr)
-		*odomTask = new pros::Task {[=] {
+		pros::Task *odomTask = new pros::Task {[=] {
 			while (true) {
 				chassis.update_position(); // query odometry system for position
 				
@@ -104,7 +104,7 @@ void autonomous() {
 		}};
 	
 	if (ladyBrownTask == nullptr) 
-		*ladyBrownTask = new pros::Task {[=] {
+		pros::Task *ladyBrownTask = new pros::Task {[=] {
 			while(true) {
 				lady_brown.move(get_lady_brown_command());
 
@@ -143,7 +143,7 @@ void opcontrol() {
 
 	// run odometry loop
 	if (odomTask == nullptr)
-		*odomTask = new pros::Task {[=] {
+		pros::Task *odomTask = new pros::Task {[=] {
 			while (true) {
 				chassis.update_position(); // query odometry system for position
 				
@@ -167,7 +167,7 @@ void opcontrol() {
 		}};
 	
 	if (ladyBrownTask == nullptr) 
-		*ladyBrownTask = new pros::Task {[=] {
+		pros::Task *ladyBrownTask = new pros::Task {[=] {
 			while(true) {
 				lady_brown.move(get_lady_brown_command());
 
