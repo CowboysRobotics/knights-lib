@@ -107,6 +107,8 @@ void autonomous() {
 		*ladyBrownTask = new pros::Task {[=] {
 			while(true) {
 				lady_brown.move(get_lady_brown_command());
+
+				pros::delay(10);
 			}
 		}};
 
@@ -168,6 +170,8 @@ void opcontrol() {
 		*ladyBrownTask = new pros::Task {[=] {
 			while(true) {
 				lady_brown.move(get_lady_brown_command());
+
+				pros::delay(10);
 			}
 		}};
 

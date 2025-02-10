@@ -99,34 +99,20 @@ void intake_out() {
 }
 
 bool color_sorting = false;
-bool blue_alliance = false;
 bool red_alliance = true;
 
 void toggle_color_sort(){
-	if (color_sorting == false){
-		color_sorting = true;
-		colors.set_led_pwm(100);
-	}
-	else if (color_sorting == true){
-		color_sorting = false;
-		colors.set_led_pwm(0);
-	}
+	color_sorting = !color_sorting;
+	colors.set_led_pwm(color_sorting * 100);
 }
 
 void change_color(){
-	if (blue_alliance == false && red_alliance == true){
-		blue_alliance = true;
-		red_alliance = false;
-	}
-	else if (red_alliance == false && blue_alliance == true){
-		blue_alliance = false;
-		red_alliance = true;
-	}
+	red_alliance = !red_alliance;
 
 }
 
 void red_color_sort() {
-	if (colors.get_hue() < 40 && blue_alliance == true && color_sorting == true && colors.get_proximity() > 100){
+	if (colors.get_hue() < 40 && red_alliance == true && color_sorting == true && colors.get_proximity() > 100){
 		pros::delay(20);
 		intake_top.move(0);
 		pros::delay(100);
