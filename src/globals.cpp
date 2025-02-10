@@ -145,7 +145,6 @@ void blue_color_sort(){
 
 #define LADY_BROWN_VELOCITY 127.0
 #define LADY_BROWN_kP 1.75
-#define LADY_BROWN_kP 1.75
 #define LADY_BROWN_kI 0.000
 #define LADY_BROWN_kD 0.5
 
@@ -181,6 +180,15 @@ void lady_brown_rev() {
 		lady_brown_spinning = true;
 		lady_brown_forward = false;
 	}
+}
+
+float lady_brown_target = LADY_BROWN_DOWN;
+
+float get_lady_brown_command() {
+	float error = lady_brown_target - lady_brown_rotation.get_position();
+	float speed = lady_brown_PID.update(error, false);
+
+	return speed;
 }
 
 void lady_brown_to_angle(float angle, int timeout, bool async = true, int dir = 0, int end_tol = LADY_BROWN_END_TOLERANCE) { // angle in 0-360 deg
@@ -234,29 +242,38 @@ void lady_brown_to_angle(float angle, int timeout, bool async = true, int dir = 
 }
 
 void lady_brown_down() {
-    lady_brown_to_angle(LADY_BROWN_DOWN, 1500, true, -1);
+    // lady_brown_to_angle(LADY_BROWN_DOWN, 1500, true, -1);
+	lady_brown_target = LADY_BROWN_DOWN;
 }
 
 void lady_brown_load1() {
 	color_sorting = false;
-    lady_brown_to_angle(LADY_BROWN_LOAD1, 1500, true);
+    // lady_brown_to_angle(LADY_BROWN_LOAD1, 1500, true);
+
+	lady_brown_target = LADY_BROWN_LOAD1;
 }
 
 void lady_brown_load2() {
-	lady_brown_to_angle(LADY_BROWN_LOAD2, 1500, true, 1);
+	// lady_brown_to_angle(LADY_BROWN_LOAD2, 1500, true, 1);
+
+	lady_brown_target = LADY_BROWN_LOAD2;
 }
 
 void lady_brown_score() {
 	color_sorting = true;
 	intake_spinning = false;
 	intake.move(0);
-    lady_brown_to_angle(LADY_BROWN_SCORE, 1500, true);
+    // lady_brown_to_angle(LADY_BROWN_SCORE, 1500, true);
+
+	lady_brown_target = LADY_BROWN_SCORE;
 }
 
 void lady_brown_alliance() {
 	intake_spinning = false;
 	intake.move(0);
-    lady_brown_to_angle(LADY_BROWN_ALLIANCE, 750, true, 5.0);
+    // lady_brown_to_angle(LADY_BROWN_ALLIANCE, 750, true, 5.0);
+
+	lady_brown_target = LADY_BROWN_ALLIANCE;
 }
 
 bool clamp_down = false;

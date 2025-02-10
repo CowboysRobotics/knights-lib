@@ -15,6 +15,8 @@
 
 pros::Task *odomTask = nullptr;
 
+pros::Task *ladyBrownTask = nullptr;
+
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -79,7 +81,7 @@ void autonomous() {
 
 	// run odometry loop
 	if (odomTask == nullptr)
-		pros::Task *odomTask = new pros::Task {[=] {
+		*odomTask = new pros::Task {[=] {
 			while (true) {
 				chassis.update_position(); // query odometry system for position
 				
@@ -98,6 +100,13 @@ void autonomous() {
 				// knights::display::change_curr_pos_dot(chassis.get_position());
 
 				pros::delay(10);
+			}
+		}};
+	
+	if (ladyBrownTask == nullptr) 
+		*ladyBrownTask = new pros::Task {[=] {
+			while(true) {
+				lady_brown.move(get_lady_brown_command());
 			}
 		}};
 
@@ -132,7 +141,7 @@ void opcontrol() {
 
 	// run odometry loop
 	if (odomTask == nullptr)
-		pros::Task *odomTask = new pros::Task {[=] {
+		*odomTask = new pros::Task {[=] {
 			while (true) {
 				chassis.update_position(); // query odometry system for position
 				
@@ -152,6 +161,13 @@ void opcontrol() {
 				// knights::display::change_curr_pos_dot(chassis.get_position());
 
 				pros::delay(10);
+			}
+		}};
+	
+	if (ladyBrownTask == nullptr) 
+		*ladyBrownTask = new pros::Task {[=] {
+			while(true) {
+				lady_brown.move(get_lady_brown_command());
 			}
 		}};
 
