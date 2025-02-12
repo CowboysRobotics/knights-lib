@@ -1,0 +1,558 @@
+\hypertarget{globals_8cpp}{}\doxysection{src/globals.cpp File Reference}
+\label{globals_8cpp}\index{src/globals.cpp@{src/globals.cpp}}
+{\ttfamily \#include \char`\"{}knights/autonomous/pid.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/logger/logger.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/util/calculation.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}pros/abstract\+\_\+motor.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}pros/motors.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}pros/adi.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}pros/optical.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}pros/rotation.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}pros/imu.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}pros/distance.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/robot/position\+\_\+tracker.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/robot/drivetrain.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/robot/chassis.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}pros/rtos.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$cmath$>$}\newline
+{\ttfamily \#include $<$cstdio$>$}\newline
+Include dependency graph for globals.\+cpp\+:
+% FIG 0
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{globals_8cpp_a9eac3b8e75d9b5d1c330af8818ecc9da}{velocity\+\_\+formula}}(x)~160$\ast$(1/(1+std\+::pow(M\+\_\+E, -\/0.\+1 $\ast$ x + 5))) + 20
+\item 
+\#define \mbox{\hyperlink{globals_8cpp_a8acaafcfcef9f956d6723e3e60345ec4}{I\+N\+T\+A\+K\+E\+\_\+\+V\+E\+L\+O\+C\+I\+TY}}~200
+\item 
+\#define \mbox{\hyperlink{globals_8cpp_a2f1451c882b656139f6dff8791cb6ad8}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+V\+E\+L\+O\+C\+I\+TY}}~127.\+0
+\item 
+\#define \mbox{\hyperlink{globals_8cpp_ab3012946fbfe37ee22a6f2bacacc5085}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+kP}}~1.\+75
+\item 
+\#define \mbox{\hyperlink{globals_8cpp_a2a14cac4cb7d83f1162fb7242963d0a2}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+kI}}~0.\+000
+\item 
+\#define \mbox{\hyperlink{globals_8cpp_a767a1cae87eb549db4b98b6cfe233f30}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+kD}}~0.\+5
+\item 
+\#define \mbox{\hyperlink{globals_8cpp_a507b3b69232da02206ef7bbbf669df2e}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+D\+O\+WN}}~0
+\item 
+\#define \mbox{\hyperlink{globals_8cpp_a8689109093f736feca01c1bc05008a0a}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+L\+O\+A\+D1}}~339
+\item 
+\#define \mbox{\hyperlink{globals_8cpp_a9791151eff0f110149d427d142a2db65}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+L\+O\+A\+D2}}~160
+\item 
+\#define \mbox{\hyperlink{globals_8cpp_a1fd3a0125073343ca8793cb34765e34d}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+S\+C\+O\+RE}}~213
+\item 
+\#define \mbox{\hyperlink{globals_8cpp_a4096ddfd385bc7176473213c9fc2cc8d}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+A\+L\+L\+I\+A\+N\+CE}}~165
+\item 
+\#define \mbox{\hyperlink{globals_8cpp_a4ec8004ed1c4c4c802a96ff124ca1650}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+E\+N\+D\+\_\+\+T\+O\+L\+E\+R\+A\+N\+CE}}~1.\+0
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+pros\+::\+Controller \mbox{\hyperlink{globals_8cpp_a2e3570f74ad22c79dc910bf4d7d23c2b}{master\+\_\+controller}} (pros\+::\+E\+\_\+\+C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+\_\+\+M\+A\+S\+T\+ER)
+\item 
+pros\+::\+Motor\+Group \mbox{\hyperlink{globals_8cpp_abb61fe4dad894b18a6c061aa9da4a99a}{right\+\_\+mtrs}} (\{17, 7, 3\}, pros\+::\+Motor\+Gears\+::blue)
+\item 
+pros\+::\+Motor\+Group \mbox{\hyperlink{globals_8cpp_aad3fa982091cb51fe735db401acef9d3}{left\+\_\+mtrs}} (\{-\/4,-\/5,-\/6\}, pros\+::\+Motor\+Gears\+::blue)
+\item 
+pros\+::\+Rotation \mbox{\hyperlink{globals_8cpp_aaf90a914ea2a81e82b565ff76a06e5ab}{mid\+\_\+odom}} (18)
+\item 
+pros\+::\+Rotation \mbox{\hyperlink{globals_8cpp_a0b061a9ae616643aaa7135a73cb36b8a}{back\+\_\+odom}} (14)
+\item 
+pros\+::\+I\+MU \mbox{\hyperlink{globals_8cpp_a6e97e0150a514b338b8b6fd798de7996}{imu}} (15)
+\item 
+pros\+::\+Motor \mbox{\hyperlink{globals_8cpp_ad39320bdc2d714e678693f347df04cac}{lady\+\_\+brown}} (21, pros\+::\+Motor\+Gears\+::green)
+\item 
+pros\+::\+Rotation \mbox{\hyperlink{globals_8cpp_ae4fa46cc538667fef93d971639281074}{lady\+\_\+brown\+\_\+rotation}} (7)
+\item 
+pros\+::\+Motor\+Group \mbox{\hyperlink{globals_8cpp_a6534f1655ec80ac7dd0aba0d3dd89f34}{intake}} (\{20, 5\}, pros\+::\+Motor\+Gears\+::blue)
+\item 
+pros\+::\+Motor \mbox{\hyperlink{globals_8cpp_aa294f166bee716a75a8c2bf731b80e31}{intake\+\_\+bottom}} (5, pros\+::v5\+::\+Motor\+Gears\+::blue)
+\item 
+pros\+::\+Motor \mbox{\hyperlink{globals_8cpp_af8e67d01061a1ae91541165bcb9f04eb}{intake\+\_\+top}} (20, pros\+::v5\+::\+Motor\+Gears\+::blue)
+\item 
+pros\+::\+Optical \mbox{\hyperlink{globals_8cpp_a31eb336270fc98826ecffc1cffc86c3d}{colors}} (15)
+\item 
+pros\+::adi\+::\+Pneumatics \mbox{\hyperlink{globals_8cpp_af8164fff40477b9424575fc9dcbbcb1d}{clamp}} (1, false)
+\item 
+pros\+::adi\+::\+Pneumatics \mbox{\hyperlink{globals_8cpp_a93646fcf6e4a19b8ff3e3f9d9642aee1}{doinker}} (3, false)
+\item 
+pros\+::adi\+::\+Pneumatics \mbox{\hyperlink{globals_8cpp_aed15c36d656454a18e8101e965117796}{doinker2}} (2, false)
+\item 
+void \mbox{\hyperlink{globals_8cpp_a7289a5306ed833ba66013b2dae5c56e7}{intake\+\_\+in}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_a801075721050c9fb584f469fff443bda}{intake\+\_\+out}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_a196701e259969a08a8f8f7c6a53afe1c}{unjam\+\_\+intake\+\_\+check}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_ab4d6f86e2315cfda3be45b3dc4783110}{toggle\+\_\+color\+\_\+sort}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_a97ceea71a364f574827d645550ea220c}{change\+\_\+color}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_a0be72e748368d240b68ea54357989ea3}{red\+\_\+color\+\_\+sort}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_a94cf8bc23c90ab195a078c77d3b604b8}{blue\+\_\+color\+\_\+sort}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_a31ea3379b57b883016f551b238dfb2fe}{lady\+\_\+brown\+\_\+fwd}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_a2524616c2e5aeeda9c75d53d63ae5510}{lady\+\_\+brown\+\_\+rev}} ()
+\item 
+float \mbox{\hyperlink{globals_8cpp_a9f2c84da3bd2618c1faa158b8c3531ce}{get\+\_\+lady\+\_\+brown\+\_\+command}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_a97b73ceb8dec342d29ff6be29dcde6d2}{lady\+\_\+brown\+\_\+to\+\_\+angle}} (float angle, int timeout, bool async=true, int dir=0, int end\+\_\+tol=\mbox{\hyperlink{globals_8h_a4ec8004ed1c4c4c802a96ff124ca1650}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+E\+N\+D\+\_\+\+T\+O\+L\+E\+R\+A\+N\+CE}})
+\item 
+void \mbox{\hyperlink{globals_8cpp_afe8968529a6da646d27c798ce1cebeb8}{lady\+\_\+brown\+\_\+down}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_ac9fddbcf0ac18344323890831edd3972}{lady\+\_\+brown\+\_\+load1}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_a7e4bdb7e9aa611bd3ec288420c706460}{lady\+\_\+brown\+\_\+load2}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_a1b11933e749c15f7cce300f8d58f5293}{lady\+\_\+brown\+\_\+score}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_a1df5beed71c2916407bb3df7c93288ed}{lady\+\_\+brown\+\_\+alliance}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_a12f176c697688969c38144b46476a874}{clamp\+\_\+toggle}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_a5a4428cfa34c0c5a1df9db79f0c66389}{doinker\+\_\+toggle}} ()
+\item 
+void \mbox{\hyperlink{globals_8cpp_ac86286880a2c31746ba71cd296f4cd9d}{doinker\+\_\+toggle2}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classknights_1_1PositionTracker}{knights\+::\+Position\+Tracker}} \mbox{\hyperlink{globals_8h_a8f230ea408e9d124198d3f1dd8162c13}{mid\+Odom}} \& \mbox{\hyperlink{globals_8cpp_aad578c29b27b2a5557a0af12d2694f94}{mid\+\_\+odom}}
+\item 
+\mbox{\hyperlink{classknights_1_1PositionTracker}{knights\+::\+Position\+Tracker}} \mbox{\hyperlink{globals_8h_a664b61070cf2c81717352174d8d11de9}{back\+Odom}} \& \mbox{\hyperlink{globals_8cpp_ab46cc08e061921936fe8cd22070c055a}{back\+\_\+odom}}
+\item 
+\mbox{\hyperlink{classknights_1_1Drivetrain}{knights\+::\+Drivetrain}} \mbox{\hyperlink{globals_8h_abfe7784aaa5845dbbc9370cb5aef6a1f}{drivetrain}} \& \mbox{\hyperlink{globals_8cpp_a0e5b40527d276b3ebb81ac4b4e0e72ac}{right\+\_\+mtrs}}
+\item 
+\mbox{\hyperlink{classknights_1_1PositionTrackerGroup}{knights\+::\+Position\+Tracker\+Group}} \mbox{\hyperlink{globals_8h_a195348e1466f01376d70f34675ff1b21}{odom\+Trackers}} \& \mbox{\hyperlink{globals_8cpp_aaff74d53594a24ef4ba0cb9ca8a07d41}{mid\+Odom}}
+\item 
+\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} \mbox{\hyperlink{globals_8h_a8ee46a1f7669e22229cd249fe7b12d3c}{chassis}} \& \mbox{\hyperlink{globals_8cpp_ad13f399efd4f300154fcb64ffaced9a5}{drivetrain}}
+\item 
+bool \mbox{\hyperlink{globals_8cpp_ad2c915556d5df1500e1b7708ed09e300}{intake\+\_\+spinning}} = false
+\item 
+bool \mbox{\hyperlink{globals_8cpp_acf02a9d900995981a45c036d876b6e17}{intake\+\_\+forward}} = false
+\item 
+float \mbox{\hyperlink{globals_8cpp_adabf9856364e05191f3081ea13afe4a3}{intake\+\_\+voltage}} = 0
+\item 
+int \mbox{\hyperlink{globals_8cpp_a305f1f45c4d5b3c4c51c83374942f1f5}{jam\+\_\+times}} = 0
+\item 
+bool \mbox{\hyperlink{globals_8cpp_a3d0039edbf7ddfc6bbbc0cee2e433d79}{jam\+\_\+enabled}} = false
+\item 
+bool \mbox{\hyperlink{globals_8cpp_acb05b3d42d8cb59e78cd45d62d8d1da6}{color\+\_\+sorting}} = false
+\item 
+bool \mbox{\hyperlink{globals_8cpp_a3b3dd3f120714c36bf0362c8e59f0f88}{red\+\_\+alliance}} = true
+\item 
+\mbox{\hyperlink{classknights_1_1PIDController}{knights\+::\+P\+I\+D\+Controller}} \mbox{\hyperlink{globals_8cpp_aad5512a14d4e8781eb7cfdab6b1fdb3c}{lady\+\_\+brown\+\_\+\+P\+ID}} (\mbox{\hyperlink{globals_8h_ab3012946fbfe37ee22a6f2bacacc5085}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+kP}}, \mbox{\hyperlink{globals_8h_a2a14cac4cb7d83f1162fb7242963d0a2}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+kI}}, \mbox{\hyperlink{globals_8h_a767a1cae87eb549db4b98b6cfe233f30}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+kD}}, 10.\+0, 127.\+0)
+\item 
+bool \mbox{\hyperlink{globals_8cpp_a3061006e4e45b683415907fc5792dd0a}{lady\+\_\+brown\+\_\+spinning}} = false
+\item 
+bool \mbox{\hyperlink{globals_8cpp_a87fdfaca4876725cd24638a2be65d6b2}{lady\+\_\+brown\+\_\+forward}} = false
+\item 
+float \mbox{\hyperlink{globals_8cpp_ab9166dc2d12373d52e4faeb52c1545cf}{lady\+\_\+brown\+\_\+target}} = \mbox{\hyperlink{globals_8h_a507b3b69232da02206ef7bbbf669df2e}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+D\+O\+WN}}
+\item 
+bool \mbox{\hyperlink{globals_8cpp_a7b14ea3e0543cc76f22ac5c89d714eb1}{clamp\+\_\+down}} = false
+\item 
+bool \mbox{\hyperlink{globals_8cpp_aa0c0ffc4dda722482545544ef513b29a}{doinker\+\_\+activate}} = false
+\item 
+bool \mbox{\hyperlink{globals_8cpp_a88ee480cbb38ec52461d75f6a4dce1e7}{doinker\+\_\+activate2}} = false
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{globals_8cpp_a8acaafcfcef9f956d6723e3e60345ec4}\label{globals_8cpp_a8acaafcfcef9f956d6723e3e60345ec4}} 
+\index{globals.cpp@{globals.cpp}!INTAKE\_VELOCITY@{INTAKE\_VELOCITY}}
+\index{INTAKE\_VELOCITY@{INTAKE\_VELOCITY}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{INTAKE\_VELOCITY}{INTAKE\_VELOCITY}}
+{\footnotesize\ttfamily \#define I\+N\+T\+A\+K\+E\+\_\+\+V\+E\+L\+O\+C\+I\+TY~200}
+
+\mbox{\Hypertarget{globals_8cpp_a4096ddfd385bc7176473213c9fc2cc8d}\label{globals_8cpp_a4096ddfd385bc7176473213c9fc2cc8d}} 
+\index{globals.cpp@{globals.cpp}!LADY\_BROWN\_ALLIANCE@{LADY\_BROWN\_ALLIANCE}}
+\index{LADY\_BROWN\_ALLIANCE@{LADY\_BROWN\_ALLIANCE}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{LADY\_BROWN\_ALLIANCE}{LADY\_BROWN\_ALLIANCE}}
+{\footnotesize\ttfamily \#define L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+A\+L\+L\+I\+A\+N\+CE~165}
+
+\mbox{\Hypertarget{globals_8cpp_a507b3b69232da02206ef7bbbf669df2e}\label{globals_8cpp_a507b3b69232da02206ef7bbbf669df2e}} 
+\index{globals.cpp@{globals.cpp}!LADY\_BROWN\_DOWN@{LADY\_BROWN\_DOWN}}
+\index{LADY\_BROWN\_DOWN@{LADY\_BROWN\_DOWN}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{LADY\_BROWN\_DOWN}{LADY\_BROWN\_DOWN}}
+{\footnotesize\ttfamily \#define L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+D\+O\+WN~0}
+
+\mbox{\Hypertarget{globals_8cpp_a4ec8004ed1c4c4c802a96ff124ca1650}\label{globals_8cpp_a4ec8004ed1c4c4c802a96ff124ca1650}} 
+\index{globals.cpp@{globals.cpp}!LADY\_BROWN\_END\_TOLERANCE@{LADY\_BROWN\_END\_TOLERANCE}}
+\index{LADY\_BROWN\_END\_TOLERANCE@{LADY\_BROWN\_END\_TOLERANCE}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{LADY\_BROWN\_END\_TOLERANCE}{LADY\_BROWN\_END\_TOLERANCE}}
+{\footnotesize\ttfamily \#define L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+E\+N\+D\+\_\+\+T\+O\+L\+E\+R\+A\+N\+CE~1.\+0}
+
+\mbox{\Hypertarget{globals_8cpp_a767a1cae87eb549db4b98b6cfe233f30}\label{globals_8cpp_a767a1cae87eb549db4b98b6cfe233f30}} 
+\index{globals.cpp@{globals.cpp}!LADY\_BROWN\_kD@{LADY\_BROWN\_kD}}
+\index{LADY\_BROWN\_kD@{LADY\_BROWN\_kD}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{LADY\_BROWN\_kD}{LADY\_BROWN\_kD}}
+{\footnotesize\ttfamily \#define L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+kD~0.\+5}
+
+\mbox{\Hypertarget{globals_8cpp_a2a14cac4cb7d83f1162fb7242963d0a2}\label{globals_8cpp_a2a14cac4cb7d83f1162fb7242963d0a2}} 
+\index{globals.cpp@{globals.cpp}!LADY\_BROWN\_kI@{LADY\_BROWN\_kI}}
+\index{LADY\_BROWN\_kI@{LADY\_BROWN\_kI}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{LADY\_BROWN\_kI}{LADY\_BROWN\_kI}}
+{\footnotesize\ttfamily \#define L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+kI~0.\+000}
+
+\mbox{\Hypertarget{globals_8cpp_ab3012946fbfe37ee22a6f2bacacc5085}\label{globals_8cpp_ab3012946fbfe37ee22a6f2bacacc5085}} 
+\index{globals.cpp@{globals.cpp}!LADY\_BROWN\_kP@{LADY\_BROWN\_kP}}
+\index{LADY\_BROWN\_kP@{LADY\_BROWN\_kP}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{LADY\_BROWN\_kP}{LADY\_BROWN\_kP}}
+{\footnotesize\ttfamily \#define L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+kP~1.\+75}
+
+\mbox{\Hypertarget{globals_8cpp_a8689109093f736feca01c1bc05008a0a}\label{globals_8cpp_a8689109093f736feca01c1bc05008a0a}} 
+\index{globals.cpp@{globals.cpp}!LADY\_BROWN\_LOAD1@{LADY\_BROWN\_LOAD1}}
+\index{LADY\_BROWN\_LOAD1@{LADY\_BROWN\_LOAD1}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{LADY\_BROWN\_LOAD1}{LADY\_BROWN\_LOAD1}}
+{\footnotesize\ttfamily \#define L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+L\+O\+A\+D1~339}
+
+\mbox{\Hypertarget{globals_8cpp_a9791151eff0f110149d427d142a2db65}\label{globals_8cpp_a9791151eff0f110149d427d142a2db65}} 
+\index{globals.cpp@{globals.cpp}!LADY\_BROWN\_LOAD2@{LADY\_BROWN\_LOAD2}}
+\index{LADY\_BROWN\_LOAD2@{LADY\_BROWN\_LOAD2}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{LADY\_BROWN\_LOAD2}{LADY\_BROWN\_LOAD2}}
+{\footnotesize\ttfamily \#define L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+L\+O\+A\+D2~160}
+
+\mbox{\Hypertarget{globals_8cpp_a1fd3a0125073343ca8793cb34765e34d}\label{globals_8cpp_a1fd3a0125073343ca8793cb34765e34d}} 
+\index{globals.cpp@{globals.cpp}!LADY\_BROWN\_SCORE@{LADY\_BROWN\_SCORE}}
+\index{LADY\_BROWN\_SCORE@{LADY\_BROWN\_SCORE}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{LADY\_BROWN\_SCORE}{LADY\_BROWN\_SCORE}}
+{\footnotesize\ttfamily \#define L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+S\+C\+O\+RE~213}
+
+\mbox{\Hypertarget{globals_8cpp_a2f1451c882b656139f6dff8791cb6ad8}\label{globals_8cpp_a2f1451c882b656139f6dff8791cb6ad8}} 
+\index{globals.cpp@{globals.cpp}!LADY\_BROWN\_VELOCITY@{LADY\_BROWN\_VELOCITY}}
+\index{LADY\_BROWN\_VELOCITY@{LADY\_BROWN\_VELOCITY}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{LADY\_BROWN\_VELOCITY}{LADY\_BROWN\_VELOCITY}}
+{\footnotesize\ttfamily \#define L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+V\+E\+L\+O\+C\+I\+TY~127.\+0}
+
+\mbox{\Hypertarget{globals_8cpp_a9eac3b8e75d9b5d1c330af8818ecc9da}\label{globals_8cpp_a9eac3b8e75d9b5d1c330af8818ecc9da}} 
+\index{globals.cpp@{globals.cpp}!velocity\_formula@{velocity\_formula}}
+\index{velocity\_formula@{velocity\_formula}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{velocity\_formula}{velocity\_formula}}
+{\footnotesize\ttfamily \#define velocity\+\_\+formula(\begin{DoxyParamCaption}\item[{}]{x }\end{DoxyParamCaption})~160$\ast$(1/(1+std\+::pow(M\+\_\+E, -\/0.\+1 $\ast$ x + 5))) + 20}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{globals_8cpp_a0b061a9ae616643aaa7135a73cb36b8a}\label{globals_8cpp_a0b061a9ae616643aaa7135a73cb36b8a}} 
+\index{globals.cpp@{globals.cpp}!back\_odom@{back\_odom}}
+\index{back\_odom@{back\_odom}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{back\_odom()}{back\_odom()}}
+{\footnotesize\ttfamily pros\+::\+Rotation back\+\_\+odom (\begin{DoxyParamCaption}\item[{14}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a94cf8bc23c90ab195a078c77d3b604b8}\label{globals_8cpp_a94cf8bc23c90ab195a078c77d3b604b8}} 
+\index{globals.cpp@{globals.cpp}!blue\_color\_sort@{blue\_color\_sort}}
+\index{blue\_color\_sort@{blue\_color\_sort}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{blue\_color\_sort()}{blue\_color\_sort()}}
+{\footnotesize\ttfamily void blue\+\_\+color\+\_\+sort (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a97ceea71a364f574827d645550ea220c}\label{globals_8cpp_a97ceea71a364f574827d645550ea220c}} 
+\index{globals.cpp@{globals.cpp}!change\_color@{change\_color}}
+\index{change\_color@{change\_color}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{change\_color()}{change\_color()}}
+{\footnotesize\ttfamily void change\+\_\+color (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_af8164fff40477b9424575fc9dcbbcb1d}\label{globals_8cpp_af8164fff40477b9424575fc9dcbbcb1d}} 
+\index{globals.cpp@{globals.cpp}!clamp@{clamp}}
+\index{clamp@{clamp}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{clamp()}{clamp()}}
+{\footnotesize\ttfamily pros\+::adi\+::\+Pneumatics clamp (\begin{DoxyParamCaption}\item[{1}]{,  }\item[{false}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a12f176c697688969c38144b46476a874}\label{globals_8cpp_a12f176c697688969c38144b46476a874}} 
+\index{globals.cpp@{globals.cpp}!clamp\_toggle@{clamp\_toggle}}
+\index{clamp\_toggle@{clamp\_toggle}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{clamp\_toggle()}{clamp\_toggle()}}
+{\footnotesize\ttfamily void clamp\+\_\+toggle (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a31eb336270fc98826ecffc1cffc86c3d}\label{globals_8cpp_a31eb336270fc98826ecffc1cffc86c3d}} 
+\index{globals.cpp@{globals.cpp}!colors@{colors}}
+\index{colors@{colors}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{colors()}{colors()}}
+{\footnotesize\ttfamily pros\+::\+Optical colors (\begin{DoxyParamCaption}\item[{15}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a93646fcf6e4a19b8ff3e3f9d9642aee1}\label{globals_8cpp_a93646fcf6e4a19b8ff3e3f9d9642aee1}} 
+\index{globals.cpp@{globals.cpp}!doinker@{doinker}}
+\index{doinker@{doinker}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{doinker()}{doinker()}}
+{\footnotesize\ttfamily pros\+::adi\+::\+Pneumatics doinker (\begin{DoxyParamCaption}\item[{3}]{,  }\item[{false}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_aed15c36d656454a18e8101e965117796}\label{globals_8cpp_aed15c36d656454a18e8101e965117796}} 
+\index{globals.cpp@{globals.cpp}!doinker2@{doinker2}}
+\index{doinker2@{doinker2}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{doinker2()}{doinker2()}}
+{\footnotesize\ttfamily pros\+::adi\+::\+Pneumatics doinker2 (\begin{DoxyParamCaption}\item[{2}]{,  }\item[{false}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a5a4428cfa34c0c5a1df9db79f0c66389}\label{globals_8cpp_a5a4428cfa34c0c5a1df9db79f0c66389}} 
+\index{globals.cpp@{globals.cpp}!doinker\_toggle@{doinker\_toggle}}
+\index{doinker\_toggle@{doinker\_toggle}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{doinker\_toggle()}{doinker\_toggle()}}
+{\footnotesize\ttfamily void doinker\+\_\+toggle (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_ac86286880a2c31746ba71cd296f4cd9d}\label{globals_8cpp_ac86286880a2c31746ba71cd296f4cd9d}} 
+\index{globals.cpp@{globals.cpp}!doinker\_toggle2@{doinker\_toggle2}}
+\index{doinker\_toggle2@{doinker\_toggle2}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{doinker\_toggle2()}{doinker\_toggle2()}}
+{\footnotesize\ttfamily void doinker\+\_\+toggle2 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a9f2c84da3bd2618c1faa158b8c3531ce}\label{globals_8cpp_a9f2c84da3bd2618c1faa158b8c3531ce}} 
+\index{globals.cpp@{globals.cpp}!get\_lady\_brown\_command@{get\_lady\_brown\_command}}
+\index{get\_lady\_brown\_command@{get\_lady\_brown\_command}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{get\_lady\_brown\_command()}{get\_lady\_brown\_command()}}
+{\footnotesize\ttfamily float get\+\_\+lady\+\_\+brown\+\_\+command (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a6e97e0150a514b338b8b6fd798de7996}\label{globals_8cpp_a6e97e0150a514b338b8b6fd798de7996}} 
+\index{globals.cpp@{globals.cpp}!imu@{imu}}
+\index{imu@{imu}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{imu()}{imu()}}
+{\footnotesize\ttfamily pros\+::\+I\+MU imu (\begin{DoxyParamCaption}\item[{15}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a6534f1655ec80ac7dd0aba0d3dd89f34}\label{globals_8cpp_a6534f1655ec80ac7dd0aba0d3dd89f34}} 
+\index{globals.cpp@{globals.cpp}!intake@{intake}}
+\index{intake@{intake}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{intake()}{intake()}}
+{\footnotesize\ttfamily pros\+::\+Motor\+Group intake (\begin{DoxyParamCaption}\item[{\{20, 5\}}]{,  }\item[{pros\+::\+Motor\+Gears\+::blue}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_aa294f166bee716a75a8c2bf731b80e31}\label{globals_8cpp_aa294f166bee716a75a8c2bf731b80e31}} 
+\index{globals.cpp@{globals.cpp}!intake\_bottom@{intake\_bottom}}
+\index{intake\_bottom@{intake\_bottom}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{intake\_bottom()}{intake\_bottom()}}
+{\footnotesize\ttfamily pros\+::\+Motor intake\+\_\+bottom (\begin{DoxyParamCaption}\item[{5}]{,  }\item[{pros\+::v5\+::\+Motor\+Gears\+::blue}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a7289a5306ed833ba66013b2dae5c56e7}\label{globals_8cpp_a7289a5306ed833ba66013b2dae5c56e7}} 
+\index{globals.cpp@{globals.cpp}!intake\_in@{intake\_in}}
+\index{intake\_in@{intake\_in}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{intake\_in()}{intake\_in()}}
+{\footnotesize\ttfamily void intake\+\_\+in (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a801075721050c9fb584f469fff443bda}\label{globals_8cpp_a801075721050c9fb584f469fff443bda}} 
+\index{globals.cpp@{globals.cpp}!intake\_out@{intake\_out}}
+\index{intake\_out@{intake\_out}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{intake\_out()}{intake\_out()}}
+{\footnotesize\ttfamily void intake\+\_\+out (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_af8e67d01061a1ae91541165bcb9f04eb}\label{globals_8cpp_af8e67d01061a1ae91541165bcb9f04eb}} 
+\index{globals.cpp@{globals.cpp}!intake\_top@{intake\_top}}
+\index{intake\_top@{intake\_top}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{intake\_top()}{intake\_top()}}
+{\footnotesize\ttfamily pros\+::\+Motor intake\+\_\+top (\begin{DoxyParamCaption}\item[{20}]{,  }\item[{pros\+::v5\+::\+Motor\+Gears\+::blue}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_ad39320bdc2d714e678693f347df04cac}\label{globals_8cpp_ad39320bdc2d714e678693f347df04cac}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown@{lady\_brown}}
+\index{lady\_brown@{lady\_brown}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown()}{lady\_brown()}}
+{\footnotesize\ttfamily pros\+::\+Motor lady\+\_\+brown (\begin{DoxyParamCaption}\item[{21}]{,  }\item[{pros\+::\+Motor\+Gears\+::green}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a1df5beed71c2916407bb3df7c93288ed}\label{globals_8cpp_a1df5beed71c2916407bb3df7c93288ed}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown\_alliance@{lady\_brown\_alliance}}
+\index{lady\_brown\_alliance@{lady\_brown\_alliance}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown\_alliance()}{lady\_brown\_alliance()}}
+{\footnotesize\ttfamily void lady\+\_\+brown\+\_\+alliance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_afe8968529a6da646d27c798ce1cebeb8}\label{globals_8cpp_afe8968529a6da646d27c798ce1cebeb8}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown\_down@{lady\_brown\_down}}
+\index{lady\_brown\_down@{lady\_brown\_down}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown\_down()}{lady\_brown\_down()}}
+{\footnotesize\ttfamily void lady\+\_\+brown\+\_\+down (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a31ea3379b57b883016f551b238dfb2fe}\label{globals_8cpp_a31ea3379b57b883016f551b238dfb2fe}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown\_fwd@{lady\_brown\_fwd}}
+\index{lady\_brown\_fwd@{lady\_brown\_fwd}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown\_fwd()}{lady\_brown\_fwd()}}
+{\footnotesize\ttfamily void lady\+\_\+brown\+\_\+fwd (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_ac9fddbcf0ac18344323890831edd3972}\label{globals_8cpp_ac9fddbcf0ac18344323890831edd3972}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown\_load1@{lady\_brown\_load1}}
+\index{lady\_brown\_load1@{lady\_brown\_load1}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown\_load1()}{lady\_brown\_load1()}}
+{\footnotesize\ttfamily void lady\+\_\+brown\+\_\+load1 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a7e4bdb7e9aa611bd3ec288420c706460}\label{globals_8cpp_a7e4bdb7e9aa611bd3ec288420c706460}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown\_load2@{lady\_brown\_load2}}
+\index{lady\_brown\_load2@{lady\_brown\_load2}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown\_load2()}{lady\_brown\_load2()}}
+{\footnotesize\ttfamily void lady\+\_\+brown\+\_\+load2 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a2524616c2e5aeeda9c75d53d63ae5510}\label{globals_8cpp_a2524616c2e5aeeda9c75d53d63ae5510}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown\_rev@{lady\_brown\_rev}}
+\index{lady\_brown\_rev@{lady\_brown\_rev}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown\_rev()}{lady\_brown\_rev()}}
+{\footnotesize\ttfamily void lady\+\_\+brown\+\_\+rev (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_ae4fa46cc538667fef93d971639281074}\label{globals_8cpp_ae4fa46cc538667fef93d971639281074}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown\_rotation@{lady\_brown\_rotation}}
+\index{lady\_brown\_rotation@{lady\_brown\_rotation}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown\_rotation()}{lady\_brown\_rotation()}}
+{\footnotesize\ttfamily pros\+::\+Rotation lady\+\_\+brown\+\_\+rotation (\begin{DoxyParamCaption}\item[{7}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a1b11933e749c15f7cce300f8d58f5293}\label{globals_8cpp_a1b11933e749c15f7cce300f8d58f5293}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown\_score@{lady\_brown\_score}}
+\index{lady\_brown\_score@{lady\_brown\_score}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown\_score()}{lady\_brown\_score()}}
+{\footnotesize\ttfamily void lady\+\_\+brown\+\_\+score (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a97b73ceb8dec342d29ff6be29dcde6d2}\label{globals_8cpp_a97b73ceb8dec342d29ff6be29dcde6d2}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown\_to\_angle@{lady\_brown\_to\_angle}}
+\index{lady\_brown\_to\_angle@{lady\_brown\_to\_angle}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown\_to\_angle()}{lady\_brown\_to\_angle()}}
+{\footnotesize\ttfamily void lady\+\_\+brown\+\_\+to\+\_\+angle (\begin{DoxyParamCaption}\item[{float}]{angle,  }\item[{int}]{timeout,  }\item[{bool}]{async = {\ttfamily true},  }\item[{int}]{dir = {\ttfamily 0},  }\item[{int}]{end\+\_\+tol = {\ttfamily \mbox{\hyperlink{globals_8h_a4ec8004ed1c4c4c802a96ff124ca1650}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+E\+N\+D\+\_\+\+T\+O\+L\+E\+R\+A\+N\+CE}}} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_aad3fa982091cb51fe735db401acef9d3}\label{globals_8cpp_aad3fa982091cb51fe735db401acef9d3}} 
+\index{globals.cpp@{globals.cpp}!left\_mtrs@{left\_mtrs}}
+\index{left\_mtrs@{left\_mtrs}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{left\_mtrs()}{left\_mtrs()}}
+{\footnotesize\ttfamily pros\+::\+Motor\+Group left\+\_\+mtrs (\begin{DoxyParamCaption}\item[{\{-\/4,-\/5,-\/6\}}]{,  }\item[{pros\+::\+Motor\+Gears\+::blue}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a2e3570f74ad22c79dc910bf4d7d23c2b}\label{globals_8cpp_a2e3570f74ad22c79dc910bf4d7d23c2b}} 
+\index{globals.cpp@{globals.cpp}!master\_controller@{master\_controller}}
+\index{master\_controller@{master\_controller}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{master\_controller()}{master\_controller()}}
+{\footnotesize\ttfamily pros\+::\+Controller master\+\_\+controller (\begin{DoxyParamCaption}\item[{pros\+::\+E\+\_\+\+C\+O\+N\+T\+R\+O\+L\+L\+E\+R\+\_\+\+M\+A\+S\+T\+ER}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_aaf90a914ea2a81e82b565ff76a06e5ab}\label{globals_8cpp_aaf90a914ea2a81e82b565ff76a06e5ab}} 
+\index{globals.cpp@{globals.cpp}!mid\_odom@{mid\_odom}}
+\index{mid\_odom@{mid\_odom}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{mid\_odom()}{mid\_odom()}}
+{\footnotesize\ttfamily pros\+::\+Rotation mid\+\_\+odom (\begin{DoxyParamCaption}\item[{18}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a0be72e748368d240b68ea54357989ea3}\label{globals_8cpp_a0be72e748368d240b68ea54357989ea3}} 
+\index{globals.cpp@{globals.cpp}!red\_color\_sort@{red\_color\_sort}}
+\index{red\_color\_sort@{red\_color\_sort}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{red\_color\_sort()}{red\_color\_sort()}}
+{\footnotesize\ttfamily void red\+\_\+color\+\_\+sort (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_abb61fe4dad894b18a6c061aa9da4a99a}\label{globals_8cpp_abb61fe4dad894b18a6c061aa9da4a99a}} 
+\index{globals.cpp@{globals.cpp}!right\_mtrs@{right\_mtrs}}
+\index{right\_mtrs@{right\_mtrs}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{right\_mtrs()}{right\_mtrs()}}
+{\footnotesize\ttfamily pros\+::\+Motor\+Group right\+\_\+mtrs (\begin{DoxyParamCaption}\item[{\{17, 7, 3\}}]{,  }\item[{pros\+::\+Motor\+Gears\+::blue}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_ab4d6f86e2315cfda3be45b3dc4783110}\label{globals_8cpp_ab4d6f86e2315cfda3be45b3dc4783110}} 
+\index{globals.cpp@{globals.cpp}!toggle\_color\_sort@{toggle\_color\_sort}}
+\index{toggle\_color\_sort@{toggle\_color\_sort}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{toggle\_color\_sort()}{toggle\_color\_sort()}}
+{\footnotesize\ttfamily void toggle\+\_\+color\+\_\+sort (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{globals_8cpp_a196701e259969a08a8f8f7c6a53afe1c}\label{globals_8cpp_a196701e259969a08a8f8f7c6a53afe1c}} 
+\index{globals.cpp@{globals.cpp}!unjam\_intake\_check@{unjam\_intake\_check}}
+\index{unjam\_intake\_check@{unjam\_intake\_check}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{unjam\_intake\_check()}{unjam\_intake\_check()}}
+{\footnotesize\ttfamily void unjam\+\_\+intake\+\_\+check (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{globals_8cpp_ab46cc08e061921936fe8cd22070c055a}\label{globals_8cpp_ab46cc08e061921936fe8cd22070c055a}} 
+\index{globals.cpp@{globals.cpp}!back\_odom@{back\_odom}}
+\index{back\_odom@{back\_odom}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{back\_odom}{back\_odom}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classknights_1_1PositionTracker}{knights\+::\+Position\+Tracker}} \mbox{\hyperlink{globals_8h_a664b61070cf2c81717352174d8d11de9}{back\+Odom}}\& back\+\_\+odom}
+
+\mbox{\Hypertarget{globals_8cpp_a7b14ea3e0543cc76f22ac5c89d714eb1}\label{globals_8cpp_a7b14ea3e0543cc76f22ac5c89d714eb1}} 
+\index{globals.cpp@{globals.cpp}!clamp\_down@{clamp\_down}}
+\index{clamp\_down@{clamp\_down}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{clamp\_down}{clamp\_down}}
+{\footnotesize\ttfamily bool clamp\+\_\+down = false}
+
+\mbox{\Hypertarget{globals_8cpp_acb05b3d42d8cb59e78cd45d62d8d1da6}\label{globals_8cpp_acb05b3d42d8cb59e78cd45d62d8d1da6}} 
+\index{globals.cpp@{globals.cpp}!color\_sorting@{color\_sorting}}
+\index{color\_sorting@{color\_sorting}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{color\_sorting}{color\_sorting}}
+{\footnotesize\ttfamily bool color\+\_\+sorting = false}
+
+\mbox{\Hypertarget{globals_8cpp_aa0c0ffc4dda722482545544ef513b29a}\label{globals_8cpp_aa0c0ffc4dda722482545544ef513b29a}} 
+\index{globals.cpp@{globals.cpp}!doinker\_activate@{doinker\_activate}}
+\index{doinker\_activate@{doinker\_activate}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{doinker\_activate}{doinker\_activate}}
+{\footnotesize\ttfamily bool doinker\+\_\+activate = false}
+
+\mbox{\Hypertarget{globals_8cpp_a88ee480cbb38ec52461d75f6a4dce1e7}\label{globals_8cpp_a88ee480cbb38ec52461d75f6a4dce1e7}} 
+\index{globals.cpp@{globals.cpp}!doinker\_activate2@{doinker\_activate2}}
+\index{doinker\_activate2@{doinker\_activate2}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{doinker\_activate2}{doinker\_activate2}}
+{\footnotesize\ttfamily bool doinker\+\_\+activate2 = false}
+
+\mbox{\Hypertarget{globals_8cpp_ad13f399efd4f300154fcb64ffaced9a5}\label{globals_8cpp_ad13f399efd4f300154fcb64ffaced9a5}} 
+\index{globals.cpp@{globals.cpp}!drivetrain@{drivetrain}}
+\index{drivetrain@{drivetrain}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{drivetrain}{drivetrain}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} \mbox{\hyperlink{globals_8h_a8ee46a1f7669e22229cd249fe7b12d3c}{chassis}} \& drivetrain}
+
+\mbox{\Hypertarget{globals_8cpp_acf02a9d900995981a45c036d876b6e17}\label{globals_8cpp_acf02a9d900995981a45c036d876b6e17}} 
+\index{globals.cpp@{globals.cpp}!intake\_forward@{intake\_forward}}
+\index{intake\_forward@{intake\_forward}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{intake\_forward}{intake\_forward}}
+{\footnotesize\ttfamily bool intake\+\_\+forward = false}
+
+\mbox{\Hypertarget{globals_8cpp_ad2c915556d5df1500e1b7708ed09e300}\label{globals_8cpp_ad2c915556d5df1500e1b7708ed09e300}} 
+\index{globals.cpp@{globals.cpp}!intake\_spinning@{intake\_spinning}}
+\index{intake\_spinning@{intake\_spinning}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{intake\_spinning}{intake\_spinning}}
+{\footnotesize\ttfamily bool intake\+\_\+spinning = false}
+
+\mbox{\Hypertarget{globals_8cpp_adabf9856364e05191f3081ea13afe4a3}\label{globals_8cpp_adabf9856364e05191f3081ea13afe4a3}} 
+\index{globals.cpp@{globals.cpp}!intake\_voltage@{intake\_voltage}}
+\index{intake\_voltage@{intake\_voltage}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{intake\_voltage}{intake\_voltage}}
+{\footnotesize\ttfamily float intake\+\_\+voltage = 0}
+
+\mbox{\Hypertarget{globals_8cpp_a3d0039edbf7ddfc6bbbc0cee2e433d79}\label{globals_8cpp_a3d0039edbf7ddfc6bbbc0cee2e433d79}} 
+\index{globals.cpp@{globals.cpp}!jam\_enabled@{jam\_enabled}}
+\index{jam\_enabled@{jam\_enabled}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{jam\_enabled}{jam\_enabled}}
+{\footnotesize\ttfamily bool jam\+\_\+enabled = false}
+
+\mbox{\Hypertarget{globals_8cpp_a305f1f45c4d5b3c4c51c83374942f1f5}\label{globals_8cpp_a305f1f45c4d5b3c4c51c83374942f1f5}} 
+\index{globals.cpp@{globals.cpp}!jam\_times@{jam\_times}}
+\index{jam\_times@{jam\_times}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{jam\_times}{jam\_times}}
+{\footnotesize\ttfamily int jam\+\_\+times = 0}
+
+\mbox{\Hypertarget{globals_8cpp_a87fdfaca4876725cd24638a2be65d6b2}\label{globals_8cpp_a87fdfaca4876725cd24638a2be65d6b2}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown\_forward@{lady\_brown\_forward}}
+\index{lady\_brown\_forward@{lady\_brown\_forward}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown\_forward}{lady\_brown\_forward}}
+{\footnotesize\ttfamily bool lady\+\_\+brown\+\_\+forward = false}
+
+\mbox{\Hypertarget{globals_8cpp_aad5512a14d4e8781eb7cfdab6b1fdb3c}\label{globals_8cpp_aad5512a14d4e8781eb7cfdab6b1fdb3c}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown\_PID@{lady\_brown\_PID}}
+\index{lady\_brown\_PID@{lady\_brown\_PID}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown\_PID}{lady\_brown\_PID}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classknights_1_1PIDController}{knights\+::\+P\+I\+D\+Controller}} lady\+\_\+brown\+\_\+\+P\+ID(\mbox{\hyperlink{globals_8h_ab3012946fbfe37ee22a6f2bacacc5085}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+kP}}, \mbox{\hyperlink{globals_8h_a2a14cac4cb7d83f1162fb7242963d0a2}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+kI}}, \mbox{\hyperlink{globals_8h_a767a1cae87eb549db4b98b6cfe233f30}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+kD}}, 10.\+0, 127.\+0)}
+
+\mbox{\Hypertarget{globals_8cpp_a3061006e4e45b683415907fc5792dd0a}\label{globals_8cpp_a3061006e4e45b683415907fc5792dd0a}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown\_spinning@{lady\_brown\_spinning}}
+\index{lady\_brown\_spinning@{lady\_brown\_spinning}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown\_spinning}{lady\_brown\_spinning}}
+{\footnotesize\ttfamily bool lady\+\_\+brown\+\_\+spinning = false}
+
+\mbox{\Hypertarget{globals_8cpp_ab9166dc2d12373d52e4faeb52c1545cf}\label{globals_8cpp_ab9166dc2d12373d52e4faeb52c1545cf}} 
+\index{globals.cpp@{globals.cpp}!lady\_brown\_target@{lady\_brown\_target}}
+\index{lady\_brown\_target@{lady\_brown\_target}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{lady\_brown\_target}{lady\_brown\_target}}
+{\footnotesize\ttfamily float lady\+\_\+brown\+\_\+target = \mbox{\hyperlink{globals_8h_a507b3b69232da02206ef7bbbf669df2e}{L\+A\+D\+Y\+\_\+\+B\+R\+O\+W\+N\+\_\+\+D\+O\+WN}}}
+
+\mbox{\Hypertarget{globals_8cpp_aad578c29b27b2a5557a0af12d2694f94}\label{globals_8cpp_aad578c29b27b2a5557a0af12d2694f94}} 
+\index{globals.cpp@{globals.cpp}!mid\_odom@{mid\_odom}}
+\index{mid\_odom@{mid\_odom}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{mid\_odom}{mid\_odom}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classknights_1_1PositionTracker}{knights\+::\+Position\+Tracker}} \mbox{\hyperlink{globals_8h_a8f230ea408e9d124198d3f1dd8162c13}{mid\+Odom}}\& mid\+\_\+odom}
+
+\mbox{\Hypertarget{globals_8cpp_aaff74d53594a24ef4ba0cb9ca8a07d41}\label{globals_8cpp_aaff74d53594a24ef4ba0cb9ca8a07d41}} 
+\index{globals.cpp@{globals.cpp}!midOdom@{midOdom}}
+\index{midOdom@{midOdom}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{midOdom}{midOdom}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classknights_1_1PositionTrackerGroup}{knights\+::\+Position\+Tracker\+Group}} \mbox{\hyperlink{globals_8h_a195348e1466f01376d70f34675ff1b21}{odom\+Trackers}}\& mid\+Odom}
+
+\mbox{\Hypertarget{globals_8cpp_a3b3dd3f120714c36bf0362c8e59f0f88}\label{globals_8cpp_a3b3dd3f120714c36bf0362c8e59f0f88}} 
+\index{globals.cpp@{globals.cpp}!red\_alliance@{red\_alliance}}
+\index{red\_alliance@{red\_alliance}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{red\_alliance}{red\_alliance}}
+{\footnotesize\ttfamily bool red\+\_\+alliance = true}
+
+\mbox{\Hypertarget{globals_8cpp_a0e5b40527d276b3ebb81ac4b4e0e72ac}\label{globals_8cpp_a0e5b40527d276b3ebb81ac4b4e0e72ac}} 
+\index{globals.cpp@{globals.cpp}!right\_mtrs@{right\_mtrs}}
+\index{right\_mtrs@{right\_mtrs}!globals.cpp@{globals.cpp}}
+\doxysubsubsection{\texorpdfstring{right\_mtrs}{right\_mtrs}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classknights_1_1Drivetrain}{knights\+::\+Drivetrain}} \mbox{\hyperlink{globals_8h_abfe7784aaa5845dbbc9370cb5aef6a1f}{drivetrain}}\& right\+\_\+mtrs}
+

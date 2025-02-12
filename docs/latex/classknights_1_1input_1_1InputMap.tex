@@ -1,0 +1,70 @@
+\hypertarget{classknights_1_1input_1_1InputMap}{}\doxysection{knights\+::input\+::Input\+Map Class Reference}
+\label{classknights_1_1input_1_1InputMap}\index{knights::input::InputMap@{knights::input::InputMap}}
+
+
+{\ttfamily \#include $<$input.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classknights_1_1input_1_1InputMap_a58273a9088819b494e0ddf25e605fe87}{bind\+\_\+action}} (pros\+::controller\+\_\+digital\+\_\+e\+\_\+t button, void($\ast$bound\+\_\+function)(), bool hold)
+\begin{DoxyCompactList}\small\item\em Add an action to the input map. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classknights_1_1input_1_1InputMap_aa9e4ca41d7d21d63948a236f10efb69b}{execute\+\_\+actions}} (pros\+::\+Controller controller)
+\begin{DoxyCompactList}\small\item\em Determine which actions to run based on controller input. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classknights_1_1input_1_1InputAction}{Input\+Action}} $>$ \mbox{\hyperlink{classknights_1_1input_1_1InputMap_a860bd769d4f9191be60307983261adab}{action\+\_\+list}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classknights_1_1input_1_1InputMap_a58273a9088819b494e0ddf25e605fe87}\label{classknights_1_1input_1_1InputMap_a58273a9088819b494e0ddf25e605fe87}} 
+\index{knights::input::InputMap@{knights::input::InputMap}!bind\_action@{bind\_action}}
+\index{bind\_action@{bind\_action}!knights::input::InputMap@{knights::input::InputMap}}
+\doxysubsubsection{\texorpdfstring{bind\_action()}{bind\_action()}}
+{\footnotesize\ttfamily void knights\+::input\+::\+Input\+Map\+::bind\+\_\+action (\begin{DoxyParamCaption}\item[{pros\+::controller\+\_\+digital\+\_\+e\+\_\+t}]{button,  }\item[{void($\ast$)()}]{bound\+\_\+function,  }\item[{bool}]{hold }\end{DoxyParamCaption})}
+
+
+
+Add an action to the input map. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em button} & Controller button to associate with the action \\
+\hline
+{\em bound\+\_\+function} & Function to execute on the controller button press \\
+\hline
+{\em hold} & Should the action be executed on hold \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classknights_1_1input_1_1InputMap_aa9e4ca41d7d21d63948a236f10efb69b}\label{classknights_1_1input_1_1InputMap_aa9e4ca41d7d21d63948a236f10efb69b}} 
+\index{knights::input::InputMap@{knights::input::InputMap}!execute\_actions@{execute\_actions}}
+\index{execute\_actions@{execute\_actions}!knights::input::InputMap@{knights::input::InputMap}}
+\doxysubsubsection{\texorpdfstring{execute\_actions()}{execute\_actions()}}
+{\footnotesize\ttfamily void knights\+::input\+::\+Input\+Map\+::execute\+\_\+actions (\begin{DoxyParamCaption}\item[{pros\+::\+Controller}]{controller }\end{DoxyParamCaption})}
+
+
+
+Determine which actions to run based on controller input. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em controller} & Controller to query for button presses \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classknights_1_1input_1_1InputMap_a860bd769d4f9191be60307983261adab}\label{classknights_1_1input_1_1InputMap_a860bd769d4f9191be60307983261adab}} 
+\index{knights::input::InputMap@{knights::input::InputMap}!action\_list@{action\_list}}
+\index{action\_list@{action\_list}!knights::input::InputMap@{knights::input::InputMap}}
+\doxysubsubsection{\texorpdfstring{action\_list}{action\_list}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{classknights_1_1input_1_1InputAction}{Input\+Action}}$>$ knights\+::input\+::\+Input\+Map\+::action\+\_\+list\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/knights/driver/\mbox{\hyperlink{input_8hpp}{input.\+hpp}}\item 
+src/knights/driver/\mbox{\hyperlink{input_8cpp}{input.\+cpp}}\end{DoxyCompactItemize}

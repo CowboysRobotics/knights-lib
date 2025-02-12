@@ -1,0 +1,40 @@
+digraph "include/knights/logger/logger.hpp"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="include/knights/logger\l/logger.hpp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node2 [label="src/autonomous.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$autonomous_8cpp.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node3 [label="src/globals.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$globals_8cpp.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node4 [label="src/knights/autonomous\l/movements/global/follow.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$follow_8cpp.html",tooltip=" "];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node5 [label="src/knights/autonomous\l/movements/global/move\l_to_point.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$move__to__point_8cpp.html",tooltip=" "];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node6 [label="src/knights/autonomous\l/movements/global/turn\l_to_angle.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$turn__to__angle_8cpp.html",tooltip=" "];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node7 [label="src/knights/logger\l/logger.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$logger_8cpp.html",tooltip=" "];
+  Node1 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node8 [label="include/knights/api.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$api_8hpp.html",tooltip=" "];
+  Node8 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node8 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node9 [label="src/knights/display.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$display_8cpp.html",tooltip=" "];
+  Node8 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node10 [label="src/knights/util/route.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$route_8cpp.html",tooltip=" "];
+  Node8 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node11 [label="src/main.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html",tooltip=" "];
+  Node8 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node12 [label="include/autonomous.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$autonomous_8h.html",tooltip=" "];
+  Node12 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node12 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node13 [label="include/main.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html",tooltip=" "];
+  Node13 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node8 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node14 [label="include/knights/display.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$display_8hpp.html",tooltip=" "];
+  Node14 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node14 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node14 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node8 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+}

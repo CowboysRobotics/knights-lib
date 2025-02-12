@@ -1,0 +1,17 @@
+digraph "knights::RobotChassis"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="knights::RobotChassis",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" prev_position\ncurr_position" ];
+  Node2 [label="knights::Pos",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structknights_1_1Pos.html",tooltip=" "];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" pos_trackers" ];
+  Node3 [label="knights::PositionTracker\lGroup",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classknights_1_1PositionTrackerGroup.html",tooltip=" "];
+  Node4 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" back_tracker\nfront_tracker\nleft_tracker\nright_tracker" ];
+  Node4 [label="knights::PositionTracker",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classknights_1_1PositionTracker.html",tooltip=" "];
+  Node5 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" drivetrain" ];
+  Node5 [label="knights::Drivetrain",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classknights_1_1Drivetrain.html",tooltip=" "];
+  Node6 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" holonomic" ];
+  Node6 [label="knights::Holonomic",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classknights_1_1Holonomic.html",tooltip=" "];
+}

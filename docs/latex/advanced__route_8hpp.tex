@@ -1,0 +1,87 @@
+\hypertarget{advanced__route_8hpp}{}\doxysection{include/knights/autonomous/advanced\+\_\+route.hpp File Reference}
+\label{advanced__route_8hpp}\index{include/knights/autonomous/advanced\_route.hpp@{include/knights/autonomous/advanced\_route.hpp}}
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$map$>$}\newline
+{\ttfamily \#include \char`\"{}knights/autonomous/controller.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/util/position.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/driver/input.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/robot/chassis.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/autonomous/pid.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/asset.\+hpp\char`\"{}}\newline
+Include dependency graph for advanced\+\_\+route.\+hpp\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structknights_1_1RouteAction}{knights\+::\+Route\+Action}}
+\item 
+struct \mbox{\hyperlink{structknights_1_1AdvancedRoute}{knights\+::\+Advanced\+Route}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceknights}{knights}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{advanced__route_8hpp_ae902db4eb3232f2fb010fddde4c834a7}{\+\_\+\+A\+D\+V\+R\+O\+U\+T\+E\+\_\+H}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{namespaceknights_a1e7cecb3457ce2b97c59b61ea0c648c1}{knights\+::action\+\_\+type}} \{ \newline
+\mbox{\hyperlink{namespaceknights_a1e7cecb3457ce2b97c59b61ea0c648c1a07c3d5cfc5843d6fd16ee15e26e804a1}{knights\+::\+L\+A\+T\+E\+R\+AL}}, 
+\mbox{\hyperlink{namespaceknights_a1e7cecb3457ce2b97c59b61ea0c648c1a45cdf081004b8bc45e9dcaf638eab160}{knights\+::\+T\+U\+RN}}, 
+\mbox{\hyperlink{namespaceknights_a1e7cecb3457ce2b97c59b61ea0c648c1a6f1c496e29043207473d2596b4aec1a3}{knights\+::\+F\+O\+L\+L\+OW}}, 
+\mbox{\hyperlink{namespaceknights_a1e7cecb3457ce2b97c59b61ea0c648c1a62b65516dd2f8fefa3439dbe3b51354d}{knights\+::\+C\+O\+M\+M\+A\+ND}}, 
+\newline
+\mbox{\hyperlink{namespaceknights_a1e7cecb3457ce2b97c59b61ea0c648c1a02f62a310a8ab1df681c1bd8f1334820}{knights\+::\+L\+A\+T\+E\+R\+A\+L\+\_\+\+T\+O\+\_\+\+P\+OS}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structknights_1_1AdvancedRoute}{knights\+::\+Advanced\+Route}} \mbox{\hyperlink{advanced__route_8hpp_a900e8c84a3f48201ec3ef3daf455cd59}{advanced\+\_\+route\+\_\+from\+\_\+file}} (std\+::string file\+\_\+name)
+\begin{DoxyCompactList}\small\item\em Read an advanced route from a file on the brain micro\+SD card. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structknights_1_1AdvancedRoute}{knights\+::\+Advanced\+Route}} \mbox{\hyperlink{advanced__route_8hpp_ab530cd303b2eef2153a31f1c35f648f9}{advanced\+\_\+route\+\_\+from\+\_\+asset}} (\mbox{\hyperlink{classAssetStream}{Asset\+Stream}} \&buffer)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{advanced__route_8hpp_ae902db4eb3232f2fb010fddde4c834a7}\label{advanced__route_8hpp_ae902db4eb3232f2fb010fddde4c834a7}} 
+\index{advanced\_route.hpp@{advanced\_route.hpp}!\_ADVROUTE\_H@{\_ADVROUTE\_H}}
+\index{\_ADVROUTE\_H@{\_ADVROUTE\_H}!advanced\_route.hpp@{advanced\_route.hpp}}
+\doxysubsubsection{\texorpdfstring{\_ADVROUTE\_H}{\_ADVROUTE\_H}}
+{\footnotesize\ttfamily \#define \+\_\+\+A\+D\+V\+R\+O\+U\+T\+E\+\_\+H}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{advanced__route_8hpp_ab530cd303b2eef2153a31f1c35f648f9}\label{advanced__route_8hpp_ab530cd303b2eef2153a31f1c35f648f9}} 
+\index{advanced\_route.hpp@{advanced\_route.hpp}!advanced\_route\_from\_asset@{advanced\_route\_from\_asset}}
+\index{advanced\_route\_from\_asset@{advanced\_route\_from\_asset}!advanced\_route.hpp@{advanced\_route.hpp}}
+\doxysubsubsection{\texorpdfstring{advanced\_route\_from\_asset()}{advanced\_route\_from\_asset()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structknights_1_1AdvancedRoute}{knights\+::\+Advanced\+Route}} advanced\+\_\+route\+\_\+from\+\_\+asset (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classAssetStream}{Asset\+Stream}} \&}]{buffer }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{advanced__route_8hpp_a900e8c84a3f48201ec3ef3daf455cd59}\label{advanced__route_8hpp_a900e8c84a3f48201ec3ef3daf455cd59}} 
+\index{advanced\_route.hpp@{advanced\_route.hpp}!advanced\_route\_from\_file@{advanced\_route\_from\_file}}
+\index{advanced\_route\_from\_file@{advanced\_route\_from\_file}!advanced\_route.hpp@{advanced\_route.hpp}}
+\doxysubsubsection{\texorpdfstring{advanced\_route\_from\_file()}{advanced\_route\_from\_file()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structknights_1_1AdvancedRoute}{knights\+::\+Advanced\+Route}} advanced\+\_\+route\+\_\+from\+\_\+file (\begin{DoxyParamCaption}\item[{std\+::string}]{file\+\_\+name }\end{DoxyParamCaption})}
+
+
+
+Read an advanced route from a file on the brain micro\+SD card. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file\+\_\+name} & Name of the file to read from -\/ DO N\+OT include the /usd/, this will automatically be added (ex\+: \char`\"{}autonomous.\+txt\char`\"{}) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structknights_1_1AdvancedRoute}{knights\+::\+Advanced\+Route}} 
+\end{DoxyReturn}

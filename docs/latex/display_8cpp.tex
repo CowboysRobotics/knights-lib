@@ -1,0 +1,142 @@
+\hypertarget{display_8cpp}{}\doxysection{src/knights/display.cpp File Reference}
+\label{display_8cpp}\index{src/knights/display.cpp@{src/knights/display.cpp}}
+{\ttfamily \#include \char`\"{}knights/display.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/api.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}liblvgl/core/lv\+\_\+disp.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}liblvgl/misc/lv\+\_\+area.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}liblvgl/misc/lv\+\_\+color.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}liblvgl/widgets/lv\+\_\+img.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$cstddef$>$}\newline
+Include dependency graph for display.\+cpp\+:
+% FIG 0
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{display_8cpp_a2706e5298e357ffb64b22c7e7fc1b3e9}{T\+I\+LE}}~180/6
+\item 
+\#define \mbox{\hyperlink{display_8cpp_aac17fc5fb4db5aa452abd68bfb30f386}{X\+\_\+\+M\+A\+R\+G\+IN}}~270
+\item 
+\#define \mbox{\hyperlink{display_8cpp_a6f445a0aad2f1f1dc343617686174d4b}{Y\+\_\+\+M\+A\+R\+G\+IN}}~40
+\item 
+\#define \mbox{\hyperlink{display_8cpp_ab4604e9ef173357d57814010151ee07b}{B\+G\+\_\+\+S\+I\+ZE}}~180
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{display_8cpp_a1eebd3075c00ed9124889a98b8a608ed}{L\+V\+\_\+\+I\+M\+G\+\_\+\+D\+E\+C\+L\+A\+RE}} (\mbox{\hyperlink{pix__art__his__field_8c_a38f0500cb0677dcde01b7a10fb838adf}{pix\+\_\+art\+\_\+his\+\_\+field}})
+\item 
+\mbox{\hyperlink{display_8cpp_a7f7ff50c2a91c34c69f82ca6fdc6d117}{L\+V\+\_\+\+I\+M\+G\+\_\+\+D\+E\+C\+L\+A\+RE}} (pix\+\_\+lockright)
+\item 
+\mbox{\hyperlink{display_8cpp_af91bd54df7635cb0a0fd81a344142e92}{L\+V\+\_\+\+I\+M\+G\+\_\+\+D\+E\+C\+L\+A\+RE}} (pix\+\_\+lockmid)
+\item 
+\mbox{\hyperlink{display_8cpp_a765f63bc4d2833a8b28f5b0c6d1590a3}{L\+V\+\_\+\+I\+M\+G\+\_\+\+D\+E\+C\+L\+A\+RE}} (pix\+\_\+lockleft)
+\item 
+void \mbox{\hyperlink{display_8cpp_a839d34ee3b7b8a2bacfa0e917e4100f0}{lv\+\_\+display}} (void)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unordered\+\_\+map$<$ std\+::string, \mbox{\hyperlink{structknights_1_1Auton}{knights\+::\+Auton}} $>$ \mbox{\hyperlink{display_8cpp_a9757672b296ef1ddf7d2de6e233f39a3}{auton\+\_\+map}}
+\item 
+\mbox{\hyperlink{structknights_1_1display_1_1AutonSelectionPackage}{knights\+::display\+::\+Auton\+Selection\+Package}} \mbox{\hyperlink{display_8cpp_a5a5b916dd1ed4b53fdb359446683af44}{curr\+\_\+package}}
+\item 
+\mbox{\hyperlink{structknights_1_1display_1_1MapDot}{knights\+::display\+::\+Map\+Dot}} \mbox{\hyperlink{display_8cpp_ae6eb71dae8ecf6ad03f9916613e687e5}{curr\+\_\+position\+\_\+dot}}
+\item 
+\mbox{\hyperlink{structknights_1_1display_1_1MapDot}{knights\+::display\+::\+Map\+Dot}} \mbox{\hyperlink{display_8cpp_a5881d6e11f303ff85f0dae80b563b846}{start\+\_\+position\+\_\+dot}} (14, 14, lv\+\_\+palette\+\_\+lighten(L\+V\+\_\+\+P\+A\+L\+E\+T\+T\+E\+\_\+\+L\+I\+ME, 0))
+\item 
+bool \mbox{\hyperlink{display_8cpp_a66a57171abe76a4f32af8dbbca8ba70d}{lock\+\_\+state}} = false
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{display_8cpp_ab4604e9ef173357d57814010151ee07b}\label{display_8cpp_ab4604e9ef173357d57814010151ee07b}} 
+\index{display.cpp@{display.cpp}!BG\_SIZE@{BG\_SIZE}}
+\index{BG\_SIZE@{BG\_SIZE}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{BG\_SIZE}{BG\_SIZE}}
+{\footnotesize\ttfamily \#define B\+G\+\_\+\+S\+I\+ZE~180}
+
+\mbox{\Hypertarget{display_8cpp_a2706e5298e357ffb64b22c7e7fc1b3e9}\label{display_8cpp_a2706e5298e357ffb64b22c7e7fc1b3e9}} 
+\index{display.cpp@{display.cpp}!TILE@{TILE}}
+\index{TILE@{TILE}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{TILE}{TILE}}
+{\footnotesize\ttfamily \#define T\+I\+LE~180/6}
+
+\mbox{\Hypertarget{display_8cpp_aac17fc5fb4db5aa452abd68bfb30f386}\label{display_8cpp_aac17fc5fb4db5aa452abd68bfb30f386}} 
+\index{display.cpp@{display.cpp}!X\_MARGIN@{X\_MARGIN}}
+\index{X\_MARGIN@{X\_MARGIN}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{X\_MARGIN}{X\_MARGIN}}
+{\footnotesize\ttfamily \#define X\+\_\+\+M\+A\+R\+G\+IN~270}
+
+\mbox{\Hypertarget{display_8cpp_a6f445a0aad2f1f1dc343617686174d4b}\label{display_8cpp_a6f445a0aad2f1f1dc343617686174d4b}} 
+\index{display.cpp@{display.cpp}!Y\_MARGIN@{Y\_MARGIN}}
+\index{Y\_MARGIN@{Y\_MARGIN}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{Y\_MARGIN}{Y\_MARGIN}}
+{\footnotesize\ttfamily \#define Y\+\_\+\+M\+A\+R\+G\+IN~40}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{display_8cpp_a839d34ee3b7b8a2bacfa0e917e4100f0}\label{display_8cpp_a839d34ee3b7b8a2bacfa0e917e4100f0}} 
+\index{display.cpp@{display.cpp}!lv\_display@{lv\_display}}
+\index{lv\_display@{lv\_display}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{lv\_display()}{lv\_display()}}
+{\footnotesize\ttfamily void lv\+\_\+display (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{display_8cpp_a1eebd3075c00ed9124889a98b8a608ed}\label{display_8cpp_a1eebd3075c00ed9124889a98b8a608ed}} 
+\index{display.cpp@{display.cpp}!LV\_IMG\_DECLARE@{LV\_IMG\_DECLARE}}
+\index{LV\_IMG\_DECLARE@{LV\_IMG\_DECLARE}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{LV\_IMG\_DECLARE()}{LV\_IMG\_DECLARE()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily L\+V\+\_\+\+I\+M\+G\+\_\+\+D\+E\+C\+L\+A\+RE (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{pix__art__his__field_8c_a38f0500cb0677dcde01b7a10fb838adf}{pix\+\_\+art\+\_\+his\+\_\+field}}}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{display_8cpp_a765f63bc4d2833a8b28f5b0c6d1590a3}\label{display_8cpp_a765f63bc4d2833a8b28f5b0c6d1590a3}} 
+\index{display.cpp@{display.cpp}!LV\_IMG\_DECLARE@{LV\_IMG\_DECLARE}}
+\index{LV\_IMG\_DECLARE@{LV\_IMG\_DECLARE}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{LV\_IMG\_DECLARE()}{LV\_IMG\_DECLARE()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily L\+V\+\_\+\+I\+M\+G\+\_\+\+D\+E\+C\+L\+A\+RE (\begin{DoxyParamCaption}\item[{pix\+\_\+lockleft}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{display_8cpp_af91bd54df7635cb0a0fd81a344142e92}\label{display_8cpp_af91bd54df7635cb0a0fd81a344142e92}} 
+\index{display.cpp@{display.cpp}!LV\_IMG\_DECLARE@{LV\_IMG\_DECLARE}}
+\index{LV\_IMG\_DECLARE@{LV\_IMG\_DECLARE}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{LV\_IMG\_DECLARE()}{LV\_IMG\_DECLARE()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily L\+V\+\_\+\+I\+M\+G\+\_\+\+D\+E\+C\+L\+A\+RE (\begin{DoxyParamCaption}\item[{pix\+\_\+lockmid}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{display_8cpp_a7f7ff50c2a91c34c69f82ca6fdc6d117}\label{display_8cpp_a7f7ff50c2a91c34c69f82ca6fdc6d117}} 
+\index{display.cpp@{display.cpp}!LV\_IMG\_DECLARE@{LV\_IMG\_DECLARE}}
+\index{LV\_IMG\_DECLARE@{LV\_IMG\_DECLARE}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{LV\_IMG\_DECLARE()}{LV\_IMG\_DECLARE()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily L\+V\+\_\+\+I\+M\+G\+\_\+\+D\+E\+C\+L\+A\+RE (\begin{DoxyParamCaption}\item[{pix\+\_\+lockright}]{ }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{display_8cpp_a9757672b296ef1ddf7d2de6e233f39a3}\label{display_8cpp_a9757672b296ef1ddf7d2de6e233f39a3}} 
+\index{display.cpp@{display.cpp}!auton\_map@{auton\_map}}
+\index{auton\_map@{auton\_map}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{auton\_map}{auton\_map}}
+{\footnotesize\ttfamily std\+::unordered\+\_\+map$<$std\+::string, \mbox{\hyperlink{structknights_1_1Auton}{knights\+::\+Auton}}$>$ auton\+\_\+map}
+
+\mbox{\Hypertarget{display_8cpp_a5a5b916dd1ed4b53fdb359446683af44}\label{display_8cpp_a5a5b916dd1ed4b53fdb359446683af44}} 
+\index{display.cpp@{display.cpp}!curr\_package@{curr\_package}}
+\index{curr\_package@{curr\_package}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{curr\_package}{curr\_package}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structknights_1_1display_1_1AutonSelectionPackage}{knights\+::display\+::\+Auton\+Selection\+Package}} curr\+\_\+package}
+
+\mbox{\Hypertarget{display_8cpp_ae6eb71dae8ecf6ad03f9916613e687e5}\label{display_8cpp_ae6eb71dae8ecf6ad03f9916613e687e5}} 
+\index{display.cpp@{display.cpp}!curr\_position\_dot@{curr\_position\_dot}}
+\index{curr\_position\_dot@{curr\_position\_dot}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{curr\_position\_dot}{curr\_position\_dot}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structknights_1_1display_1_1MapDot}{knights\+::display\+::\+Map\+Dot}} curr\+\_\+position\+\_\+dot}
+
+\mbox{\Hypertarget{display_8cpp_a66a57171abe76a4f32af8dbbca8ba70d}\label{display_8cpp_a66a57171abe76a4f32af8dbbca8ba70d}} 
+\index{display.cpp@{display.cpp}!lock\_state@{lock\_state}}
+\index{lock\_state@{lock\_state}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{lock\_state}{lock\_state}}
+{\footnotesize\ttfamily bool lock\+\_\+state = false}
+
+\mbox{\Hypertarget{display_8cpp_a5881d6e11f303ff85f0dae80b563b846}\label{display_8cpp_a5881d6e11f303ff85f0dae80b563b846}} 
+\index{display.cpp@{display.cpp}!start\_position\_dot@{start\_position\_dot}}
+\index{start\_position\_dot@{start\_position\_dot}!display.cpp@{display.cpp}}
+\doxysubsubsection{\texorpdfstring{start\_position\_dot}{start\_position\_dot}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structknights_1_1display_1_1MapDot}{knights\+::display\+::\+Map\+Dot}} start\+\_\+position\+\_\+dot(14, 14, lv\+\_\+palette\+\_\+lighten(L\+V\+\_\+\+P\+A\+L\+E\+T\+T\+E\+\_\+\+L\+I\+ME, 0))}
+

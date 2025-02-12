@@ -1,0 +1,64 @@
+\hypertarget{namespaceknights_1_1display}{}\doxysection{knights\+::display Namespace Reference}
+\label{namespaceknights_1_1display}\index{knights::display@{knights::display}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structknights_1_1display_1_1AutonSelectionPackage}{Auton\+Selection\+Package}}
+\item 
+struct \mbox{\hyperlink{structknights_1_1display_1_1MapDot}{Map\+Dot}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structknights_1_1display_1_1AutonSelectionPackage}{Auton\+Selection\+Package}} \mbox{\hyperlink{namespaceknights_1_1display_a16a14cf90f584b65efa53ea0340989ef}{get\+\_\+selected\+\_\+auton}} (void)
+\begin{DoxyCompactList}\small\item\em Get the currently selection combination of auton. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespaceknights_1_1display_a188be90539b7c8743cbff0b53b6a98f2}{set\+\_\+pos\+\_\+label}} (std\+::string str)
+\begin{DoxyCompactList}\small\item\em Set the current position label to a string. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespaceknights_1_1display_ace9aefe953b9c8f618043fb78a8a68b6}{change\+\_\+curr\+\_\+pos\+\_\+dot}} (\mbox{\hyperlink{structknights_1_1Pos}{Pos}} pos)
+\begin{DoxyCompactList}\small\item\em Move the current position dot. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespaceknights_1_1display_ace9aefe953b9c8f618043fb78a8a68b6}\label{namespaceknights_1_1display_ace9aefe953b9c8f618043fb78a8a68b6}} 
+\index{knights::display@{knights::display}!change\_curr\_pos\_dot@{change\_curr\_pos\_dot}}
+\index{change\_curr\_pos\_dot@{change\_curr\_pos\_dot}!knights::display@{knights::display}}
+\doxysubsubsection{\texorpdfstring{change\_curr\_pos\_dot()}{change\_curr\_pos\_dot()}}
+{\footnotesize\ttfamily void knights\+::display\+::change\+\_\+curr\+\_\+pos\+\_\+dot (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structknights_1_1Pos}{Pos}}}]{pos }\end{DoxyParamCaption})}
+
+
+
+Move the current position dot. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pos} & coordinates to move it to \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceknights_1_1display_a16a14cf90f584b65efa53ea0340989ef}\label{namespaceknights_1_1display_a16a14cf90f584b65efa53ea0340989ef}} 
+\index{knights::display@{knights::display}!get\_selected\_auton@{get\_selected\_auton}}
+\index{get\_selected\_auton@{get\_selected\_auton}!knights::display@{knights::display}}
+\doxysubsubsection{\texorpdfstring{get\_selected\_auton()}{get\_selected\_auton()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structknights_1_1display_1_1AutonSelectionPackage}{knights\+::display\+::\+Auton\+Selection\+Package}} knights\+::display\+::get\+\_\+selected\+\_\+auton (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Get the currently selection combination of auton. 
+
+\begin{DoxyReturn}{Returns}
+An auton package that has a type (red or blue) and a number (1-\/4) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespaceknights_1_1display_a188be90539b7c8743cbff0b53b6a98f2}\label{namespaceknights_1_1display_a188be90539b7c8743cbff0b53b6a98f2}} 
+\index{knights::display@{knights::display}!set\_pos\_label@{set\_pos\_label}}
+\index{set\_pos\_label@{set\_pos\_label}!knights::display@{knights::display}}
+\doxysubsubsection{\texorpdfstring{set\_pos\_label()}{set\_pos\_label()}}
+{\footnotesize\ttfamily void knights\+::display\+::set\+\_\+pos\+\_\+label (\begin{DoxyParamCaption}\item[{std\+::string}]{str }\end{DoxyParamCaption})}
+
+
+
+Set the current position label to a string. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em str} & String to set the label to \\
+\hline
+\end{DoxyParams}
