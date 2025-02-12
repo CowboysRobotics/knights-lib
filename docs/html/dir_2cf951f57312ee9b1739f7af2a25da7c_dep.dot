@@ -1,9 +1,0 @@
-digraph "include/knights/driver" {
-  compound=true
-  node [ fontsize="10", fontname="Helvetica"];
-  edge [ labelfontsize="10", labelfontname="Helvetica"];
-  subgraph clusterdir_8291f6de53729c1653b84484969589fe {
-    graph [ bgcolor="#ddddee", pencolor="black", label="knights" fontname="Helvetica", fontsize="10", URL="dir_8291f6de53729c1653b84484969589fe.html"]
-  dir_2cf951f57312ee9b1739f7af2a25da7c [shape=box, label="driver", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_2cf951f57312ee9b1739f7af2a25da7c.html"];
-  }
-}
