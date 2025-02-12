@@ -196,7 +196,7 @@ void lady_brown_rev() {
 float lady_brown_target = LADY_BROWN_DOWN;
 
 float get_lady_brown_command() {
-	float error = knights::angular_error(lady_brown_rotation.get_angle()/100.0, lady_brown_target, 0);
+	float error = knights::angular_error(lady_brown_rotation.get_angle()/100.0, lady_brown_target, 0, false);
 	float speed = lady_brown_PID.update(error, false);
 
 	knights::logger::cyan(knights::logger::string_format(
