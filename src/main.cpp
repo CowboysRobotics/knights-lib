@@ -4,6 +4,7 @@
 #include "knights/autonomous/profile.hpp"
 #include "knights/display.hpp"
 #include "pros/misc.h"
+#include "pros/rtos.hpp"
 
 #include <cstdio>
 #include <cstring>
@@ -17,6 +18,7 @@
 pros::Task *odomTask = nullptr;
 pros::Task *ladyBrownTask = nullptr;
 pros::Task *colorSortTask = nullptr;
+pros::Task *intakeJamTask = nullptr;
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -104,6 +106,22 @@ void autonomous() {
 		}};
 
 		ladyBrownTask->set_priority(TASK_PRIORITY_DEFAULT - 1);
+	}
+
+	if (intakeJamTask == nullptr) {
+		intakeJamTask = new pros::Task {[=] {
+			while(true) {
+				if (jam_enabled) {
+					unjam_intake_check();
+
+					pros::delay(20);
+				} else {
+					pros::delay(150);
+				}
+			}
+		}};
+
+		intakeJamTask->set_priority(TASK_PRIORITY_DEFAULT - 1);
 	}
 
 	if (package.type == "Red") {
@@ -199,7 +217,7 @@ void opcontrol() {
 
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_toggle, false); //assign clamp toggle to controller button R2
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doinker_toggle, false); //assign doinker toggle to controller button R1
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, doinker_toggle, false); //assign doinker toggle to controller button R1
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, doinker_toggle2, false); //assign doinker toggle to controller button R1
 
 	if (colorSortTask == nullptr) {
 		colorSortTask = new pros::Task {[=] {
@@ -217,6 +235,22 @@ void opcontrol() {
 		}};
 
 		colorSortTask->set_priority(TASK_PRIORITY_DEFAULT - 2);
+	}
+
+	if (intakeJamTask == nullptr) {
+		intakeJamTask = new pros::Task {[=] {
+			while(true) {
+				if (jam_enabled) {
+					unjam_intake_check();
+
+					pros::delay(20);
+				} else {
+					pros::delay(150);
+				}
+			}
+		}};
+
+		intakeJamTask->set_priority(TASK_PRIORITY_DEFAULT - 1);
 	}
 
 	while (true) {

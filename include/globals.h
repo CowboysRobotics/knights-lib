@@ -36,9 +36,11 @@ extern pros::Motor intake_bottom;
 extern pros::Motor intake_top;
 extern bool intake_spinning;
 extern bool intake_forward;
+extern bool jam_enabled;
 
 void intake_in();
 void intake_out();
+void unjam_intake_check();
 
 // Color Sorting
 extern pros::Optical colors;

@@ -72,10 +72,12 @@ knights::RobotChassis chassis(
 
 #define velocity_formula(x) 160*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20 // arbitrarily defined formula to translate joysticks to velocity
 
-#define INTAKE_VELOCITY 300
+#define INTAKE_VELOCITY 200
 
 bool intake_spinning = false;
 bool intake_forward = false;
+
+float intake_voltage = 0;
 
 void intake_in() {
 	if (intake_spinning == true && intake_forward == true) { // If intake is on or in wrong direction
@@ -83,6 +85,7 @@ void intake_in() {
 		intake_spinning = false;
 	} else {
 		intake.move(INTAKE_VELOCITY); // Spin intake forward
+		intake_voltage = INTAKE_VELOCITY;
 		intake_spinning = true;
 		intake_forward = true;
 	}
@@ -94,8 +97,29 @@ void intake_out() {
 		intake_spinning = false;
 	} else { 
 		intake.move(-INTAKE_VELOCITY); // Spin the intake in reverse
+		intake_voltage = -INTAKE_VELOCITY;
 		intake_spinning = true;
 		intake_forward = false;
+	}
+}
+
+int jam_times = 0;
+bool jam_enabled = false;
+
+void unjam_intake_check() {
+	if (intake_spinning && std::abs(intake.get_actual_velocity()) < 1) {
+		jam_times++;
+
+		if (jam_times > 20) {
+
+			float original_intake_voltage = intake_voltage;
+
+			intake.move(-1 * intake_voltage);
+			pros::delay(200);
+			intake.move(intake_voltage);
+
+			jam_times = 0;
+		}
 	}
 }
 
@@ -170,8 +194,6 @@ void lady_brown_rev() {
 }
 
 float lady_brown_target = LADY_BROWN_DOWN;
-
-
 
 float get_lady_brown_command() {
 	float error = lady_brown_target - lady_brown_rotation.get_position();
@@ -289,3 +311,4 @@ void doinker_toggle2() {
 	doinker_activate2 = !doinker_activate2; //toggle whether active or inactive mode
 	doinker2.set_value(doinker_activate2); //extend doinker if inactive or retract clamp if active
 }
+
