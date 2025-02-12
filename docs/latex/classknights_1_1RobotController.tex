@@ -1,0 +1,330 @@
+\hypertarget{classknights_1_1RobotController}{}\doxysection{knights\+::Robot\+Controller Class Reference}
+\label{classknights_1_1RobotController}\index{knights::RobotController@{knights::RobotController}}
+
+
+{\ttfamily \#include $<$controller.\+hpp$>$}
+
+
+
+Collaboration diagram for knights\+::Robot\+Controller\+:
+% FIG 0
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classknights_1_1RobotController_a1f2a778d8b4be6feadb6b723f1dfcb9a}{Robot\+Controller}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{Robot\+Chassis}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_a708d56141ff71be07b9bd60cbcf439b5}{chassis}}, \mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_a5957172b120bd6ca81adce53114ddabd}{lateral\+\_\+pid}}, \mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_a625237b7a811587e7793aaa9baed6c72}{turn\+\_\+pid}}, \mbox{\hyperlink{classknights_1_1RamseteConstants}{Ramsete\+Constants}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_ae83eb49956f6b71175d1354bd00eb709}{ramsete\+\_\+constants}}, bool \mbox{\hyperlink{classknights_1_1RobotController_a98790f177544b9fcf4cb02045a6e4cbc}{use\+\_\+motor\+\_\+encoders}}=false)
+\begin{DoxyCompactList}\small\item\em Construct a new Robot Controller object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classknights_1_1RobotController_a49c183f000327197c49b4eaee8ac742b}{Robot\+Controller}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{Robot\+Chassis}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_a708d56141ff71be07b9bd60cbcf439b5}{chassis}}, \mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_a5957172b120bd6ca81adce53114ddabd}{lateral\+\_\+pid}}, \mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_a625237b7a811587e7793aaa9baed6c72}{turn\+\_\+pid}}, \mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_ae47e12171a8f225f6eef330a76788c24}{angular\+\_\+pid}}, \mbox{\hyperlink{classknights_1_1RamseteConstants}{Ramsete\+Constants}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_ae83eb49956f6b71175d1354bd00eb709}{ramsete\+\_\+constants}}, bool \mbox{\hyperlink{classknights_1_1RobotController_a98790f177544b9fcf4cb02045a6e4cbc}{use\+\_\+motor\+\_\+encoders}}=false)
+\item 
+\mbox{\hyperlink{classknights_1_1RobotController_a3ac8421096d97645434d43e7bf3a0163}{Robot\+Controller}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{Robot\+Chassis}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_a708d56141ff71be07b9bd60cbcf439b5}{chassis}}, \mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_a5957172b120bd6ca81adce53114ddabd}{lateral\+\_\+pid}}, \mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_a625237b7a811587e7793aaa9baed6c72}{turn\+\_\+pid}}, bool \mbox{\hyperlink{classknights_1_1RobotController_a98790f177544b9fcf4cb02045a6e4cbc}{use\+\_\+motor\+\_\+encoders}}=false)
+\begin{DoxyCompactList}\small\item\em Construct a new Robot Controller object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classknights_1_1RobotController_aff6a250efce79d941429ff1e749dbe1f}{Robot\+Controller}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{Robot\+Chassis}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_a708d56141ff71be07b9bd60cbcf439b5}{chassis}}, \mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_a5957172b120bd6ca81adce53114ddabd}{lateral\+\_\+pid}}, \mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_a625237b7a811587e7793aaa9baed6c72}{turn\+\_\+pid}}, \mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$\mbox{\hyperlink{classknights_1_1RobotController_ae47e12171a8f225f6eef330a76788c24}{angular\+\_\+pid}}, bool \mbox{\hyperlink{classknights_1_1RobotController_a98790f177544b9fcf4cb02045a6e4cbc}{use\+\_\+motor\+\_\+encoders}}=false)
+\item 
+void \mbox{\hyperlink{classknights_1_1RobotController_a4502b2873cba34543659afbf6b912366}{follow\+\_\+route\+\_\+pursuit}} (const \mbox{\hyperlink{structknights_1_1Route}{knights\+::\+Route}} \&route, float lookahead\+\_\+distance=15.\+0, const float max\+\_\+speed=127.\+0, bool forwards=true, float end\+\_\+tolerance=4.\+0, float timeout=5000)
+\begin{DoxyCompactList}\small\item\em Follow a route that has been read into the route memory of the robot. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classknights_1_1RobotController_a8986fe4c6f3a97d336bb88c27609ddfb}{follow\+\_\+profile\+\_\+pursuit}} (const \mbox{\hyperlink{structknights_1_1MotionProfile}{knights\+::\+Motion\+Profile}} \&profile, float lookahead\+\_\+distance=15.\+0, const float max\+\_\+speed=127.\+0, bool forwards=true, float end\+\_\+tolerance=4.\+0, float timeout=5000)
+\item 
+void \mbox{\hyperlink{classknights_1_1RobotController_a65e5f6a72a7f4066fdb1102d5aa0e6b3}{follow\+\_\+profile\+\_\+ramsete}} (const \mbox{\hyperlink{structknights_1_1MotionProfile}{knights\+::\+Motion\+Profile}} \&profile, float end\+\_\+tolerance=3.\+0, bool forwards=true)
+\item 
+void \mbox{\hyperlink{classknights_1_1RobotController_a3c5f9f859cbebf1e70d2dfc5eaacfcd5}{lateral\+\_\+to\+\_\+position}} (const \mbox{\hyperlink{structknights_1_1Pos}{Pos}} desired\+\_\+position, const bool forwards=true, const float end\+\_\+tolerance=3.\+5, const int timeout=1000)
+\item 
+void \mbox{\hyperlink{classknights_1_1RobotController_a3d89ef69a574c9bf71fa93321b2533e7}{lateral\+\_\+to\+\_\+point}} (const \mbox{\hyperlink{structknights_1_1Pos}{Pos}} desired\+\_\+position, const bool forwards=true, const float end\+\_\+tolerance=3.\+5, const int timeout=1000)
+\item 
+void \mbox{\hyperlink{classknights_1_1RobotController_a6f1cd2bdd138ee977e240bbb8b48c973}{move\+\_\+to\+\_\+position}} (const \mbox{\hyperlink{structknights_1_1Pos}{Pos}} desired\+\_\+position, float lead=0.\+5, float correction\+\_\+dist=8.\+0, const float \&end\+\_\+tolerance=2.\+0, const bool forwards=true, float timeout=1000)
+\item 
+void \mbox{\hyperlink{classknights_1_1RobotController_a0bfcb67548bb446b9e62e486f93b7233}{turn\+\_\+to\+\_\+angle}} (const float angle, int \mbox{\hyperlink{namespaceknights_ae1072718845d07f21ff69308a7f41e20}{direction}}=0, float end\+\_\+tolerance=3.\+0, int timeout=2000, bool \mbox{\hyperlink{autonomous_8cpp_aa322affa45b9a0af7408db0f961d6e14}{rad}}=false)
+\begin{DoxyCompactList}\small\item\em Turn the robot to a specific angle. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classknights_1_1RobotController_ae5275448b05e5a32ab3ac8e0734d40de}{turn\+\_\+to\+\_\+point}} (\mbox{\hyperlink{structknights_1_1Pos}{knights\+::\+Pos}} point, bool forwards=true, int \mbox{\hyperlink{namespaceknights_ae1072718845d07f21ff69308a7f41e20}{direction}}=0, float end\+\_\+tolerance=3.\+0, int timeout=2000)
+\item 
+void \mbox{\hyperlink{classknights_1_1RobotController_a60908cf99fb528e0063e7c8faac72f43}{lateral\+\_\+move}} (const float distance, float end\+\_\+tolerance=3.\+0, float timeout=1500)
+\begin{DoxyCompactList}\small\item\em Move in a straight line, forwards or backwards. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classknights_1_1RobotController_ae63ebc8df7f18b27816deb42cf03848d}{turn\+\_\+for}} (const float angle, const float end\+\_\+tolerance=2.\+0, float timeout=750, bool \mbox{\hyperlink{autonomous_8cpp_aa322affa45b9a0af7408db0f961d6e14}{rad}}=false)
+\begin{DoxyCompactList}\small\item\em Turn the robot left or right for a certain angle. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$ \mbox{\hyperlink{classknights_1_1RobotController_a5957172b120bd6ca81adce53114ddabd}{lateral\+\_\+pid}}
+\item 
+\mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$ \mbox{\hyperlink{classknights_1_1RobotController_a625237b7a811587e7793aaa9baed6c72}{turn\+\_\+pid}}
+\item 
+\mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$ \mbox{\hyperlink{classknights_1_1RobotController_ae47e12171a8f225f6eef330a76788c24}{angular\+\_\+pid}}
+\item 
+\mbox{\hyperlink{classknights_1_1RamseteConstants}{Ramsete\+Constants}} $\ast$ \mbox{\hyperlink{classknights_1_1RobotController_ae83eb49956f6b71175d1354bd00eb709}{ramsete\+\_\+constants}}
+\item 
+\mbox{\hyperlink{classknights_1_1RobotChassis}{Robot\+Chassis}} $\ast$ \mbox{\hyperlink{classknights_1_1RobotController_a708d56141ff71be07b9bd60cbcf439b5}{chassis}}
+\item 
+bool \mbox{\hyperlink{classknights_1_1RobotController_a98790f177544b9fcf4cb02045a6e4cbc}{use\+\_\+motor\+\_\+encoders}} = false
+\item 
+bool \mbox{\hyperlink{classknights_1_1RobotController_a12c003998271886759770f1bcefc3679}{in\+\_\+motion}} = false
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classknights_1_1RobotController_ada509e8498a3ea6185ef731743cc8ed8}{Advanced\+Route}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classknights_1_1RobotController_a1f2a778d8b4be6feadb6b723f1dfcb9a}\label{classknights_1_1RobotController_a1f2a778d8b4be6feadb6b723f1dfcb9a}} 
+\index{knights::RobotController@{knights::RobotController}!RobotController@{RobotController}}
+\index{RobotController@{RobotController}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{RobotController()}{RobotController()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily knights\+::\+Robot\+Controller\+::\+Robot\+Controller (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{Robot\+Chassis}} $\ast$}]{chassis,  }\item[{\mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$}]{lateral\+\_\+pid,  }\item[{\mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$}]{turn\+\_\+pid,  }\item[{\mbox{\hyperlink{classknights_1_1RamseteConstants}{Ramsete\+Constants}} $\ast$}]{ramsete\+\_\+constants,  }\item[{bool}]{use\+\_\+motor\+\_\+encoders = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Construct a new Robot Controller object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em chassis} & \\
+\hline
+{\em lateral\+\_\+pid} & \\
+\hline
+{\em ramsete\+\_\+constants} & \\
+\hline
+{\em use\+\_\+motor\+\_\+encoders} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classknights_1_1RobotController_a49c183f000327197c49b4eaee8ac742b}\label{classknights_1_1RobotController_a49c183f000327197c49b4eaee8ac742b}} 
+\index{knights::RobotController@{knights::RobotController}!RobotController@{RobotController}}
+\index{RobotController@{RobotController}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{RobotController()}{RobotController()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily knights\+::\+Robot\+Controller\+::\+Robot\+Controller (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{Robot\+Chassis}} $\ast$}]{chassis,  }\item[{\mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$}]{lateral\+\_\+pid,  }\item[{\mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$}]{turn\+\_\+pid,  }\item[{\mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$}]{angular\+\_\+pid,  }\item[{\mbox{\hyperlink{classknights_1_1RamseteConstants}{Ramsete\+Constants}} $\ast$}]{ramsete\+\_\+constants,  }\item[{bool}]{use\+\_\+motor\+\_\+encoders = {\ttfamily false} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classknights_1_1RobotController_a3ac8421096d97645434d43e7bf3a0163}\label{classknights_1_1RobotController_a3ac8421096d97645434d43e7bf3a0163}} 
+\index{knights::RobotController@{knights::RobotController}!RobotController@{RobotController}}
+\index{RobotController@{RobotController}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{RobotController()}{RobotController()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily knights\+::\+Robot\+Controller\+::\+Robot\+Controller (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{Robot\+Chassis}} $\ast$}]{chassis,  }\item[{\mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$}]{lateral\+\_\+pid,  }\item[{\mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$}]{turn\+\_\+pid,  }\item[{bool}]{use\+\_\+motor\+\_\+encoders = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Construct a new Robot Controller object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em chassis} & \\
+\hline
+{\em pid\+\_\+controller} & \\
+\hline
+{\em use\+\_\+motor\+\_\+encoders} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classknights_1_1RobotController_aff6a250efce79d941429ff1e749dbe1f}\label{classknights_1_1RobotController_aff6a250efce79d941429ff1e749dbe1f}} 
+\index{knights::RobotController@{knights::RobotController}!RobotController@{RobotController}}
+\index{RobotController@{RobotController}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{RobotController()}{RobotController()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily knights\+::\+Robot\+Controller\+::\+Robot\+Controller (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{Robot\+Chassis}} $\ast$}]{chassis,  }\item[{\mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$}]{lateral\+\_\+pid,  }\item[{\mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$}]{turn\+\_\+pid,  }\item[{\mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}} $\ast$}]{angular\+\_\+pid,  }\item[{bool}]{use\+\_\+motor\+\_\+encoders = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classknights_1_1RobotController_a8986fe4c6f3a97d336bb88c27609ddfb}\label{classknights_1_1RobotController_a8986fe4c6f3a97d336bb88c27609ddfb}} 
+\index{knights::RobotController@{knights::RobotController}!follow\_profile\_pursuit@{follow\_profile\_pursuit}}
+\index{follow\_profile\_pursuit@{follow\_profile\_pursuit}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{follow\_profile\_pursuit()}{follow\_profile\_pursuit()}}
+{\footnotesize\ttfamily void knights\+::\+Robot\+Controller\+::follow\+\_\+profile\+\_\+pursuit (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structknights_1_1MotionProfile}{knights\+::\+Motion\+Profile}} \&}]{profile,  }\item[{float}]{lookahead\+\_\+distance = {\ttfamily 15.0},  }\item[{const float}]{max\+\_\+speed = {\ttfamily 127.0},  }\item[{bool}]{forwards = {\ttfamily true},  }\item[{float}]{end\+\_\+tolerance = {\ttfamily 4.0},  }\item[{float}]{timeout = {\ttfamily 5000} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classknights_1_1RobotController_a65e5f6a72a7f4066fdb1102d5aa0e6b3}\label{classknights_1_1RobotController_a65e5f6a72a7f4066fdb1102d5aa0e6b3}} 
+\index{knights::RobotController@{knights::RobotController}!follow\_profile\_ramsete@{follow\_profile\_ramsete}}
+\index{follow\_profile\_ramsete@{follow\_profile\_ramsete}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{follow\_profile\_ramsete()}{follow\_profile\_ramsete()}}
+{\footnotesize\ttfamily void knights\+::\+Robot\+Controller\+::follow\+\_\+profile\+\_\+ramsete (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structknights_1_1MotionProfile}{knights\+::\+Motion\+Profile}} \&}]{profile,  }\item[{float}]{end\+\_\+tolerance = {\ttfamily 3.0},  }\item[{bool}]{forwards = {\ttfamily true} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classknights_1_1RobotController_a4502b2873cba34543659afbf6b912366}\label{classknights_1_1RobotController_a4502b2873cba34543659afbf6b912366}} 
+\index{knights::RobotController@{knights::RobotController}!follow\_route\_pursuit@{follow\_route\_pursuit}}
+\index{follow\_route\_pursuit@{follow\_route\_pursuit}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{follow\_route\_pursuit()}{follow\_route\_pursuit()}}
+{\footnotesize\ttfamily void knights\+::\+Robot\+Controller\+::follow\+\_\+route\+\_\+pursuit (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structknights_1_1Route}{knights\+::\+Route}} \&}]{route,  }\item[{float}]{lookahead\+\_\+distance = {\ttfamily 15.0},  }\item[{const float}]{max\+\_\+speed = {\ttfamily 127.0},  }\item[{bool}]{forwards = {\ttfamily true},  }\item[{float}]{end\+\_\+tolerance = {\ttfamily 4.0},  }\item[{float}]{timeout = {\ttfamily 5000} }\end{DoxyParamCaption})}
+
+
+
+Follow a route that has been read into the route memory of the robot. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em route} & Pointer to the route to follow \\
+\hline
+{\em lookahead\+\_\+distance} & Distance to look ahead on the route in order to obtain the target position \\
+\hline
+{\em max\+\_\+speed} & Maximum speed to move the bot at \\
+\hline
+{\em forwards} & Whether the bot should follow with its front or back \\
+\hline
+{\em end\+\_\+tolerance} & Distance to end the loop at \\
+\hline
+{\em timeout} & Amount of time to wait before ending the movement \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classknights_1_1RobotController_a60908cf99fb528e0063e7c8faac72f43}\label{classknights_1_1RobotController_a60908cf99fb528e0063e7c8faac72f43}} 
+\index{knights::RobotController@{knights::RobotController}!lateral\_move@{lateral\_move}}
+\index{lateral\_move@{lateral\_move}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{lateral\_move()}{lateral\_move()}}
+{\footnotesize\ttfamily void knights\+::\+Robot\+Controller\+::lateral\+\_\+move (\begin{DoxyParamCaption}\item[{const float}]{distance,  }\item[{float}]{end\+\_\+tolerance = {\ttfamily 3.0},  }\item[{float}]{timeout = {\ttfamily 1500} }\end{DoxyParamCaption})}
+
+
+
+Move in a straight line, forwards or backwards. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em distance} & Distance to move, positive for forward, negative for backward \\
+\hline
+{\em end\+\_\+tolerance} & Position that the bot will stop moving at (ie if this is 5, the bot will stop moving 5 inches before the position)
+\begin{DoxyItemize}
+\item this is used to account for the center of the bot not being the front 
+\end{DoxyItemize}\\
+\hline
+{\em timeout} & Amount of time to wait before exiting the move \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classknights_1_1RobotController_a3d89ef69a574c9bf71fa93321b2533e7}\label{classknights_1_1RobotController_a3d89ef69a574c9bf71fa93321b2533e7}} 
+\index{knights::RobotController@{knights::RobotController}!lateral\_to\_point@{lateral\_to\_point}}
+\index{lateral\_to\_point@{lateral\_to\_point}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{lateral\_to\_point()}{lateral\_to\_point()}}
+{\footnotesize\ttfamily void knights\+::\+Robot\+Controller\+::lateral\+\_\+to\+\_\+point (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structknights_1_1Pos}{Pos}}}]{desired\+\_\+position,  }\item[{const bool}]{forwards = {\ttfamily true},  }\item[{const float}]{end\+\_\+tolerance = {\ttfamily 3.5},  }\item[{const int}]{timeout = {\ttfamily 1000} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classknights_1_1RobotController_a3c5f9f859cbebf1e70d2dfc5eaacfcd5}\label{classknights_1_1RobotController_a3c5f9f859cbebf1e70d2dfc5eaacfcd5}} 
+\index{knights::RobotController@{knights::RobotController}!lateral\_to\_position@{lateral\_to\_position}}
+\index{lateral\_to\_position@{lateral\_to\_position}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{lateral\_to\_position()}{lateral\_to\_position()}}
+{\footnotesize\ttfamily void knights\+::\+Robot\+Controller\+::lateral\+\_\+to\+\_\+position (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structknights_1_1Pos}{Pos}}}]{desired\+\_\+position,  }\item[{const bool}]{forwards = {\ttfamily true},  }\item[{const float}]{end\+\_\+tolerance = {\ttfamily 3.5},  }\item[{const int}]{timeout = {\ttfamily 1000} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classknights_1_1RobotController_a6f1cd2bdd138ee977e240bbb8b48c973}\label{classknights_1_1RobotController_a6f1cd2bdd138ee977e240bbb8b48c973}} 
+\index{knights::RobotController@{knights::RobotController}!move\_to\_position@{move\_to\_position}}
+\index{move\_to\_position@{move\_to\_position}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{move\_to\_position()}{move\_to\_position()}}
+{\footnotesize\ttfamily void knights\+::\+Robot\+Controller\+::move\+\_\+to\+\_\+position (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structknights_1_1Pos}{Pos}}}]{desired\+\_\+position,  }\item[{float}]{lead = {\ttfamily 0.5},  }\item[{float}]{correction\+\_\+dist = {\ttfamily 8.0},  }\item[{const float \&}]{end\+\_\+tolerance = {\ttfamily 2.0},  }\item[{const bool}]{forwards = {\ttfamily true},  }\item[{float}]{timeout = {\ttfamily 1000} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classknights_1_1RobotController_ae63ebc8df7f18b27816deb42cf03848d}\label{classknights_1_1RobotController_ae63ebc8df7f18b27816deb42cf03848d}} 
+\index{knights::RobotController@{knights::RobotController}!turn\_for@{turn\_for}}
+\index{turn\_for@{turn\_for}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{turn\_for()}{turn\_for()}}
+{\footnotesize\ttfamily void knights\+::\+Robot\+Controller\+::turn\+\_\+for (\begin{DoxyParamCaption}\item[{const float}]{angle,  }\item[{const float}]{end\+\_\+tolerance = {\ttfamily 2.0},  }\item[{float}]{timeout = {\ttfamily 750},  }\item[{bool}]{rad = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Turn the robot left or right for a certain angle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em angle} & Amount to change the heading by, negative for right, positive for left (think of unit circle) \\
+\hline
+{\em end\+\_\+tolerance} & Angle that the bot will stop moving at (ie if this is 5, the bot will stop moving 5 degrees before the heading)
+\begin{DoxyItemize}
+\item this is used to account for the center of the bot not being the front 
+\end{DoxyItemize}\\
+\hline
+{\em timeout} & Amount of time to wait before exiting the movement \\
+\hline
+{\em rad} & Whether the provided angle is in radians or not \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classknights_1_1RobotController_a0bfcb67548bb446b9e62e486f93b7233}\label{classknights_1_1RobotController_a0bfcb67548bb446b9e62e486f93b7233}} 
+\index{knights::RobotController@{knights::RobotController}!turn\_to\_angle@{turn\_to\_angle}}
+\index{turn\_to\_angle@{turn\_to\_angle}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{turn\_to\_angle()}{turn\_to\_angle()}}
+{\footnotesize\ttfamily void knights\+::\+Robot\+Controller\+::turn\+\_\+to\+\_\+angle (\begin{DoxyParamCaption}\item[{const float}]{angle,  }\item[{int}]{direction = {\ttfamily 0},  }\item[{float}]{end\+\_\+tolerance = {\ttfamily 3.0},  }\item[{int}]{timeout = {\ttfamily 2000},  }\item[{bool}]{rad = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Turn the robot to a specific angle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em angle} & Angle to turn to \\
+\hline
+{\em direction} & Whether to turn left (-\/1), right (1), or best direction (0) \\
+\hline
+{\em end\+\_\+tolerance} & Angle that the bot will stop moving at (ie if this is 5, the bot will stop moving 5 degrees before the heading)
+\begin{DoxyItemize}
+\item this is used to account for the center of the bot not being the front 
+\end{DoxyItemize}\\
+\hline
+{\em timeout} & Amount of time to wait before exiting the movement \\
+\hline
+{\em rad} & Whether the provided angle is in radians or not \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classknights_1_1RobotController_ae5275448b05e5a32ab3ac8e0734d40de}\label{classknights_1_1RobotController_ae5275448b05e5a32ab3ac8e0734d40de}} 
+\index{knights::RobotController@{knights::RobotController}!turn\_to\_point@{turn\_to\_point}}
+\index{turn\_to\_point@{turn\_to\_point}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{turn\_to\_point()}{turn\_to\_point()}}
+{\footnotesize\ttfamily void knights\+::\+Robot\+Controller\+::turn\+\_\+to\+\_\+point (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structknights_1_1Pos}{knights\+::\+Pos}}}]{point,  }\item[{bool}]{forwards = {\ttfamily true},  }\item[{int}]{direction = {\ttfamily 0},  }\item[{float}]{end\+\_\+tolerance = {\ttfamily 3.0},  }\item[{int}]{timeout = {\ttfamily 2000} }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em point} & \\
+\hline
+{\em direction} & \\
+\hline
+{\em end\+\_\+tolerance} & \\
+\hline
+{\em timeout} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{classknights_1_1RobotController_ada509e8498a3ea6185ef731743cc8ed8}\label{classknights_1_1RobotController_ada509e8498a3ea6185ef731743cc8ed8}} 
+\index{knights::RobotController@{knights::RobotController}!AdvancedRoute@{AdvancedRoute}}
+\index{AdvancedRoute@{AdvancedRoute}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{AdvancedRoute}{AdvancedRoute}}
+{\footnotesize\ttfamily friend class \mbox{\hyperlink{structknights_1_1AdvancedRoute}{Advanced\+Route}}\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classknights_1_1RobotController_ae47e12171a8f225f6eef330a76788c24}\label{classknights_1_1RobotController_ae47e12171a8f225f6eef330a76788c24}} 
+\index{knights::RobotController@{knights::RobotController}!angular\_pid@{angular\_pid}}
+\index{angular\_pid@{angular\_pid}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{angular\_pid}{angular\_pid}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}}$\ast$ knights\+::\+Robot\+Controller\+::angular\+\_\+pid\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classknights_1_1RobotController_a708d56141ff71be07b9bd60cbcf439b5}\label{classknights_1_1RobotController_a708d56141ff71be07b9bd60cbcf439b5}} 
+\index{knights::RobotController@{knights::RobotController}!chassis@{chassis}}
+\index{chassis@{chassis}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{chassis}{chassis}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classknights_1_1RobotChassis}{Robot\+Chassis}}$\ast$ knights\+::\+Robot\+Controller\+::chassis\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classknights_1_1RobotController_a12c003998271886759770f1bcefc3679}\label{classknights_1_1RobotController_a12c003998271886759770f1bcefc3679}} 
+\index{knights::RobotController@{knights::RobotController}!in\_motion@{in\_motion}}
+\index{in\_motion@{in\_motion}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{in\_motion}{in\_motion}}
+{\footnotesize\ttfamily bool knights\+::\+Robot\+Controller\+::in\+\_\+motion = false\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classknights_1_1RobotController_a5957172b120bd6ca81adce53114ddabd}\label{classknights_1_1RobotController_a5957172b120bd6ca81adce53114ddabd}} 
+\index{knights::RobotController@{knights::RobotController}!lateral\_pid@{lateral\_pid}}
+\index{lateral\_pid@{lateral\_pid}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{lateral\_pid}{lateral\_pid}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}}$\ast$ knights\+::\+Robot\+Controller\+::lateral\+\_\+pid\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classknights_1_1RobotController_ae83eb49956f6b71175d1354bd00eb709}\label{classknights_1_1RobotController_ae83eb49956f6b71175d1354bd00eb709}} 
+\index{knights::RobotController@{knights::RobotController}!ramsete\_constants@{ramsete\_constants}}
+\index{ramsete\_constants@{ramsete\_constants}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{ramsete\_constants}{ramsete\_constants}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classknights_1_1RamseteConstants}{Ramsete\+Constants}}$\ast$ knights\+::\+Robot\+Controller\+::ramsete\+\_\+constants\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classknights_1_1RobotController_a625237b7a811587e7793aaa9baed6c72}\label{classknights_1_1RobotController_a625237b7a811587e7793aaa9baed6c72}} 
+\index{knights::RobotController@{knights::RobotController}!turn\_pid@{turn\_pid}}
+\index{turn\_pid@{turn\_pid}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{turn\_pid}{turn\_pid}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classknights_1_1PIDController}{P\+I\+D\+Controller}}$\ast$ knights\+::\+Robot\+Controller\+::turn\+\_\+pid\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classknights_1_1RobotController_a98790f177544b9fcf4cb02045a6e4cbc}\label{classknights_1_1RobotController_a98790f177544b9fcf4cb02045a6e4cbc}} 
+\index{knights::RobotController@{knights::RobotController}!use\_motor\_encoders@{use\_motor\_encoders}}
+\index{use\_motor\_encoders@{use\_motor\_encoders}!knights::RobotController@{knights::RobotController}}
+\doxysubsubsection{\texorpdfstring{use\_motor\_encoders}{use\_motor\_encoders}}
+{\footnotesize\ttfamily bool knights\+::\+Robot\+Controller\+::use\+\_\+motor\+\_\+encoders = false\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/knights/autonomous/\mbox{\hyperlink{controller_8hpp}{controller.\+hpp}}\item 
+src/knights/autonomous/\mbox{\hyperlink{controller_8cpp}{controller.\+cpp}}\item 
+src/knights/autonomous/movements/global/\mbox{\hyperlink{follow_8cpp}{follow.\+cpp}}\item 
+src/knights/autonomous/movements/global/\mbox{\hyperlink{move__to__point_8cpp}{move\+\_\+to\+\_\+point.\+cpp}}\item 
+src/knights/autonomous/movements/global/\mbox{\hyperlink{turn__to__angle_8cpp}{turn\+\_\+to\+\_\+angle.\+cpp}}\item 
+src/knights/autonomous/movements/local/\mbox{\hyperlink{lateral_8cpp}{lateral.\+cpp}}\item 
+src/knights/autonomous/movements/local/\mbox{\hyperlink{turn__for_8cpp}{turn\+\_\+for.\+cpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,73 @@
+\hypertarget{display_8hpp}{}\doxysection{include/knights/display.hpp File Reference}
+\label{display_8hpp}\index{include/knights/display.hpp@{include/knights/display.hpp}}
+{\ttfamily \#include \char`\"{}liblvgl/lvgl.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/api.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$string$>$}\newline
+Include dependency graph for display.\+hpp\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structknights_1_1display_1_1MapDot}{knights\+::display\+::\+Map\+Dot}}
+\item 
+struct \mbox{\hyperlink{structknights_1_1display_1_1AutonSelectionPackage}{knights\+::display\+::\+Auton\+Selection\+Package}}
+\item 
+struct \mbox{\hyperlink{structknights_1_1Auton}{knights\+::\+Auton}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceknights}{knights}}
+\item 
+ \mbox{\hyperlink{namespaceknights_1_1display}{knights\+::display}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{display_8hpp_af42251d0b1aa95ddd7c18764e7d154e9}{\+\_\+\+K\+N\+I\+G\+H\+T\+S\+\_\+\+D\+I\+S\+P\+L\+A\+Y\+\_\+H}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{display_8hpp_a839d34ee3b7b8a2bacfa0e917e4100f0}{lv\+\_\+display}} (void)
+\item 
+Auton\+Selection\+Package \mbox{\hyperlink{namespaceknights_1_1display_a16a14cf90f584b65efa53ea0340989ef}{knights\+::display\+::get\+\_\+selected\+\_\+auton}} (void)
+\begin{DoxyCompactList}\small\item\em Get the currently selection combination of auton. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespaceknights_1_1display_a188be90539b7c8743cbff0b53b6a98f2}{knights\+::display\+::set\+\_\+pos\+\_\+label}} (std\+::string str)
+\begin{DoxyCompactList}\small\item\em Set the current position label to a string. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespaceknights_1_1display_ace9aefe953b9c8f618043fb78a8a68b6}{knights\+::display\+::change\+\_\+curr\+\_\+pos\+\_\+dot}} (Pos pos)
+\begin{DoxyCompactList}\small\item\em Move the current position dot. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unordered\+\_\+map$<$ std\+::string, \mbox{\hyperlink{structknights_1_1Auton}{knights\+::\+Auton}} $>$ \mbox{\hyperlink{display_8hpp_a9757672b296ef1ddf7d2de6e233f39a3}{auton\+\_\+map}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{display_8hpp_af42251d0b1aa95ddd7c18764e7d154e9}\label{display_8hpp_af42251d0b1aa95ddd7c18764e7d154e9}} 
+\index{display.hpp@{display.hpp}!\_KNIGHTS\_DISPLAY\_H@{\_KNIGHTS\_DISPLAY\_H}}
+\index{\_KNIGHTS\_DISPLAY\_H@{\_KNIGHTS\_DISPLAY\_H}!display.hpp@{display.hpp}}
+\doxysubsubsection{\texorpdfstring{\_KNIGHTS\_DISPLAY\_H}{\_KNIGHTS\_DISPLAY\_H}}
+{\footnotesize\ttfamily \#define \+\_\+\+K\+N\+I\+G\+H\+T\+S\+\_\+\+D\+I\+S\+P\+L\+A\+Y\+\_\+H}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{display_8hpp_a839d34ee3b7b8a2bacfa0e917e4100f0}\label{display_8hpp_a839d34ee3b7b8a2bacfa0e917e4100f0}} 
+\index{display.hpp@{display.hpp}!lv\_display@{lv\_display}}
+\index{lv\_display@{lv\_display}!display.hpp@{display.hpp}}
+\doxysubsubsection{\texorpdfstring{lv\_display()}{lv\_display()}}
+{\footnotesize\ttfamily void lv\+\_\+display (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{display_8hpp_a9757672b296ef1ddf7d2de6e233f39a3}\label{display_8hpp_a9757672b296ef1ddf7d2de6e233f39a3}} 
+\index{display.hpp@{display.hpp}!auton\_map@{auton\_map}}
+\index{auton\_map@{auton\_map}!display.hpp@{display.hpp}}
+\doxysubsubsection{\texorpdfstring{auton\_map}{auton\_map}}
+{\footnotesize\ttfamily std\+::unordered\+\_\+map$<$std\+::string, \mbox{\hyperlink{structknights_1_1Auton}{knights\+::\+Auton}}$>$ auton\+\_\+map}
+

@@ -1,0 +1,11 @@
+digraph "src/knights/autonomous/movements/global" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_0c5bd9647ca01fbfc510b89e786f33ee {
+    graph [ bgcolor="#ddddee", pencolor="black", label="movements" fontname="Helvetica", fontsize="10", URL="dir_0c5bd9647ca01fbfc510b89e786f33ee.html"]
+  dir_ffd7a500c8a0e6b62c58198794512f95 [shape=box, label="global", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_ffd7a500c8a0e6b62c58198794512f95.html"];
+  }
+  dir_d44c64559bbebec7f509842c48db8b23 [shape=box label="include" fillcolor="white" style="filled" color="red" URL="dir_d44c64559bbebec7f509842c48db8b23.html"];
+  dir_ffd7a500c8a0e6b62c58198794512f95->dir_d44c64559bbebec7f509842c48db8b23 [headlabel="21", labeldistance=1.5 headhref="dir_000012_000000.html"];
+}

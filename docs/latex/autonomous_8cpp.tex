@@ -1,0 +1,369 @@
+\hypertarget{autonomous_8cpp}{}\doxysection{src/autonomous.cpp File Reference}
+\label{autonomous_8cpp}\index{src/autonomous.cpp@{src/autonomous.cpp}}
+{\ttfamily \#include \char`\"{}autonomous.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}globals.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/api.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/autonomous/advanced\+\_\+route.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/autonomous/path.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/logger/logger.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/util/calculation.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}knights/util/position.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$fstream$>$}\newline
+Include dependency graph for autonomous.\+cpp\+:
+% FIG 0
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_a80fb826a684cf3f0d306b22aa100ddac}{R\+I\+G\+HT}}~1
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_a437ef08681e7210d6678427030446a54}{L\+E\+FT}}~-\/1
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_a81139eb21d3e93ce04f74bc0a9f3165f}{L\+A\+T\+E\+R\+A\+L\+\_\+kP}}~8.\+3
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_af0a7aaac4976dd8f2195d4bbeb4a9432}{L\+A\+T\+E\+R\+A\+L\+\_\+kI}}~0
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_a625c213b8a55f874c26a3ea5c5255f70}{L\+A\+T\+E\+R\+A\+L\+\_\+kD}}~50
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_a472b418f1b81f8b880cb7ab6e2279718}{T\+U\+R\+N\+\_\+k\+P\+\_\+45}}~98
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_aed6dd0c77b58d28dd543526b73d41614}{T\+U\+R\+N\+\_\+k\+I\+\_\+45}}~0.\+0
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_a5176e68e4e237c8da241b8fdc0a2545e}{T\+U\+R\+N\+\_\+k\+D\+\_\+45}}~675
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_a09bdbbb2b8658405d8f829c57803782f}{T\+U\+R\+N\+\_\+k\+P\+\_\+90}}~78
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_ad4ec6365541303574a1782ad5e160bba}{T\+U\+R\+N\+\_\+k\+I\+\_\+90}}~0.\+0
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_ab371c78e3b860283e340b3855f787a0b}{T\+U\+R\+N\+\_\+k\+D\+\_\+90}}~525
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_a49dfd2cb6bc8a9459c846c18dde77dc6}{T\+U\+R\+N\+\_\+k\+P\+\_\+135}}~78
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_a1fe88d671bd3ef4cdb4d01f4cc78b227}{T\+U\+R\+N\+\_\+k\+I\+\_\+135}}~0.\+0
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_a289d37c4b38f3649bd348736c16834d5}{T\+U\+R\+N\+\_\+k\+D\+\_\+135}}~610
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_a7fb07c08089e48e25eb6a5b7de7bd4f8}{T\+U\+R\+N\+\_\+k\+P\+\_\+180}}~78
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_afb5b8c2319cd569fdd231a4b1c968432}{T\+U\+R\+N\+\_\+k\+I\+\_\+180}}~0.\+0
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_ad8fd98201d8dfa98154275e3bffb63ba}{T\+U\+R\+N\+\_\+k\+D\+\_\+180}}~700
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_aef72fe86b7c60b1a86920496456edeac}{W\+A\+IT}}~170
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_a611fcb4d1749f9462ec3e903e3a5ac55}{k\+Pos}}~\mbox{\hyperlink{structknights_1_1Pos}{knights\+::\+Pos}}
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_aa322affa45b9a0af7408db0f961d6e14}{rad}}(x)~\mbox{\hyperlink{namespaceknights_a3a2830dce0650f9ed8084557ae039684}{knights\+::to\+\_\+rad}}(x)
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_a6c6772207c061db8f6ca77c2661f497a}{w}}~pros\+::delay(\mbox{\hyperlink{autonomous_8cpp_aef72fe86b7c60b1a86920496456edeac}{W\+A\+IT}})
+\item 
+\#define \mbox{\hyperlink{autonomous_8cpp_aa284f6a053e9009708ea55934e4b83c4}{tw}}(x)~pros\+::delay((x)$\ast$\mbox{\hyperlink{autonomous_8cpp_aef72fe86b7c60b1a86920496456edeac}{W\+A\+IT}})
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a5a6f19a9249e499e55cf7917c53e7d45}{pid\+\_\+tuning}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_ac172c53ac28d212211b7fa5863254388}{pp\+\_\+test}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a62ea54084700cc7ee57e690ca1b05ab2}{redone\+\_\+skills}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_ae09b79ded0b12fbbadf737bba72ac76a}{w400ms}} ()
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a7e3b46b8a860f4871ba26cf638f3113c}{w800ms}} ()
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a0cbef0b086fd9fbd67781809fd4ea14b}{w1s}} ()
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a59bbd4f6e1c8fe36fd157bb48c8e703c}{skills}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a3d8bac39d58f4713b84625471451d588}{na\+\_\+skills}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a8f4078b11b59f132cbb72e487895a67f}{red\+\_\+left\+\_\+wp}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_adffba0a6db02f7c9975880b066456c1d}{red\+\_\+rush\+\_\+right\+\_\+wp}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a52c93ca41739a7acf0bc230919488e09}{alt\+\_\+skills}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a85cac1c2965ebd47cadeb65279e151d9}{red\+\_\+rush\+\_\+right\+\_\+elim}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_ac7cc065941974277c581d8d22c6bdcb7}{blue\+\_\+rush\+\_\+left\+\_\+elim}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a95c599d01ea96c027e3633ebc0c00fb1}{blue\+\_\+right\+\_\+wp}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a176becdcc595739692b183994771a918}{blue\+\_\+rush\+\_\+left\+\_\+wp}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a77cb237763c371b6c465b587528cc32c}{blue\+\_\+right\+\_\+elim}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a095c470583a6a10d3619df671d1842b5}{mogo\+\_\+red\+\_\+rush}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a64ad037d946217b44049caf6d0be3328}{mogo\+\_\+blue\+\_\+rush}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a98edc58501cc0e3e02c854b4852ea0e2}{right\+\_\+safe\+\_\+no\+\_\+wait}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a3a53bbfd3b2984d27c18544a9cab3f72}{rush\+\_\+4\+\_\+ring}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\item 
+void \mbox{\hyperlink{autonomous_8cpp_a1636c3e2a291035a34d204fa62581a9a}{empty}} (\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$chassis)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{autonomous_8cpp_a611fcb4d1749f9462ec3e903e3a5ac55}\label{autonomous_8cpp_a611fcb4d1749f9462ec3e903e3a5ac55}} 
+\index{autonomous.cpp@{autonomous.cpp}!kPos@{kPos}}
+\index{kPos@{kPos}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{kPos}{kPos}}
+{\footnotesize\ttfamily \#define k\+Pos~\mbox{\hyperlink{structknights_1_1Pos}{knights\+::\+Pos}}}
+
+\mbox{\Hypertarget{autonomous_8cpp_a625c213b8a55f874c26a3ea5c5255f70}\label{autonomous_8cpp_a625c213b8a55f874c26a3ea5c5255f70}} 
+\index{autonomous.cpp@{autonomous.cpp}!LATERAL\_kD@{LATERAL\_kD}}
+\index{LATERAL\_kD@{LATERAL\_kD}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{LATERAL\_kD}{LATERAL\_kD}}
+{\footnotesize\ttfamily \#define L\+A\+T\+E\+R\+A\+L\+\_\+kD~50}
+
+\mbox{\Hypertarget{autonomous_8cpp_af0a7aaac4976dd8f2195d4bbeb4a9432}\label{autonomous_8cpp_af0a7aaac4976dd8f2195d4bbeb4a9432}} 
+\index{autonomous.cpp@{autonomous.cpp}!LATERAL\_kI@{LATERAL\_kI}}
+\index{LATERAL\_kI@{LATERAL\_kI}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{LATERAL\_kI}{LATERAL\_kI}}
+{\footnotesize\ttfamily \#define L\+A\+T\+E\+R\+A\+L\+\_\+kI~0}
+
+\mbox{\Hypertarget{autonomous_8cpp_a81139eb21d3e93ce04f74bc0a9f3165f}\label{autonomous_8cpp_a81139eb21d3e93ce04f74bc0a9f3165f}} 
+\index{autonomous.cpp@{autonomous.cpp}!LATERAL\_kP@{LATERAL\_kP}}
+\index{LATERAL\_kP@{LATERAL\_kP}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{LATERAL\_kP}{LATERAL\_kP}}
+{\footnotesize\ttfamily \#define L\+A\+T\+E\+R\+A\+L\+\_\+kP~8.\+3}
+
+\mbox{\Hypertarget{autonomous_8cpp_a437ef08681e7210d6678427030446a54}\label{autonomous_8cpp_a437ef08681e7210d6678427030446a54}} 
+\index{autonomous.cpp@{autonomous.cpp}!LEFT@{LEFT}}
+\index{LEFT@{LEFT}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{LEFT}{LEFT}}
+{\footnotesize\ttfamily \#define L\+E\+FT~-\/1}
+
+\mbox{\Hypertarget{autonomous_8cpp_aa322affa45b9a0af7408db0f961d6e14}\label{autonomous_8cpp_aa322affa45b9a0af7408db0f961d6e14}} 
+\index{autonomous.cpp@{autonomous.cpp}!rad@{rad}}
+\index{rad@{rad}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{rad}{rad}}
+{\footnotesize\ttfamily \#define rad(\begin{DoxyParamCaption}\item[{}]{x }\end{DoxyParamCaption})~\mbox{\hyperlink{namespaceknights_a3a2830dce0650f9ed8084557ae039684}{knights\+::to\+\_\+rad}}(x)}
+
+\mbox{\Hypertarget{autonomous_8cpp_a80fb826a684cf3f0d306b22aa100ddac}\label{autonomous_8cpp_a80fb826a684cf3f0d306b22aa100ddac}} 
+\index{autonomous.cpp@{autonomous.cpp}!RIGHT@{RIGHT}}
+\index{RIGHT@{RIGHT}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{RIGHT}{RIGHT}}
+{\footnotesize\ttfamily \#define R\+I\+G\+HT~1}
+
+\mbox{\Hypertarget{autonomous_8cpp_a289d37c4b38f3649bd348736c16834d5}\label{autonomous_8cpp_a289d37c4b38f3649bd348736c16834d5}} 
+\index{autonomous.cpp@{autonomous.cpp}!TURN\_kD\_135@{TURN\_kD\_135}}
+\index{TURN\_kD\_135@{TURN\_kD\_135}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{TURN\_kD\_135}{TURN\_kD\_135}}
+{\footnotesize\ttfamily \#define T\+U\+R\+N\+\_\+k\+D\+\_\+135~610}
+
+\mbox{\Hypertarget{autonomous_8cpp_ad8fd98201d8dfa98154275e3bffb63ba}\label{autonomous_8cpp_ad8fd98201d8dfa98154275e3bffb63ba}} 
+\index{autonomous.cpp@{autonomous.cpp}!TURN\_kD\_180@{TURN\_kD\_180}}
+\index{TURN\_kD\_180@{TURN\_kD\_180}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{TURN\_kD\_180}{TURN\_kD\_180}}
+{\footnotesize\ttfamily \#define T\+U\+R\+N\+\_\+k\+D\+\_\+180~700}
+
+\mbox{\Hypertarget{autonomous_8cpp_a5176e68e4e237c8da241b8fdc0a2545e}\label{autonomous_8cpp_a5176e68e4e237c8da241b8fdc0a2545e}} 
+\index{autonomous.cpp@{autonomous.cpp}!TURN\_kD\_45@{TURN\_kD\_45}}
+\index{TURN\_kD\_45@{TURN\_kD\_45}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{TURN\_kD\_45}{TURN\_kD\_45}}
+{\footnotesize\ttfamily \#define T\+U\+R\+N\+\_\+k\+D\+\_\+45~675}
+
+\mbox{\Hypertarget{autonomous_8cpp_ab371c78e3b860283e340b3855f787a0b}\label{autonomous_8cpp_ab371c78e3b860283e340b3855f787a0b}} 
+\index{autonomous.cpp@{autonomous.cpp}!TURN\_kD\_90@{TURN\_kD\_90}}
+\index{TURN\_kD\_90@{TURN\_kD\_90}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{TURN\_kD\_90}{TURN\_kD\_90}}
+{\footnotesize\ttfamily \#define T\+U\+R\+N\+\_\+k\+D\+\_\+90~525}
+
+\mbox{\Hypertarget{autonomous_8cpp_a1fe88d671bd3ef4cdb4d01f4cc78b227}\label{autonomous_8cpp_a1fe88d671bd3ef4cdb4d01f4cc78b227}} 
+\index{autonomous.cpp@{autonomous.cpp}!TURN\_kI\_135@{TURN\_kI\_135}}
+\index{TURN\_kI\_135@{TURN\_kI\_135}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{TURN\_kI\_135}{TURN\_kI\_135}}
+{\footnotesize\ttfamily \#define T\+U\+R\+N\+\_\+k\+I\+\_\+135~0.\+0}
+
+\mbox{\Hypertarget{autonomous_8cpp_afb5b8c2319cd569fdd231a4b1c968432}\label{autonomous_8cpp_afb5b8c2319cd569fdd231a4b1c968432}} 
+\index{autonomous.cpp@{autonomous.cpp}!TURN\_kI\_180@{TURN\_kI\_180}}
+\index{TURN\_kI\_180@{TURN\_kI\_180}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{TURN\_kI\_180}{TURN\_kI\_180}}
+{\footnotesize\ttfamily \#define T\+U\+R\+N\+\_\+k\+I\+\_\+180~0.\+0}
+
+\mbox{\Hypertarget{autonomous_8cpp_aed6dd0c77b58d28dd543526b73d41614}\label{autonomous_8cpp_aed6dd0c77b58d28dd543526b73d41614}} 
+\index{autonomous.cpp@{autonomous.cpp}!TURN\_kI\_45@{TURN\_kI\_45}}
+\index{TURN\_kI\_45@{TURN\_kI\_45}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{TURN\_kI\_45}{TURN\_kI\_45}}
+{\footnotesize\ttfamily \#define T\+U\+R\+N\+\_\+k\+I\+\_\+45~0.\+0}
+
+\mbox{\Hypertarget{autonomous_8cpp_ad4ec6365541303574a1782ad5e160bba}\label{autonomous_8cpp_ad4ec6365541303574a1782ad5e160bba}} 
+\index{autonomous.cpp@{autonomous.cpp}!TURN\_kI\_90@{TURN\_kI\_90}}
+\index{TURN\_kI\_90@{TURN\_kI\_90}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{TURN\_kI\_90}{TURN\_kI\_90}}
+{\footnotesize\ttfamily \#define T\+U\+R\+N\+\_\+k\+I\+\_\+90~0.\+0}
+
+\mbox{\Hypertarget{autonomous_8cpp_a49dfd2cb6bc8a9459c846c18dde77dc6}\label{autonomous_8cpp_a49dfd2cb6bc8a9459c846c18dde77dc6}} 
+\index{autonomous.cpp@{autonomous.cpp}!TURN\_kP\_135@{TURN\_kP\_135}}
+\index{TURN\_kP\_135@{TURN\_kP\_135}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{TURN\_kP\_135}{TURN\_kP\_135}}
+{\footnotesize\ttfamily \#define T\+U\+R\+N\+\_\+k\+P\+\_\+135~78}
+
+\mbox{\Hypertarget{autonomous_8cpp_a7fb07c08089e48e25eb6a5b7de7bd4f8}\label{autonomous_8cpp_a7fb07c08089e48e25eb6a5b7de7bd4f8}} 
+\index{autonomous.cpp@{autonomous.cpp}!TURN\_kP\_180@{TURN\_kP\_180}}
+\index{TURN\_kP\_180@{TURN\_kP\_180}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{TURN\_kP\_180}{TURN\_kP\_180}}
+{\footnotesize\ttfamily \#define T\+U\+R\+N\+\_\+k\+P\+\_\+180~78}
+
+\mbox{\Hypertarget{autonomous_8cpp_a472b418f1b81f8b880cb7ab6e2279718}\label{autonomous_8cpp_a472b418f1b81f8b880cb7ab6e2279718}} 
+\index{autonomous.cpp@{autonomous.cpp}!TURN\_kP\_45@{TURN\_kP\_45}}
+\index{TURN\_kP\_45@{TURN\_kP\_45}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{TURN\_kP\_45}{TURN\_kP\_45}}
+{\footnotesize\ttfamily \#define T\+U\+R\+N\+\_\+k\+P\+\_\+45~98}
+
+\mbox{\Hypertarget{autonomous_8cpp_a09bdbbb2b8658405d8f829c57803782f}\label{autonomous_8cpp_a09bdbbb2b8658405d8f829c57803782f}} 
+\index{autonomous.cpp@{autonomous.cpp}!TURN\_kP\_90@{TURN\_kP\_90}}
+\index{TURN\_kP\_90@{TURN\_kP\_90}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{TURN\_kP\_90}{TURN\_kP\_90}}
+{\footnotesize\ttfamily \#define T\+U\+R\+N\+\_\+k\+P\+\_\+90~78}
+
+\mbox{\Hypertarget{autonomous_8cpp_aa284f6a053e9009708ea55934e4b83c4}\label{autonomous_8cpp_aa284f6a053e9009708ea55934e4b83c4}} 
+\index{autonomous.cpp@{autonomous.cpp}!tw@{tw}}
+\index{tw@{tw}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{tw}{tw}}
+{\footnotesize\ttfamily \#define tw(\begin{DoxyParamCaption}\item[{}]{x }\end{DoxyParamCaption})~pros\+::delay((x)$\ast$\mbox{\hyperlink{autonomous_8cpp_aef72fe86b7c60b1a86920496456edeac}{W\+A\+IT}})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a6c6772207c061db8f6ca77c2661f497a}\label{autonomous_8cpp_a6c6772207c061db8f6ca77c2661f497a}} 
+\index{autonomous.cpp@{autonomous.cpp}!w@{w}}
+\index{w@{w}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{w}{w}}
+{\footnotesize\ttfamily \#define w~pros\+::delay(\mbox{\hyperlink{autonomous_8cpp_aef72fe86b7c60b1a86920496456edeac}{W\+A\+IT}})}
+
+\mbox{\Hypertarget{autonomous_8cpp_aef72fe86b7c60b1a86920496456edeac}\label{autonomous_8cpp_aef72fe86b7c60b1a86920496456edeac}} 
+\index{autonomous.cpp@{autonomous.cpp}!WAIT@{WAIT}}
+\index{WAIT@{WAIT}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{WAIT}{WAIT}}
+{\footnotesize\ttfamily \#define W\+A\+IT~170}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{autonomous_8cpp_a52c93ca41739a7acf0bc230919488e09}\label{autonomous_8cpp_a52c93ca41739a7acf0bc230919488e09}} 
+\index{autonomous.cpp@{autonomous.cpp}!alt\_skills@{alt\_skills}}
+\index{alt\_skills@{alt\_skills}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{alt\_skills()}{alt\_skills()}}
+{\footnotesize\ttfamily void alt\+\_\+skills (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a77cb237763c371b6c465b587528cc32c}\label{autonomous_8cpp_a77cb237763c371b6c465b587528cc32c}} 
+\index{autonomous.cpp@{autonomous.cpp}!blue\_right\_elim@{blue\_right\_elim}}
+\index{blue\_right\_elim@{blue\_right\_elim}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{blue\_right\_elim()}{blue\_right\_elim()}}
+{\footnotesize\ttfamily void blue\+\_\+right\+\_\+elim (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a95c599d01ea96c027e3633ebc0c00fb1}\label{autonomous_8cpp_a95c599d01ea96c027e3633ebc0c00fb1}} 
+\index{autonomous.cpp@{autonomous.cpp}!blue\_right\_wp@{blue\_right\_wp}}
+\index{blue\_right\_wp@{blue\_right\_wp}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{blue\_right\_wp()}{blue\_right\_wp()}}
+{\footnotesize\ttfamily void blue\+\_\+right\+\_\+wp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_ac7cc065941974277c581d8d22c6bdcb7}\label{autonomous_8cpp_ac7cc065941974277c581d8d22c6bdcb7}} 
+\index{autonomous.cpp@{autonomous.cpp}!blue\_rush\_left\_elim@{blue\_rush\_left\_elim}}
+\index{blue\_rush\_left\_elim@{blue\_rush\_left\_elim}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{blue\_rush\_left\_elim()}{blue\_rush\_left\_elim()}}
+{\footnotesize\ttfamily void blue\+\_\+rush\+\_\+left\+\_\+elim (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a176becdcc595739692b183994771a918}\label{autonomous_8cpp_a176becdcc595739692b183994771a918}} 
+\index{autonomous.cpp@{autonomous.cpp}!blue\_rush\_left\_wp@{blue\_rush\_left\_wp}}
+\index{blue\_rush\_left\_wp@{blue\_rush\_left\_wp}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{blue\_rush\_left\_wp()}{blue\_rush\_left\_wp()}}
+{\footnotesize\ttfamily void blue\+\_\+rush\+\_\+left\+\_\+wp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a1636c3e2a291035a34d204fa62581a9a}\label{autonomous_8cpp_a1636c3e2a291035a34d204fa62581a9a}} 
+\index{autonomous.cpp@{autonomous.cpp}!empty@{empty}}
+\index{empty@{empty}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{empty()}{empty()}}
+{\footnotesize\ttfamily void empty (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a64ad037d946217b44049caf6d0be3328}\label{autonomous_8cpp_a64ad037d946217b44049caf6d0be3328}} 
+\index{autonomous.cpp@{autonomous.cpp}!mogo\_blue\_rush@{mogo\_blue\_rush}}
+\index{mogo\_blue\_rush@{mogo\_blue\_rush}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{mogo\_blue\_rush()}{mogo\_blue\_rush()}}
+{\footnotesize\ttfamily void mogo\+\_\+blue\+\_\+rush (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a095c470583a6a10d3619df671d1842b5}\label{autonomous_8cpp_a095c470583a6a10d3619df671d1842b5}} 
+\index{autonomous.cpp@{autonomous.cpp}!mogo\_red\_rush@{mogo\_red\_rush}}
+\index{mogo\_red\_rush@{mogo\_red\_rush}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{mogo\_red\_rush()}{mogo\_red\_rush()}}
+{\footnotesize\ttfamily void mogo\+\_\+red\+\_\+rush (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a3d8bac39d58f4713b84625471451d588}\label{autonomous_8cpp_a3d8bac39d58f4713b84625471451d588}} 
+\index{autonomous.cpp@{autonomous.cpp}!na\_skills@{na\_skills}}
+\index{na\_skills@{na\_skills}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{na\_skills()}{na\_skills()}}
+{\footnotesize\ttfamily void na\+\_\+skills (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a5a6f19a9249e499e55cf7917c53e7d45}\label{autonomous_8cpp_a5a6f19a9249e499e55cf7917c53e7d45}} 
+\index{autonomous.cpp@{autonomous.cpp}!pid\_tuning@{pid\_tuning}}
+\index{pid\_tuning@{pid\_tuning}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{pid\_tuning()}{pid\_tuning()}}
+{\footnotesize\ttfamily void pid\+\_\+tuning (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_ac172c53ac28d212211b7fa5863254388}\label{autonomous_8cpp_ac172c53ac28d212211b7fa5863254388}} 
+\index{autonomous.cpp@{autonomous.cpp}!pp\_test@{pp\_test}}
+\index{pp\_test@{pp\_test}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{pp\_test()}{pp\_test()}}
+{\footnotesize\ttfamily void pp\+\_\+test (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a8f4078b11b59f132cbb72e487895a67f}\label{autonomous_8cpp_a8f4078b11b59f132cbb72e487895a67f}} 
+\index{autonomous.cpp@{autonomous.cpp}!red\_left\_wp@{red\_left\_wp}}
+\index{red\_left\_wp@{red\_left\_wp}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{red\_left\_wp()}{red\_left\_wp()}}
+{\footnotesize\ttfamily void red\+\_\+left\+\_\+wp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a85cac1c2965ebd47cadeb65279e151d9}\label{autonomous_8cpp_a85cac1c2965ebd47cadeb65279e151d9}} 
+\index{autonomous.cpp@{autonomous.cpp}!red\_rush\_right\_elim@{red\_rush\_right\_elim}}
+\index{red\_rush\_right\_elim@{red\_rush\_right\_elim}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{red\_rush\_right\_elim()}{red\_rush\_right\_elim()}}
+{\footnotesize\ttfamily void red\+\_\+rush\+\_\+right\+\_\+elim (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_adffba0a6db02f7c9975880b066456c1d}\label{autonomous_8cpp_adffba0a6db02f7c9975880b066456c1d}} 
+\index{autonomous.cpp@{autonomous.cpp}!red\_rush\_right\_wp@{red\_rush\_right\_wp}}
+\index{red\_rush\_right\_wp@{red\_rush\_right\_wp}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{red\_rush\_right\_wp()}{red\_rush\_right\_wp()}}
+{\footnotesize\ttfamily void red\+\_\+rush\+\_\+right\+\_\+wp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a62ea54084700cc7ee57e690ca1b05ab2}\label{autonomous_8cpp_a62ea54084700cc7ee57e690ca1b05ab2}} 
+\index{autonomous.cpp@{autonomous.cpp}!redone\_skills@{redone\_skills}}
+\index{redone\_skills@{redone\_skills}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{redone\_skills()}{redone\_skills()}}
+{\footnotesize\ttfamily void redone\+\_\+skills (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a98edc58501cc0e3e02c854b4852ea0e2}\label{autonomous_8cpp_a98edc58501cc0e3e02c854b4852ea0e2}} 
+\index{autonomous.cpp@{autonomous.cpp}!right\_safe\_no\_wait@{right\_safe\_no\_wait}}
+\index{right\_safe\_no\_wait@{right\_safe\_no\_wait}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{right\_safe\_no\_wait()}{right\_safe\_no\_wait()}}
+{\footnotesize\ttfamily void right\+\_\+safe\+\_\+no\+\_\+wait (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a3a53bbfd3b2984d27c18544a9cab3f72}\label{autonomous_8cpp_a3a53bbfd3b2984d27c18544a9cab3f72}} 
+\index{autonomous.cpp@{autonomous.cpp}!rush\_4\_ring@{rush\_4\_ring}}
+\index{rush\_4\_ring@{rush\_4\_ring}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{rush\_4\_ring()}{rush\_4\_ring()}}
+{\footnotesize\ttfamily void rush\+\_\+4\+\_\+ring (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a59bbd4f6e1c8fe36fd157bb48c8e703c}\label{autonomous_8cpp_a59bbd4f6e1c8fe36fd157bb48c8e703c}} 
+\index{autonomous.cpp@{autonomous.cpp}!skills@{skills}}
+\index{skills@{skills}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{skills()}{skills()}}
+{\footnotesize\ttfamily void skills (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classknights_1_1RobotChassis}{knights\+::\+Robot\+Chassis}} $\ast$}]{chassis }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a0cbef0b086fd9fbd67781809fd4ea14b}\label{autonomous_8cpp_a0cbef0b086fd9fbd67781809fd4ea14b}} 
+\index{autonomous.cpp@{autonomous.cpp}!w1s@{w1s}}
+\index{w1s@{w1s}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{w1s()}{w1s()}}
+{\footnotesize\ttfamily void w1s (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_ae09b79ded0b12fbbadf737bba72ac76a}\label{autonomous_8cpp_ae09b79ded0b12fbbadf737bba72ac76a}} 
+\index{autonomous.cpp@{autonomous.cpp}!w400ms@{w400ms}}
+\index{w400ms@{w400ms}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{w400ms()}{w400ms()}}
+{\footnotesize\ttfamily void w400ms (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{autonomous_8cpp_a7e3b46b8a860f4871ba26cf638f3113c}\label{autonomous_8cpp_a7e3b46b8a860f4871ba26cf638f3113c}} 
+\index{autonomous.cpp@{autonomous.cpp}!w800ms@{w800ms}}
+\index{w800ms@{w800ms}!autonomous.cpp@{autonomous.cpp}}
+\doxysubsubsection{\texorpdfstring{w800ms()}{w800ms()}}
+{\footnotesize\ttfamily void w800ms (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
