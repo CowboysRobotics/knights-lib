@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "knights/api.hpp"
 #include "knights/autonomous/profile.hpp"
+#include "knights/display.hpp"
 #include "pros/misc.h"
 
 #include <cstdio>
@@ -14,8 +15,8 @@
 #include <fstream>
 
 pros::Task *odomTask = nullptr;
-
 pros::Task *ladyBrownTask = nullptr;
+pros::Task *colorSortTask = nullptr;
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -79,38 +80,37 @@ void autonomous() {
 	midOdom.reset();
 	backOdom.reset();
 
-	// run odometry loop
-	if (odomTask == nullptr)
+	if (odomTask == nullptr) {
 		odomTask = new pros::Task {[=] {
 			while (true) {
 				chassis.update_position(); // query odometry system for position
 				
-				// // Convoluted method of inputting everything to a string
-				// std::stringstream stream;
-				// stream << "Curr Pos: ";
-				// stream << std::fixed << std::setprecision(2) << chassis.get_position().x << " ";
-				// stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
-				// stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
-				// std::string s = stream.str();
-
-				// // Set the display label to the current position
-				// knights::display::set_pos_label(s);
-
-				// // Move the current position dot to the desired position
-				// knights::display::change_curr_pos_dot(chassis.get_position());
+				// removed display for stability - may add processing load
 
 				pros::delay(10);
 			}
 		}};
+
+		odomTask->set_priority(TASK_PRIORITY_DEFAULT + 1);
+	}
 	
-	if (ladyBrownTask == nullptr) 
+	if (ladyBrownTask == nullptr) {
 		ladyBrownTask = new pros::Task {[=] {
 			while(true) {
 				lady_brown.move(get_lady_brown_command());
 
-				pros::delay(10);
+				pros::delay(20);
 			}
 		}};
+
+		ladyBrownTask->set_priority(TASK_PRIORITY_DEFAULT - 1);
+	}
+
+	if (package.type == "Red") {
+		red_alliance = true;
+	} else {
+		red_alliance = false;
+	}
 
 	// Run the chosen auton
 	if (auton_map.contains(package.get_value())) {
@@ -142,7 +142,7 @@ void opcontrol() {
 	backOdom.reset();
 
 	// run odometry loop
-	if (odomTask == nullptr)
+	if (odomTask == nullptr) {
 		odomTask = new pros::Task {[=] {
 			while (true) {
 				chassis.update_position(); // query odometry system for position
@@ -165,15 +165,21 @@ void opcontrol() {
 				pros::delay(10);
 			}
 		}};
+
+		odomTask->set_priority(TASK_PRIORITY_DEFAULT - 1);
+	}
 	
-	if (ladyBrownTask == nullptr) 
+	if (ladyBrownTask == nullptr) {
 		ladyBrownTask = new pros::Task {[=] {
 			while(true) {
 				lady_brown.move(get_lady_brown_command());
 
-				pros::delay(10);
+				pros::delay(20);
 			}
 		}};
+
+		ladyBrownTask->set_priority(TASK_PRIORITY_DEFAULT - 1);
+	}
 
 	float right_velocity = 0; float left_velocity = 0; 
 
@@ -195,6 +201,23 @@ void opcontrol() {
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doinker_toggle, false); //assign doinker toggle to controller button R1
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, doinker_toggle, false); //assign doinker toggle to controller button R1
 
+	if (colorSortTask == nullptr) {
+		colorSortTask = new pros::Task {[=] {
+			while(true) {
+				if (color_sorting) {
+					red_color_sort();
+					blue_color_sort();
+
+					pros::delay(20);
+				}
+				else {
+					pros::delay(150);
+				}
+			}
+		}};
+
+		colorSortTask->set_priority(TASK_PRIORITY_DEFAULT - 2);
+	}
 
 	while (true) {
 		// If controller joystick not in deadzone, calculate the velocity
@@ -221,9 +244,6 @@ void opcontrol() {
 
 		// Delay to let other tasks run
 		pros::delay(10);
-		
-		// red_color_sort();
-		// blue_color_sort();
 
 		// Loop through all values in input map
 		input.execute_actions(master_controller);

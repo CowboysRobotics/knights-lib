@@ -1,4 +1,5 @@
 #include "knights/autonomous/pid.hpp"
+#include "knights/logger/logger.hpp"
 #include "knights/util/calculation.hpp"
 #include "pros/abstract_motor.hpp"
 #include "pros/motors.hpp"
@@ -170,9 +171,15 @@ void lady_brown_rev() {
 
 float lady_brown_target = LADY_BROWN_DOWN;
 
+
+
 float get_lady_brown_command() {
 	float error = lady_brown_target - lady_brown_rotation.get_position();
 	float speed = lady_brown_PID.update(error, false);
+
+	knights::logger::cyan(knights::logger::string_format(
+		"error: %lf speed: %lf curr: %lf target: %lf", error, speed, lady_brown_rotation.get_position(), lady_brown_target
+	));
 
 	return speed;
 }
