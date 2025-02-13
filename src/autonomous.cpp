@@ -353,16 +353,16 @@ void skills(knights::RobotChassis *chassis) {
 	inputMap.bind_action("wait800", w400ms);
 	inputMap.bind_action("wait400", w800ms);
 
-	AssetStream first(first_txt);
+	AssetStream first(skillsfirst_txt);
 	auto first_route = knights::init_route_from_asset(first);
 
-	AssetStream second(second_txt);
+	AssetStream second(skillssecond_txt);
 	auto second_route = knights::init_route_from_asset(second);
 
-	AssetStream third(third_txt);
+	AssetStream third(skillsthird_txt);
 	auto third_route = knights::init_route_from_asset(third);
 
-	AssetStream fourth(fourth_txt);
+	AssetStream fourth(skillsfourth_txt);
 	auto fourth_route = knights::init_route_from_asset(fourth);
 
 	intake_in();
