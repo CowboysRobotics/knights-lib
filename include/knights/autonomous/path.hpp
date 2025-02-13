@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #ifndef _PATHK_H
 #define _PATHK_H
 
@@ -16,6 +17,7 @@ namespace knights {
 
     struct Route {
         std::vector<Pos> positions;
+        std::map<int, std::vector<std::function<void()>>> actions;
 
         /**
          * @brief Construct a new Route object
@@ -31,6 +33,8 @@ namespace knights {
         Route();
 
         Route(knights::MotionProfile profile);
+
+        void add_action(knights::Pos input_position, std::function<void()> function);
 
         float length_dist();
 

@@ -74,6 +74,7 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
     // declare essential values
     knights::Pos target_point = route.positions[0];
     int closest_i = 0;
+    int prev_closest_i = 0;
     float closest_dist = 1e5;
     float error = distance_btwn(this->chassis->curr_position, route.positions[route.positions.size()-1]);
 
@@ -190,6 +191,20 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
         //     route.positions.back().x, route.positions.back().y, route.positions.size(), angular_curve/((distance_btwn(curr_position, target_point)/max_lookahead) * 0.1), 
         //     timeout, lookahead_distance, distance_btwn(this->chassis->curr_position, target_point), angular_velocity, angular_pid->get_max_speed()
         // ) << "\n";
+
+        
+        // run all actions between previous closest point and current
+        if (prev_closest_i != closest_i) {
+            for (int i = prev_closest_i; i < closest_i; i++) {
+                if (route.actions.contains(i)) { // ensure we are not accessing empty vector
+                    for (std::function<void()> action : route.actions.at(i)) { // run action
+                        action();
+                    }
+                }
+            }
+        }
+
+        prev_closest_i = closest_i;
 
         // wait for next iteration of loop
         pros::delay(10);

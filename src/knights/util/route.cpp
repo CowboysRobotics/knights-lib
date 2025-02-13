@@ -1,6 +1,7 @@
 #include "knights/api.hpp"
 #include "api.h"
 #include "knights/autonomous/profile.hpp"
+#include "position.hpp"
 
 #include <fstream>
 #include <string>
@@ -18,6 +19,21 @@ knights::Route::Route(knights::MotionProfile profile) {
     for (auto timestamp : profile.timestamps) {
         this->positions.emplace_back(timestamp.position.x, timestamp.position.y, timestamp.position.heading);
     }
+}
+
+void knights::Route::add_action(knights::Pos input_position, std::function<void()> function) {
+
+    float min_dist = 1e8;
+    int closest_i = 0;
+
+    for (int i = 0; i < this->positions.size(); i++) {
+        if (distance_btwn(this->positions[i], input_position) < min_dist) {
+            min_dist = distance_btwn(this->positions[i], input_position);
+            closest_i = i;
+        }
+    }
+
+    this->actions[closest_i].emplace_back(function);
 }
 
 float knights::Route::length_dist() {
