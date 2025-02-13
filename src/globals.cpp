@@ -212,62 +212,9 @@ float get_lady_brown_command() {
 		speed = fabs(speed);
 	}
 
-	knights::logger::cyan(knights::logger::string_format(
-		"error: %lf speed: %lf curr: %lf target: %lf", error, speed, lady_brown_rotation.get_angle()/100.0, lady_brown_target
-	));
-
 	return speed;
 }
 
-void lady_brown_to_angle(float angle, int timeout, bool async = true, int dir = 0, int end_tol = LADY_BROWN_END_TOLERANCE) { // angle in 0-360 deg
-	if (async) {
-		pros::Task task([&]() {
-			lady_brown_to_angle(angle, timeout, false, dir);
-		});
-		pros::delay(20);
-		return;
-	}
-    float error = angle - lady_brown_rotation.get_angle()/100.0;
-	int curr_direction;
-
-    lady_brown_PID.reset();
-    lady_brown.set_brake_mode(pros::MotorBrake::hold);
-    lady_brown.set_brake_mode(pros::MotorBrake::hold);
-    lady_brown_spinning = true;
-
-    while (fabsf(error) > LADY_BROWN_END_TOLERANCE && lady_brown_spinning) {
-        error = fabs(angle - lady_brown_rotation.get_angle()/100.0);
-
-		if (error > 180) {
-			error = 360-error;
-		}
-
-		if (dir == 0)
-			curr_direction = knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false);
-		else
-			curr_direction = dir;
-
-		float speed = lady_brown_PID.update(error);
-
-		printf("speed: %lf, error: %lf, dir %d, curr: %lf, des: %lf\n", speed, error, knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false), lady_brown_rotation.get_angle()/100.0, angle);
-
-        lady_brown.move(
-            speed * -curr_direction
-        );
-        timeout -= 20;
-        if (timeout < 0) {
-            break;
-        }
-
-        pros::delay(20);
-    }
-
-   	lady_brown.move(0);
-	lady_brown.brake();
-	printf("error: %F \n", error);
-	printf("position: %i \n", lady_brown_rotation.get_angle());
-
-}
 
 void lady_brown_down() {
     // lady_brown_to_angle(LADY_BROWN_DOWN, 1500, true, -1);

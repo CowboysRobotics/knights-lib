@@ -321,10 +321,10 @@ void w1s() {
 	pros::delay(1000);
 }
 
-ASSET(first_txt)
-ASSET(second_txt)
-ASSET(third_txt)
-ASSET(fourth_txt)
+ASSET(skillsfirst_txt)
+ASSET(skillssecond_txt)
+ASSET(skillsthird_txt)
+ASSET(skillsfourth_txt)
 
 
 void skills(knights::RobotChassis *chassis) {
