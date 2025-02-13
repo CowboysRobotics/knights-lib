@@ -15,6 +15,12 @@
 #include "knights/robot/drivetrain.hpp"
 #include "knights/robot/chassis.hpp"
 
+extern pros::Task *odomTask;
+extern pros::Task *ladyBrownTask;
+extern pros::Task *colorSortTask;
+extern pros::Task *intakeJamTask;
+
+
 // Controller
 extern pros::Controller master_controller;
 

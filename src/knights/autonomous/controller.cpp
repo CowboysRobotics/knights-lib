@@ -44,7 +44,7 @@ float knights::PIDController::update(float error, bool clamp) {
             this->max_velocity
         ) * knights::signum(this->kP * error + this->kI * total_error + this->kD * (error - prev_error));
     } else
-        result = std::fabs(this->kP * error + this->kI * total_error + this->kD * (error - prev_error));
+        result = this->kP * error + this->kI * total_error + this->kD * (error - prev_error);
     prev_error = error;
     return result;
 }
