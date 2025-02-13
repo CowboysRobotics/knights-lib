@@ -17,31 +17,31 @@
 #include <cstdio>
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
-// Competition Robot
-//front of bot is intake side
-//assign ports to right side drive-train
-pros::MotorGroup left_mtrs({2,3,-4}, pros::MotorGears::blue); // no reverse
-//assign ports to left side drive-train
-pros::MotorGroup right_mtrs({-14,-16,13}, pros::MotorGears::blue); // no reverse
-//assign ports to odom pods for position tracking
-pros::Rotation mid_odom(8); // parallel tracking
-pros::Rotation back_odom(	11); // perpendicular tracking
-//assign port for imu tracker
-pros::IMU imu(6);
-//dimensions and positions of odom pods for calculations for position tracking
-knights::PositionTracker midOdom(&mid_odom, 2, 1, 1.25, -1);
-knights::PositionTracker backOdom(&back_odom, 2, 1, 1.875, -1);
-// #### END
-
-// // #### Test Robot
-// pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
-// pros::MotorGroup left_mtrs({-4,-5,-6}, pros::MotorGears::blue);
-// pros::Rotation mid_odom(18);
-// pros::Rotation back_odom(14);
-// pros::IMU imu(15);
-// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
-// knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
+// // Competition Robot
+// //front of bot is intake side
+// //assign ports to right side drive-train
+// pros::MotorGroup left_mtrs({2,3,-4}, pros::MotorGears::blue); // no reverse
+// //assign ports to left side drive-train
+// pros::MotorGroup right_mtrs({-14,-16,13}, pros::MotorGears::blue); // no reverse
+// //assign ports to odom pods for position tracking
+// pros::Rotation mid_odom(8); // parallel tracking
+// pros::Rotation back_odom(	11); // perpendicular tracking
+// //assign port for imu tracker
+// pros::IMU imu(6);
+// //dimensions and positions of odom pods for calculations for position tracking
+// knights::PositionTracker midOdom(&mid_odom, 2, 1, 1.25, -1);
+// knights::PositionTracker backOdom(&back_odom, 2, 1, 1.875, -1);
 // // #### END
+
+// #### Test Robot
+pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
+pros::MotorGroup left_mtrs({-4,-5,-6}, pros::MotorGears::blue);
+pros::Rotation mid_odom(18);
+pros::Rotation back_odom(14);
+pros::IMU imu(15);
+knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
+knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
+// #### END
 
 //assign ports to Lady Brown arm mech
 pros::Motor lady_brown(21, pros::MotorGears::green);
@@ -212,61 +212,11 @@ float get_lady_brown_command() {
 		speed = fabs(speed);
 	}
 
-	knights::logger::cyan(knights::logger::string_format(
-		"error: %lf speed: %lf curr: %lf target: %lf", error, speed, lady_brown_rotation.get_angle()/100.0, lady_brown_target
-	));
+	// knights::logger::cyan(knights::logger::string_format(
+	// 	"error: %lf speed: %lf curr: %lf target: %lf", error, speed, lady_brown_rotation.get_angle()/100.0, lady_brown_target
+	// ));
 
 	return speed;
-}
-
-void lady_brown_to_angle(float angle, int timeout, bool async = true, int dir = 0, int end_tol = LADY_BROWN_END_TOLERANCE) { // angle in 0-360 deg
-	if (async) {
-		pros::Task task([&]() {
-			lady_brown_to_angle(angle, timeout, false, dir);
-		});
-		pros::delay(20);
-		return;
-	}
-    float error = angle - lady_brown_rotation.get_angle()/100.0;
-	int curr_direction;
-
-    lady_brown_PID.reset();
-    lady_brown.set_brake_mode(pros::MotorBrake::hold);
-    lady_brown.set_brake_mode(pros::MotorBrake::hold);
-    lady_brown_spinning = true;
-
-    while (fabsf(error) > LADY_BROWN_END_TOLERANCE && lady_brown_spinning) {
-        error = fabs(angle - lady_brown_rotation.get_angle()/100.0);
-
-		if (error > 180) {
-			error = 360-error;
-		}
-
-		if (dir == 0)
-			curr_direction = knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false);
-		else
-			curr_direction = dir;
-
-		float speed = lady_brown_PID.update(error);
-
-		printf("speed: %lf, error: %lf, dir %d, curr: %lf, des: %lf\n", speed, error, knights::direction(lady_brown_rotation.get_angle()/100.0, angle, false), lady_brown_rotation.get_angle()/100.0, angle);
-
-        lady_brown.move(
-            speed * -curr_direction
-        );
-        timeout -= 20;
-        if (timeout < 0) {
-            break;
-        }
-
-        pros::delay(20);
-    }
-
-   	lady_brown.move(0);
-	lady_brown.brake();
-	printf("error: %F \n", error);
-	printf("position: %i \n", lady_brown_rotation.get_angle());
-
 }
 
 void lady_brown_down() {

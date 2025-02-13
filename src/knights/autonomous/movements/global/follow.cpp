@@ -87,7 +87,7 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
         this->angular_pid->reset();
     }
 
-    // std::fstream write_file("/usd/pure_pursuit.txt", std::ios_base::out);
+    // std::fstream write_file("/usd/pp_actions_in.txt", std::ios_base::out);
 
     // While the robot has not reached the desired point and is not at the end of the route
     while (error > end_tolerance && closest_i != route.positions.size()-1 ) {
@@ -192,13 +192,14 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
         //     timeout, lookahead_distance, distance_btwn(this->chassis->curr_position, target_point), angular_velocity, angular_pid->get_max_speed()
         // ) << "\n";
 
-        
         // run all actions between previous closest point and current
         if (prev_closest_i != closest_i) {
             for (int i = prev_closest_i; i < closest_i; i++) {
+                // write_file << i << " " << route.actions.contains(i) << "\n";
                 if (route.actions.contains(i)) { // ensure we are not accessing empty vector
                     for (std::function<void()> action : route.actions.at(i)) { // run action
                         action();
+                        // write_file << "ran function of point " << i << "\n";
                     }
                 }
             }
@@ -212,6 +213,8 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
 
         if (timeout < 0) break;
     }
+
+    // write_file.close();
 
     // stop motors after route over
     this->chassis->drivetrain->voltage_command(0, 0);
