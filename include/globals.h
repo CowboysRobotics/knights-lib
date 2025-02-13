@@ -78,6 +78,8 @@ void lady_brown_load2();
 void lady_brown_score();
 void lady_brown_alliance();
 
+void score_wall_stake();
+
 // Pneumatics
 extern pros::adi::Pneumatics clamp;
 extern pros::adi::Pneumatics doinker;

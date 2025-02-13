@@ -139,7 +139,6 @@ void toggle_color_sort(){
 
 void change_color(){
 	red_alliance = !red_alliance;
-
 }
 
 void red_color_sort() {
@@ -289,7 +288,7 @@ void lady_brown_load2() {
 }
 
 void lady_brown_score() {
-	color_sorting = true;
+	// color_sorting = true;
 	intake_spinning = false;
 	intake.move(0);
     // lady_brown_to_angle(LADY_BROWN_SCORE, 1500, true);
@@ -303,6 +302,12 @@ void lady_brown_alliance() {
     // lady_brown_to_angle(LADY_BROWN_ALLIANCE, 750, true, 5.0);
 
 	lady_brown_target = LADY_BROWN_ALLIANCE;
+}
+
+void score_wall_stake() {
+	lady_brown_score();
+	pros::delay(600);
+	lady_brown_down();
 }
 
 bool clamp_down = false;
