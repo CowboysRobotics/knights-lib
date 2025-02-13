@@ -71,6 +71,7 @@ extern float lady_brown_target;
 void lady_brown_fwd();
 void lady_brown_rev();
 float get_lady_brown_command();
+void lady_brown_to_angle(float angle, int timeout, bool async = true, int dir = 0, int end_tol = 1.0);
 void lady_brown_down();
 void lady_brown_load1();
 void lady_brown_load2();

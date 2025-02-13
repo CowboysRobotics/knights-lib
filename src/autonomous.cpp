@@ -1,7 +1,6 @@
 #include "autonomous.h" 
 #include "globals.h"
 #include "knights/api.hpp"
-#include "knights/asset.hpp"
 #include "knights/autonomous/advanced_route.hpp"
 #include "knights/autonomous/path.hpp"
 #include "knights/logger/logger.hpp"
@@ -82,9 +81,17 @@ void pid_tuning(knights::RobotChassis *chassis) {
 	// robotControl.follow_profile_ramsete(profile);
 }
 
-ASSET(testactioin_txt);
 
 void pp_test(knights::RobotChassis *chassis) {
+
+	std::string s = "rush.txt";
+
+	knights::AdvancedRoute test_route = advanced_route_from_file(s);
+	// for (auto route : test_route.routes) {
+	// 	for (auto pt : route.second.positions) {
+	// 		// knights::logger::green(knights::logger::string_format("pt: %lf %lf %lf", pt.x, pt.y, pt.heading));
+	// 	}
+	// }
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
@@ -106,11 +113,12 @@ void pp_test(knights::RobotChassis *chassis) {
 	inputMap.bind_action("lbLoad1", lady_brown_load1);
 	inputMap.bind_action("lbScore", lady_brown_score);
 
-	AssetStream first(testactioin_txt);
-	auto first_route = knights::init_route_from_asset(first);
-	first_route.add_action(knights::Pos(20, 28, 0), &print1);
+	knights::ProfileGenerator generator(drivetrain, 600);
+	knights::MotionProfile profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 0), 80, 0, 0);
 
-	robotControl.follow_route_pursuit(first_route, 18.0);
+	robotControl.follow_route_pursuit(knights::Route(profile), 18.0, 100.0);
+
+	// test_route.execute(chassis, &robotControl, &inputMap);
 }
 
 #define WAIT 170

@@ -6,10 +6,6 @@
 
 #include "knights/util/calculation.hpp"
 
-#include <fstream>
-
-std::fstream write_file("/usd/odometry.txt", std::ios_base::out);
-
 void knights::RobotChassis::update_position() {
 
     float deltaRight, deltaLeft, deltaFront, deltaBack;
@@ -85,7 +81,4 @@ void knights::RobotChassis::update_position() {
     curr_position.y += localX * cos(averageHeading) + localY * sin(averageHeading);
 
     this->curr_position.heading = newHeading;
-
-
-    write_file << curr_position.x << " " << curr_position.y << " " << curr_position.heading << "\n";
 }

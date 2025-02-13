@@ -1,7 +1,6 @@
 #include "knights/api.hpp"
 #include "api.h"
 #include "knights/autonomous/profile.hpp"
-#include "knights/logger/logger.hpp"
 #include "position.hpp"
 
 #include <fstream>
@@ -22,24 +21,17 @@ knights::Route::Route(knights::MotionProfile profile) {
     }
 }
 
-// std::fstream write_file("/usd/pp_actions_add.txt", std::ios_base::out);
-
 void knights::Route::add_action(knights::Pos input_position, std::function<void()> function) {
 
     float min_dist = 1e8;
     int closest_i = 0;
 
     for (int i = 0; i < this->positions.size(); i++) {
-        // write_file << knights::logger::string_format("found pt %lf %lf at i %d\n", this->positions[i].x, this->positions[i].y, i);
         if (distance_btwn(this->positions[i], input_position) < min_dist) {
             min_dist = distance_btwn(this->positions[i], input_position);
             closest_i = i;
-
-            // write_file << knights::logger::string_format("min dist %lf closest i %d\n", min_dist, closest_i);
         }
     }
-
-    // write_file.close();
 
     this->actions[closest_i].emplace_back(function);
 }

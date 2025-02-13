@@ -42,10 +42,7 @@ void initialize() {
 	auton_map["None0"] = knights::Auton(&skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
 	auton_map["Skills0"] = knights::Auton(&redone_skills, knights::Pos(-62.5, 0, 0));
 	auton_map["Skills1"] = knights::Auton(&na_skills, knights::Pos(-57.5, 0, 0));
-
-
-
-	auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(12, 12, knights::to_rad(90)));
+	// auton_map["None0"] = knights::Auton(&pp_skills, knights::Pos(-57.5, -12.75, knights::to_rad(180-49)));
 
 	lv_display();
 
