@@ -42,9 +42,14 @@ void initialize() {
 	auton_map["None0"] = knights::Auton(&skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
 	auton_map["Skills0"] = knights::Auton(&redone_skills, knights::Pos(-62.5, 0, 0));
 	auton_map["Skills1"] = knights::Auton(&na_skills, knights::Pos(-57.5, 0, 0));
-	// auton_map["None0"] = knights::Auton(&pp_skills, knights::Pos(-57.5, -12.75, knights::to_rad(180-49)));
+
+
+	// auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(0.001, 0.001, 0));
 
 	lv_display();
+
+	midOdom.reset();
+	backOdom.reset();
 
 	// wait until everything is calibrated
 	pros::delay(2000);
@@ -83,8 +88,22 @@ void autonomous() {
 			while (true) {
 				chassis.update_position(); // query odometry system for position
 				
-				// removed display for stability - may add processing load
+				// // Convoluted method of inputting everything to a string
+				// std::stringstream stream;
+				// stream << "Curr Pos: ";
+				// stream << std::fixed << std::setprecision(2) << chassis.get_position().x << " ";
+				// stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
+				// stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
+				// std::string s = stream.str();
+				// // printf("curr pos: %lf %lf %lf\n", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading);
 
+				// // Set the display label to the current position
+				// knights::display::set_pos_label(s);
+
+				// // Move the current position dot to the desired position
+				// knights::display::change_curr_pos_dot(chassis.get_position());
+
+				// pros::delay(10);
 				pros::delay(10);
 			}
 		}};
@@ -173,8 +192,8 @@ void opcontrol() {
 				// Set the display label to the current position
 				knights::display::set_pos_label(s);
 
-				// // Move the current position dot to the desired position
-				// knights::display::change_curr_pos_dot(chassis.get_position());
+				// Move the current position dot to the desired position
+				knights::display::change_curr_pos_dot(chassis.get_position());
 
 				pros::delay(10);
 			}

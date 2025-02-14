@@ -29,7 +29,7 @@ pros::Rotation back_odom(	11); // perpendicular tracking
 //assign port for imu tracker
 pros::IMU imu(6);
 //dimensions and positions of odom pods for calculations for position tracking
-knights::PositionTracker midOdom(&mid_odom, 2, 1, 1.25, -1);
+knights::PositionTracker midOdom(&mid_odom, 2, 1, 0.9375, -1);
 knights::PositionTracker backOdom(&back_odom, 2, 1, 1.875, -1);
 // #### END
 
