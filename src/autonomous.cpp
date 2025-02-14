@@ -574,13 +574,15 @@ void safer_skills(knights::RobotChassis *chassis) {
 
 	robotControl.lateral_to_position(kPos(-2, -40, rad(270)), false, 2.0, 1000); w;
 
-	robotControl.lateral_move(28, 2.0, 750); intake_in();
+	robotControl.lateral_move(24, 2.0, 750); intake_in();
 
-	lady_brown_score(); pros::delay(600); lady_brown_down(); pros::delay(500); 
+	lady_brown_score(); pros::delay(700); robotControl.lateral_move(-8, 2.0, 750, false); lady_brown_load1(); pros::delay(500); 
 	
-	intake_in(); pros::delay(500); lady_brown_score();
+	intake_in(); robotControl.lateral_move(10, 2.0, 750, false); pros::delay(500); lady_brown_score(); pros::delay(500);  intake_in();
 
-	robotControl.lateral_move(-12); lady_brown_down(); w; robotControl.turn_to_angle(180);
+	robotControl.lateral_move(-10);
+
+	lady_brown_down(); w; robotControl.turn_to_angle(180);
 
 	// route to get three rings
 	robotControl.follow_route_pursuit(
@@ -601,17 +603,19 @@ void safer_skills(knights::RobotChassis *chassis) {
 
 	clamp_toggle(); robotControl.lateral_move(-20, 2.0, 750); w;
 
-	robotControl.lateral_move(8);
+	robotControl.lateral_move(14); w;
 
 	// ^ gets one 6 ring mogo pushed into corner
 
-	robotControl.lateral_to_position(kPos(-48, 12, rad(270))); w;
+	robotControl.lateral_to_point(kPos(-56, 0, rad(270))); w;
 
-	robotControl.lateral_move(-12); clamp_toggle(); w;
+	robotControl.turn_to_point(kPos(-48, 24, 0), false);
+
+	robotControl.lateral_move(-12); robotControl.lateral_move(-12); clamp_toggle(); w;
 
 	robotControl.turn_to_angle(0); w;
 
-	robotControl.lateral_move(24); w;
+	robotControl.lateral_move(18); w; robotControl.turn_to_angle(45); w;
 
 	robotControl.follow_route_pursuit(
 		third_route, 14.0, 90
@@ -621,13 +625,23 @@ void safer_skills(knights::RobotChassis *chassis) {
 
 	robotControl.lateral_move(12); w;
 
-	robotControl.turn_for(330); w; clamp_toggle();
+	robotControl.turn_to_angle(330); w; clamp_toggle();
 
 	robotControl.lateral_move(-16); w; robotControl.lateral_move(12);
 
 	lady_brown_load1();
 
-	robotControl.follow_route_pursuit(fourth_route, 18.0, 100);
+	robotControl.follow_route_pursuit(fourth_route, 18.0, 100); w;
+
+	robotControl.lateral_to_position(kPos(0, 43, rad(90)), false);
+
+	robotControl.lateral_move(30, 2.0, 750); intake_in();
+
+	lady_brown_score(); pros::delay(700); robotControl.lateral_move(-8, 2.0, 750, false); lady_brown_load1(); pros::delay(500); 
+	
+	intake_in(); robotControl.lateral_move(10, 2.0, 750, false); pros::delay(500); lady_brown_score(); pros::delay(500);  intake_in();
+
+	robotControl.lateral_move(-10);
 
 }
 

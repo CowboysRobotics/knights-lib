@@ -9,9 +9,17 @@
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
 
-void knights::RobotController::lateral_move(const float distance, const float end_tolerance, float timeout) {
+void knights::RobotController::lateral_move(const float distance, const float end_tolerance, float timeout, bool async) {
     if (this->in_motion) return;
     this->in_motion = true;
+
+    if (async) {
+        pros::Task lateral([=] {
+            this->lateral_move(distance, end_tolerance, timeout, false);
+        });
+        pros::delay(10);
+        return;
+    }
 
     this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
     this->chassis->drivetrain->left_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
