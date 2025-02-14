@@ -507,7 +507,127 @@ void skills(knights::RobotChassis *chassis) {
 	
 	robotControl.lateral_to_position(kPos(26, 26, rad(90))); w;
 
+}
+
+ASSET(skills2third_txt)
+ASSET(skills2fourth_txt)
+
+void safer_skills(knights::RobotChassis *chassis) {
+
+    knights::RamseteConstants ramsete_constants(1, 0.5);
+
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 110.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
+	knights::PIDController angularPID(50, 0, 10, -60.0, 60.0);
+
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 	
+	knights::input::AutonomousInputMap inputMap;
+    inputMap.bind_action("intakeRev", intake_out);
+    inputMap.bind_action("intakeFwd", intake_in);
+    inputMap.bind_action("clamp", clamp_toggle);
+	inputMap.bind_action("lbDown", lady_brown_down);
+	inputMap.bind_action("lbLoad1", lady_brown_load1);
+	inputMap.bind_action("lbScore", lady_brown_score);
+	inputMap.bind_action("lbAlliance", lady_brown_alliance);
+	inputMap.bind_action("wait1000", w1s);
+	inputMap.bind_action("wait800", w400ms);
+	inputMap.bind_action("wait400", w800ms);
+
+	AssetStream first(skillsfirst_txt);
+	auto first_route = knights::init_route_from_asset(first);
+	first_route.add_action(kPos(-12, -36, 0), &lady_brown_load1);
+
+	AssetStream second(skillssecond_txt);
+	auto second_route = knights::init_route_from_asset(second);
+
+	AssetStream third(skills2third_txt);
+	auto third_route = knights::init_route_from_asset(third);
+
+	AssetStream fourth(skills2fourth_txt);
+	auto fourth_route = knights::init_route_from_asset(fourth);
+
+	intake_in();
+
+	pros::delay(350);
+
+	intake_in();
+
+	robotControl.lateral_to_position(knights::Pos(-48, 0, knights::to_rad(90)), 1, 2.0, 500); w;
+
+	robotControl.lateral_move(-12); robotControl.lateral_move(-12);
+	
+	clamp_toggle(); w; intake_in();
+
+	robotControl.turn_to_angle(0); w;
+
+	// route from first mogo to other side ring
+	robotControl.follow_route_pursuit(
+		first_route, 18.0, 100, true, 3.0, 1600
+	);
+
+	pros::delay(500);
+
+	robotControl.lateral_to_position(kPos(-2, -40, rad(270)), false, 2.0, 1000); w;
+
+	robotControl.lateral_move(28, 2.0, 750); intake_in();
+
+	lady_brown_score(); pros::delay(600); lady_brown_down(); pros::delay(500); 
+	
+	intake_in(); pros::delay(500); lady_brown_score();
+
+	robotControl.lateral_move(-12); lady_brown_down(); w; robotControl.turn_to_angle(180);
+
+	// route to get three rings
+	robotControl.follow_route_pursuit(
+		second_route, 18.0, 100, true, 4.0, 1500
+	);
+
+	robotControl.lateral_move(8);
+
+	pros::delay(500);
+
+	robotControl.turn_to_angle(305, 0, 2.0, 750); w;
+
+	robotControl.lateral_move(12); w;
+
+	pros::delay(200);
+
+	robotControl.turn_to_angle(40); w;
+
+	clamp_toggle(); robotControl.lateral_move(-20, 2.0, 750); w;
+
+	robotControl.lateral_move(8);
+
+	// ^ gets one 6 ring mogo pushed into corner
+
+	robotControl.lateral_to_position(kPos(-48, 12, rad(270))); w;
+
+	robotControl.lateral_move(-12); clamp_toggle(); w;
+
+	robotControl.turn_to_angle(0); w;
+
+	robotControl.lateral_move(24); w;
+
+	robotControl.follow_route_pursuit(
+		third_route, 14.0, 90
+	); w;
+
+	robotControl.turn_to_point(kPos(-48, 60, 0)); w;
+
+	robotControl.lateral_move(12); w;
+
+	robotControl.turn_for(330); w; clamp_toggle();
+
+	robotControl.lateral_move(-16); w; robotControl.lateral_move(12);
+
+	lady_brown_load1();
+
+	robotControl.follow_route_pursuit(fourth_route, 18.0, 100);
 
 }
 
