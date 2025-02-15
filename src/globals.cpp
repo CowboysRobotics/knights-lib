@@ -22,7 +22,7 @@ pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 //assign ports to right side drive-train
 pros::MotorGroup left_mtrs({2,3,-4}, pros::MotorGears::blue); // no reverse
 //assign ports to left side drive-train
-pros::MotorGroup right_mtrs({-14,-16,13}, pros::MotorGears::blue); // no reverse
+pros::MotorGroup right_mtrs({-14,-12,13}, pros::MotorGears::blue); // no reverse
 //assign ports to odom pods for position tracking
 pros::Rotation mid_odom(8); // parallel tracking
 pros::Rotation back_odom(	11); // perpendicular tracking

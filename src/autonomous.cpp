@@ -581,7 +581,7 @@ void safer_skills(knights::RobotChassis *chassis) {
 
 	// pros::delay(500);
 
-	robotControl.lateral_to_position(kPos(-2, -40, rad(270)), false, 2.0, 1000); w;
+	robotControl.lateral_to_position(kPos(-2, -43, rad(270)), false, 2.0, 1000); w;
 
 	robotControl.lateral_move(24, 2.0, 750); intake_in();
 
@@ -687,11 +687,10 @@ void safer_skills(knights::RobotChassis *chassis) {
 
 	robotControl.lateral_move(16); w;
 
-	// robotControl.lateral_to_point(kPos(34, 24, 90));
+	robotControl.lateral_to_point(kPos(34, 24, 90));
 
-	robotControl.turn_to_angle(270); w;
-
-	robotControl.lateral_move(36);
+	// robotControl.turn_to_angle(270); w;
+	// robotControl.lateral_move(36);
 
 	robotControl.turn_to_angle(90); w;
 
