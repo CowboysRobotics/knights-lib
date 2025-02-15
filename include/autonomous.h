@@ -36,5 +36,7 @@ void rush_4_ring(knights::RobotChassis *chassis);
 void mogo_red_rush(knights::RobotChassis *chassis);
 void mogo_blue_rush(knights::RobotChassis *chassis);
 
+void sig_red_winpoint(knights::RobotChassis *chassis);
+
 
 #endif

@@ -3,6 +3,7 @@
 #include "knights/api.hpp"
 #include "knights/autonomous/profile.hpp"
 #include "knights/display.hpp"
+#include "knights/util/calculation.hpp"
 #include "pros/misc.h"
 #include "pros/rtos.hpp"
 
@@ -38,6 +39,8 @@ void initialize() {
 	auton_map["Blue2"] = knights::Auton(&blue_rush_left_elim, knights::Pos(-53,44,knights::to_rad(16)));
 	auton_map["Red3"] = knights::Auton(&mogo_red_rush, knights::Pos(-55.1,37.5,0));
 	auton_map["Blue3"] = knights::Auton(&mogo_blue_rush, knights::Pos(-55.1,37.5,0));
+
+	// auton_map["None0"] = knights::Auton(&sig_red_winpoint, knights::Pos(-58,15,knights::to_rad(-132)));
 
 	auton_map["None0"] = knights::Auton(&safer_skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
 	auton_map["Skills0"] = knights::Auton(&redone_skills, knights::Pos(-62.5, 0, 0));
@@ -88,20 +91,20 @@ void autonomous() {
 			while (true) {
 				chassis.update_position(); // query odometry system for position
 				
-				// // Convoluted method of inputting everything to a string
-				// std::stringstream stream;
-				// stream << "Curr Pos: ";
-				// stream << std::fixed << std::setprecision(2) << chassis.get_position().x << " ";
-				// stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
-				// stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
-				// std::string s = stream.str();
-				// // printf("curr pos: %lf %lf %lf\n", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading);
+				// Convoluted method of inputting everything to a string
+				std::stringstream stream;
+				stream << "Curr Pos: ";
+				stream << std::fixed << std::setprecision(2) << chassis.get_position().x << " ";
+				stream << std::fixed << std::setprecision(2) << chassis.get_position().y << " ";
+				stream << std::fixed << std::setprecision(2) << knights::to_deg(chassis.get_position().heading);
+				std::string s = stream.str();
+				// printf("curr pos: %lf %lf %lf\n", chassis.get_position().x, chassis.get_position().y, chassis.get_position().heading);
 
-				// // Set the display label to the current position
-				// knights::display::set_pos_label(s);
+				// Set the display label to the current position
+				knights::display::set_pos_label(s);
 
-				// // Move the current position dot to the desired position
-				// knights::display::change_curr_pos_dot(chassis.get_position());
+				// Move the current position dot to the desired position
+				knights::display::change_curr_pos_dot(chassis.get_position());
 
 				// pros::delay(10);
 				pros::delay(10);
@@ -238,6 +241,7 @@ void opcontrol() {
 		colorSortTask = new pros::Task {[=] {
 			while(true) {
 				if (color_sorting) {
+					printf("red_colorsorting %d \n", red_alliance);
 					red_color_sort();
 					blue_color_sort();
 
