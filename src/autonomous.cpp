@@ -9,6 +9,7 @@
 #include "knights/util/position.hpp"
 #include "pros/rtos.hpp"
 
+#include <cmath>
 #include <fstream>
 
 #define RIGHT 1
@@ -515,6 +516,11 @@ ASSET(skills2fourth_txt)
 ASSET(skills2fifth_txt)
 ASSET(skills2secondmogo_txt)
 
+#define GUIDE_TO_TRACKING_CENTER_DIST 10 // need to cange
+#define WALL_STAKE_POLE_DIST 1
+
+std::fstream write_file("/usd/skills.log", std::ios_base::out);
+
 void safer_skills(knights::RobotChassis *chassis) {
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
@@ -648,9 +654,19 @@ void safer_skills(knights::RobotChassis *chassis) {
 
 	robotControl.lateral_to_position(kPos(-7, 40, rad(90)), false, 1.0, 3500);
 
-	robotControl.lateral_move(26, 2.0, 750); intake_in();
+	robotControl.lateral_move(26, 2.0, 750); w; // ram wall stake
 
-	lady_brown_score(); pros::delay(700); robotControl.lateral_move(-8, 2.0, 750, false); lady_brown_load1(); pros::delay(300); 
+	// ---- RESET POSITION ON WALL STAKE ----
+
+	chassis->set_position(kPos(
+		cos(chassis->get_position().heading) * GUIDE_TO_TRACKING_CENTER_DIST,
+		(72 - WALL_STAKE_POLE_DIST) - sin(chassis->get_position().heading) * GUIDE_TO_TRACKING_CENTER_DIST,
+		chassis->get_position().heading
+	));
+
+	// ---- END ----
+
+	w; intake_in(); lady_brown_score(); pros::delay(700); robotControl.lateral_move(-8, 2.0, 750, false); lady_brown_load1(); pros::delay(300); 
 	
 	intake_in(); robotControl.lateral_move(10, 2.0, 750, false); pros::delay(500); lady_brown_score(); pros::delay(500);  intake_in();
 
@@ -718,7 +734,7 @@ void safer_skills(knights::RobotChassis *chassis) {
 
 	robotControl.lateral_move(28); w;
 
-
+	write_file << "skills end\n";
 
 }
 
