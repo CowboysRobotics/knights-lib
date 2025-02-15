@@ -15,6 +15,14 @@ PositionTracker::PositionTracker(pros::Motor *motor, float wheel_diameter, float
     : motor(motor), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio), offset(offset), direction(direction) {
 };
 
+DistanceTracker::DistanceTracker(pros::Distance *distance, float x_displacement, float y_displacement, float angle_from_front)
+    : distance_sensor(distance), x_displacement(x_displacement), y_displacement(y_displacement), angle_from_front(angle_from_front) {
+}
+
+float DistanceTracker::get_displacement() {
+    // no idea
+}
+
 float PositionTracker::get_distance_travelled() {
     if (this->rotation != NULL) {
         return knights::signum(this->direction) * this->rotation->get_position() * ((this->wheel_diameter * this->gear_ratio * M_PI) / 36000); // this works in centidegrees
@@ -41,6 +49,10 @@ PositionTrackerGroup::PositionTrackerGroup(knights::PositionTracker *right, knig
 
 PositionTrackerGroup::PositionTrackerGroup(knights::PositionTracker *middle, knights::PositionTracker *back, pros::IMU *inertial)
     : right_tracker(middle), back_tracker(back), inertial(inertial) {
+}
+
+void PositionTrackerGroup::add_dist(knights::DistanceTracker *tracker) {
+    this->distance_trackers.emplace_back(tracker);
 }
 
 void PositionTracker::reset() {

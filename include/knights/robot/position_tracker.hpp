@@ -1,5 +1,7 @@
 #pragma once
 
+#include "pros/distance.hpp"
+#include <vector>
 #ifndef _POSITION_TRACKER_H
 #define _POSITION_TRACKER_H
 
@@ -10,13 +12,13 @@ namespace knights {
     class PositionTracker {
         private:
             // the rotation sensor attached to the odom wheel
-            pros::Rotation *rotation = NULL;
+            pros::Rotation *rotation = nullptr;
 
             // the triwire port sensor attached to the odom wheel
-            pros::adi::Encoder *adi_encoder = NULL;
+            pros::adi::Encoder *adi_encoder = nullptr;
 
             // the motor that is for tracking
-            pros::Motor *motor = NULL;
+            pros::Motor *motor = nullptr;
 
             // the diameter of the tracking wheel
             float wheel_diameter = 0;
@@ -81,6 +83,21 @@ namespace knights {
             void reset();
     };
 
+    class DistanceTracker {
+        private:
+            float angle_from_front = 0; // RADIANS
+
+            float x_displacement = 0; float y_displacement = 0;
+
+            pros::Distance *distance_sensor = nullptr;
+        
+        public:
+            DistanceTracker(pros::Distance *distance, float x_displacement, float y_displacement, float angle_from_front);
+
+            float get_displacement();
+
+    };
+
     class PositionTrackerGroup {
         public:
             knights::PositionTracker *right_tracker = nullptr; // the rightmost tracker
@@ -88,6 +105,8 @@ namespace knights {
             knights::PositionTracker *front_tracker = nullptr; // the frontmost tracker
             knights::PositionTracker *back_tracker = nullptr; // the backmost tracker
             pros::IMU *inertial = nullptr; // inertial sensor to use instead of tracking wheels
+
+            std::vector<knights::DistanceTracker *> distance_trackers; 
 
             /**
              * @brief Construct a new Position Tracker Group object
@@ -124,6 +143,8 @@ namespace knights {
              * @param inertial inertial sensor (IMU) to use for the heading
              */
             PositionTrackerGroup(knights::PositionTracker *middle, knights::PositionTracker *back, pros::IMU *inertial);
+
+            void add_dist(knights::DistanceTracker *tracker);
     };
 
 }
