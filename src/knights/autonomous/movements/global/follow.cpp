@@ -259,7 +259,7 @@ void knights::RobotController::follow_profile_pursuit(const knights::MotionProfi
         this->angular_pid->reset();
     }
 
-    std::fstream write_file("/usd/pure_pursuit_profile.txt", std::ios_base::out);
+    // std::fstream write_file("/usd/pure_pursuit_profile.txt", std::ios_base::out);
 
     // While the robot has not reached the desired point and is not at the end of the route
     while (error > end_tolerance && closest_i != profile.timestamps.size()-1 ) {
@@ -342,12 +342,12 @@ void knights::RobotController::follow_profile_pursuit(const knights::MotionProfi
             this->chassis->drivetrain->voltage_command(-l_speed, -r_speed);
 
         // log for debugging
-        write_file << logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , used angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d closest_i: %lf %lf %lf , end pt: %lf %lf %d, real angular_curve: %lf, timeout: %lf, curr lhd: %lf, calculated lhd: %lf, angular vel: %lf, angular max: %lf", 
-            target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
-            target_speed, angular_curve, r_speed, l_speed, error, forwards, profile.timestamps[closest_i].position.x, profile.timestamps[closest_i].position.y, profile.timestamps[closest_i].position.heading, 
-            profile.timestamps.back().position.x, profile.timestamps.back().position.y, profile.timestamps.size(), angular_curve/((distance_btwn(curr_position, target_point)/max_lookahead) * 0.1), 
-            timeout, lookahead_distance, distance_btwn(this->chassis->curr_position, target_point), angular_velocity, angular_pid->get_max_speed()
-        ) << "\n";
+        // write_file << logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , used angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d closest_i: %lf %lf %lf , end pt: %lf %lf %d, real angular_curve: %lf, timeout: %lf, curr lhd: %lf, calculated lhd: %lf, angular vel: %lf, angular max: %lf", 
+        //     target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
+        //     target_speed, angular_curve, r_speed, l_speed, error, forwards, profile.timestamps[closest_i].position.x, profile.timestamps[closest_i].position.y, profile.timestamps[closest_i].position.heading, 
+        //     profile.timestamps.back().position.x, profile.timestamps.back().position.y, profile.timestamps.size(), angular_curve/((distance_btwn(curr_position, target_point)/max_lookahead) * 0.1), 
+        //     timeout, lookahead_distance, distance_btwn(this->chassis->curr_position, target_point), angular_velocity, angular_pid->get_max_speed()
+        // ) << "\n";
 
         // wait for next iteration of loop
         pros::delay(10);

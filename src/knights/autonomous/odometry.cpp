@@ -8,7 +8,7 @@
 
 #include <fstream>
 
-std::fstream write_file("/usd/odometry.log", std::ios_base::out);
+// std::fstream write_file("/usd/odometry.log", std::ios_base::out);
 
 
 void knights::RobotChassis::update_position() {
@@ -87,5 +87,5 @@ void knights::RobotChassis::update_position() {
 
     this->curr_position.heading = newHeading;
 
-    write_file << curr_position.x << " " << curr_position.y << " " << curr_position.heading << "\n";
+    // write_file << curr_position.x << " " << curr_position.y << " " << curr_position.heading << "\n";
 }
