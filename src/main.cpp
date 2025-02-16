@@ -42,7 +42,7 @@ void initialize() {
 
 	auton_map["None0"] = knights::Auton(&sig_red_winpoint, knights::Pos(-58,15,knights::to_rad(226)));
 
-	//auton_map["None0"] = knights::Auton(&safer_skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
+	auton_map["None0"] = knights::Auton(&safer_skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
 	auton_map["Skills0"] = knights::Auton(&redone_skills, knights::Pos(-62.5, 0, 0));
 	auton_map["Skills1"] = knights::Auton(&na_skills, knights::Pos(-57.5, 0, 0));
 
@@ -103,8 +103,8 @@ void autonomous() {
 				// // Set the display label to the current position
 				// knights::display::set_pos_label(s);
 
-				// // Move the current position dot to the desired position
-				// knights::display::change_curr_pos_dot(chassis.get_position());
+				// Move the current position dot to the desired position
+				knights::display::change_curr_pos_dot(chassis.get_position());
 
 				pros::delay(10);
 			}
