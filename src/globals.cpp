@@ -144,7 +144,7 @@ void change_color(){
 void red_color_sort() {
 	if (colors.get_hue() < 40 && red_alliance == false && color_sorting == true && colors.get_proximity() > 100){
 		pros::delay(20);
-		printf("red_color_sorting \n");
+		// printf("red_color_sorting \n");
 		intake_top.move(0);
 		pros::delay(100);
 		intake_top.move(INTAKE_VELOCITY);
@@ -154,7 +154,7 @@ void red_color_sort() {
 void blue_color_sort(){
 	if (colors.get_hue() > 140 && red_alliance == true && color_sorting == true && colors.get_proximity() > 100){
 		pros::delay(20);
-		printf("blue_color_sorting \n");
+		// printf("blue_color_sorting \n");
 		intake_top.move(0);
 		pros::delay(100);
 		intake_top.move(INTAKE_VELOCITY);
