@@ -516,7 +516,7 @@ ASSET(skills2fourth_txt)
 ASSET(skills2fifth_txt)
 ASSET(skills2secondmogo_txt)
 
-#define GUIDE_TO_TRACKING_CENTER_DIST 10 // need to cange
+#define GUIDE_TO_TRACKING_CENTER_DIST 9 // need to cange
 #define WALL_STAKE_POLE_DIST 1
 
 std::fstream write_file("/usd/skills.log", std::ios_base::out);
@@ -1719,37 +1719,43 @@ void sig_red_winpoint(knights::RobotChassis *chassis){
 
 	robotControl.turn_to_angle(40, 0, 2.0, 750); w;
 
-	doinker_toggle2();
-
 	intake_in();
 
 	robotControl.lateral_move(25); w;
 
 	robotControl.lateral_move(-23); w;
 
-	robotControl.turn_to_angle(70, 0, 2.0, 750); w; 
-
-	doinker_toggle2(); w;
-
 	robotControl.turn_to_angle(90, 0, 2.0, 500); w;
 
-	robotControl.lateral_move(20); tw(2);
+	robotControl.lateral_move(20); tw(3);
 
-	robotControl.lateral_to_position(kPos(-40, 0, 90));
+	robotControl.lateral_to_position(kPos(-46, 24, knights::to_rad(270)));
 
 	clamp_toggle(); 
 
-	robotControl.turn_to_point(kPos(-24, -24, 0), false, 0, 2.0, 750);
+	robotControl.lateral_to_position(kPos(-46,3,knights::to_rad(270))); tw(2);
 
-	robotControl.lateral_move(-16); w; clamp_toggle(); w;
+	intake_top.move_velocity(0);
+
+	robotControl.lateral_to_position(kPos(-46,-18,knights::to_rad(270))); w;
+
+	robotControl.turn_to_point(kPos(-24, -22, 0), false, 0, 2.0, 750);
+
+	robotControl.lateral_move(-18); w; clamp_toggle(); w;
 
 	robotControl.turn_to_point(kPos(-24, -48, 0), true, 0, 2.0, 750); w;
+
+	intake_in();
+	
+	intake_in();
 
 	robotControl.lateral_move(16); w;
 
 	robotControl.turn_to_point(kPos(12,0,0), true, 0, 2.0, 750);
 
-	robotControl.lateral_move(12); lady_brown_score();
+	robotControl.lateral_move(12); lady_brown_score(); w;
+
+	robotControl.lateral_move(10);
 
 }
 
