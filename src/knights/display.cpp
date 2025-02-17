@@ -142,10 +142,10 @@ static void lock_handler(lv_event_t * e) {
             lv_obj_add_flag(btnm2, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(btnm2, LV_OBJ_FLAG_CLICKABLE);
         } else {
-            lv_obj_clear_flag(btnm1, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(btnm1, LV_OBJ_FLAG_CLICKABLE);
-            lv_obj_clear_flag(btnm2, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(btnm2, LV_OBJ_FLAG_CLICKABLE);
+            // lv_obj_clear_flag(btnm1, LV_OBJ_FLAG_HIDDEN);
+            // lv_obj_add_flag(btnm1, LV_OBJ_FLAG_CLICKABLE);
+            // lv_obj_clear_flag(btnm2, LV_OBJ_FLAG_HIDDEN);
+            // lv_obj_add_flag(btnm2, LV_OBJ_FLAG_CLICKABLE);
         }
     }
 }

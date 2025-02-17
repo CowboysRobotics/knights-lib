@@ -162,9 +162,9 @@ void blue_color_sort(){
 }
 
 #define LADY_BROWN_VELOCITY 127.0
-#define LADY_BROWN_kP 1.75
+#define LADY_BROWN_kP 1.2 // 1.75
 #define LADY_BROWN_kI 0.000
-#define LADY_BROWN_kD 0.5
+#define LADY_BROWN_kD 3
 
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
@@ -211,6 +211,9 @@ float get_lady_brown_command() {
 		speed = -1 * fabs(speed);
 	}
 	else if (lady_brown_target == LADY_BROWN_DOWN) {
+		speed = fabs(speed);
+	}
+	else if (lady_brown_rotation.get_angle()/100.0 < 180 && lady_brown_target == LADY_BROWN_LOAD1 && lady_brown_rotation.get_angle()/100.0 > 30) {
 		speed = fabs(speed);
 	}
 
