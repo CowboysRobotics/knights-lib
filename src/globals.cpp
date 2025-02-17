@@ -129,7 +129,7 @@ void unjam_intake_check() {
 	}
 }
 
-bool color_sorting = false;
+bool color_sorting = true;
 bool red_alliance = true;
 
 void toggle_color_sort(){
@@ -142,7 +142,7 @@ void change_color(){
 }
 
 void red_color_sort() {
-	if (colors.get_hue() < 40 && red_alliance == false && color_sorting == true && colors.get_proximity() > 100){
+	if (colors.get_hue() < 40 && colors.get_proximity() > 100){
 		pros::delay(20);
 		// printf("red_color_sorting \n");
 		intake_top.move(0);
@@ -152,7 +152,7 @@ void red_color_sort() {
 }
 
 void blue_color_sort(){
-	if (colors.get_hue() > 140 && red_alliance == true && color_sorting == true && colors.get_proximity() > 100){
+	if (colors.get_hue() > 140 && colors.get_proximity() > 100){
 		pros::delay(20);
 		// printf("blue_color_sorting \n");
 		intake_top.move(0);

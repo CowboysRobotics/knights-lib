@@ -62,6 +62,8 @@ void initialize() {
 	// intake.set_reversed(false, 0);
 	// intake.set_reversed(true, 1);
 
+	colors.set_led_pwm(color_sorting * 100);
+
 	// #### TEST AREA ####
 	// motion profile test
 }
@@ -239,9 +241,13 @@ void opcontrol() {
 		colorSortTask = new pros::Task {[=] {
 			while(true) {
 				if (color_sorting) {
-					red_color_sort();
-					blue_color_sort();
-
+					if (red_alliance) {
+						blue_color_sort();
+					}
+					else {				
+						red_color_sort();
+					}
+					
 					pros::delay(20);
 				}
 				else {
