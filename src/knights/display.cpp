@@ -31,8 +31,8 @@ std::string knights::display::AutonSelectionPackage::get_value(void) {
     return this->type + this->number;
 }
 
-knights::Auton::Auton(std::function<void(knights::RobotChassis*)> function, knights::Pos start)
-    : function(function), start(start) {}
+knights::Auton::Auton(std::function<void(knights::RobotChassis*, bool, bool)> function, knights::Pos start, bool flip_x, bool flip_y)
+    : function(function), start(start), flip_x(flip_x), flip_y(flip_y) {}
 
 knights::Auton::Auton()
     : function(nullptr), start(Pos(0,0,0)) {}

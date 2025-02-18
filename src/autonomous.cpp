@@ -36,7 +36,7 @@
 #define TURN_kD_180 700
 
 
-void pid_tuning(knights::RobotChassis *chassis) {
+void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
     knights::RamseteConstants ramsete_constants;
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
@@ -83,7 +83,7 @@ void pid_tuning(knights::RobotChassis *chassis) {
 }
 
 
-void pp_test(knights::RobotChassis *chassis) {
+void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	std::string s = "rush.txt";
 
@@ -129,7 +129,7 @@ void pp_test(knights::RobotChassis *chassis) {
 #define w pros::delay(WAIT)
 #define tw(x) pros::delay((x)*WAIT)
 
-void redone_skills(knights::RobotChassis *chassis) {
+void redone_skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	std::string s = "rush.txt";
 
@@ -329,7 +329,7 @@ ASSET(skillsfourth_txt)
 ASSET(skills5_txt)
 ASSET(skills6_txt)
 
-void skills(knights::RobotChassis *chassis) {
+void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
@@ -521,7 +521,7 @@ ASSET(skills2secondmogo_txt)
 
 std::fstream write_file("/usd/skills.log", std::ios_base::out);
 
-void safer_skills(knights::RobotChassis *chassis) {
+void safer_skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
@@ -767,7 +767,7 @@ void safer_skills(knights::RobotChassis *chassis) {
 
 }
 
-void red_left_wp(knights::RobotChassis *chassis) {
+void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
@@ -891,7 +891,7 @@ void red_left_wp(knights::RobotChassis *chassis) {
 }
 
 
-void red_rush_right_wp(knights::RobotChassis *chassis) {
+void red_rush_right_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
@@ -947,7 +947,7 @@ void red_rush_right_wp(knights::RobotChassis *chassis) {
 
 }
 
-void red_rush_right_elim(knights::RobotChassis *chassis) {
+void red_rush_right_elim(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
@@ -1014,7 +1014,7 @@ void red_rush_right_elim(knights::RobotChassis *chassis) {
 	robotControl.lateral_move(-10); w;
 }
 
-void blue_rush_left_elim(knights::RobotChassis *chassis) {
+void blue_rush_left_elim(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
@@ -1082,7 +1082,7 @@ void blue_rush_left_elim(knights::RobotChassis *chassis) {
 }
 
 
-void blue_right_wp(knights::RobotChassis *chassis) {
+void blue_right_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
@@ -1207,7 +1207,7 @@ void blue_right_wp(knights::RobotChassis *chassis) {
 }
 
 
-void blue_rush_left_wp(knights::RobotChassis *chassis) {
+void blue_rush_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
@@ -1262,7 +1262,7 @@ void blue_rush_left_wp(knights::RobotChassis *chassis) {
 	robotControl.turn_to_angle(180, -1);
 }
 
-void blue_right_elim(knights::RobotChassis *chassis) {
+void blue_right_elim(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
@@ -1279,7 +1279,7 @@ void blue_right_elim(knights::RobotChassis *chassis) {
 
 }
 
-void mogo_red_rush(knights::RobotChassis *chassis) {
+void mogo_red_rush(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
@@ -1350,7 +1350,7 @@ void mogo_red_rush(knights::RobotChassis *chassis) {
 
 }
 
-void mogo_blue_rush(knights::RobotChassis *chassis) {
+void mogo_blue_rush(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	 knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
@@ -1422,7 +1422,7 @@ void mogo_blue_rush(knights::RobotChassis *chassis) {
 
 
 
-void right_safe_no_wait(knights::RobotChassis *chassis) {
+void right_safe_no_wait(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
     knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
@@ -1476,7 +1476,7 @@ void right_safe_no_wait(knights::RobotChassis *chassis) {
 }
 
 
-void rush_4_ring(knights::RobotChassis *chassis) {
+void rush_4_ring(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
@@ -1515,7 +1515,7 @@ void rush_4_ring(knights::RobotChassis *chassis) {
 
 }
 
-void sig_red_winpoint(knights::RobotChassis *chassis){
+void sig_red_winpoint(knights::RobotChassis *chassis, bool flip_x, bool flip_y){
 	knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
@@ -1608,6 +1608,6 @@ void sig_red_winpoint(knights::RobotChassis *chassis){
 	robotControl.lateral_move(26, 3.0, 750);
 }
 
-void empty(knights::RobotChassis *chassis) {
+void empty(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	return;
 }

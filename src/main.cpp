@@ -148,7 +148,11 @@ void autonomous() {
 
 	// Run the chosen auton
 	if (auton_map.contains(package.get_value())) {
-		auton_map[package.get_value()].function(&chassis);
+		auton_map[package.get_value()].function(
+			&chassis, 
+			auton_map[package.get_value()].flip_x, 
+			auton_map[package.get_value()].flip_y
+		);
 	}
 
 }

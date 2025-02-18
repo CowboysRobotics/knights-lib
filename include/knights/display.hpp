@@ -83,10 +83,11 @@ namespace knights::display {
 
 namespace knights {
     struct Auton {
-        std::function<void(knights::RobotChassis*)> function;
+        std::function<void(knights::RobotChassis*, bool, bool)> function;
         knights::Pos start;
+        bool flip_x; bool flip_y;
 
-        Auton(std::function<void(knights::RobotChassis*)> function, knights::Pos start);
+        Auton(std::function<void(knights::RobotChassis*, bool, bool)> function, knights::Pos start, bool flip_x = false, bool flip_y = false);
 
         Auton();
     };
