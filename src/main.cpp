@@ -1,4 +1,5 @@
 #include "main.h"
+#include "autonomous.h"
 #include "globals.h"
 #include "knights/api.hpp"
 #include "knights/autonomous/profile.hpp"
@@ -33,17 +34,13 @@ void initialize() {
 	// auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(-50, -64, knights::to_rad(180)));
 	// auton_map["None0"] = knights::Auton(&red_rush_right_elim, knights::Pos(-53, -44, knights::to_rad(-16)));
 
-	auton_map["Red1"] = knights::Auton(&sig_red_winpoint, knights::Pos(-58,15,knights::to_rad(226)));
-	auton_map["Red2"] = knights::Auton(&red_rush_right_elim, knights::Pos(-60,-36,knights::to_rad(0)));
-	auton_map["Blue1"] = knights::Auton(&sig_blue_winpoint, knights::Pos(58,15,knights::to_rad(-46)));
-	auton_map["Blue2"] = knights::Auton(&blue_rush_left_wp, knights::Pos(-58,-15,knights::to_rad(46)));
-	auton_map["Red3"] = knights::Auton(&red_left_wp, knights::Pos(-58,15,knights::to_rad(226)));
-	auton_map["Blue3"] = knights::Auton(&mogo_blue_rush, knights::Pos(-55.1,37.5,0));
+	auton_map["Red1"] = knights::Auton(&sig_winpoint_ring, knights::Pos(-58,15,knights::to_rad(226)), false, false);
+	auton_map["Blue1"] = knights::Auton(&sig_winpoint_ring, knights::Pos(58,15,knights::to_rad(-46)), false, true);
 
 	// auton_map["None0"] = knights::Auton(&sig_red_winpoint, knights::Pos(-58,15,knights::to_rad(226)));
 
-	auton_map["None0"] = knights::Auton(&safer_skills, knights::Pos(-62.5, 0, knights::to_rad(0)));
-	auton_map["Skills0"] = knights::Auton(&safer_skills, knights::Pos(-62.5, 0, 0));
+	auton_map["None0"] = knights::Auton(&skills, knights::Pos(-62.5, 0, knights::to_rad(0)), false, false);
+	auton_map["Skills0"] = knights::Auton(&skills, knights::Pos(-62.5, 0, 0), false, false);
 
 
 	// auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(0.001, 0.001, 0));
@@ -142,15 +139,19 @@ void autonomous() {
 		intakeJamTask->set_priority(TASK_PRIORITY_DEFAULT - 1);
 	}
 
-	if (package.type == "Red") {
-		red_alliance = true;
-	} else {
+	if (package.type == "Blue") {
 		red_alliance = false;
+	} else {
+		red_alliance = true;
 	}
 
 	// Run the chosen auton
 	if (auton_map.contains(package.get_value())) {
-		auton_map[package.get_value()].function(&chassis);
+		auton_map[package.get_value()].function(
+			&chassis, 
+			auton_map[package.get_value()].flip_x, 
+			auton_map[package.get_value()].flip_y
+		);
 	}
 
 }

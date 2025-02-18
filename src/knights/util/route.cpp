@@ -1,5 +1,6 @@
 #include "knights/api.hpp"
 #include "api.h"
+#include "knights/autonomous/path.hpp"
 #include "knights/autonomous/profile.hpp"
 #include "position.hpp"
 
@@ -47,6 +48,30 @@ float knights::Route::length_dist() {
     }
 
     return dist;
+}
+
+knights::Route knights::Route::flip_x() {
+    knights::Route output;
+
+    for (knights::Pos pos : this->positions) {
+        output.positions.emplace_back(Pos(pos.x, -1 * pos.y, -pos.heading));
+    }
+
+    output.actions = this->actions;
+
+    return output;
+}
+
+knights::Route knights::Route::flip_y() {
+    knights::Route output;
+
+    for (knights::Pos pos : this->positions) {
+        output.positions.emplace_back(Pos(-1 * pos.x, pos.y,  M_PI - pos.heading));
+    }
+
+    output.actions = this->actions;
+
+    return output;
 }
 
 knights::RouteAction::RouteAction(knights::action_type type, std::string route_name, float end_tolerance, int timeout, float lookahead) :
