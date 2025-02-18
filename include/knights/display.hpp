@@ -87,6 +87,14 @@ namespace knights {
         knights::Pos start;
         bool flip_x; bool flip_y;
 
+        /**
+         * @brief Construct a new Auton
+         * 
+         * @param function function to run for the auton
+         * @param start start position for the auton
+         * @param flip_x whether or not to flip over the X AXIS
+         * @param flip_y whether or not to flip over the Y AXIS
+         */
         Auton(std::function<void(knights::RobotChassis*, bool, bool)> function, knights::Pos start, bool flip_x = false, bool flip_y = false);
 
         Auton();

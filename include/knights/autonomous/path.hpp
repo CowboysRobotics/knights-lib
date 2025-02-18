@@ -38,6 +38,10 @@ namespace knights {
 
         float length_dist();
 
+        Route flip_x();
+
+        Route flip_y();
+
     };
 
     /**

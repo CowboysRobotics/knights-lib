@@ -129,7 +129,7 @@ void unjam_intake_check() {
 	}
 }
 
-bool color_sorting = false;
+bool color_sorting = true;
 bool red_alliance = true;
 
 void toggle_color_sort(){
@@ -142,7 +142,7 @@ void change_color(){
 }
 
 void red_color_sort() {
-	if (colors.get_hue() < 40 && red_alliance == false && color_sorting == true && colors.get_proximity() > 100){
+	if (colors.get_hue() < 40 && colors.get_proximity() > 100){
 		pros::delay(20);
 		// printf("red_color_sorting \n");
 		intake_top.move(0);
@@ -152,7 +152,7 @@ void red_color_sort() {
 }
 
 void blue_color_sort(){
-	if (colors.get_hue() > 140 && red_alliance == true && color_sorting == true && colors.get_proximity() > 100){
+	if (colors.get_hue() > 140 && colors.get_proximity() > 100){
 		pros::delay(20);
 		// printf("blue_color_sorting \n");
 		intake_top.move(0);
@@ -162,9 +162,9 @@ void blue_color_sort(){
 }
 
 #define LADY_BROWN_VELOCITY 127.0
-#define LADY_BROWN_kP 1.75
+#define LADY_BROWN_kP 1.2 // 1.75
 #define LADY_BROWN_kI 0.000
-#define LADY_BROWN_kD 0.5
+#define LADY_BROWN_kD 3
 
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
@@ -211,6 +211,9 @@ float get_lady_brown_command() {
 		speed = -1 * fabs(speed);
 	}
 	else if (lady_brown_target == LADY_BROWN_DOWN) {
+		speed = fabs(speed);
+	}
+	else if (lady_brown_rotation.get_angle()/100.0 < 180 && lady_brown_target == LADY_BROWN_LOAD1 && lady_brown_rotation.get_angle()/100.0 > 30) {
 		speed = fabs(speed);
 	}
 
