@@ -392,6 +392,7 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 }
 
+// coded for red side
 void sig_winpoint_ring(knights::RobotChassis *chassis, bool flip_x, bool flip_y){
 
 	float x_mod = flip_x ? -1 : 1;

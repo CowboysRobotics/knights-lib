@@ -139,10 +139,10 @@ void autonomous() {
 		intakeJamTask->set_priority(TASK_PRIORITY_DEFAULT - 1);
 	}
 
-	if (package.type == "Red") {
-		red_alliance = true;
-	} else {
+	if (package.type == "Blue") {
 		red_alliance = false;
+	} else {
+		red_alliance = true;
 	}
 
 	// Run the chosen auton
