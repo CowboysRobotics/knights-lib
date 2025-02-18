@@ -38,8 +38,18 @@ namespace knights {
 
         float length_dist();
 
+        /**
+         * @brief Flip route over the X AXIS
+         * 
+         * @return Route 
+         */
         Route flip_x();
 
+        /**
+         * @brief Flip route over the Y AXIS
+         * 
+         * @return Route 
+         */
         Route flip_y();
 
     };
