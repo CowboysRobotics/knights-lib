@@ -20,7 +20,6 @@ extern pros::Task *ladyBrownTask;
 extern pros::Task *colorSortTask;
 extern pros::Task *intakeJamTask;
 
-
 // Controller
 extern pros::Controller master_controller;
 
@@ -51,6 +50,7 @@ void unjam_intake_check();
 // Color Sorting
 extern pros::Optical colors;
 extern bool color_sorting;
+extern bool auton_color_sorting;
 extern bool blue_alliance;
 extern bool red_alliance;
 
@@ -58,6 +58,9 @@ void toggle_color_sort();
 void change_color();
 void red_color_sort();
 void blue_color_sort();
+void red_color_auton_sort();
+void blue_color_auton_sort();
+
 
 // Lady Brown Mechanism
 extern pros::Motor lady_brown;
@@ -94,7 +97,7 @@ void doinker_toggle2();
 
 // Constants
 #define velocity_formula(x) 160*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20
-#define INTAKE_VELOCITY 300
+#define INTAKE_VELOCITY 200
 #define LADY_BROWN_VELOCITY 127.0
 #define LADY_BROWN_kP 1.75
 #define LADY_BROWN_kI 0.000

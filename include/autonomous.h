@@ -13,5 +13,6 @@ void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 
 void sig_winpoint_ring(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
+void ring_rush(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 
 #endif

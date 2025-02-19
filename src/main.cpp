@@ -37,9 +37,11 @@ void initialize() {
 	auton_map["Red1"] = knights::Auton(&sig_winpoint_ring, knights::Pos(-58,15,knights::to_rad(226)), false, false);
 	auton_map["Blue1"] = knights::Auton(&sig_winpoint_ring, knights::Pos(58,15,knights::to_rad(-46)), false, true);
 
+	auton_map["Blue2"] = knights::Auton(&ring_rush, knights::Pos(54,27,knights::to_rad(160)), false, false);
+
 	// auton_map["None0"] = knights::Auton(&sig_red_winpoint, knights::Pos(-58,15,knights::to_rad(226)));
 
-	auton_map["None0"] = knights::Auton(&skills, knights::Pos(-62.5, 0, knights::to_rad(0)), false, false);
+	auton_map["None0"] = knights::Auton(&ring_rush, knights::Pos(54,27,knights::to_rad(160)), false, false);
 	auton_map["Skills0"] = knights::Auton(&skills, knights::Pos(-62.5, 0, 0), false, false);
 
 
@@ -139,10 +141,42 @@ void autonomous() {
 		intakeJamTask->set_priority(TASK_PRIORITY_DEFAULT - 1);
 	}
 
+
 	if (package.type == "Blue") {
 		red_alliance = false;
 	} else {
 		red_alliance = true;
+	}
+
+	if (colorSortTask == nullptr) {
+		colorSortTask = new pros::Task {[=] {
+			while(true) {
+				if (color_sorting || auton_color_sorting) {
+					if (color_sorting) {
+						if (red_alliance) {
+							blue_color_sort();
+						}
+						else {				
+							red_color_sort();
+						}
+					} else if (auton_color_sorting) {
+						if (red_alliance) {
+							blue_color_auton_sort();
+						}
+						else {				
+							red_color_auton_sort();
+						}
+					}
+					
+					pros::delay(20);
+				}
+				else {
+					pros::delay(150);
+				}
+			}
+		}};
+
+		colorSortTask->set_priority(TASK_PRIORITY_DEFAULT - 2);
 	}
 
 	// Run the chosen auton

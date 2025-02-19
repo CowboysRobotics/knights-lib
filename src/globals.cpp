@@ -1,3 +1,4 @@
+#include "globals.h"
 #include "knights/autonomous/pid.hpp"
 #include "knights/logger/logger.hpp"
 #include "knights/util/calculation.hpp"
@@ -130,6 +131,7 @@ void unjam_intake_check() {
 }
 
 bool color_sorting = true;
+bool auton_color_sorting = false;
 bool red_alliance = true;
 
 void toggle_color_sort(){
@@ -160,6 +162,27 @@ void blue_color_sort(){
 		intake_top.move(INTAKE_VELOCITY);
 	}
 }
+
+void red_color_auton_sort() {
+	if (colors.get_hue() < 40 && colors.get_proximity() > 100){
+		pros::delay(50);
+		// printf("red_color_sorting \n");
+		intake_top.move(-INTAKE_VELOCITY);
+		pros::delay(100);
+		intake_top.move(0);
+	}
+}
+
+void blue_color_auton_sort(){
+	if (colors.get_hue() > 140 && colors.get_proximity() > 100){
+		pros::delay(50);
+		// printf("blue_color_sorting \n");
+		intake_top.move(-INTAKE_VELOCITY);
+		pros::delay(100);
+		intake_top.move(0);
+	}
+}
+
 
 #define LADY_BROWN_VELOCITY 127.0
 #define LADY_BROWN_kP 1.2 // 1.75
