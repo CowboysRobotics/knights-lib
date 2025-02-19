@@ -227,7 +227,7 @@ void lady_brown_down() {
 }
 
 void lady_brown_load1() {
-	color_sorting = false;
+	// color_sorting = false;
     // lady_brown_to_angle(LADY_BROWN_LOAD1, 1500, true);
 
 	lady_brown_target = LADY_BROWN_LOAD1;
