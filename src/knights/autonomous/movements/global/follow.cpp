@@ -49,7 +49,7 @@ float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights:
 }
 
 void knights::RobotController::follow_route_pursuit(const knights::Route &route, float lookahead_distance, const float max_speed, bool forwards, 
-    float end_tolerance, float timeout) {
+    float end_tolerance, float timeout, bool use_pid) {
     // make sure this is only movement running and route is valid
     if (this->in_motion || route.positions.size() < 2) return;
     this->in_motion = true;
@@ -83,7 +83,7 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
 
     this->lateral_pid->reset();
 
-    if (this->angular_pid != nullptr) {
+    if (this->angular_pid != nullptr && use_pid) {
         this->angular_pid->reset();
     }
 
@@ -148,17 +148,17 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
 
         float angular_velocity = 0;
         // curve to update angular velocity
-        if (this->angular_pid != nullptr && closest_i != 0) {
+        if (this->angular_pid != nullptr && closest_i != 0 && use_pid) {
             // write_file << "angular error: " << angular_error(curr_position.heading, route.positions[closest_i].heading, 0) << "\n";
             angular_velocity = this->angular_pid->update(angular_error(curr_position.heading, route.positions[closest_i].heading, 0), true);
         }
 
         // decrease angular curve if the target point is at the end of the path
-        if (distance_btwn(curr_position, target_point)/max_lookahead < 0.3 && distance_btwn(curr_position, route.positions.back()) < max_lookahead) {
+        if (use_pid && distance_btwn(curr_position, target_point)/max_lookahead < 0.3 && distance_btwn(curr_position, route.positions.back()) < max_lookahead) {
             angular_curve = 0;
             angular_velocity *= 1.5;
             target_speed = std::fmin(target_speed * (distance_btwn(curr_position, target_point)/max_lookahead), target_speed);
-        } else if (distance_btwn(curr_position, target_point)/lookahead_distance < 0.7 && distance_btwn(curr_position, route.positions.back()) < max_lookahead) {
+        } else if (use_pid && distance_btwn(curr_position, target_point)/lookahead_distance < 0.7 && distance_btwn(curr_position, route.positions.back()) < max_lookahead) {
             angular_curve *= ((distance_btwn(curr_position, target_point)/lookahead_distance) * 0.01);
             // target_speed = std::fmin(target_speed * (distance_btwn(curr_position, target_point)/lookahead_distance), target_speed);
         }

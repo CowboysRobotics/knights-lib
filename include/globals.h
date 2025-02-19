@@ -35,6 +35,15 @@ extern knights::Drivetrain drivetrain;
 extern knights::PositionTrackerGroup odomTrackers;
 extern knights::RobotChassis chassis;
 
+extern pros::Distance left_sensor;
+extern pros::Distance back_sensor;
+extern pros::Distance right_sensor;
+extern pros::Distance front_sensor;
+
+extern knights::DistanceTracker back;
+extern knights::DistanceTracker left;
+extern knights::DistanceTracker right;
+
 // Intake system
 extern pros::MotorGroup intake;
 extern pros::Motor intake_bottom;

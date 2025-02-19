@@ -84,14 +84,13 @@ namespace knights {
     };
 
     class DistanceTracker {
-        private:
+        public:
             float angle_from_front = 0; // RADIANS
 
             float x_displacement = 0; float y_displacement = 0;
 
             pros::Distance *distance_sensor = nullptr;
         
-        public:
             DistanceTracker(pros::Distance *distance, float x_displacement, float y_displacement, float angle_from_front);
 
             float get_displacement();

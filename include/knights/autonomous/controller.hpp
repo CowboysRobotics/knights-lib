@@ -60,15 +60,17 @@ namespace knights {
              * @param end_tolerance Distance to end the loop at
              * @param timeout Amount of time to wait before ending the movement
              */
-            void follow_route_pursuit(const knights::Route &route, float lookahead_distance = 15.0, const float max_speed = 127.0, bool forwards = true, float end_tolerance = 4.0, float timeout = 5000);
+            void follow_route_pursuit(const knights::Route &route, float lookahead_distance = 15.0, const float max_speed = 127.0, bool forwards = true, float end_tolerance = 4.0, float timeout = 5000, bool use_pid = true);
 
             void follow_profile_pursuit(const knights::MotionProfile &profile, float lookahead_distance = 15.0, const float max_speed = 127.0, bool forwards = true, float end_tolerance = 4.0, float timeout = 5000);
 
             void follow_profile_ramsete(const knights::MotionProfile &profile, float end_tolerance = 3.0, bool forwards = true);
 
-            void lateral_to_position(const Pos desired_position, const bool forwards = true, const float end_tolerance = 3.5, const int timeout = 1000, const int turn_timeout = 750);
+            void lateral_to_position(const Pos desired_position, const bool forwards = true, const float end_tolerance = 3.5, const int timeout = 1000, const int turn_timeout = 750, const int wait_time = 140);
 
-            void lateral_to_point(const Pos desired_position, const bool forwards = true, const float end_tolerance = 3.5, const int timeout = 1000, const int turn_timeout = 750);
+            void lateral_to_point(const Pos desired_position, const bool forwards = true, const float end_tolerance = 3.5, const int timeout = 1000, const int turn_timeout = 750, const int wait_time = 140);
+
+            void curve_move(const knights::Pos point, const bool forwards = true, const float end_tolerance = 2.0, float timeout = 1250, bool async= false);
 
             void move_to_position(const Pos desired_position, float lead = 0.5, float correction_dist = 8.0, const float &end_tolerance = 2.0, const bool forwards = true, float timeout = 1000);
 

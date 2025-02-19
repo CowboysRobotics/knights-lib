@@ -199,10 +199,15 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	intake_in();
 
-	// robotControl.lateral_to_position(knights::Pos(-48, 0, knights::to_rad(90)), true, 2.0, 500, 0); w;
-	// robotControl.turn_to_point(kPos(-48, -24, 0), false, 0, 2.0, 600);
+	chassis->set_position(kPos(
+		-72+(knights::to_inches(back_sensor.get_distance()/1000.0)-back.y_displacement)
+	, 0, chassis->get_position().heading));
 
-	robotControl.lateral_move(13); w; robotControl.turn_to_angle(90);
+	robotControl.lateral_to_position(knights::Pos(-50, 0, knights::to_rad(90)), true, 2.0, 500, 0, 10); w;
+	// robotControl.turn_to_point(kPos(-48, -24, 0), false, 0, 2.0, 600);
+	robotControl.turn_to_angle(90);
+
+	// robotControl.lateral_move(13); w; robotControl.turn_to_angle(90);
 
 	robotControl.lateral_move(-12); robotControl.lateral_move(-12);
 	
@@ -217,7 +222,7 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	// pros::delay(500);
 
-	robotControl.lateral_to_position(kPos(-4, -43, rad(270)), false, 3.0, 1000);
+	robotControl.lateral_to_position(kPos(-4, -43, rad(270)), false, 3.0, 1000, 750);
 
 	robotControl.lateral_move(26, 2.0, 750); intake_in();
 
@@ -260,9 +265,9 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	// robotControl.lateral_move(-12);
 
 	robotControl.lateral_move(14); w; intake_in();
-	robotControl.turn_to_angle(270, 0, 2.0, 750); w; robotControl.lateral_move(-52, 8.0, 1250);
+	robotControl.turn_to_angle(270, 0, 2.0, 750); w; robotControl.lateral_move(-50, 8.0, 1250);
 	robotControl.turn_to_point(kPos(-48, 24, 0), false, 0, 2.0, 1000);
-	robotControl.lateral_move(-12); robotControl.lateral_move(-10);
+	robotControl.lateral_move(-14); robotControl.lateral_move(-12);
 	
 	clamp_toggle(); w;
 
@@ -272,7 +277,7 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	robotControl.turn_to_angle(60, 0.0, 3.0, 1000); w;
 
 	robotControl.follow_route_pursuit(
-		third_route, 15.0, 80
+		third_route, 12.0, 80
 	); w;
 
 	robotControl.lateral_move(10, 2.0, 650);
@@ -296,10 +301,10 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	lady_brown_load1();
 
 	robotControl.follow_route_pursuit(
-		fourth_route, 18.0, 90, true, 10.0, 1500
-	);
+		fourth_route, 18.0, 90, true, 15.0, 1500
+	); w;
 
-	robotControl.lateral_to_position(kPos(-7, 40, rad(90)), false, 4.0, 1800); // used to be point
+	robotControl.lateral_to_position(kPos(-7, 38, rad(90)), false, 4.0, 2200); // used to be point
 
 	// robotControl.turn_to_point(kPos(0, 100, 0), true, 0, 2.0, 750);
 
@@ -321,111 +326,123 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	intake_in(); robotControl.lateral_move(12, 2.0, 750, false); 
 	pros::delay(500); lady_brown_score(); pros::delay(500);
 
-	robotControl.lateral_move(-6); lady_brown_load1();
+	robotControl.lateral_move(-10); lady_brown_load1();
 
 	// end of 2nd side
 
-	robotControl.follow_route_pursuit(
-		fifth_route, 13.0, 90, false, 6.0, 1600
-	); w;
-	robotControl.lateral_move(-8, 3.0, 750); clamp_toggle(); lady_brown_load1();
+	// robotControl.follow_route_pursuit(
+	// 	fifth_route, 13.0, 90, false, 5.0, 1600
+	// );
+	// robotControl.curve_move(kPos(40, 44, 0), false, 5.0, 3000); lady_brown_load1();
+	robotControl.turn_to_point(kPos(60, 24, 0), false, 0, 3.0, 750);
+	robotControl.lateral_move(-46, 6.0, 1500);
+	robotControl.turn_to_point(kPos(60, 24, 0), false, 0, 3.0, 750);
+	robotControl.lateral_move(-15, 3.0, 750); 
+	clamp_toggle(); lady_brown_load1(); w;
 
 	// robotControl.turn_to_angle(146, 0, 3.0, 750); w;
 	// robotControl.lateral_move(-36, 4.0, 1500); w;
 	// robotControl.lateral_move(-22, 4.0, 1500); w;
 
-	robotControl.turn_to_angle(90, 0, 2.0, 750); w; intake_in();
+	robotControl.turn_to_angle(90, 0, 2.0, 750); intake_in();
 
-	// doinker_toggle();
-
-	robotControl.lateral_move(28); w;
+	robotControl.lateral_move(28, 2.0, 750); w;
 
 	robotControl.turn_to_angle(225, 0, 2.0, 750);
 	clamp_toggle(); 
 	
-	// doinker_toggle();
+	robotControl.lateral_move(-6, 3.0, 750); w; intake_in();
 
-	robotControl.lateral_move(-12, 3.0, 750); w; intake_in();
+	robotControl.turn_to_angle(225, 0, 2.0, 750);
+	robotControl.lateral_move(16);
 
-	// robotControl.turn_to_angle(90, 0, 2.0, 750); w;
-	// robotControl.lateral_move(-18); robotControl.lateral_move(-12); w; 
-	// robotControl.lateral_to_point(kPos(48, 0, 0), true, 3.5, 500, 0); - might still need to center for alliance stake
-
-	// robotControl.lateral_move(20); w;
-	// robotControl.lateral_to_position(kPos(41, 12, rad(90)), true, 3.5, 1000, 750); w;
-	// // robotControl.lateral_to_point(kPos(48, 0, 0), false, 2.0, 750, 0);
-	// robotControl.lateral_move(-12); robotControl.lateral_move(-12);
-
-	// robotControl.turn_to_angle(225, 0, 2.0, 750);
-	// robotControl.lateral_move(10);
-	// robotControl.turn_to_angle(90);
-	// robotControl.follow_route_pursuit(
-	// 	third_mogo_route, 21.0, 90, false, 6.0, 1500
-	// ); w;
+	robotControl.turn_to_angle(90, 0, 3.0, 750);
 	
-	robotControl.lateral_to_point(kPos(38, 24, 0));
+	robotControl.curve_move(kPos(48, 15, 0), false, 12.0, 750); w;
+	robotControl.turn_to_angle(90, 0, 3.0, 750);
+	robotControl.lateral_move(-13);
 
-	robotControl.turn_to_angle(90);
-
-	robotControl.lateral_move(-12); robotControl.lateral_move(-10);
+	// robotControl.lateral_to_point(kPos(48, 0, 0), true, 1.0, 400, 0, 0);
 	
-	clamp_toggle();
+	clamp_toggle(); 
 
 	// ^ grab 3rd mogo
 
-	robotControl.turn_to_point(kPos(72, 0, 0), true, 0, 2.0, 750);
-	// robotControl.turn_to_angle(0, 0, 3.0, 750);
+	// robotControl.turn_to_point(kPos(72, 0, 0), true, 0, 2.0, 750);
+	robotControl.turn_to_angle(10, 0, 3.0, 750);
 
 	robotControl.lateral_move(24); // could maybe reset pos here 
 
 	robotControl.lateral_move(-8); w;
 
-	lady_brown_load2(); pros::delay(600); lady_brown_down(); 
+	lady_brown_load2(); pros::delay(600);
 
 	// ^ score on second alliance
 	
-	robotControl.lateral_move(-8, 3.0, 750); intake_in();
-	// robotControl.turn_to_angle(135, 0, 2.0, 750);
-	// robotControl.lateral_move(26);
+	robotControl.lateral_move(-8, 3.0, 750); lady_brown_down();  intake_in();
 
-	robotControl.lateral_to_point(kPos(24, 24, rad(225)), true, 2.0, 1000, 750);
+	if (colorSortTask == nullptr) {
+		colorSortTask = new pros::Task {[=] {
+			while(true) {
+				if (color_sorting || auton_color_sorting) {
+					if (color_sorting) {
+						if (red_alliance) {
+							blue_color_sort();
+						}
+						else {				
+							red_color_sort();
+						}
+					} else if (auton_color_sorting) {
+						if (red_alliance) {
+							blue_color_auton_sort();
+						}
+						else {				
+							red_color_auton_sort();
+						}
+					}
+					
+					pros::delay(20);
+				}
+				else {
+					pros::delay(150);
+				}
+			}
+		}};
 
-	robotControl.lateral_to_point(kPos(0, 0, rad(225)), true, 2.0, 1000, 750);
+		colorSortTask->set_priority(TASK_PRIORITY_DEFAULT - 2);
+	}
 
-	robotControl.lateral_to_position(kPos(20, -20, rad(300)), true, 2.0, 1000, 750);
-
-	// robotControl.lateral_to_point(kPos(48, -48, 0), true, 3.5, 1000, 0);
-	// robotControl.turn_to_angle(0);
-	// robotControl.lateral_move(15);
-
-	// TURN ON COLOR SORT - need to start task somewhere else
 	color_sorting = true;
 	red_alliance = true;
 
-	robotControl.follow_route_pursuit(
-		sixth_route, 15.0, 90, true, 10.0, 1200
-	); w;
+	robotControl.lateral_to_point(kPos(24, 24, rad(225)), true, 3.0, 1000, 750);
 
-	robotControl.turn_to_angle(235, 0, 3.0, 750); //doinker_toggle(); 
+	robotControl.lateral_to_point(kPos(-6, 0, rad(225)), true, 4.0, 1000, 750);
+
+	robotControl.lateral_to_point(kPos(24, -24, rad(300)), true, 3.0, 1000, 750);
+
+	robotControl.follow_route_pursuit(
+		sixth_route, 15.0, 90, true, 12.0, 1250
+	); w;
+	doinker_toggle2(); 
+
+	robotControl.turn_to_angle(215, 0, 3.0, 750); 
 	
 	robotControl.lateral_move(8, 2.0, 750);
 
-	robotControl.turn_to_angle(135, 0, 6.0, 1200); clamp_toggle();
+	robotControl.turn_to_angle(135, 0, 6.0, 750); clamp_toggle(); doinker_toggle2();
 
-	robotControl.lateral_move(-20, 3.0, 750);
+	robotControl.lateral_move(-12, 3.0, 750);
 
-	robotControl.lateral_move(24);
-
-	robotControl.turn_to_angle(315, 0, 3.0, 750);
+	robotControl.lateral_move(12, 3.0, 750);
 
 	lady_brown_score();
 
-	robotControl.lateral_to_point(kPos(22, -22, rad(315)));
+	robotControl.lateral_to_position(kPos(24, -24, rad(315)), false, 2.0, 1000, 1000);
 
-	drivetrain.voltage_command(-100, -100);
+	drivetrain.voltage_command(-70, -70);
 
 	// ^ end
-
 }
 
 // coded for red side

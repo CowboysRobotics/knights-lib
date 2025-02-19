@@ -107,23 +107,23 @@ void knights::RobotController::move_to_position(const Pos desired_position, floa
     return;
 }
 
-void knights::RobotController::lateral_to_position(const Pos desired_position, const bool forwards, const float end_tolerance, const int timeout, const int turn_timeout) {
+void knights::RobotController::lateral_to_position(const Pos desired_position, const bool forwards, const float end_tolerance, const int timeout, const int turn_timeout, const int wait_time) {
     this->turn_to_point(desired_position, forwards, 0, 2.0, turn_timeout);
-    pros::delay(140);
+    pros::delay(wait_time);
     if (forwards)
         this->lateral_move(distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
     else
         this->lateral_move(-distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
-    pros::delay(140);
+    pros::delay(wait_time);
     this->turn_to_angle(knights::to_deg(desired_position.heading), 0, 2.0, turn_timeout);
 }
 
-void knights::RobotController::lateral_to_point(const Pos desired_position, const bool forwards, const float end_tolerance, const int timeout, const int turn_timeout) {
+void knights::RobotController::lateral_to_point(const Pos desired_position, const bool forwards, const float end_tolerance, const int timeout, const int turn_timeout, const int wait_time) {
     this->turn_to_point(desired_position, forwards, 0, 2.0, turn_timeout);
-    pros::delay(140);
+    pros::delay(wait_time);
     if (forwards)
         this->lateral_move(distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
     else
         this->lateral_move(-distance_btwn(this->chassis->curr_position, desired_position), end_tolerance, timeout);
-    pros::delay(140);
+    pros::delay(wait_time);
 }

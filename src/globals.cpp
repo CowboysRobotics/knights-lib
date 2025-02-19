@@ -63,6 +63,16 @@ pros::adi::Pneumatics clamp(1, false); //clamp solenoid
 pros::adi::Pneumatics doinker(3, false); //doinker solenoid
 pros::adi::Pneumatics doinker2(2, false); //rush mech solenoid
 
+// distance sensors
+pros::Distance left_sensor(1);
+pros::Distance back_sensor(10);
+pros::Distance right_sensor(18);
+pros::Distance front_sensor(19);
+
+knights::DistanceTracker back(&back_sensor, 7, 3.0625, M_PI);
+knights::DistanceTracker left(&left_sensor, -7, 4.75, M_PI/2);
+knights::DistanceTracker right(&right_sensor, 6.75, 5, M_PI/2);
+
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.9375, 450.0, 3.25, 0.75);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
 
