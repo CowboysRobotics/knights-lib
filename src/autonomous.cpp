@@ -347,8 +347,6 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	robotControl.lateral_move(-12, 3.0, 750); w; intake_in();
 
-	robotControl.lateral_to_point(kPos(48, 24, 0));
-
 	// robotControl.turn_to_angle(90, 0, 2.0, 750); w;
 	// robotControl.lateral_move(-18); robotControl.lateral_move(-12); w; 
 	// robotControl.lateral_to_point(kPos(48, 0, 0), true, 3.5, 500, 0); - might still need to center for alliance stake
@@ -364,16 +362,19 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	// robotControl.follow_route_pursuit(
 	// 	third_mogo_route, 21.0, 90, false, 6.0, 1500
 	// ); w;
+	
+	robotControl.lateral_to_point(kPos(40, 24, 0));
 
 	robotControl.turn_to_angle(90);
 
-	robotControl.lateral_move(-15); robotControl.lateral_move(-12);
+	robotControl.lateral_move(-12); robotControl.lateral_move(-12);
 	
 	clamp_toggle();
 
 	// ^ grab 3rd mogo
 
-	robotControl.turn_to_point(kPos(72, 0, 0), true, 0, 2.0, 750);
+	// robotControl.turn_to_point(kPos(72, 0, 0), true, 0, 2.0, 750);
+	robotControl.turn_to_angle(0, 0, 3.0, 750);
 
 	robotControl.lateral_move(24); // could maybe reset pos here 
 
@@ -411,13 +412,13 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	robotControl.lateral_move(24);
 
-	robotControl.turn_to_angle(315);
+	robotControl.turn_to_angle(315, 0, 3.0, 750);
 
 	lady_brown_score();
 
 	robotControl.lateral_to_point(kPos(22, -22, rad(315)));
 
-	drivetrain.voltage_command(-80, -80);
+	drivetrain.voltage_command(-100, -100);
 
 	// ^ end
 
