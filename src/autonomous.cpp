@@ -262,7 +262,7 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	robotControl.lateral_move(14); w; intake_in();
 	robotControl.turn_to_angle(270, 0, 2.0, 750); w; robotControl.lateral_move(-52, 8.0, 1250);
 	robotControl.turn_to_point(kPos(-48, 24, 0), false, 0, 2.0, 1000);
-	robotControl.lateral_move(-12); robotControl.lateral_move(-12);
+	robotControl.lateral_move(-12); robotControl.lateral_move(-10);
 	
 	clamp_toggle(); w;
 
@@ -299,11 +299,11 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 		fourth_route, 18.0, 90, true, 10.0, 1500
 	);
 
-	robotControl.lateral_to_point(kPos(-7, 40, rad(90)), false, 4.0, 1800); // used to be position
+	robotControl.lateral_to_position(kPos(-7, 40, rad(90)), false, 4.0, 1800); // used to be point
 
-	robotControl.turn_to_point(kPos(0, 100, 0), true, 0, 2.0, 750);
+	// robotControl.turn_to_point(kPos(0, 100, 0), true, 0, 2.0, 750);
 
-	robotControl.lateral_move(30, 2.0, 1000); // ram wall stake
+	robotControl.lateral_move(28, 2.0, 1000); // ram wall stake
 
 	// ---- RESET POSITION ON WALL STAKE ----
 
@@ -363,11 +363,11 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	// 	third_mogo_route, 21.0, 90, false, 6.0, 1500
 	// ); w;
 	
-	robotControl.lateral_to_point(kPos(40, 24, 0));
+	robotControl.lateral_to_point(kPos(38, 24, 0));
 
 	robotControl.turn_to_angle(90);
 
-	robotControl.lateral_move(-12); robotControl.lateral_move(-12);
+	robotControl.lateral_move(-12); robotControl.lateral_move(-10);
 	
 	clamp_toggle();
 
@@ -398,8 +398,12 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	// robotControl.turn_to_angle(0);
 	// robotControl.lateral_move(15);
 
+	// TURN ON COLOR SORT - need to start task somewhere else
+	color_sorting = true;
+	red_alliance = true;
+
 	robotControl.follow_route_pursuit(
-		sixth_route, 15.0, 90, true, 4.0, 1200
+		sixth_route, 15.0, 90, true, 10.0, 1200
 	); w;
 
 	robotControl.turn_to_angle(235, 0, 3.0, 750); //doinker_toggle(); 
