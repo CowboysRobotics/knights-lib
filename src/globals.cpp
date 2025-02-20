@@ -202,7 +202,7 @@ void blue_color_auton_sort(){
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
 #define LADY_BROWN_DOWN 0
-#define LADY_BROWN_LOAD1 336
+#define LADY_BROWN_LOAD1 339
 #define LADY_BROWN_LOAD2 135
 #define LADY_BROWN_SCORE 206 // 213
 #define LADY_BROWN_ALLIANCE 160

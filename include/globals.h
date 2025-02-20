@@ -107,15 +107,5 @@ void doinker_toggle2();
 // Constants
 #define velocity_formula(x) 160*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20
 #define INTAKE_VELOCITY 200
-#define LADY_BROWN_VELOCITY 127.0
-#define LADY_BROWN_kP 1.75
-#define LADY_BROWN_kI 0.000
-#define LADY_BROWN_kD 0.5
-#define LADY_BROWN_DOWN 0
-#define LADY_BROWN_LOAD1 339
-#define LADY_BROWN_LOAD2 160
-#define LADY_BROWN_SCORE 213
-#define LADY_BROWN_ALLIANCE 165
-#define LADY_BROWN_END_TOLERANCE 1.0
 
 #endif // ROBOT_CONFIG_H
