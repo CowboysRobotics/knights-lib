@@ -45,7 +45,7 @@ void initialize() {
 	auton_map["Skills0"] = knights::Auton(&skills, knights::Pos(-62.5, 0, 0), false, false);
 
 
-	// auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(0.001, 0.001, 0));
+	// auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(-60, 0, knights::to_rad(270)));
 
 	lv_display();
 
@@ -158,16 +158,17 @@ void autonomous() {
 						else {				
 							red_color_sort();
 						}
-					} else if (auton_color_sorting) {
-						if (red_alliance) {
-							blue_color_auton_sort();
-						}
-						else {				
-							red_color_auton_sort();
-						}
+					} 
+				else if (auton_color_sorting) {
+					if (red_alliance) {
+						blue_color_auton_sort();
 					}
+					else {				
+						red_color_auton_sort();
+					}
+				}
 					
-					pros::delay(20);
+				pros::delay(20);
 				}
 				else {
 					pros::delay(150);

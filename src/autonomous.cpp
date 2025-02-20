@@ -82,6 +82,7 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	robotControl.lateral_move(24);
 }
 
+ASSET(test_txt)
 
 void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
@@ -114,10 +115,15 @@ void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	inputMap.bind_action("lbLoad1", lady_brown_load1);
 	inputMap.bind_action("lbScore", lady_brown_score);
 
-	knights::ProfileGenerator generator(drivetrain, 600);
-	knights::MotionProfile profile = generator.generate(knights::Pos(0, 0, 90_deg), knights::Pos(24, 24, 0), 80, 0, 0);
+	AssetStream first(test_txt);
+	auto first_route = knights::init_route_from_asset(first);
 
-	robotControl.follow_route_pursuit(knights::Route(profile), 18.0, 100.0);
+	clamp_toggle();
+	intake_in();
+
+	pros::delay(500);
+
+	robotControl.follow_route_pursuit(first_route, 18.0, 100.0);
 
 	// test_route.execute(chassis, &robotControl, &inputMap);
 }
@@ -140,8 +146,6 @@ ASSET(skills2thirdmogo_txt)
 
 #define GUIDE_TO_TRACKING_CENTER_DIST 9 // need to cange
 #define WALL_STAKE_POLE_DIST 1
-
-std::fstream write_file("/usd/skills.log", std::ios_base::out);
 
 void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
@@ -200,7 +204,7 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	intake_in();
 
 	chassis->set_position(kPos(
-		-72+(knights::to_inches(back_sensor.get_distance()/1000.0)-back.y_displacement)
+		-72 + (knights::to_inches(back_sensor.get_distance()/1000.0)-back.y_displacement)
 	, 0, chassis->get_position().heading));
 
 	robotControl.lateral_to_position(knights::Pos(-50, 0, knights::to_rad(90)), true, 2.0, 500, 0, 10); w;
@@ -251,9 +255,9 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	pros::delay(200);
 
-	robotControl.turn_to_angle(40, 0, 3.0, 1000); w;
+	robotControl.turn_to_angle(40, 0, 3.0, 750); w;
 
-	clamp_toggle(); robotControl.lateral_move(-20, 2.0, 750);
+	clamp_toggle(); robotControl.lateral_move(-20, 2.0, 500);
 
 	// ^ gets one 6 ring mogo pushed into corner
 
@@ -265,7 +269,7 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	// robotControl.lateral_move(-12);
 
 	robotControl.lateral_move(14); w; intake_in();
-	robotControl.turn_to_angle(270, 0, 2.0, 750); w; robotControl.lateral_move(-50, 8.0, 1250);
+	robotControl.turn_to_angle(270, 0, 2.0, 600); w; robotControl.lateral_move(-50, 8.0, 1250);
 	robotControl.turn_to_point(kPos(-48, 24, 0), false, 0, 2.0, 1000);
 	robotControl.lateral_move(-14); robotControl.lateral_move(-12);
 	
@@ -351,9 +355,9 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	robotControl.turn_to_angle(225, 0, 2.0, 750);
 	clamp_toggle(); 
 	
-	robotControl.lateral_move(-6, 3.0, 750); w; intake_in();
+	robotControl.lateral_move(-6, 3.0, 500); w; intake_in();
 
-	robotControl.turn_to_angle(225, 0, 2.0, 750);
+	robotControl.turn_to_angle(225, 0, 2.0, 500);
 	robotControl.lateral_move(16);
 
 	robotControl.turn_to_angle(90, 0, 3.0, 750);
@@ -369,13 +373,13 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	// ^ grab 3rd mogo
 
 	// robotControl.turn_to_point(kPos(72, 0, 0), true, 0, 2.0, 750);
-	robotControl.turn_to_angle(10, 0, 3.0, 750);
+	robotControl.turn_to_angle(0, 0, 3.0, 750);
 
 	robotControl.lateral_move(24); // could maybe reset pos here 
 
 	robotControl.lateral_move(-8); w;
 
-	lady_brown_load2(); pros::delay(600);
+	lady_brown_alliance(); pros::delay(600); intake_out();
 
 	// ^ score on second alliance
 	
@@ -419,22 +423,22 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	robotControl.lateral_to_point(kPos(-6, 0, rad(225)), true, 4.0, 1000, 750);
 
-	robotControl.lateral_to_point(kPos(24, -24, rad(300)), true, 3.0, 1000, 750);
+	robotControl.lateral_to_point(kPos(22, -22, rad(300)), true, 3.0, 1000, 750);
 
 	robotControl.follow_route_pursuit(
-		sixth_route, 15.0, 90, true, 12.0, 1250
+		sixth_route, 12.0, 75, true, 14.0, 1250
 	); w;
 	doinker_toggle2(); 
 
 	robotControl.turn_to_angle(215, 0, 3.0, 750); 
 	
-	robotControl.lateral_move(8, 2.0, 750);
+	robotControl.lateral_move(8, 2.0, 400);
 
 	robotControl.turn_to_angle(135, 0, 6.0, 750); clamp_toggle(); doinker_toggle2();
 
-	robotControl.lateral_move(-12, 3.0, 750);
+	robotControl.lateral_move(-12, 3.0, 400);
 
-	robotControl.lateral_move(12, 3.0, 750);
+	robotControl.lateral_move(12, 3.0, 500);
 
 	lady_brown_score();
 
@@ -442,18 +446,20 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	drivetrain.voltage_command(-70, -70);
 
+	pros::delay(3000);
+
+	drivetrain.voltage_command(0, 0);
+
 	// ^ end
 }
 
 // coded for red side
 void sig_winpoint_ring(knights::RobotChassis *chassis, bool flip_x, bool flip_y){
 
-	float x_mod = flip_x ? -1 : 1;
-	float y_mod = flip_y ? -1 : 1;
+	float x_mod = flip_y ? -1 : 1;
+	float y_mod = flip_x ? -1 : 1;
 
 	float angle_mod = flip_y ? 180 : 0;
-
-	knights::RamseteConstants ramsete_constants(1, 0.5);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
 	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
@@ -465,16 +471,9 @@ void sig_winpoint_ring(knights::RobotChassis *chassis, bool flip_x, bool flip_y)
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
 
 	auton_color_sorting = true;
-	
-	if (flip_x) {
-		red_alliance = false;
-	}
+	color_sorting = false;
 
-	else {
-		red_alliance = true;
-	}
-
-	lady_brown_load2();
+	lady_brown_alliance();
 
 	pros::delay(400);
 
@@ -493,7 +492,7 @@ void sig_winpoint_ring(knights::RobotChassis *chassis, bool flip_x, bool flip_y)
 	clamp_toggle(); tw(1);
 
 	robotControl.turn_to_angle(
-		(42 - angle_mod) * y_mod, 0, 2.0, 750
+		(42 - angle_mod) * x_mod, 0, 2.0, 750
 	); w;
 
 	intake_in();
@@ -502,7 +501,7 @@ void sig_winpoint_ring(knights::RobotChassis *chassis, bool flip_x, bool flip_y)
 
 	robotControl.lateral_move(-23, 3.0, 750);
 
-	robotControl.turn_to_angle((85 - angle_mod) * y_mod, 0, 2.0, 500); w;
+	robotControl.turn_to_angle((85 - angle_mod) * x_mod, 0, 2.0, 500); w;
 
 	robotControl.lateral_move(20, 3.0, 750); w;
 
@@ -518,18 +517,20 @@ void sig_winpoint_ring(knights::RobotChassis *chassis, bool flip_x, bool flip_y)
 
 	clamp_toggle();
 
+	robotControl.turn_to_point(kPos(-24 * x_mod, -24 * y_mod, 0), false, 0, 2.0, 750);
+	// robotControl.turn_to_angle((85 - angle_mod) * x_mod, 0, 2.0, 500); w;
+
+
+	robotControl.lateral_move(-17, 3.0, 750); 
+
+	robotControl.lateral_move(-12, 3.0, 750); 
+	
+	w; clamp_toggle(); w;
+
 	auton_color_sorting = false;
 	color_sorting = true;
 
 	intake_in(); intake_in();
-
-	robotControl.turn_to_point(kPos(-24 * x_mod, -22 * y_mod, 0), false, 0, 2.0, 750);
-
-	robotControl.lateral_move(-12, 3.0, 750); 
-
-	robotControl.lateral_move(-15, 3.0, 750); 
-	
-	w; clamp_toggle(); w;
 
 	robotControl.turn_to_point(kPos(-24 * x_mod, -48 * y_mod, 0), true, 0, 2.0, 750); w;
 
@@ -537,7 +538,7 @@ void sig_winpoint_ring(knights::RobotChassis *chassis, bool flip_x, bool flip_y)
 
 	robotControl.turn_to_point(kPos(-12 * x_mod, 0 * y_mod,0), true, 0, 2.0, 750);
 
-	robotControl.lateral_move(26, 3.0, 750);
+	robotControl.lateral_move(31, 3.0, 750);
 }
 
 void ring_rush(knights::RobotChassis *chassis, bool flip_x, bool flip_y){
