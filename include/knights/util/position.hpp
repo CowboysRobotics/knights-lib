@@ -134,12 +134,16 @@ namespace knights {
     */
     float distance_btwn(const Pos &pt1, const Pos &pt2);
 
+    float angle_btwn(const Pos &pt1, const Pos &pt2);
+
     /**
     @brief get the distance between two positions
     @param pt1,pt2 point
     @return the distance between the points
     */
     float distance_btwn(const Point &pt1, const Point &pt2);
+
+    float angle_btwn(const Point &pt1, const Point &pt2);
 
     /**
      * @brief Get whichever point is closer to a certain point

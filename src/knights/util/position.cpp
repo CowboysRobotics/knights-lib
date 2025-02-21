@@ -74,6 +74,16 @@ float knights::distance_btwn(const Pos &pt1, const Pos &pt2) {
     return std::hypot(pt2.x-pt1.x, pt2.y-pt1.y);
 };
 
+float knights::angle_btwn(const Pos &pt1, const Pos &pt2) {
+    return std::atan2(pt2.y-pt1.y, pt2.x-pt1.x);
+};
+
+
+float knights::angle_btwn(const Point &pt1, const Point &pt2) {
+    return std::atan2(pt2.y-pt1.y, pt2.x-pt1.x);
+};
+
+
 Pos knights::closest_point(const Pos &start, const Pos &pt1, const Pos &pt2) {
     if (distance_btwn(start, pt1) <= distance_btwn(start, pt2))
         return pt1;
