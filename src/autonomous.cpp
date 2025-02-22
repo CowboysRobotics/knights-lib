@@ -377,7 +377,7 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	// robotControl.turn_to_point(kPos(72, 0, 0), true, 0, 3.0, 750);
 	robotControl.turn_to_angle(0, 0, 3.0, 750);
 
-	robotControl.lateral_move(18, 3.0, 600); // could maybe reset pos here 
+	robotControl.lateral_move(24, 3.0, 600); // could maybe reset pos here 
 
 	robotControl.lateral_move(-8, 3.0, 600); w;
 
@@ -438,7 +438,7 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	robotControl.turn_to_angle(235, 0, 3.0, 600); w;
 	
-	robotControl.lateral_move(10, 3.0, 500); doinker_toggle();
+	robotControl.lateral_move(10, 3.0, 500); doinker_toggle(); w;
 
 	robotControl.turn_to_angle(135, LEFT, 6.0, 3000); clamp_toggle(); doinker_toggle(); w;
 
@@ -451,13 +451,9 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	robotControl.lateral_to_point(kPos(24, -24, rad(315)), false, 2.0, 1000, 750, 40);
 	robotControl.turn_to_angle(315, 0, 3.0, 400);
 
+	pros::delay(20);
+
 	drivetrain.voltage_command(-70, -70);
-
-	pros::delay(700);
-
-	lady_brown_down();
-
-	drivetrain.voltage_command(0, 0);
 
 	// ^ end
 }

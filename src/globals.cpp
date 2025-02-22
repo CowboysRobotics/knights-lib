@@ -195,14 +195,14 @@ void blue_color_auton_sort(){
 
 
 #define LADY_BROWN_VELOCITY 127.0
-#define LADY_BROWN_kP 1.2 // 1.75
+#define LADY_BROWN_kP 1.1 // 1.75
 #define LADY_BROWN_kI 0.000
-#define LADY_BROWN_kD 3
+#define LADY_BROWN_kD 0.5
 
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
 #define LADY_BROWN_DOWN 0
-#define LADY_BROWN_LOAD1 339
+#define LADY_BROWN_LOAD1 337
 #define LADY_BROWN_LOAD2 135
 #define LADY_BROWN_SCORE 206 // 213
 #define LADY_BROWN_ALLIANCE 160
@@ -263,7 +263,11 @@ void lady_brown_load1() {
 	// color_sorting = false;
     // lady_brown_to_angle(LADY_BROWN_LOAD1, 1500, true);
 
-	lady_brown_target = LADY_BROWN_LOAD1;
+	if (lady_brown_target < 220 && lady_brown_target > 30) {
+		lady_brown_target = LADY_BROWN_LOAD1 - 3;
+	} else {
+		lady_brown_target = LADY_BROWN_LOAD1;
+	}
 }
 
 void lady_brown_load2() {
