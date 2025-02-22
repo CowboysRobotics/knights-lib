@@ -74,6 +74,27 @@ knights::Route knights::Route::flip_y() {
     return output;
 }
 
+knights::Route knights::Route::reverse() {
+    knights::Route output;
+
+    output.positions = this->positions;
+    std::reverse(output.positions.begin(), output.positions.end());
+
+    // need to figure out thetas
+    for (int i = 0; i < output.positions.size() - 1; i++) {
+        output.positions[i].heading =  angle_btwn(output.positions[i], output.positions[i+1]);
+    }
+
+    output.positions[output.positions.size() - 1].heading = output.positions[output.positions.size() - 2].heading;
+    
+    int size = this->positions.size();
+    for (auto const& [i, func] : this->actions) {
+        output.actions[size-i] = func;
+    }
+
+    return output;
+}
+
 knights::RouteAction::RouteAction(knights::action_type type, std::string route_name, float end_tolerance, int timeout, float lookahead) :
     type(type), route_name(route_name), end_tolerance(end_tolerance), timeout(timeout), lookahead(lookahead) {}
 

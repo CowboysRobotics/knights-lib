@@ -52,6 +52,13 @@ namespace knights {
          */
         Route flip_y();
 
+        /**
+         * @brief Reverse a route
+         * 
+         * @return Route 
+         */
+        Route reverse();
+
     };
 
     /**
