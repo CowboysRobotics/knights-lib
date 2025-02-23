@@ -239,6 +239,7 @@ float get_lady_brown_command() {
 	float error = knights::angular_error(lady_brown_rotation.get_angle()/100.0, lady_brown_target, 0, false);
 	// float error = lady_brown_target - (lady_brown_rotation.get_angle()/100.0);
 	float speed = lady_brown_PID.update(error, false);
+	// printf("error: %lf speed: %lf\n", error, speed);
 
 	if (lady_brown_target < 180 && lady_brown_target > 0 && (lady_brown_rotation.get_angle()/100.0 > lady_brown_target || lady_brown_rotation.get_angle()/100.0 < 20)) {
 		speed = -1 * fabs(speed);
