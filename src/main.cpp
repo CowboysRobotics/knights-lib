@@ -43,11 +43,15 @@ void initialize() {
 	auton_map["Red3"] = knights::Auton(&sig_winpoint_red_cut, knights::Pos(-58,15,knights::to_rad(226)), false, false);
 	auton_map["Blue3"] = knights::Auton(&sig_winpoint_blue_cut, knights::Pos(58,15,knights::to_rad(-46)), false, false);
 
+	auton_map["Red4"] = knights::Auton(&goal_side_red, knights::Pos(-54,36,knights::to_rad(180)), false, false);
+	auton_map["Blue4"] = knights::Auton(&goal_side_blue, knights::Pos(54,36,knights::to_rad(0)), false, true);
+
 
 
 	// auton_map["None0"] = knights::Auton(&sig_winpoint_red, knights::Pos(-58,15,knights::to_rad(226)), false, false);
 	// auton_map["None0"] = knights::Auton(&sig_winpoint_blue, knights::Pos(58,15,knights::to_rad(-46)), false, false);
-	auton_map["None0"] = knights::Auton(&ring_6_rush_blue, knights::Pos(52,30,knights::to_rad(170)), false, false);
+	// auton_map["None0"] = knights::Auton(&ring_6_rush_blue, knights::Pos(52,30,knights::to_rad(170)), false, false);
+	auton_map["None0"] = knights::Auton(&goal_side_blue, knights::Pos(54,36,knights::to_rad(0)), false, true);
 
 	// auton_map["None0"] = knights::Auton(&skills, knights::Pos(-62.5, 0, 0), false, false);
 	auton_map["Skills0"] = knights::Auton(&skills, knights::Pos(-62.5, 0, 0), false, false);

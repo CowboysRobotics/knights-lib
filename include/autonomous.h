@@ -24,5 +24,7 @@ void ring_6_rush_red(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 void sig_winpoint_red_cut(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 void sig_winpoint_blue_cut(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 
+void goal_side_red(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
+void goal_side_blue(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 
 #endif
