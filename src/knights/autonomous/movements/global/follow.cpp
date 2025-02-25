@@ -10,6 +10,7 @@
 
 #include "knights/logger/logger.hpp"
 #include "pros/motors.h"
+#include "pros/rtos.hpp"
 
 #include <cmath>
 #include <cstdio>
@@ -373,25 +374,34 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
     this->chassis->drivetrain->right_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
     this->chassis->drivetrain->left_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 
-    float time = 0;
+    float start_time = pros::millis();
     int curr_i = 0;
 
     std::fstream write_file("/usd/ramsete_output.txt", std::ios_base::out);
 
     printf("Ramsete started with state vars: max_vel %lf \n", profile.max_velocity);
 
-    while (distance_btwn(this->chassis->curr_position, profile.timestamps.back().position) > end_tolerance && time <= profile.timestamps.back().time) {
+    while (distance_btwn(this->chassis->curr_position, profile.timestamps.back().position) > end_tolerance) {
         knights::Pos curr_position = this->chassis->curr_position;
 
+        float elapsed_time = (pros::millis() - start_time) / 1000.0;
+
+        if (elapsed_time > profile.timestamps.back().time * 1.5 || curr_i >= profile.timestamps.size() - 1) break;
+
         // find closest timestamp to current
-        while (curr_i < profile.timestamps.size() - 1 && profile.timestamps[curr_i+1].time < time) {
+        while (curr_i < profile.timestamps.size() - 1 && profile.timestamps[curr_i+1].time < elapsed_time) {
             curr_i++;
         }
 
+        const ProfileTimestamp& next = profile.timestamps[curr_i];
+        const ProfileTimestamp& prev = profile.timestamps[curr_i+1];
+        knights::ProfileTimestamp selected = lerp(prev, next, 
+            knights::clamp((elapsed_time - prev.time) / (next.time - prev.time), 0.0, 1.0));
+
         // obtain error values
-        float error_x = knights::to_meters(profile.timestamps[curr_i].position.x - curr_position.x);
-        float error_y = knights::to_meters(profile.timestamps[curr_i].position.y - curr_position.y);
-        float error_theta = knights::angular_error(profile.timestamps[curr_i].position.heading, curr_position.heading, 0);
+        float error_x = knights::to_meters(selected.position.x - curr_position.x);
+        float error_y = knights::to_meters(selected.position.y - curr_position.y);
+        float error_theta = knights::angular_error(selected.position.heading, curr_position.heading, 0);
 
         if (error_theta == 0) {
             error_theta = 1e-6;
@@ -401,8 +411,8 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float local_error_y = -sin(curr_position.heading) * error_x + cos(curr_position.heading) * error_y;
 
         // convert velocities to meters -> ensure default constants work
-        float lin_vel = knights::to_meters(profile.timestamps[curr_i].linear_velocity);
-        float ang_vel = profile.timestamps[curr_i].angular_velocity;
+        float lin_vel = knights::to_meters(selected.linear_velocity);
+        float ang_vel = selected.angular_velocity;
 
         // calculate gain
         float gain = 2 * this->ramsete_constants->damping * std::sqrt(
