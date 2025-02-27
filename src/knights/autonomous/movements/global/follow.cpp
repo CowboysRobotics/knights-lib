@@ -447,7 +447,6 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         // send command to motors
         this->chassis->drivetrain->voltage_command(dir * (output_lin_vel + output_ang_vel), dir * (output_lin_vel - output_ang_vel));
 
-        time += 0.01;
         pros::delay(10);
     }
 
