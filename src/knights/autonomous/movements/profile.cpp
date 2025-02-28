@@ -169,7 +169,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
     return MotionProfile(timestamps, path, this->max_acceleration, path_max_velocity);
 }
 
-knights::ProfileTimestamp lerp(const knights::ProfileTimestamp &t1, const knights::ProfileTimestamp &t2, float t) {
+knights::ProfileTimestamp knights::lerp(const knights::ProfileTimestamp &t1, const knights::ProfileTimestamp &t2, float t) {
     return knights::ProfileTimestamp(
         knights::lerp(t1.position, t2.position, t),
         t1.linear_velocity + t * (t2.linear_velocity - t1.linear_velocity),

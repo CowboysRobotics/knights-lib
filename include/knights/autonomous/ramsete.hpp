@@ -10,8 +10,8 @@ namespace knights {
             /**
              * @brief Construct a new Ramsete Constants object
              * 
-             * @param damping Damping value for the Ramsete controller, must be greater than 0 (zeta term)
-             * @param proportional Proportional value for the Ramsete controller, must be within (0,1) (b term)
+             * @param damping Damping value for the Ramsete controller, must be within (0,1). default is 0.7 (zeta)
+             * @param proportional Proportional value for the Ramsete controller, must be greater than 0. default is 2 (b)
              */
             RamseteConstants(const float &damping = 0.7, const float &proportional = 2);
     };

@@ -395,7 +395,7 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
 
         const ProfileTimestamp& next = profile.timestamps[curr_i];
         const ProfileTimestamp& prev = profile.timestamps[curr_i+1];
-        knights::ProfileTimestamp selected = lerp(prev, next, 
+        knights::ProfileTimestamp selected = knights::lerp(prev, next, 
             knights::clamp((elapsed_time - prev.time) / (next.time - prev.time), 0.0, 1.0));
 
         // obtain error values
@@ -422,23 +422,23 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
 
         // calculate output velocities
         float curr_lin_vel = lin_vel * cos(error_theta) + gain * local_error_x;
-        float curr_ang_vel = ang_vel + gain * error_theta + (this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y) / error_theta;
-        // float curr_lin_vel = lin_vel;
-        // float curr_ang_vel = ang_vel;
+
+        // float curr_ang_vel = ang_vel + gain * error_theta + (this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y) / error_theta;
+        float curr_ang_vel = ang_vel + this->ramsete_constants->proportional * lin_vel * local_error_y + gain * error_theta;
 
         // convert output to something usable
         float output_lin_vel = (knights::to_inches(curr_lin_vel) / this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE;
         float output_ang_vel = ((curr_ang_vel * this->chassis->drivetrain->track_width / 2) / this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE;
         
         write_file << knights::logger::string_format(
-            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n MV: %lf \n",
-            curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, time, 
-            this->chassis->drivetrain->max_velocity()
+            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n MV: %lf curr stamp time %lf\n",
+            curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, elapsed_time, 
+            this->chassis->drivetrain->max_velocity(), selected.time
         );
 
         std::cout << knights::logger::string_format(
             "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n",
-            curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, time
+            curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, elapsed_time
         );
 
         // get direction

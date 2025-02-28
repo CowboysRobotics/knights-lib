@@ -32,6 +32,7 @@ pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 // //dimensions and positions of odom pods for calculations for position tracking
 // knights::PositionTracker midOdom(&mid_odom, 2, 1, 0.9315, -1);
 // knights::PositionTracker backOdom(&back_odom, 2, 1, 1.6550, -1); // 1.875
+// knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.9375, 600.0, 2.75, 1);
 // // #### END
 
 // #### Test Robot
@@ -42,6 +43,8 @@ pros::Rotation back_odom(14);
 pros::IMU imu(15);
 knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
 knights::PositionTracker backOdom(&back_odom, 2.75, 1, 4.0, -1);
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 13, 450.0, 3.25, 0.75);
+
 // #### END
 
 //assign ports to Lady Brown arm mech
@@ -73,7 +76,6 @@ knights::DistanceTracker back(&back_sensor, 7, 3.0625, M_PI);
 knights::DistanceTracker left(&left_sensor, -7, 4.75, M_PI/2);
 knights::DistanceTracker right(&right_sensor, 6.75, 5, M_PI/2);
 
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.9375, 450.0, 3.25, 0.75);
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
 
 knights::RobotChassis chassis(
