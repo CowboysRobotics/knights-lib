@@ -200,5 +200,5 @@ float knights::curvature(const Pos &start, const Pos &end) {
 }
 
 knights::Pos knights::lerp(const Pos &pt1, const Pos &pt2, const float t) {
-    return knights::Pos(pt1.x + (pt2.x - pt1.x) * t, pt1.y + (pt2.y - pt1.y) * t, pt1.heading * t * angular_error(pt1.heading, pt2.heading, 0));
+    return knights::Pos(pt1.x + (pt2.x - pt1.x) * t, pt1.y + (pt2.y - pt1.y) * t, pt1.heading + t * angular_error(pt1.heading, pt2.heading, 0));
 }

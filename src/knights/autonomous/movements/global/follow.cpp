@@ -393,22 +393,22 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
             curr_i++;
         }
 
-        const ProfileTimestamp& next = profile.timestamps[curr_i];
-        const ProfileTimestamp& prev = profile.timestamps[curr_i+1];
+        const ProfileTimestamp& next = profile.timestamps[curr_i+1];
+        const ProfileTimestamp& prev = profile.timestamps[curr_i];
         knights::ProfileTimestamp selected = knights::lerp(prev, next, 
             knights::clamp((elapsed_time - prev.time) / (next.time - prev.time), 0.0, 1.0));
 
         // obtain error values
         float error_x = knights::to_meters(selected.position.x - curr_position.x);
         float error_y = knights::to_meters(selected.position.y - curr_position.y);
-        float error_theta = knights::angular_error(selected.position.heading, curr_position.heading, 0);
+        float error_theta = knights::angular_error(curr_position.heading, selected.position.heading, 0, true);
 
         if (error_theta == 0) {
             error_theta = 1e-6;
         }
 
-        float local_error_x = cos(curr_position.heading) * error_x + sin(curr_position.heading) * error_y;
-        float local_error_y = -sin(curr_position.heading) * error_x + cos(curr_position.heading) * error_y;
+        float local_error_x = cos(-curr_position.heading) * error_x - sin(-curr_position.heading) * error_y;
+        float local_error_y = sin(-curr_position.heading) * error_x + cos(-curr_position.heading) * error_y;
 
         // convert velocities to meters -> ensure default constants work
         float lin_vel = knights::to_meters(selected.linear_velocity);
@@ -424,16 +424,17 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float curr_lin_vel = lin_vel * cos(error_theta) + gain * local_error_x;
 
         // float curr_ang_vel = ang_vel + gain * error_theta + (this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y) / error_theta;
-        float curr_ang_vel = ang_vel + this->ramsete_constants->proportional * lin_vel * local_error_y + gain * error_theta;
+        // float curr_ang_vel = ang_vel + this->ramsete_constants->proportional * lin_vel * local_error_y + gain * error_theta;
+        float curr_ang_vel = ang_vel + gain * error_theta + this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y / error_theta;
 
         // convert output to something usable
         float output_lin_vel = (knights::to_inches(curr_lin_vel) / this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE;
         float output_ang_vel = ((curr_ang_vel * this->chassis->drivetrain->track_width / 2) / this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE;
         
         write_file << knights::logger::string_format(
-            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n MV: %lf curr stamp time %lf\n",
+            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n MV: %lf curr stamp time %lf pos: %lf %lf %lf closest pos: %lf %lf %lf\n",
             curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, elapsed_time, 
-            this->chassis->drivetrain->max_velocity(), selected.time
+            this->chassis->drivetrain->max_velocity(), selected.time, curr_position.x, curr_position.y, curr_position.heading, selected.position.x, selected.position.y, selected.position.heading
         );
 
         std::cout << knights::logger::string_format(
