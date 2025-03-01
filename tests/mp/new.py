@@ -124,7 +124,7 @@ def dist_between(x1, y1, x2, y2):
 def lerp(start, end, step):
   return start + (end-start) * step
 
-def generate_motion_profile(max_acceleration, max_velocity, distance, track_width, path):
+def generate_motion_profile(max_acceleration, max_velocity, distance, track_width, path, forward):
   # Calculate the time it takes to accelerate to max velocity
   acceleration_dt = max_velocity / max_acceleration
 
@@ -196,12 +196,19 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     else:
       velocity = lerp(max_velocity, 0, (elapsed_time-(acceleration_dt + cruise_dt))/acceleration_dt)
     
+    if (forward == False):
+       velocity = -velocity
+
     vel_arr.append(velocity)
     
     # Angular Calculations
     x,y,theta = path.position(curr_dist/total_dist)
     dx_ds, dy_ds, omega = path.derivatives(curr_dist/total_dist)
     # omega = np.arctan2(dy_ds, dx_ds) * velocity
+
+    # if (forward == False):
+    #    omega = -omega
+
     omega_arr.append(omega)
     position_arr.append((x,y,theta))
 
@@ -213,8 +220,14 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
   
   return [t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
 
+forward = False
+
 curr = [0, 0, np.radians(90)]
-target = [24, 24, np.radians(90)]
+target = [-24, -24, np.radians(90)]
+
+if forward == False:
+  curr[2] = np.radians(360) - curr[2]
+  target[2] = np.radians(360) - target[2]
 
 dist = np.hypot(target[0]-curr[0], target[1]-curr[1])
 
@@ -245,11 +258,11 @@ max_velocity = (DESIRED_VOLTAGE/MAX_VOLTAGE) * np.pi * WHEEL_DIAMETER * (RPM / 6
 
 print(max_velocity, max_acceleration)
 
-t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr = generate_motion_profile(max_acceleration, max_velocity, total_dist, TRACK_WIDTH, path)
+t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr = generate_motion_profile(max_acceleration, max_velocity, total_dist, TRACK_WIDTH, path, forward)
 
 figure, axis = plt.subplots(3, 2)
 
-plt.subplots_adjust(vspace=2)
+# plt.subplots_adjust(vspace=2)
 
 axis[0][1].plot(t, vel_arr)
 axis[0][1].set_title("Velocity")
