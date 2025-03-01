@@ -206,8 +206,8 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     dx_ds, dy_ds, omega = path.derivatives(curr_dist/total_dist)
     # omega = np.arctan2(dy_ds, dx_ds) * velocity
 
-    # if (forward == False):
-    #    omega = -omega
+    if (forward == False):
+       omega = -omega
 
     omega_arr.append(omega)
     position_arr.append((x,y,theta))
@@ -215,7 +215,10 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     left_vel = velocity - (omega * track_width / 2)
     right_vel = velocity + (omega * track_width / 2)
 
-    side_vel_arr.append((left_vel, right_vel))
+    if (forward == False):
+      side_vel_arr.append((right_vel, left_vel))
+    else:
+      side_vel_arr.append((left_vel, right_vel))
 
   
   return [t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
