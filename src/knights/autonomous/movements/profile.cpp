@@ -86,7 +86,12 @@ knights::Pos knights::QuinticPath::second_derivatives(float t) {
     return Pos(dx2, dy2, 0);
 }
 
-knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, knights::Pos end, float desired_voltage, float curr_accel, float target_accel) {
+knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, knights::Pos end, float desired_voltage, bool forwards, float curr_accel, float target_accel) {
+
+    if (!forwards) {
+        start.heading = knights::normalize_angle(start.heading + M_PI);
+        end.heading = knights::normalize_angle(end.heading + M_PI);
+    }
 
     float distance = distance_btwn(start, end);
     knights::Pos curr_tangent(std::cos(start.heading) * distance, std::sin(start.heading) * distance, 0);
@@ -96,7 +101,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     Pos curr;
     float total_dist = 0;
-    for (float val : knights::linspace(0, 1, 300)) {
+    for (float val : knights::linspace(0, 1, 100)) {
         Pos p = path.position(val);
         Pos deriv = path.derivatives(val);
         Pos deriv2 = path.second_derivatives(val);
@@ -162,6 +167,17 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         float right_speed = curr_velocity + (omega * track_width / 2);
         float left_speed = curr_velocity - (omega * track_width / 2);
+
+        if (!forwards) {
+            curr_velocity *= -1;
+            omega *= -1;
+
+            float tmp = right_speed;
+            right_speed = left_speed;
+            left_speed = tmp;
+
+            pt.heading = knights::normalize_angle(pt.heading + M_PI);
+        }
 
         timestamps.emplace_back(pt, curr_velocity, omega, curr_dist, elapsed_time, right_speed, left_speed);
     }

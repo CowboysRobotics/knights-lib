@@ -229,8 +229,10 @@ curr = [0, 0, np.radians(90)]
 target = [-24, -24, np.radians(90)]
 
 if forward == False:
-  curr[2] = np.radians(360) - curr[2]
-  target[2] = np.radians(360) - target[2]
+  # curr[2] = np.radians(360) - curr[2]
+  # target[2] = np.radians(360) - target[2]
+  curr[2] = curr[2] + np.radians(180)
+  target[2] = target[2] + np.radians(180)
 
 dist = np.hypot(target[0]-curr[0], target[1]-curr[1])
 

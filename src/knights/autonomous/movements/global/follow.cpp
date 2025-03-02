@@ -432,7 +432,7 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float output_ang_vel = ((curr_ang_vel * this->chassis->drivetrain->track_width / 2) / this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE;
         
         write_file << knights::logger::string_format(
-            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n MV: %lf curr stamp time %lf pos: %lf %lf %lf closest pos: %lf %lf %lf\n",
+            "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n MV: %lf curr stamp time %lf pos: %lf %lf %lf time pos: %lf %lf %lf\n",
             curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, elapsed_time, 
             this->chassis->drivetrain->max_velocity(), selected.time, curr_position.x, curr_position.y, curr_position.heading, selected.position.x, selected.position.y, selected.position.heading
         );
