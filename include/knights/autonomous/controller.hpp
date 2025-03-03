@@ -86,6 +86,10 @@ namespace knights {
              */
             void turn_to_angle(const float angle, int direction = 0, float end_tolerance = 3.0, int timeout = 2000, bool rad = false); // DEGREES
 
+            void right_swing_to_angle(const float angle, float end_tolerance = 3.0, int timeout = 2000, bool rad = false); // DEGREES
+
+            void left_swing_to_angle(const float angle, float end_tolerance = 3.0, int timeout = 2000, bool rad = false); // DEGREES
+
             /**
              * @brief 
              * 
