@@ -92,8 +92,6 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
 
     // While the robot has not reached the desired point and is not at the end of the route
     while (error > end_tolerance && closest_i != route.positions.size()-1 ) {
-    // while (!(error < end_tolerance || (error < end_tolerance*4 && closest_i == route.positions.size()-1))) {
-    // while (error > end_tolerance ) {
 
         knights::Pos curr_position = this->chassis->curr_position;
         if (!forwards || lookahead_distance < 0) {
@@ -122,11 +120,26 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
         }
 
         // find lookahead point
-        for (int i = closest_i; i < route.positions.size() - 1; i++) {
-            float t = circle_intersection(route.positions[i+1], route.positions[i], curr_position, lookahead_distance);
+        for (int i = closest_i; i < route.positions.size(); i++) {
+            if (i == route.positions.size() - 1) {
+                knights::Pos extended(
+                    route.positions.back().x + 24 * cos(route.positions.back().heading),
+                    route.positions.back().y + 24 * sin(route.positions.back().heading),
+                    route.positions.back().heading
+                );
 
-            if (t != -1) {
-                target_point = lerp(route.positions[i], route.positions[i+1], t);
+                float t = circle_intersection(extended, route.positions[i], curr_position, lookahead_distance);
+
+                if (t != -1) {
+                    target_point = lerp(route.positions[i], extended, t);
+                }
+            }
+            else {
+                float t = circle_intersection(route.positions[i+1], route.positions[i], curr_position, lookahead_distance);
+
+                if (t != -1) {
+                    target_point = lerp(route.positions[i], route.positions[i+1], t);
+                }
             }
         }
 
@@ -153,6 +166,8 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
             // write_file << "angular error: " << angular_error(curr_position.heading, route.positions[closest_i].heading, 0) << "\n";
             angular_velocity = this->angular_pid->update(angular_error(curr_position.heading, route.positions[closest_i].heading, 0), true);
         }
+
+        // might be better to find a point past the end of the path and try to route toward that - maintain lookahead instead of ignoring it
 
         // decrease angular curve if the target point is at the end of the path
         if (use_pid && distance_btwn(curr_position, target_point)/max_lookahead < 0.3 && distance_btwn(curr_position, route.positions.back()) < max_lookahead) {
