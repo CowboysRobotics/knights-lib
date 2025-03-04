@@ -36,46 +36,51 @@
 #define TURN_kI_180 0.0
 #define TURN_kD_180 700
 
+ASSET(testpp1_txt)
 
 void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
     knights::RamseteConstants ramsete_constants;
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 110.0);
 	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
 	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
 	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
 	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
-	knights::PIDController angularPID(15, 0.01,10);
+	knights::PIDController angularPID(50, 0, 10, -60.0, 60.0);
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 
-	knights::ProfileGenerator generator(drivetrain, 100);
-	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-24, -24, 0), 80, false);
+	// knights::ProfileGenerator generator(drivetrain, 100);
+	// knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-24, -24, 0), 80, false);
 
-	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
+	// std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 
-	for (knights::ProfileTimestamp timestamp : profile.timestamps) {
-		write_file << "time: " << timestamp.time << " ";
-		write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
-		write_file << "lin vel: " << timestamp.linear_velocity << " ";
-		write_file << "angular vel: " << timestamp.angular_velocity << " ";
-		write_file << "dist: " << timestamp.curr_distance << " ";
-		write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
-		write_file << "end timestamp\n";
+	// for (knights::ProfileTimestamp timestamp : profile.timestamps) {
+	// 	write_file << "time: " << timestamp.time << " ";
+	// 	write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+	// 	write_file << "lin vel: " << timestamp.linear_velocity << " ";
+	// 	write_file << "angular vel: " << timestamp.angular_velocity << " ";
+	// 	write_file << "dist: " << timestamp.curr_distance << " ";
+	// 	write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+	// 	write_file << "end timestamp\n";
 
-		std::cout << "time: " << timestamp.time << " ";
-		std::cout << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
-		std::cout << "lin vel: " << timestamp.linear_velocity << " ";
-		std::cout << "angular vel: " << timestamp.angular_velocity << " ";
-		std::cout << "dist: " << timestamp.curr_distance << " ";
-		std::cout << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
-		std::cout << "end timestamp\n";
-	}
+	// 	std::cout << "time: " << timestamp.time << " ";
+	// 	std::cout << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+	// 	std::cout << "lin vel: " << timestamp.linear_velocity << " ";
+	// 	std::cout << "angular vel: " << timestamp.angular_velocity << " ";
+	// 	std::cout << "dist: " << timestamp.curr_distance << " ";
+	// 	std::cout << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+	// 	std::cout << "end timestamp\n";
+	// }
 
-	write_file.close();
+	// write_file.close();
 
-	robotControl.follow_profile_ramsete(profile);
+	AssetStream test(testpp1_txt);
+	knights::Route test_route = knights::init_route_from_asset(test);
+
+	robotControl.follow_route_pursuit(
+		test_route, 12.0, 110.0, true, 4.0, 1600, true);
 
 	
 }

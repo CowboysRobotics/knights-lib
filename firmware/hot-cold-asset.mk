@@ -1,3 +1,5 @@
+# TAKEN FROM LEMLIB - CODE BELONGS TO LEMLIB MAINTAINERS
+
 # if "template" is in the make command, do not include static.lib files
 ifneq (,$(findstring template,$(MAKECMDGOALS)))
 ASSET_FILES=$(wildcard static/*)
