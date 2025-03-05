@@ -50,6 +50,14 @@ knights::Pos knights::QuinticPath::position(float t) {
                p14() * 5 * (1 - t) * pow(t, 4) + p15() * pow(t, 5);
     
     Pos deriv = this->derivatives(t);
+
+    // prevent nan
+    if (deriv.y == 0) {
+        deriv.y = 1e-4;
+    }
+    if (deriv.x == 0) {
+        deriv.x = 1e-4;
+    }
     
     float theta = atan2(deriv.y, deriv.x);
 

@@ -51,36 +51,38 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 
-	// knights::ProfileGenerator generator(drivetrain, 100);
-	// knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-24, -24, 0), 80, false);
+	knights::ProfileGenerator generator(drivetrain, 100);
+	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-12, 36, 180_deg), 80, true);
 
-	// std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
+	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 
-	// for (knights::ProfileTimestamp timestamp : profile.timestamps) {
-	// 	write_file << "time: " << timestamp.time << " ";
-	// 	write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
-	// 	write_file << "lin vel: " << timestamp.linear_velocity << " ";
-	// 	write_file << "angular vel: " << timestamp.angular_velocity << " ";
-	// 	write_file << "dist: " << timestamp.curr_distance << " ";
-	// 	write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
-	// 	write_file << "end timestamp\n";
+	for (knights::ProfileTimestamp timestamp : profile.timestamps) {
+		write_file << "time: " << timestamp.time << " ";
+		write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+		write_file << "lin vel: " << timestamp.linear_velocity << " ";
+		write_file << "angular vel: " << timestamp.angular_velocity << " ";
+		write_file << "dist: " << timestamp.curr_distance << " ";
+		write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+		write_file << "end timestamp\n";
 
-	// 	std::cout << "time: " << timestamp.time << " ";
-	// 	std::cout << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
-	// 	std::cout << "lin vel: " << timestamp.linear_velocity << " ";
-	// 	std::cout << "angular vel: " << timestamp.angular_velocity << " ";
-	// 	std::cout << "dist: " << timestamp.curr_distance << " ";
-	// 	std::cout << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
-	// 	std::cout << "end timestamp\n";
-	// }
+		std::cout << "time: " << timestamp.time << " ";
+		std::cout << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+		std::cout << "lin vel: " << timestamp.linear_velocity << " ";
+		std::cout << "angular vel: " << timestamp.angular_velocity << " ";
+		std::cout << "dist: " << timestamp.curr_distance << " ";
+		std::cout << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+		std::cout << "end timestamp\n";
+	}
 
-	// write_file.close();
+	write_file.close();
 
-	AssetStream test(testpp1_txt);
-	knights::Route test_route = knights::init_route_from_asset(test);
+	// AssetStream test(testpp1_txt);
+	// knights::Route test_route = knights::init_route_from_asset(test);
 
-	robotControl.follow_route_pursuit(
-		test_route, 12.0, 110.0, true, 4.0, 1600, true);
+	// robotControl.follow_route_pursuit(
+	// 	test_route, 12.0, 110.0, true, 4.0, 6000, true);
+
+	robotControl.follow_profile_ramsete(profile);
 
 	
 }
