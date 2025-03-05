@@ -36,7 +36,7 @@
 #define TURN_kI_180 0.0
 #define TURN_kD_180 700
 
-ASSET(testpp1_txt)
+STATIC_FILE(testpp1_txt)
 
 void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
     knights::RamseteConstants ramsete_constants;
@@ -76,8 +76,7 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	write_file.close();
 
-	// AssetStream test(testpp1_txt);
-	// knights::Route test_route = knights::init_route_from_asset(test);
+	// knights::Route test_route = knights::init_route_from_asset(testpp1_txt);
 
 	// robotControl.follow_route_pursuit(
 	// 	test_route, 12.0, 110.0, true, 4.0, 6000, true);
@@ -86,8 +85,6 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	
 }
-
-ASSET(test_txt)
 
 void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
@@ -119,16 +116,6 @@ void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	inputMap.bind_action("lbDown", lady_brown_down);
 	inputMap.bind_action("lbLoad1", lady_brown_load1);
 	inputMap.bind_action("lbScore", lady_brown_score);
-
-	AssetStream first(test_txt);
-	auto first_route = knights::init_route_from_asset(first);
-
-	clamp_toggle();
-	intake_in();
-
-	pros::delay(500);
-
-	robotControl.follow_route_pursuit(first_route, 18.0, 100.0);
 
 	// test_route.execute(chassis, &robotControl, &inputMap);
 }

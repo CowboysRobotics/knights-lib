@@ -39,7 +39,7 @@ EXCLUDE_SRC_FROM_LIB+=$(SRCDIR)/globals.cpp
 # files that get distributed to every user (beyond your source archive) - add
 # whatever files you want here. This line is configured to add all header files
 # that are in the the include directory get exported
-TEMPLATE_FILES=$(INCDIR)/**/*.h $(INCDIR)/**/*.hpp
+TEMPLATE_FILES=$(INCDIR)/**/*.h $(INCDIR)/**/*.hpp $(wildcard firmware/hot-cold-asset.mk)
 
 .DEFAULT_GOAL=quick
 
