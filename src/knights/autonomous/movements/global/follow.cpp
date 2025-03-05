@@ -134,14 +134,14 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
                     route.positions.back().heading
                 );
 
-                float t = circle_intersection(extended, route.positions[i], curr_position, lookahead_distance);
+                float t = circle_intersection(extended, route.positions[i], curr_position, curr_lookahead);
 
                 if (t != -1) {
                     target_point = lerp(route.positions[i], extended, t);
                 }
             }
             else {
-                float t = circle_intersection(route.positions[i+1], route.positions[i], curr_position, lookahead_distance);
+                float t = circle_intersection(route.positions[i+1], route.positions[i], curr_position, curr_lookahead);
 
                 if (t != -1) {
                     target_point = lerp(route.positions[i], route.positions[i+1], t);
