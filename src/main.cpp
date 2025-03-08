@@ -30,7 +30,7 @@ void initialize() {
 	//make sure that the imu sensor is accurate before the start of a match
 	knights::logger::blue("Initialization Begin");
 
-	auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(12, 12, knights::to_rad(90)));
+	auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(12, 12, 90_deg));
 
 	lv_display();
 
@@ -191,7 +191,7 @@ void autonomous() {
 
 void opcontrol() {
 	// need to find a way to do this dynamically
-	chassis.set_position(knights::Pos(12, 12, knights::to_rad(90)));
+	chassis.set_position(knights::Pos(0, 0, knights::to_rad(0)));
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
 
 	midOdom.reset();

@@ -90,7 +90,7 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
         this->angular_pid->reset();
     }
 
-    // std::fstream write_file("/usd/pure_pursuit.txt", std::ios_base::out);
+    std::fstream write_file("/usd/pure_pursuit.txt", std::ios_base::out);
 
     // While the robot has not reached the desired point and is not at the end of the route
     while (error > end_tolerance && closest_i != route.positions.size() - 1) {
@@ -98,18 +98,6 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
         knights::Pos curr_position = this->chassis->curr_position;
         if (!forwards || lookahead_distance < 0) {
             curr_position.heading = knights::normalize_angle(curr_position.heading + M_PI);
-        }
-
-        // lookahead and speed scaling
-        max_curr_speed= 127.0;
-        if (target_point != route.positions[0] && (closest_i != 0 && closest_i != route.positions.size()-1)) { // make sure we have valid closest_i variables, it won't be right if the robot is at the start of the route
-            curr_lookahead = clampf(
-                lookahead_distance * 
-            (1.5/curvature(route.positions[closest_i-1], route.positions[closest_i], route.positions[closest_i+1])), // tuned formula dependent on curvature
-            lookahead_distance*0.5, lookahead_distance*1.5); // limit lookahead from going too high or too low
-
-            // also change target speed with this
-            max_curr_speed = 12.0/curvature(route.positions[closest_i-1], route.positions[closest_i], route.positions[closest_i+1]);
         }
 
         // update error values
@@ -125,36 +113,51 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
             }
         }
 
+        int target_i = closest_i;
+
         // find lookahead point
-        for (int i = closest_i; i < route.positions.size(); i++) {
-            if (i == route.positions.size() - 1) {
+        for (; target_i < route.positions.size(); target_i++) {
+            if (target_i == route.positions.size() - 1) {
                 knights::Pos extended(
                     route.positions.back().x + lookahead_distance * 1.5 * cos(route.positions.back().heading),
                     route.positions.back().y + lookahead_distance * 1.5 * sin(route.positions.back().heading),
                     route.positions.back().heading
                 );
 
-                float t = circle_intersection(extended, route.positions[i], curr_position, curr_lookahead);
+                float t = circle_intersection(extended, route.positions[target_i], curr_position, curr_lookahead);
 
                 if (t != -1) {
-                    target_point = lerp(route.positions[i], extended, t);
+                    target_point = lerp(route.positions[target_i], extended, t);
                 }
             }
             else {
-                float t = circle_intersection(route.positions[i+1], route.positions[i], curr_position, curr_lookahead);
+                float t = circle_intersection(route.positions[target_i+1], route.positions[target_i], curr_position, curr_lookahead);
 
                 if (t != -1) {
-                    target_point = lerp(route.positions[i], route.positions[i+1], t);
+                    target_point = lerp(route.positions[target_i], route.positions[target_i+1], t);
                 }
             }
         }
 
         const float &effective_lookahead = distance_btwn(curr_position, target_point);
 
+        // lookahead and speed scaling
+        max_curr_speed= 127.0;
+        if (target_point != route.positions[0] && (closest_i != 0 && closest_i != route.positions.size()-1)) { // make sure we have valid target_i variables, it won't be right if the robot is at the start of the route
+            curr_lookahead = clampf(
+                lookahead_distance * 
+            (0.15/curvature(route.positions[closest_i-1], route.positions[closest_i], route.positions[closest_i+1])), // tuned formula dependent on curvature
+            lookahead_distance, lookahead_distance*1.5); // limit lookahead from going too high or too low
+
+            // also change target speed with this
+            max_curr_speed = 7.0/curvature(route.positions[closest_i-1], route.positions[closest_i], route.positions[closest_i+1]);
+        }
+        
         // determine the speed and angular curvature to use for calculating ratio of motor velocities
-        const float &target_speed = std::fmin(
+        float pid_speed = this->lateral_pid->update(error);
+        float target_speed = std::fmin(
             knights::clampf(
-                this->lateral_pid->update(error),
+                pid_speed,
                 this->lateral_pid->get_min_speed(), max_curr_speed
             ), max_speed
         );
@@ -167,7 +170,9 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
 
         float angular_velocity = 0;
         // curve to update angular velocity
-        if (this->angular_pid != nullptr && closest_i != 0 && use_pid) {
+        if (this->angular_pid != nullptr && closest_i != 0 && use_pid && 
+            distance_btwn(curr_position, route.positions[closest_i]) < end_tolerance) // only use if closely following the path
+        {
             angular_velocity = this->angular_pid->update(angular_error(curr_position.heading, route.positions[closest_i].heading, 0), true);
         }
 
@@ -176,10 +181,10 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
         float l_speed = target_speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2 - angular_velocity;
 
         // calculate if one is over max alloted speed (might need to be 127.0 - max speed in pros)
-        float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / max_speed; 
-        if (max_curr_speed > 1) {
-            r_speed /= max_curr_speed;
-            l_speed /= max_curr_speed;
+        float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / max_speed; 
+        if (ratio_curr_speed > 1) {
+            r_speed /= ratio_curr_speed;
+            l_speed /= ratio_curr_speed;
         }
 
         // apply calculated velocities to motors
@@ -188,13 +193,11 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
         else
             this->chassis->drivetrain->voltage_command(-l_speed, -r_speed);
 
-        // // log for debugging
-        // write_file << logger::string_format("target: %lf %lf , curr: %lf %lf %lf , target speed: %lf , used angular: %lf , side speed: %lf %lf , error: %lf  fwd: %d closest_i: %lf %lf %lf , end pt: %lf %lf %d, real angular_curve: %lf, timeout: %lf, curr lhd: %lf, calculated lhd: %lf, angular vel: %lf, angular max: %lf", 
-        //     target_point.x, target_point.y, this->chassis->curr_position.x, this->chassis->curr_position.y, this->chassis->curr_position.heading,
-        //     target_speed, angular_curve, r_speed, l_speed, error, forwards, route.positions[closest_i].x, route.positions[closest_i].y, route.positions[closest_i].heading, 
-        //     route.positions.back().x, route.positions.back().y, route.positions.size(), angular_curve/(effective_lookahead/lookahead_distance * 0.1), 
-        //     timeout, lookahead_distance, distance_btwn(this->chassis->curr_position, target_point), angular_velocity, angular_pid->get_max_speed()
-        // ) << "\n";
+        // log for debugging
+        write_file << logger::string_format("target: %lf %lf %lf, curr: %lf %lf %lf , target speed(curve/pid): %lf %lf, angular speed: %lf side speeds(r/l): %lf %lf curr lookahead: %lf , error: %lf\n",
+            target_point.x, target_point.y, route.positions[closest_i].heading, curr_position.x, curr_position.y, curr_position.heading, max_curr_speed, pid_speed, angular_velocity, r_speed, l_speed, curr_lookahead, error
+            
+        ) << "\n";
         
         // run all actions between previous closest point and current
         if (prev_closest_i != closest_i) {

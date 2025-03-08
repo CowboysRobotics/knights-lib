@@ -36,7 +36,7 @@
 #define TURN_kI_180 0.0
 #define TURN_kD_180 700
 
-STATIC_FILE(testpp1_txt)
+STATIC_FILE(testpp3_txt)
 
 void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
     knights::RamseteConstants ramsete_constants;
@@ -47,12 +47,12 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
 	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
 	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
-	knights::PIDController angularPID(50, 0, 10, -60.0, 60.0);
+	knights::PIDController angularPID(50, 0, 10, -25.0, 25.0);
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 
-	knights::ProfileGenerator generator(drivetrain, 100);
-	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-12, 36, 180_deg), 80, true);
+	knights::ProfileGenerator generator(drivetrain, 50);
+	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-12, 36, 0_deg), 90, true);
 
 	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 
@@ -76,12 +76,14 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	write_file.close();
 
-	// knights::Route test_route = knights::init_route_from_asset(testpp1_txt);
+	// knights::Route test_route = knights::init_route_from_asset(testpp3_txt);
 
 	// robotControl.follow_route_pursuit(
-	// 	test_route, 12.0, 110.0, true, 4.0, 6000, true);
+	// 	test_route, 20.0, 90.0, true, 6.0, 4000, true);
 
 	robotControl.follow_profile_ramsete(profile);
+
+	// robotControl.turn_to_angle(90);
 
 	
 }
