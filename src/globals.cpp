@@ -43,7 +43,7 @@ pros::Rotation back_odom(14);
 pros::IMU imu(15);
 knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
 knights::PositionTracker backOdom(&back_odom, 2.75, 1, -2.8, -1);
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 13, 450.0, 3.25, 0.75);
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 17, 450.0, 3.25, 0.75);
 
 // #### END
 

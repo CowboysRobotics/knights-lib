@@ -223,10 +223,10 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
   
   return [t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
 
-forward = False
+forward = True
 
-curr = [0, 0, np.radians(90)]
-target = [-24, -24, np.radians(90)]
+curr = [12, 12, np.radians(90)]
+target = [-12, 36, np.radians(180)]
 
 if forward == False:
   # curr[2] = np.radians(360) - curr[2]
@@ -267,8 +267,6 @@ t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr = generate_motion_pr
 
 figure, axis = plt.subplots(3, 2)
 
-# plt.subplots_adjust(vspace=2)
-
 axis[0][1].plot(t, vel_arr)
 axis[0][1].set_title("Velocity")
 
@@ -283,11 +281,13 @@ axis[1][1].set_title("Omega")
 
 left_vels, right_vels = zip(*side_vel_arr)
 
-axis[2][0].plot(t, left_vels)
-axis[2][0].set_title("Left Velocities")
+# axis[2][0].plot(t, left_vels)
+# axis[2][0].set_title("Left Velocities")
 
-axis[2][1].plot(t, right_vels)
-axis[2][1].set_title("Right Velocities")
+axis[2][1].plot(t, right_vels, label = "right")
+axis[2][1].plot(t, left_vels, label = "left")
+# axis[2][1].set_title("Right Velocities")
 
+plt.legend()
 plt.show()
 

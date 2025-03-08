@@ -13,8 +13,8 @@ knights::QuinticPath::QuinticPath(knights::Pos curr, knights::Pos target, knight
     curr(curr), target(target), curr_tangent(curr_tangent), target_tangent(target_tangent), 
     curr_acceleration(curr_acceleration), target_acceleration(target_acceleration) {};
 
-knights::MotionProfile::MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity) :
-    timestamps(timestamps), path(path), max_accel(max_accel), max_velocity(max_velocity) {}
+knights::MotionProfile::MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity, float desired_voltage) :
+    timestamps(timestamps), path(path), max_accel(max_accel), max_velocity(max_velocity), desired_voltage(desired_voltage) {}
 
 knights::ProfileTimestamp::ProfileTimestamp(knights::Pos position, float linear_velocity, float angular_velocity, float curr_distance, 
     float time, float right_speed, float left_speed) : position(position), linear_velocity(linear_velocity), angular_velocity(angular_velocity),
@@ -190,7 +190,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
         timestamps.emplace_back(pt, curr_velocity, omega, curr_dist, elapsed_time, right_speed, left_speed);
     }
 
-    return MotionProfile(timestamps, path, this->max_acceleration, path_max_velocity);
+    return MotionProfile(timestamps, path, this->max_acceleration, path_max_velocity, desired_voltage);
 }
 
 knights::ProfileTimestamp knights::lerp(const knights::ProfileTimestamp &t1, const knights::ProfileTimestamp &t2, float t) {

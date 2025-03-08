@@ -36,12 +36,14 @@
 #define TURN_kI_180 0.0
 #define TURN_kD_180 700
 
+#define PROS_MAX_VOLTAGE 127
+
 STATIC_FILE(testpp3_txt)
 
 void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
-    knights::RamseteConstants ramsete_constants;
+    knights::RamseteConstants ramsete_constants(0.7, 2.0);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 110.0);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
 	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
 	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
@@ -51,27 +53,19 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 
-	knights::ProfileGenerator generator(drivetrain, 50);
-	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-12, 36, 0_deg), 90, true);
+	knights::ProfileGenerator generator(drivetrain, 100);
+	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-12, 36, 180_deg), 100, true);
 
 	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 
 	for (knights::ProfileTimestamp timestamp : profile.timestamps) {
 		write_file << "time: " << timestamp.time << " ";
 		write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
-		write_file << "lin vel: " << timestamp.linear_velocity << " ";
-		write_file << "angular vel: " << timestamp.angular_velocity << " ";
+		write_file << "lin vel: " << (timestamp.linear_velocity/drivetrain.max_velocity())*PROS_MAX_VOLTAGE << " ";
+		write_file << "angular vel: " << timestamp.angular_velocity * 17/2 << " ";
 		write_file << "dist: " << timestamp.curr_distance << " ";
-		write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+		write_file << "side vels (r,l): " << (timestamp.right_speed/drivetrain.max_velocity())*PROS_MAX_VOLTAGE << " " << (timestamp.left_speed/drivetrain.max_velocity())*PROS_MAX_VOLTAGE << " ";
 		write_file << "end timestamp\n";
-
-		std::cout << "time: " << timestamp.time << " ";
-		std::cout << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
-		std::cout << "lin vel: " << timestamp.linear_velocity << " ";
-		std::cout << "angular vel: " << timestamp.angular_velocity << " ";
-		std::cout << "dist: " << timestamp.curr_distance << " ";
-		std::cout << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
-		std::cout << "end timestamp\n";
 	}
 
 	write_file.close();
