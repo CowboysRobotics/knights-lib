@@ -74,7 +74,7 @@ namespace knights {
 
             ProfileGenerator(float max_velocity, float track_width, float max_acceleration);
 
-            MotionProfile generate(knights::Pos start, knights::Pos end, float desired_voltage, bool forwards = true, float curr_accel = 0, float target_accel = 0);
+            MotionProfile generate(knights::Pos start, knights::Pos end, float desired_voltage, int points_per_sec = 30, bool forwards = true, float curr_accel = 0, float target_accel = 0);
     };
 
     ProfileTimestamp lerp(const ProfileTimestamp &t1, const ProfileTimestamp &t2, float t);

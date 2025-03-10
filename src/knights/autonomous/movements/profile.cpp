@@ -94,7 +94,7 @@ knights::Pos knights::QuinticPath::second_derivatives(float t) {
     return Pos(dx2, dy2, 0);
 }
 
-knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, knights::Pos end, float desired_voltage, bool forwards, float curr_accel, float target_accel) {
+knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, knights::Pos end, float desired_voltage, int points_per_sec, bool forwards, float curr_accel, float target_accel) {
 
     if (!forwards) {
         start.heading = knights::normalize_angle(start.heading + M_PI);
@@ -141,7 +141,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
     float deceleration_distance = 0.5 * this->max_acceleration * deceleration_time * deceleration_time;
     float cruise_distance = path_max_velocity * cruise_time;
 
-    std::vector<float> t = knights::linspace(0, total_time, 300);
+    std::vector<float> t = knights::linspace(0, total_time, points_per_sec * total_time);
 
     std::vector<ProfileTimestamp> timestamps;
     float x = 0, y = 0;

@@ -21,6 +21,8 @@
 #define PROS_MAX_VOLTAGE 127
 #define MOTOR_VOLTS 11.0f
 
+#define SCALE_OMEGA 2.5
+
 
 float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights::Pos curr, float lookahead_distance) {
     knights::Pos dir = nxt - prev;
@@ -433,7 +435,7 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float output_lin_vel = (knights::to_inches(curr_lin_vel) / this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE;
 
         // converting this does not need to be done, but helps with keeping angular high enough
-        float output_ang_vel = ((curr_ang_vel * this->chassis->drivetrain->track_width / 2) / this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE;
+        float output_ang_vel = ((curr_ang_vel * this->chassis->drivetrain->track_width / 2) / this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE * SCALE_OMEGA;
         
         // write_file << knights::logger::string_format(
         //     "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n MV: %lf curr stamp time %lf pos: %lf %lf %lf time pos: %lf %lf %lf\n",

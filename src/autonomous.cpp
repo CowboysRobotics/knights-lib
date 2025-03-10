@@ -53,10 +53,14 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 
-	knights::ProfileGenerator generator(drivetrain, 100);
-	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-12, 36, 180_deg), 100, true);
-
 	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
+
+	write_file << "Profile Generation Start at t: " << pros::millis() << "\n";
+
+	knights::ProfileGenerator generator(drivetrain, 100);
+	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-12, 36, 180_deg), 100, 30, true);
+
+	write_file << "Profile Generation End at t: " << pros::millis() << "\n";
 
 	for (knights::ProfileTimestamp timestamp : profile.timestamps) {
 		write_file << "time: " << timestamp.time << " ";
