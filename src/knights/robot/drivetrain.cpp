@@ -14,6 +14,15 @@ void knights::Drivetrain::voltage_command(int rightMtrs, int leftMtrs) {
     this->left_mtrs->move(leftMtrs);
 }
 
+void knights::Drivetrain::velocity_command(float linear_velocity, float angular_velocity) {
+    float linear_rpm = (linear_velocity / (wheel_diameter * M_PI)) * 60.0;
+    float angular_lin_vel = (angular_velocity * track_width/2.0);
+    float angular_rpm = (angular_lin_vel / (wheel_diameter * M_PI)) * 60.0;
+
+    this->right_mtrs->move_velocity(linear_rpm + angular_rpm);
+    this->left_mtrs->move_velocity(linear_rpm - angular_rpm);
+}
+
 float knights::Drivetrain::distance_to_position(float distance) {
     return distance / ((this->gear_ratio * this->wheel_diameter * M_PI) / 360);
 };

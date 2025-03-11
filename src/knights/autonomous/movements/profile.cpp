@@ -2,7 +2,6 @@
 #include "knights/autonomous/profile.hpp"
 #include "knights/util/calculation.hpp"
 #include "knights/util/position.hpp"
-#include "knights/util/timer.hpp"
 #include <cmath>
 #include <vector>
 
@@ -11,7 +10,22 @@
 knights::QuinticPath::QuinticPath(knights::Pos curr, knights::Pos target, knights::Pos curr_tangent, knights::Pos target_tangent, 
     float curr_acceleration, float target_acceleration) : 
     curr(curr), target(target), curr_tangent(curr_tangent), target_tangent(target_tangent), 
-    curr_acceleration(curr_acceleration), target_acceleration(target_acceleration) {};
+    curr_acceleration(curr_acceleration), target_acceleration(target_acceleration) 
+{
+    this->p00 = this->curr.x;
+    this->p01 = this->p00 + this->curr_tangent.x / 5;
+    this->p02 = this->curr_acceleration / 20 + 2 * this->p01 - this->p00;
+    this->p05 = this->target.x;
+    this->p04 = this->p05 - this->target_tangent.x / 5;
+    this->p03 = this->target_acceleration / 20 + 2 * this->p04 - this->p05;
+
+    this->p10 = this->curr.y;
+    this->p11 = this->p10 + this->curr_tangent.y / 5;
+    this->p12 = this->curr_acceleration / 20 + 2 * this->p11 - this->p10;
+    this->p15 = this->target.y;
+    this->p14 = this->p15 - this->target_tangent.y / 5;
+    this->p13 = this->target_acceleration / 20 + 2 * this->p14 - this->p15;
+};
 
 knights::MotionProfile::MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity, float desired_voltage) :
     timestamps(timestamps), path(path), max_accel(max_accel), max_velocity(max_velocity), desired_voltage(desired_voltage) {}
@@ -26,28 +40,28 @@ knights::ProfileGenerator::ProfileGenerator(knights::Drivetrain drivetrain, floa
 knights::ProfileGenerator::ProfileGenerator(float max_velocity, float track_width, float max_acceleration) :
     max_velocity(max_velocity), max_acceleration(max_acceleration), track_width(track_width) {}
 
-float knights::QuinticPath::p00() { return this->curr.x; }
-float knights::QuinticPath::p01() { return this->p00() + this->curr_tangent.x / 5; }
-float knights::QuinticPath::p02() { return this->curr_acceleration / 20 + 2 * this->p01() - this->p00(); }
-float knights::QuinticPath::p03() { return this->target_acceleration / 20 + 2 * this->p04() - this->p05(); }
-float knights::QuinticPath::p04() { return this->p05() - this->target_tangent.x / 5; }
-float knights::QuinticPath::p05() { return this->target.x; }
+// constexpr float knights::QuinticPath::p00() { return this->curr.x; }
+// constexpr float knights::QuinticPath::p01() { return this->p00() + this->curr_tangent.x / 5; }
+// constexpr float knights::QuinticPath::p02() { return this->curr_acceleration / 20 + 2 * this->p01() - this->p00(); }
+// constexpr float knights::QuinticPath::p03() { return this->target_acceleration / 20 + 2 * this->p04() - this->p05(); }
+// constexpr float knights::QuinticPath::p04() { return this->p05() - this->target_tangent.x / 5; }
+// constexpr float knights::QuinticPath::p05() { return this->target.x; }
 
-float knights::QuinticPath::p10() { return this->curr.y; }
-float knights::QuinticPath::p11() { return this->p10() + this->curr_tangent.y / 5; }
-float knights::QuinticPath::p12() { return this->curr_acceleration / 20 + 2 * this->p11() - this->p10(); }
-float knights::QuinticPath::p13() { return this->target_acceleration / 20 + 2 * this->p14() - this->p15(); }
-float knights::QuinticPath::p14() { return this->p15() - this->target_tangent.y / 5; }
-float knights::QuinticPath::p15() { return this->target.y; }
+// constexpr float knights::QuinticPath::p10() { return this->curr.y; }
+// constexpr float knights::QuinticPath::p11() { return this->p10() + this->curr_tangent.y / 5; }
+// constexpr float knights::QuinticPath::p12() { return this->curr_acceleration / 20 + 2 * this->p11() - this->p10(); }
+// constexpr float knights::QuinticPath::p13() { return this->target_acceleration / 20 + 2 * this->p14() - this->p15(); }
+// constexpr float knights::QuinticPath::p14() { return this->p15() - this->target_tangent.y / 5; }
+// constexpr float knights::QuinticPath::p15() { return this->target.y; }
 
 knights::Pos knights::QuinticPath::position(float t) {
-    float x = p00() * pow((1 - t), 5) + p01() * 5 * pow((1 - t), 4) * t +
-               p02() * 10 * pow((1 - t), 3) * pow(t, 2) + p03() * 10 * pow((1 - t), 2) * pow(t, 3) +
-               p04() * 5 * (1 - t) * pow(t, 4) + p05() * pow(t, 5);
+    float x = p00 * pow((1 - t), 5) + p01 * 5 * pow((1 - t), 4) * t +
+               p02 * 10 * pow((1 - t), 3) * pow(t, 2) + p03 * 10 * pow((1 - t), 2) * pow(t, 3) +
+               p04 * 5 * (1 - t) * pow(t, 4) + p05 * pow(t, 5);
 
-    float y = p10() * pow((1 - t), 5) + p11() * 5 * pow((1 - t), 4) * t +
-               p12() * 10 * pow((1 - t), 3) * pow(t, 2) + p13() * 10 * pow((1 - t), 2) * pow(t, 3) +
-               p14() * 5 * (1 - t) * pow(t, 4) + p15() * pow(t, 5);
+    float y = p10 * pow((1 - t), 5) + p11 * 5 * pow((1 - t), 4) * t +
+               p12 * 10 * pow((1 - t), 3) * pow(t, 2) + p13 * 10 * pow((1 - t), 2) * pow(t, 3) +
+               p14 * 5 * (1 - t) * pow(t, 4) + p15 * pow(t, 5);
     
     Pos deriv = this->derivatives(t);
 
@@ -65,31 +79,31 @@ knights::Pos knights::QuinticPath::position(float t) {
 }
 
 knights::Pos knights::QuinticPath::derivatives(float t) {
-    float dx = p01() * 5 * pow((1 - t), 4) - p00() * 5 * pow((1 - t), 4) +
-                p02() * 20 * pow((1 - t), 3) * t - p01() * 20 * pow((1 - t), 3) * t +
-                p03() * 30 * pow((1 - t), 2) * pow(t, 2) - p02() * 30 * pow((1 - t), 2) * pow(t, 2) +
-                p04() * 20 * (1 - t) * pow(t, 3) - p03() * 20 * (1 - t) * pow(t, 3) +
-                p05() * 5 * pow(t, 4) - p04() * 5 * pow(t, 4);
+    float dx = p01 * 5 * pow((1 - t), 4) - p00 * 5 * pow((1 - t), 4) +
+                p02 * 20 * pow((1 - t), 3) * t - p01 * 20 * pow((1 - t), 3) * t +
+                p03 * 30 * pow((1 - t), 2) * pow(t, 2) - p02 * 30 * pow((1 - t), 2) * pow(t, 2) +
+                p04 * 20 * (1 - t) * pow(t, 3) - p03 * 20 * (1 - t) * pow(t, 3) +
+                p05 * 5 * pow(t, 4) - p04 * 5 * pow(t, 4);
 
-    float dy = p11() * 5 * pow((1 - t), 4) - p10() * 5 * pow((1 - t), 4) +
-                p12() * 20 * pow((1 - t), 3) * t - p11() * 20 * pow((1 - t), 3) * t +
-                p13() * 30 * pow((1 - t), 2) * pow(t, 2) - p12() * 30 * pow((1 - t), 2) * pow(t, 2) +
-                p14() * 20 * (1 - t) * pow(t, 3) - p13() * 20 * (1 - t) * pow(t, 3) +
-                p15() * 5 * pow(t, 4) - p14() * 5 * pow(t, 4);
+    float dy = p11 * 5 * pow((1 - t), 4) - p10 * 5 * pow((1 - t), 4) +
+                p12 * 20 * pow((1 - t), 3) * t - p11 * 20 * pow((1 - t), 3) * t +
+                p13 * 30 * pow((1 - t), 2) * pow(t, 2) - p12 * 30 * pow((1 - t), 2) * pow(t, 2) +
+                p14 * 20 * (1 - t) * pow(t, 3) - p13 * 20 * (1 - t) * pow(t, 3) +
+                p15 * 5 * pow(t, 4) - p14 * 5 * pow(t, 4);
 
     return Pos(dx, dy, 0);
 }
 
 knights::Pos knights::QuinticPath::second_derivatives(float t) {
-    float dx2 = 20 * (p02() - 2 * p01() + p00()) * pow((1 - t), 3) +
-                 60 * (p03() - 2 * p02() + p01()) * pow((1 - t), 2) * t +
-                 60 * (p04() - 2 * p03() + p02()) * (1 - t) * pow(t, 2) +
-                 20 * (p05() - 2 * p04() + p03()) * pow(t, 3);
+    float dx2 = 20 * (p02 - 2 * p01 + p00) * pow((1 - t), 3) +
+                 60 * (p03 - 2 * p02 + p01) * pow((1 - t), 2) * t +
+                 60 * (p04 - 2 * p03 + p02) * (1 - t) * pow(t, 2) +
+                 20 * (p05 - 2 * p04 + p03) * pow(t, 3);
 
-    float dy2 = 20 * (p12() - 2 * p11() + p10()) * pow((1 - t), 3) +
-                 60 * (p13() - 2 * p12() + p11()) * pow((1 - t), 2) * t +
-                 60 * (p14() - 2 * p13() + p12()) * (1 - t) * pow(t, 2) +
-                 20 * (p15() - 2 * p14() + p13()) * pow(t, 3);
+    float dy2 = 20 * (p12 - 2 * p11 + p10) * pow((1 - t), 3) +
+                 60 * (p13 - 2 * p12 + p11) * pow((1 - t), 2) * t +
+                 60 * (p14 - 2 * p13 + p12) * (1 - t) * pow(t, 2) +
+                 20 * (p15 - 2 * p14 + p13) * pow(t, 3);
 
     return Pos(dx2, dy2, 0);
 }
@@ -109,10 +123,8 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     Pos curr;
     float total_dist = 0;
-    for (float val : knights::linspace(0, 1, 100)) {
+    for (float val : knights::linspace(0, 1, points_per_sec)) {
         Pos p = path.position(val);
-        Pos deriv = path.derivatives(val);
-        Pos deriv2 = path.second_derivatives(val);
         total_dist += distance_btwn(curr, p);
         curr = p;
     }

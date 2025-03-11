@@ -33,12 +33,20 @@ namespace knights {
             Drivetrain(pros::MotorGroup *right_mtrs, pros::MotorGroup *left_mtrs, float track_width, float rpm, float wheel_diameter, float gear_ratio);
 
             /**
-             * @brief Update the velocity of both sides of the drivetrain
+             * @brief Update the voltage of both sides of the drivetrain
              * 
-             * @param rightMtrs velocity for the right motors
-             * @param leftMtrs velocity for the left motors
+             * @param rightMtrs voltage for the right motors
+             * @param leftMtrs voltage for the left motors
              */
             void voltage_command(int rightMtrs, int leftMtrs);
+
+            /**
+             * @brief Update the velocity of the drivetrain
+             * 
+             * @param linear_velocity Linear movement velocity (in/s)
+             * @param angular_velocity Angular velocity (rad/s)
+             */
+            void velocity_command(float linear_velocity, float angular_velocity);
 
             /**
              * @brief Conversion function from distance to motor position (in degrees)

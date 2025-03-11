@@ -21,8 +21,7 @@
 #define PROS_MAX_VOLTAGE 127
 #define MOTOR_VOLTS 11.0f
 
-#define SCALE_OMEGA 2.5
-
+#define SCALE_OMEGA 2
 
 float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights::Pos curr, float lookahead_distance) {
     knights::Pos dir = nxt - prev;
@@ -410,10 +409,6 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float error_y = knights::to_meters(selected.position.y - curr_position.y);
         float error_theta = knights::angular_error(curr_position.heading, selected.position.heading, 0, true);
 
-        if (error_theta == 0) {
-            error_theta = 1e-6;
-        }
-
         float local_error_x = cos(-curr_position.heading) * error_x - sin(-curr_position.heading) * error_y;
         float local_error_y = sin(-curr_position.heading) * error_x + cos(-curr_position.heading) * error_y;
 
@@ -427,40 +422,22 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
             this->ramsete_constants->proportional * lin_vel * lin_vel
         );
 
-        // calculate output velocities
-        float curr_lin_vel = lin_vel * cos(error_theta) + gain * local_error_x;
-        float curr_ang_vel = ang_vel + gain * error_theta + this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y / error_theta;
-
-        // convert output to something usable
-        float output_lin_vel = (knights::to_inches(curr_lin_vel) / this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE;
-
-        // converting this does not need to be done, but helps with keeping angular high enough
-        float output_ang_vel = ((curr_ang_vel * this->chassis->drivetrain->track_width / 2) / this->chassis->drivetrain->max_velocity()) * PROS_MAX_VOLTAGE * SCALE_OMEGA;
-        
-        // write_file << knights::logger::string_format(
-        //     "closest %d global errors %lf %lf %lf , local error %lf %lf , lin/ang vel %lf %lf gain %lf curr lin/ang %lf %lf output lin/ang %lf %lf time %lf \n MV: %lf curr stamp time %lf pos: %lf %lf %lf time pos: %lf %lf %lf\n",
-        //     curr_i, error_x, error_y, error_theta, local_error_x, local_error_y, lin_vel, ang_vel, gain, curr_lin_vel, curr_ang_vel, output_lin_vel, output_ang_vel, elapsed_time, 
-        //     this->chassis->drivetrain->max_velocity(), selected.time, curr_position.x, curr_position.y, curr_position.heading, selected.position.x, selected.position.y, selected.position.heading
-        // );
-
-        // get direction
-        int dir = forwards ? 1 : -1;
-
-        float r_speed = output_lin_vel + output_ang_vel;
-        float l_speed = output_lin_vel - output_ang_vel;
-
-        float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / profile.desired_voltage; 
-        if (ratio_curr_speed > 1) {
-            r_speed /= ratio_curr_speed;
-            l_speed /= ratio_curr_speed;
+        // prevent divide by 0
+        if (error_theta < 1e-6) {
+            error_theta += 1e-4;
         }
 
-        // send command to motors
-        this->chassis->drivetrain->voltage_command(dir * (output_lin_vel + output_ang_vel), dir * (output_lin_vel - output_ang_vel));
+        // calculate output velocities
+        float curr_lin_vel = lin_vel * cos(error_theta) + gain * local_error_x; // still in m/s
+        float curr_ang_vel = ang_vel + gain * error_theta + this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y / error_theta;
+
+        float linear_rpm = (to_inches(curr_lin_vel) / (chassis->drivetrain->wheel_diameter * M_PI)) * 60.0;
+        float angular_rpm = (curr_ang_vel / (2*M_PI)) * 60.0;
+        this->chassis->drivetrain->velocity_command(to_inches(curr_lin_vel), curr_ang_vel);
 
         write_file << knights::logger::string_format(
             "right/left vel %lf %lf final l/a vel %lf %lf curr l/a vel %lf %lf gain %lf curr pos %lf %lf %lf des pos %lf %lf %lf global error %lf %lf %lf local error %lf %lf \n\n",
-            r_speed, l_speed, output_lin_vel, output_ang_vel, lin_vel, ang_vel, gain, curr_position.x, curr_position.y, curr_position.heading,
+            linear_rpm + angular_rpm, linear_rpm - angular_rpm, linear_rpm, angular_rpm, lin_vel, ang_vel, gain, curr_position.x, curr_position.y, curr_position.heading,
             selected.position.x, selected.position.y, selected.position.heading, error_x, error_y, error_theta, local_error_x, local_error_y
         );
 

@@ -17,19 +17,19 @@ namespace knights {
             knights::Pos curr_tangent, knights::Pos target_tangent,
             float curr_acceleration, float target_acceleration);
 
-        float p00();
-        float p01();
-        float p02();
-        float p03();
-        float p04();
-        float p05();
+        float p00;
+        float p01;
+        float p02;
+        float p03;
+        float p04;
+        float p05;
 
-        float p10();
-        float p11();
-        float p12();
-        float p13();
-        float p14();
-        float p15();
+        float p10;
+        float p11;
+        float p12;
+        float p13;
+        float p14;
+        float p15;
 
         knights::Pos position(float t);
 
