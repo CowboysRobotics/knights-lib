@@ -381,7 +381,7 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
     this->chassis->drivetrain->left_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 
     float start_time = pros::millis();
-    int curr_i = 0;
+    int curr_i = 1;
 
     std::fstream write_file("/usd/ramsete_output.txt", std::ios_base::out);
 
