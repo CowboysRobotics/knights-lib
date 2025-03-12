@@ -431,13 +431,26 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float curr_lin_vel = lin_vel * cos(error_theta) + gain * local_error_x; // still in m/s
         float curr_ang_vel = ang_vel + gain * error_theta + this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y / error_theta;
 
-        float linear_rpm = (to_inches(curr_lin_vel) / (chassis->drivetrain->wheel_diameter * M_PI)) * 60.0;
-        float angular_rpm = (curr_ang_vel / (2*M_PI)) * 60.0;
+        // Send to drivetrain
         this->chassis->drivetrain->velocity_command(to_inches(curr_lin_vel), curr_ang_vel);
+
+        // debugging velocities
+        float linear_rpm = (to_inches(curr_lin_vel) / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
+        float angular_lin_vel = (curr_ang_vel * chassis->drivetrain->track_width/2.0);
+        float angular_rpm = (angular_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
+
+        float r_speed = linear_rpm + angular_rpm;
+        float l_speed = linear_rpm - angular_rpm;
+    
+        float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / (chassis->drivetrain->rpm / chassis->drivetrain->gear_ratio); 
+        if (ratio_curr_speed > 1) {
+            r_speed /= ratio_curr_speed;
+            l_speed /= ratio_curr_speed;
+        }
 
         write_file << knights::logger::string_format(
             "right/left vel %lf %lf final l/a vel %lf %lf curr l/a vel %lf %lf gain %lf curr pos %lf %lf %lf des pos %lf %lf %lf global error %lf %lf %lf local error %lf %lf \n\n",
-            linear_rpm + angular_rpm, linear_rpm - angular_rpm, linear_rpm, angular_rpm, lin_vel, ang_vel, gain, curr_position.x, curr_position.y, curr_position.heading,
+            r_speed, l_speed, linear_rpm, angular_rpm, lin_vel, ang_vel, gain, curr_position.x, curr_position.y, curr_position.heading,
             selected.position.x, selected.position.y, selected.position.heading, error_x, error_y, error_theta, local_error_x, local_error_y
         );
 
@@ -445,7 +458,6 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
     }
 
     write_file.close();
-
 
     // stop motors after route over
     this->chassis->drivetrain->voltage_command(0, 0);

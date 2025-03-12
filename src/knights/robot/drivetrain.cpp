@@ -15,12 +15,21 @@ void knights::Drivetrain::voltage_command(int rightMtrs, int leftMtrs) {
 }
 
 void knights::Drivetrain::velocity_command(float linear_velocity, float angular_velocity) {
-    float linear_rpm = (linear_velocity / (wheel_diameter * M_PI)) * 60.0;
+    float linear_rpm = (linear_velocity / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0;
     float angular_lin_vel = (angular_velocity * track_width/2.0);
-    float angular_rpm = (angular_lin_vel / (wheel_diameter * M_PI)) * 60.0;
+    float angular_rpm = (angular_lin_vel / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0;
 
-    this->right_mtrs->move_velocity(linear_rpm + angular_rpm);
-    this->left_mtrs->move_velocity(linear_rpm - angular_rpm);
+    float r_speed = linear_rpm + angular_rpm;
+    float l_speed = linear_rpm - angular_rpm;
+
+    float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / (this->rpm / this->gear_ratio); 
+    if (ratio_curr_speed > 1) {
+        r_speed /= ratio_curr_speed;
+        l_speed /= ratio_curr_speed;
+    }
+
+    this->right_mtrs->move_velocity(r_speed);
+    this->left_mtrs->move_velocity(l_speed);
 }
 
 float knights::Drivetrain::distance_to_position(float distance) {

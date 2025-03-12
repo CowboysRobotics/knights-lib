@@ -62,20 +62,8 @@ knights::Pos knights::QuinticPath::position(float t) {
     float y = p10 * pow((1 - t), 5) + p11 * 5 * pow((1 - t), 4) * t +
                p12 * 10 * pow((1 - t), 3) * pow(t, 2) + p13 * 10 * pow((1 - t), 2) * pow(t, 3) +
                p14 * 5 * (1 - t) * pow(t, 4) + p15 * pow(t, 5);
-    
-    Pos deriv = this->derivatives(t);
 
-    // prevent nan
-    if (deriv.y == 0) {
-        deriv.y = 1e-4;
-    }
-    if (deriv.x == 0) {
-        deriv.x = 1e-4;
-    }
-    
-    float theta = atan2(deriv.y, deriv.x);
-
-    return Pos(x, y, theta);
+    return Pos(x, y, 0);
 }
 
 knights::Pos knights::QuinticPath::derivatives(float t) {
@@ -123,7 +111,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     Pos curr;
     float total_dist = 0;
-    for (float val : knights::linspace(0, 1, points_per_sec)) {
+    for (float val = 0; val <= 1; val += 1.0/points_per_sec) {
         Pos p = path.position(val);
         total_dist += distance_btwn(curr, p);
         curr = p;
@@ -153,12 +141,12 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
     float deceleration_distance = 0.5 * this->max_acceleration * deceleration_time * deceleration_time;
     float cruise_distance = path_max_velocity * cruise_time;
 
-    std::vector<float> t = knights::linspace(0, total_time, points_per_sec * total_time);
+    // std::vector<float> t = knights::linspace(0, total_time, points_per_sec * total_time);
 
     std::vector<ProfileTimestamp> timestamps;
     float x = 0, y = 0;
 
-    for (float elapsed_time : t) {
+    for (double elapsed_time = 0; elapsed_time <= total_time; elapsed_time += 1.0/points_per_sec) {
         float curr_dist = 0;
         float curr_velocity = 0;
 
@@ -182,7 +170,10 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
         Pos deriv = path.derivatives(elapsed_time / total_time);
         Pos deriv2 = path.second_derivatives(elapsed_time / total_time);
 
-        float theta = std::atan2(deriv.y, deriv.x) / total_time;
+        float theta = std::atan2(deriv.y, deriv.x);
+
+        pt.heading = theta;
+
         float omega = ((deriv2.y * deriv.x - deriv.y * deriv2.x) / ((deriv.x * deriv.x) * (1 + (deriv.y / deriv.x) * (deriv.y / deriv.x)))) / total_time;
 
         float right_speed = curr_velocity + (omega * track_width / 2);

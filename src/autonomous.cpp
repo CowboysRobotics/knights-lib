@@ -56,20 +56,20 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 
 	write_file << "Profile Generation Start at t: " << pros::millis() << "\n";
-
+	
 	knights::ProfileGenerator generator(drivetrain, 100);
-	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-12, 60, 90_deg), 100, 30, true);
-
+	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-12, 36, 180_deg), 80, 30, true);
+	
 	write_file << "Profile Generation End at t: " << pros::millis() << "\n";
-
+	
 	for (knights::ProfileTimestamp timestamp : profile.timestamps) {
 		write_file << "time: " << timestamp.time << " ";
 		write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
-		write_file << "lin vel: " << (timestamp.linear_velocity/drivetrain.max_velocity())*PROS_MAX_VOLTAGE << " ";
-		write_file << "angular vel: " << timestamp.angular_velocity * 17/2 << " ";
+		write_file << "lin vel: " << timestamp.linear_velocity << " ";
+		write_file << "angular vel: " << timestamp.angular_velocity << " ";
 		write_file << "dist: " << timestamp.curr_distance << " ";
-		write_file << "side vels (r,l): " << (timestamp.right_speed/drivetrain.max_velocity())*PROS_MAX_VOLTAGE << " " << (timestamp.left_speed/drivetrain.max_velocity())*PROS_MAX_VOLTAGE << " ";
-		write_file << "end timestamp\n";
+		write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+		write_file << "\n";
 	}
 
 	write_file.close();
