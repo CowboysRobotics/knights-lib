@@ -409,8 +409,8 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float error_y = knights::to_meters(selected.position.y - curr_position.y);
         float error_theta = knights::angular_error(curr_position.heading, selected.position.heading, 0, true);
 
-        float local_error_x = cos(-curr_position.heading) * error_x - sin(-curr_position.heading) * error_y;
-        float local_error_y = sin(-curr_position.heading) * error_x + cos(-curr_position.heading) * error_y;
+        float local_error_x = cos(curr_position.heading) * error_x + sin(curr_position.heading) * error_y;
+        float local_error_y = -sin(curr_position.heading) * error_x + cos(curr_position.heading) * error_y;
 
         // convert velocities to meters -> ensure default constants work
         float lin_vel = knights::to_meters(selected.linear_velocity);
@@ -418,8 +418,7 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
 
         // calculate gain
         float gain = 2 * this->ramsete_constants->damping * std::sqrt(
-            ang_vel * ang_vel + 
-            this->ramsete_constants->proportional * lin_vel * lin_vel
+            ang_vel * ang_vel + this->ramsete_constants->proportional * lin_vel * lin_vel
         );
 
         // prevent divide by 0
@@ -449,9 +448,9 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         }
 
         write_file << knights::logger::string_format(
-            "right/left vel %lf %lf final l/a vel %lf %lf curr l/a vel %lf %lf gain %lf curr pos %lf %lf %lf des pos %lf %lf %lf global error %lf %lf %lf local error %lf %lf \n\n",
+            "right/left vel %lf %lf final l/a vel %lf %lf curr l/a vel %lf %lf gain %lf curr pos %lf %lf %lf des pos %lf %lf %lf global error %lf %lf %lf local error %lf %lf time %lf \n\n",
             r_speed, l_speed, linear_rpm, angular_rpm, lin_vel, ang_vel, gain, curr_position.x, curr_position.y, curr_position.heading,
-            selected.position.x, selected.position.y, selected.position.heading, error_x, error_y, error_theta, local_error_x, local_error_y
+            selected.position.x, selected.position.y, selected.position.heading, error_x, error_y, error_theta, local_error_x, local_error_y, elapsed_time
         );
 
         pros::delay(10);
