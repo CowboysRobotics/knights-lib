@@ -2,15 +2,13 @@ import re
 import matplotlib.pyplot as plt
 
 def parse_debug_log(log):
-    pattern = (r"right/left vel (?P<right_vel>[-\d.]+) (?P<left_vel>[-\d.]+) "
-               r"final l/a vel (?P<final_lat_vel>[-\d.]+) (?P<final_ang_vel>[-\d.]+) "
-               r"curr l/a vel (?P<curr_lat_vel>[-\d.]+) (?P<curr_ang_vel>[-\d.]+) "
-               r"gain (?P<gain>[-\d.]+) "
-               r"curr pos (?P<curr_pos_x>[-\d.]+) (?P<curr_pos_y>[-\d.]+) (?P<curr_pos_theta>[-\d.]+) "
-               r"des pos (?P<des_pos_x>[-\d.]+) (?P<des_pos_y>[-\d.]+) (?P<des_pos_theta>[-\d.]+) "
-               r"global error (?P<global_err_x>[-\d.]+) (?P<global_err_y>[-\d.]+) (?P<global_err_theta>[-\d.]+) "
-               r"local error (?P<local_err_x>[-\d.]+) (?P<local_err_y>[-\d.]+) "
-               r"time (?P<time>[-\d.]+)")
+    pattern = (r"time:\s*(?P<time>[-\d.]+)\s*"
+               r"pos:\s*(?P<pos_x>[-\d.]+)\s+(?P<pos_y>[-\d.]+)\s+(?P<pos_theta>[-\d.]+)\s*"
+               r"lin vel:\s*(?P<linear_velocity>[-\d.]+)\s*"
+               r"angular vel:\s*(?P<angular_velocity>[-\d.]+)\s*"
+               r"dist:\s*(?P<distance_travelled>[-\d.]+)\s*"
+               r"side vels \(r,l\):\s*(?P<right_vel>[-\d.]+)\s+(?P<left_vel>[-\d.]+)"
+               )
     
     match = re.match(pattern, log)
     if match:
@@ -24,16 +22,13 @@ def read_log_file(filename):
         logs = file.readlines()
     
     parsed_data = {
-        "right_vel": [], "left_vel": [], "final_lat_vel": [], "final_ang_vel": [],
-        "curr_lat_vel": [], "curr_ang_vel": [], "gain": [], "curr_pos_x": [],
-        "curr_pos_y": [], "curr_pos_theta": [], "des_pos_x": [], "des_pos_y": [],
-        "des_pos_theta": [], "global_err_x": [], "global_err_y": [], "global_err_theta": [],
-        "local_err_x": [], "local_err_y": [], "time": []
+        "time": [], "pos_x": [], "pos_y": [], "pos_theta": [],
+        "linear_velocity": [], "angular_velocity": [], "distance_travelled": [], "right_vel": [],
+        "left_vel": []
     }
 
     for log in logs:
         parsed_log = parse_debug_log(log.strip())
-        # cant parse past 1.066 secnds
         if parsed_log:
             for key in parsed_log:
                 parsed_data[key].append(parsed_log[key])
@@ -41,23 +36,22 @@ def read_log_file(filename):
     return parsed_data
 
 # Example usage
-filename = "a:/Desktop - 2TB Storage/code/robotics/knights-lib/knights-lib/tests/mp/ramsete_output.txt"
+filename = "motion_output.txt"
 decoded_values = read_log_file(filename)
-# print(decoded_values)
 
 figure, axis = plt.subplots(3, 2)
 
-axis[0][1].plot(decoded_values["time"], decoded_values["final_lat_vel"])
-axis[0][1].set_title("Velocity (rpm)")
+axis[0][1].plot(decoded_values["time"], decoded_values["linear_velocity"])
+axis[0][1].set_title("Velocity (in/s)")
 
-axis[0][0].plot(decoded_values["time"], decoded_values["gain"])
-axis[0][0].set_title("Gain")
+axis[0][0].plot(decoded_values["time"], decoded_values["distance_travelled"])
+axis[0][0].set_title("Distance Travelled")
 
-axis[1][0].plot(decoded_values["curr_pos_x"], decoded_values["curr_pos_y"])
+axis[1][0].plot(decoded_values["pos_x"], decoded_values["pos_y"])
 axis[1][0].set_title("Path")
 
-axis[1][1].plot(decoded_values["time"], decoded_values["final_ang_vel"])
-axis[1][1].set_title("Omega (rpm)")
+axis[1][1].plot(decoded_values["time"], decoded_values["angular_velocity"])
+axis[1][1].set_title("Omega (rad/s)")
 
 axis[2][1].plot(decoded_values["time"], decoded_values["right_vel"], label = "right")
 axis[2][1].plot(decoded_values["time"], decoded_values["left_vel"], label = "left")

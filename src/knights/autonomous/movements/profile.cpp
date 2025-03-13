@@ -174,7 +174,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         pt.heading = theta;
 
-        float omega = ((deriv2.y * deriv.x - deriv.y * deriv2.x) / ((deriv.x * deriv.x) * (1 + (deriv.y / deriv.x) * (deriv.y / deriv.x)))) / total_time;
+        float omega = ((deriv2.y * deriv.x - deriv.y * deriv2.x) / ((deriv.x * deriv.x) * (1 + (deriv.y / deriv.x) * (deriv.y / deriv.x))));
 
         float right_speed = curr_velocity + (omega * track_width / 2);
         float left_speed = curr_velocity - (omega * track_width / 2);
