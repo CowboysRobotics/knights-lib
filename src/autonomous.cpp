@@ -79,7 +79,7 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	// robotControl.follow_route_pursuit(
 	// 	test_route, 20.0, 90.0, true, 6.0, 4000, true);
 
-	robotControl.follow_profile_ramsete(profile);
+	robotControl.follow_profile_simple(profile);
 
 	// robotControl.turn_to_angle(90);
 

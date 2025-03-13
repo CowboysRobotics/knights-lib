@@ -466,3 +466,75 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
     this->in_motion = false;
     return;
 }
+
+void knights::RobotController::follow_profile_simple(const knights::MotionProfile &profile, float end_tolerance, bool forwards) {
+    // make sure this is only movement running and route is valid
+    if (this->in_motion || profile.timestamps.size() < 2) return;
+    this->in_motion = true;
+
+    // make sure motors are on brake - prevent drift at end
+    this->chassis->drivetrain->right_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    this->chassis->drivetrain->left_mtrs->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+
+    float start_time = pros::millis();
+    int curr_i = 1;
+
+    std::fstream write_file("/usd/simple_mp_output.txt", std::ios_base::out);
+
+    while (distance_btwn(this->chassis->curr_position, profile.timestamps.back().position) > end_tolerance) {
+        knights::Pos curr_position = this->chassis->curr_position;
+
+        float elapsed_time = (pros::millis() - start_time) / 1000.0;
+
+        if (elapsed_time > profile.timestamps.back().time * 1.5 || curr_i >= profile.timestamps.size() - 1) break;
+
+        // find closest timestamp to current
+        while (curr_i < profile.timestamps.size() - 1 && profile.timestamps[curr_i+1].time < elapsed_time) {
+            curr_i++;
+        }
+
+        const ProfileTimestamp& next = profile.timestamps[curr_i+1];
+        const ProfileTimestamp& prev = profile.timestamps[curr_i];
+        knights::ProfileTimestamp selected = knights::lerp(prev, next, 
+            knights::clamp((elapsed_time - prev.time) / (next.time - prev.time), 0.0, 1.0));
+
+        // convert velocities to meters -> ensure default constants work
+        float lin_vel = selected.linear_velocity;
+        float ang_vel = selected.angular_velocity;
+
+        // Send to drivetrain
+        this->chassis->drivetrain->velocity_command(lin_vel, ang_vel);
+
+        // debugging velocities
+        float linear_rpm = (to_inches(lin_vel) / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
+        float angular_lin_vel = (ang_vel * chassis->drivetrain->track_width/2.0);
+        float angular_rpm = (angular_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
+
+        float r_speed = linear_rpm + angular_rpm;
+        float l_speed = linear_rpm - angular_rpm;
+    
+        float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / (chassis->drivetrain->rpm / chassis->drivetrain->gear_ratio); 
+        if (ratio_curr_speed > 1) {
+            r_speed /= ratio_curr_speed;
+            l_speed /= ratio_curr_speed;
+        }
+
+        write_file << knights::logger::string_format(
+            "right/left vel %lf %lf final l/a vel %lf %lf curr l/a vel %lf %lf curr pos %lf %lf %lf des pos %lf %lf %lf time %lf \n\n",
+            r_speed, l_speed, linear_rpm, angular_rpm, lin_vel, ang_vel, curr_position.x, curr_position.y, curr_position.heading,
+            selected.position.x, selected.position.y, selected.position.heading, elapsed_time
+        );
+
+        pros::delay(10);
+    }
+
+    write_file.close();
+
+    // stop motors after route over
+    this->chassis->drivetrain->voltage_command(0, 0);
+    this->chassis->drivetrain->right_mtrs->brake();
+    this->chassis->drivetrain->left_mtrs->brake();
+
+    this->in_motion = false;
+    return;
+}

@@ -66,6 +66,8 @@ namespace knights {
 
             void follow_profile_ramsete(const knights::MotionProfile &profile, float end_tolerance = 3.0, bool forwards = true);
 
+            void follow_profile_simple(const knights::MotionProfile &profile, float end_tolerance = 3.0, bool forwards = true);
+
             void lateral_to_position(const Pos desired_position, const bool forwards = true, const float end_tolerance = 3.5, const int timeout = 1000, const int turn_timeout = 750, const int wait_time = 140);
 
             void lateral_to_point(const Pos desired_position, const bool forwards = true, const float end_tolerance = 3.5, const int timeout = 1000, const int turn_timeout = 750, const int wait_time = 140);
