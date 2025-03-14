@@ -74,14 +74,22 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	write_file.close();
 
-	// knights::Route test_route = knights::init_route_from_asset(testpp3_txt);
+	drivetrain.voltage_command(300, 300);
 
-	// robotControl.follow_route_pursuit(
-	// 	test_route, 20.0, 90.0, true, 6.0, 4000, true);
+	std::fstream odom_file("/usd/odom_log.txt", std::ios_base::out);
 
-	robotControl.follow_profile_ramsete(profile);
+	for (int i = 0; i < 70; i++) {
+		odom_file << "time: " << pros::millis() << " ";
+		odom_file << "pos: " << chassis->get_position().x << " " << chassis->get_position().y << " " << chassis->get_position().heading << "\n";
 
-	// robotControl.turn_to_angle(90);
+		pros::delay(10);
+	}
+
+	drivetrain.voltage_command(0, 0);
+
+	odom_file.close();
+
+
 
 	
 }
