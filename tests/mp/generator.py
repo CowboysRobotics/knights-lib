@@ -2,6 +2,44 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+def curvature(pt1, pt2, pt3):
+    # Calculate midpoints of segments between points
+    mx1 = (pt1[0] + pt2[0]) / 2.0
+    my1 = (pt1[1] + pt2[1]) / 2.0
+    mx2 = (pt2[0] + pt3[0]) / 2.0
+    my2 = (pt2[1] + pt3[1]) / 2.0
+
+    # Calculate slopes of segments between points
+    if pt2[0] - pt1[0] == 0 or pt3[0] - pt2[0] == 0:
+        return 0.0  # Vertical line case, no curvature
+    
+    slope1 = (pt2[1] - pt1[1]) / (pt2[0] - pt1[0])
+    slope2 = (pt3[1] - pt2[1]) / (pt3[0] - pt2[0])
+    
+    # Calculate slopes of perpendicular bisectors
+    if slope1 == 0 or slope2 == 0:
+        return 0.0  # Horizontal line case, no curvature
+    
+    perp_slope1 = -1 / slope1
+    perp_slope2 = -1 / slope2
+    
+    # Check if slopes are parallel (points are in a straight line)
+    if abs(perp_slope1 - perp_slope2) < 1e-6:
+        return 0.0
+    
+    # Calculate y-intercepts of perpendicular bisectors
+    b1 = my1 - perp_slope1 * mx1
+    b2 = my2 - perp_slope2 * mx2
+    
+    # Calculate center coordinates
+    center_x = (b2 - b1) / (perp_slope1 - perp_slope2)
+    center_y = perp_slope1 * center_x + b1
+    
+    # Calculate radius
+    radius = np.sqrt((pt1[0] - center_x) ** 2 + (pt1[1] - center_y) ** 2)
+    
+    return 1.0 / radius
+
 class QuinticPath:
     def __init__(self, curr, target, curr_tangent, target_tangent, curr_acceleration, target_acceleration):
         """
@@ -21,8 +59,6 @@ class QuinticPath:
         self.target_tangent = target_tangent
         self.curr_acceleration = curr_acceleration
         self.target_acceleration = target_acceleration
-
-
 
     def p00(self):
         return curr[0]
@@ -60,9 +96,6 @@ class QuinticPath:
 
     def p15(self):
         return target[1]
-
-
-
 
     def position(self, t):
         """
@@ -142,14 +175,11 @@ class QuinticPath:
         )
         return dx2, dy2
 
-
 def dist_between(x1, y1, x2, y2):
   return np.hypot(x2-x1, y2-y1)
 
 def lerp(start, end, step):
   return start + (end-start) * step
-
-
 
 def generate_motion_profile(max_acceleration, max_velocity, distance, track_width, path):
   # Calculate the time it takes to accelerate to max velocity
@@ -167,8 +197,6 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     cruise_time = distance / max_velocity - acceleration_time
     total_time = cruise_time + 2 * acceleration_time
   
-  print(total_time)
-
   # we decelerate at the same rate as we accelerate
   deceleration_time = acceleration_time
 
@@ -196,7 +224,7 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
   x = 0
   y = 0
 
-  for elapsed_time in t:
+  for i, elapsed_time in enumerate(t):
 
     curr_dist = 0
 
@@ -226,16 +254,17 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
       # use the kinematic equations to calculate the instantaneous desired position
       curr_dist = acceleration_distance + cruise_distance + max_velocity * deceleration_curr_time - max_acceleration * (deceleration_curr_time ** 2) / 2
       curr_velocity = max_velocity - max_acceleration * (deceleration_curr_time)
-    
+        
     # Angular Calculations
     x,y = path.position(elapsed_time / total_time)
     dx,dy = path.derivatives(elapsed_time / total_time)
     dx2,dy2 = path.second_derivatives(elapsed_time / total_time)
 
-    theta = (np.arctan2(dy,dx)) / total_time
-    omega = ((dy2 * dx - dy * dx2) / (((dx) ** 2) * (1 + ((dy / dx)) ** 2))) / total_time
+    if (i < len(t) - 2):
+        curr_velocity = min(curr_velocity, 1.5/curvature([x,y], path.position(t[i+1]/elapsed_time), path.position(t[i+2]/elapsed_time)))
 
-
+    theta = (np.arctan2(dy,dx))
+    omega = ((dy2 * dx - dy * dx2) / (((dx) ** 2) * (1 + ((dy / dx)) ** 2)))
 
     dist_arr.append(curr_dist)
     vel_arr.append(curr_velocity)
@@ -250,14 +279,12 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
 
     side_vel_arr.append((left_vel, right_vel))
 
-  print(curr_dist)
   return [t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
 
 curr = [0, 0, np.radians(90), 0]
-target = [72, 72, np.radians(0), 0]
+target = [24, 24, np.radians(0), 0]
 
 dist = np.sqrt(((target[0]-curr[0]) ** 2) + ((target[1]-curr[1]) ** 2))
-
 
 curr_tangent = (np.cos(curr[2]) * dist, np.sin(curr[2]) * dist)
 target_tangent = (np.cos(target[2]) * dist, np.sin(target[2]) * dist)
@@ -282,16 +309,14 @@ for val in t:
     total_dist += dist_between(curr_pos[0], curr_pos[1], x, y)
     curr_pos = [x, y]
 
-DESIRED_VOLTAGE = 120
+DESIRED_VOLTAGE = 80
 MAX_VOLTAGE = 127
 WHEEL_DIAMETER = 3.25
 RPM = 450
 TRACK_WIDTH = 15
 
-max_acceleration = 178 # arbitrary constant
+max_acceleration = 100 # arbitrary constant
 max_velocity = (DESIRED_VOLTAGE/MAX_VOLTAGE) * np.pi * WHEEL_DIAMETER * (RPM / 60.0)
-
-print(max_velocity, max_acceleration)
 
 t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr = generate_motion_profile(max_acceleration, max_velocity, total_dist, TRACK_WIDTH, path)
 
