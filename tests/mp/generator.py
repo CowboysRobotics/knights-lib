@@ -1,45 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-def curvature(pt1, pt2, pt3):
-    # Calculate midpoints of segments between points
-    mx1 = (pt1[0] + pt2[0]) / 2.0
-    my1 = (pt1[1] + pt2[1]) / 2.0
-    mx2 = (pt2[0] + pt3[0]) / 2.0
-    my2 = (pt2[1] + pt3[1]) / 2.0
-
-    # Calculate slopes of segments between points
-    if pt2[0] - pt1[0] == 0 or pt3[0] - pt2[0] == 0:
-        return 0.0  # Vertical line case, no curvature
-    
-    slope1 = (pt2[1] - pt1[1]) / (pt2[0] - pt1[0])
-    slope2 = (pt3[1] - pt2[1]) / (pt3[0] - pt2[0])
-    
-    # Calculate slopes of perpendicular bisectors
-    if slope1 == 0 or slope2 == 0:
-        return 0.0  # Horizontal line case, no curvature
-    
-    perp_slope1 = -1 / slope1
-    perp_slope2 = -1 / slope2
-    
-    # Check if slopes are parallel (points are in a straight line)
-    if abs(perp_slope1 - perp_slope2) < 1e-6:
-        return 0.0
-    
-    # Calculate y-intercepts of perpendicular bisectors
-    b1 = my1 - perp_slope1 * mx1
-    b2 = my2 - perp_slope2 * mx2
-    
-    # Calculate center coordinates
-    center_x = (b2 - b1) / (perp_slope1 - perp_slope2)
-    center_y = perp_slope1 * center_x + b1
-    
-    # Calculate radius
-    radius = np.sqrt((pt1[0] - center_x) ** 2 + (pt1[1] - center_y) ** 2)
-    
-    return 1.0 / radius
-
 class QuinticPath:
     def __init__(self, curr, target, curr_tangent, target_tangent, curr_acceleration, target_acceleration):
         """
@@ -260,8 +221,13 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     dx,dy = path.derivatives(elapsed_time / total_time)
     dx2,dy2 = path.second_derivatives(elapsed_time / total_time)
 
-    if (i < len(t) - 2):
-        curr_velocity = min(curr_velocity, 1.5/curvature([x,y], path.position(t[i+1]/elapsed_time), path.position(t[i+2]/elapsed_time)))
+    max_speed = np.hypot(dx, dy)
+    if max_speed > 1e-6:
+        kappa = abs(dx * dy2 - dy * dx2) / (max_speed ** 3)
+    else:
+        kappa = 0
+    
+    curr_velocity = min(curr_velocity, max_speed)
 
     theta = (np.arctan2(dy,dx))
     omega = ((dy2 * dx - dy * dx2) / (((dx) ** 2) * (1 + ((dy / dx)) ** 2)))
@@ -271,9 +237,7 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     omega_arr.append(omega)
     theta_arr.append(theta)
     position_arr.append((x,y))
-    
-    # omega = np.arctan2(dy_ds, dx_ds) * velocity
-    
+        
     left_vel = curr_velocity - (omega * track_width / 2)
     right_vel = curr_velocity + (omega * track_width / 2)
 
