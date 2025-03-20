@@ -230,8 +230,8 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     else:
         kappa = 0
     
-    if (curr_velocity < max_speed):
-      added_distance = ((max_speed - curr_velocity) * time_step) # in inches
+    if (max_speed < curr_velocity):
+      added_distance = ((curr_velocity - max_speed) * time_step) # in inches
       curr_dist -= added_distance
 
       curr_velocity = max_speed
