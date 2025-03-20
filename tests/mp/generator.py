@@ -169,11 +169,6 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
 
   # check if we're still in the motion profile
   
-  n_t_values = round(total_time, 2) * 500
-
-
-  t = np.linspace(0, total_time, int(n_t_values))
-
   dist_arr = []
   vel_arr = []
 
@@ -182,10 +177,17 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
   theta_arr = []
   position_arr = []
 
+  times = []
+
   x = 0
   y = 0
 
-  for i, elapsed_time in enumerate(t):
+  elapsed_time = 0
+
+  time_step = total_time / 300
+
+  while elapsed_time < total_time:
+  # for elapsed_time in range(0.0, total_time, total_time/30):
 
     curr_dist = 0
 
@@ -221,29 +223,46 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     dx,dy = path.derivatives(elapsed_time / total_time)
     dx2,dy2 = path.second_derivatives(elapsed_time / total_time)
 
+    # VELOCITY CURVING
     max_speed = np.hypot(dx, dy)
     if max_speed > 1e-6:
         kappa = abs(dx * dy2 - dy * dx2) / (max_speed ** 3)
     else:
         kappa = 0
     
-    curr_velocity = min(curr_velocity, max_speed)
+    if (curr_velocity < max_speed):
+      added_distance = ((max_speed - curr_velocity) * time_step) # in inches
+      curr_dist -= added_distance
+
+      curr_velocity = max_speed
+
+      total_time += added_distance * 1/curr_velocity
+
+      if (total_time > 2):
+         break
+
+    
+    # END
 
     theta = (np.arctan2(dy,dx))
     omega = ((dy2 * dx - dy * dx2) / (((dx) ** 2) * (1 + ((dy / dx)) ** 2)))
+
 
     dist_arr.append(curr_dist)
     vel_arr.append(curr_velocity)
     omega_arr.append(omega)
     theta_arr.append(theta)
     position_arr.append((x,y))
+    times.append(elapsed_time)
         
     left_vel = curr_velocity - (omega * track_width / 2)
     right_vel = curr_velocity + (omega * track_width / 2)
 
     side_vel_arr.append((left_vel, right_vel))
 
-  return [t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
+    elapsed_time += time_step
+
+  return [times, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
 
 curr = [0, 0, np.radians(90), 0]
 target = [24, 24, np.radians(0), 0]
@@ -303,6 +322,14 @@ left_vels, right_vels = zip(*side_vel_arr)
 axis[2][1].plot(t, left_vels, label="left")
 axis[2][1].set_title("Side Velocities")
 axis[2][1].plot(t, right_vels, label="right")
+
+new_axis = plt.figure().add_subplot(projection='3d')
+
+real_x, real_y = zip(*position_arr)
+
+new_axis.plot(real_x, real_y, t, label="Actual Path")
+
+
 
 plt.legend()
 plt.show()
