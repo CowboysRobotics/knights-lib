@@ -895,7 +895,7 @@ void ring_6_rush_blue(knights::RobotChassis *chassis, bool flip_x, bool flip_y) 
 	robotControl.lateral_move(24); w;	
 }
 
-void goal_side_red(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
+void ring_side_red(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	float x_mod = flip_y ? -1 : 1;
 	float y_mod = flip_x ? -1 : 1;
 
@@ -903,15 +903,16 @@ void goal_side_red(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
-	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 110.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
 	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
 	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
 	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
+	knights::PIDController angularPID(50, 0, 10, -60.0, 60.0);
 
-	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
-
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
+	
 	color_sorting = true;
 	robotControl.lateral_move(-7); w;
 
@@ -934,7 +935,150 @@ void goal_side_red(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	robotControl.lateral_move(22, 5.0, 800); w;
 
-	robotControl.lateral_to_position(kPos(-47 * x_mod, 54 * y_mod, 
+	robotControl.lateral_to_position(kPos(-47 * x_mod, 58 * y_mod, 
+		knights::to_rad((170 - angle_mod) * x_mod))); 
+
+	pros::delay(200);
+
+	if (flip_y)
+		doinker_toggle2();
+	else
+		doinker_toggle();
+
+	robotControl.lateral_move(9, 1.0, 600); w;
+
+	robotControl.turn_to_angle((270 - angle_mod) * x_mod, 0, 3.0, 2000);
+
+	if (flip_y)
+		doinker_toggle2();
+	else
+		doinker_toggle();
+
+	pros::delay(300);
+
+	robotControl.turn_to_angle((250 - angle_mod) * x_mod, 0, 3.0, 1000); w;
+
+	robotControl.lateral_move(32, 3.0, 750);
+}
+
+void goal_side_red(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
+	float x_mod = flip_y ? -1 : 1;
+	float y_mod = flip_x ? -1 : 1;
+
+	float angle_mod = flip_y ? 180 : 0;
+
+	knights::RamseteConstants ramsete_constants(1, 0.5);
+
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 110.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
+	knights::PIDController angularPID(50, 0, 10, -60.0, 60.0);
+
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
+	
+	color_sorting = true;
+	robotControl.lateral_move(-7); w;
+
+	robotControl.turn_to_point(kPos(-24 * x_mod, 24 * y_mod, 0), false); w;
+
+	robotControl.lateral_move(-16);
+
+	robotControl.lateral_move(-12);
+
+	clamp_toggle();
+
+	pros::delay(200);
+
+	intake_in(); 
+
+	pros::delay(200);
+
+
+	robotControl.turn_to_point(kPos(-24 * x_mod, 48 * y_mod, 0), true, 0, 3.0, 750); w;
+
+	robotControl.lateral_move(22, 5.0, 800); w;
+
+	robotControl.lateral_to_position(kPos(-47 * x_mod, 58 * y_mod, 
+		knights::to_rad((170 - angle_mod) * x_mod))); 
+
+	pros::delay(200);
+
+	if (flip_y)
+		doinker_toggle2();
+	else
+		doinker_toggle();
+
+	robotControl.lateral_move(9, 1.0, 600); w;
+
+	robotControl.turn_to_angle((270 - angle_mod) * x_mod, 0, 3.0, 2000);
+
+	if (flip_y)
+		doinker_toggle2();
+	else
+		doinker_toggle();
+
+	pros::delay(300);
+
+	robotControl.turn_to_angle((250 - angle_mod) * x_mod, 0, 3.0, 1000); w;
+
+	robotControl.lateral_move(32, 3.0, 750);
+	// robotControl.curve_move(kPos(-58 * x_mod, 10 * y_mod, 0));
+
+	robotControl.lateral_to_point(kPos(-24 * x_mod, 36 * y_mod, 0), false, 5.0, 750);
+
+	robotControl.turn_to_angle(0);
+
+	clamp_toggle();
+
+	// we can drop here to keep mogo on this side
+
+	robotControl.turn_to_point(kPos(72 * x_mod, 64 * y_mod, 0), false);
+}
+
+void goal_side_blue(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
+	float x_mod = flip_y ? -1 : 1;
+	float y_mod = flip_x ? -1 : 1;
+
+	float angle_mod = flip_y ? 180 : 0;
+
+	knights::RamseteConstants ramsete_constants(1, 0.5);
+
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 110.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
+	knights::PIDController angularPID(50, 0, 10, -60.0, 60.0);
+
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
+	
+	color_sorting = true;
+	robotControl.lateral_move(-7); w;
+
+	robotControl.turn_to_point(kPos(-24 * x_mod, 24 * y_mod, 0), false); w;
+
+	robotControl.lateral_move(-16);
+
+	robotControl.lateral_move(-12);
+
+	clamp_toggle();
+
+	pros::delay(200);
+
+	intake_in(); 
+
+	pros::delay(200);
+
+
+	robotControl.turn_to_point(kPos(-24 * x_mod, 48 * y_mod, 0), true, 0, 3.0, 750); w;
+
+	robotControl.lateral_move(22, 5.0, 800); w;
+
+	robotControl.lateral_to_position(kPos(-47 * x_mod, 58 * y_mod, 
 		knights::to_rad((170 - angle_mod) * x_mod))); 
 
 	pros::delay(200);
@@ -958,6 +1102,7 @@ void goal_side_red(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	robotControl.turn_to_angle((250 - angle_mod) * x_mod); w;
 
 	robotControl.lateral_move(32, 3.0, 750);
+	// robotControl.curve_move(kPos(-58 * x_mod, 10 * y_mod, 0));
 
 	robotControl.lateral_to_point(kPos(-24 * x_mod, 36 * y_mod, 0), false, 5.0, 750);
 
@@ -966,7 +1111,7 @@ void goal_side_red(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	robotControl.turn_to_point(kPos(72 * x_mod, 64 * y_mod, 0), false);
 }
 
-void goal_side_blue(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
+void ring_side_blue(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	float x_mod = flip_y ? -1 : 1;
 	float y_mod = flip_x ? -1 : 1;
 
@@ -974,15 +1119,16 @@ void goal_side_blue(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	knights::RamseteConstants ramsete_constants(1, 0.5);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
-	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 15.0, 127.0);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 110.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
 	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
 	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
 	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
+	knights::PIDController angularPID(50, 0, 10, -60.0, 60.0);
 
-	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, false);
-
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
+	
 	color_sorting = true;
 	robotControl.lateral_move(-7); w;
 
@@ -1030,13 +1176,7 @@ void goal_side_blue(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	robotControl.lateral_move(32, 3.0, 750);
 
-	robotControl.lateral_to_point(kPos(-24 * x_mod, 36 * y_mod, 0), false, 5.0, 750);
-
-	// we can drop here to keep mogo on this side
-
-	robotControl.turn_to_point(kPos(72 * x_mod, 64 * y_mod, 0), false);
 }
-
 
 void empty(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	return;

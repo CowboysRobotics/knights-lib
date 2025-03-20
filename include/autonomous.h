@@ -27,4 +27,7 @@ void sig_winpoint_blue_cut(knights::RobotChassis *chassis, bool flip_x, bool fli
 void goal_side_red(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 void goal_side_blue(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 
+void ring_side_red(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
+void ring_side_blue(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
+
 #endif
