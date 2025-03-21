@@ -157,6 +157,8 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
   else:
     cruise_time = distance / max_velocity - acceleration_time
     total_time = cruise_time + 2 * acceleration_time
+
+  # print(total_time)
   
   # we decelerate at the same rate as we accelerate
   deceleration_time = acceleration_time
@@ -240,9 +242,19 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
 
       if (total_time > 2):
          break
-
-    
     # END
+
+    # Re calculate Angular Calculations with new total time
+    new_x,new_y = path.position(elapsed_time / total_time)
+    dx,dy = path.derivatives(elapsed_time / total_time)
+    dx2,dy2 = path.second_derivatives(elapsed_time / total_time)
+
+    # if (new_x != x):
+    #    print(new_x, x)
+    #    print(new_y, y)
+    
+    x = new_x
+    y = new_y
 
     theta = (np.arctan2(dy,dx))
     omega = ((dy2 * dx - dy * dx2) / (((dx) ** 2) * (1 + ((dy / dx)) ** 2)))
