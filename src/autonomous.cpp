@@ -53,44 +53,29 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 
-	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
+	// std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 
-	write_file << "Profile Generation Start at t: " << pros::millis() << "\n";
+	// write_file << "Profile Generation Start at t: " << pros::millis() << "\n";
 	
 	knights::ProfileGenerator generator(drivetrain, 70);
-	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-12, 60, 90_deg), 80, 30, true);
+	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-12, 60, 90_deg), 100, 30, true);
 	
-	write_file << "Profile Generation End at t: " << pros::millis() << "\n";
+	// write_file << "Profile Generation End at t: " << pros::millis() << "\n";
+
+	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 	
 	for (knights::ProfileTimestamp timestamp : profile.timestamps) {
 		write_file << "time: " << timestamp.time << " ";
 		write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
 		write_file << "lin vel: " << timestamp.linear_velocity << " ";
 		write_file << "angular vel: " << timestamp.angular_velocity << " ";
-		write_file << "dist: " << timestamp.curr_distance << " ";
 		write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
 		write_file << "\n";
 	}
 
 	write_file.close();
 
-	drivetrain.voltage_command(300, 300);
-
-	std::fstream odom_file("/usd/odom_log.txt", std::ios_base::out);
-
-	for (int i = 0; i < 70; i++) {
-		odom_file << "time: " << pros::millis() << " ";
-		odom_file << "pos: " << chassis->get_position().x << " " << chassis->get_position().y << " " << chassis->get_position().heading << "\n";
-
-		pros::delay(10);
-	}
-
-	drivetrain.voltage_command(0, 0);
-
-	odom_file.close();
-
-
-
+	robotControl.follow_profile_ramsete(profile);
 	
 }
 

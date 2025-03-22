@@ -238,10 +238,10 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
 
       curr_velocity = max_speed
 
-      total_time += added_distance * 1/curr_velocity
+      total_time += added_distance /curr_velocity
 
-      if (total_time > 2):
-         break
+    #   if (total_time > 2):
+    #      break
     # END
 
     # Re calculate Angular Calculations with new total time
@@ -304,7 +304,7 @@ for val in t:
     total_dist += dist_between(curr_pos[0], curr_pos[1], x, y)
     curr_pos = [x, y]
 
-DESIRED_VOLTAGE = 80
+DESIRED_VOLTAGE = 70
 MAX_VOLTAGE = 127
 WHEEL_DIAMETER = 3.25
 RPM = 450
@@ -339,9 +339,9 @@ new_axis = plt.figure().add_subplot(projection='3d')
 
 real_x, real_y = zip(*position_arr)
 
+print(position_arr[-1])
+
 new_axis.plot(real_x, real_y, t, label="Actual Path")
-
-
 
 plt.legend()
 plt.show()

@@ -46,7 +46,7 @@ namespace knights {
              * @param linear_velocity Linear movement velocity (in/s)
              * @param angular_velocity Angular velocity (rad/s)
              */
-            void velocity_command(float linear_velocity, float angular_velocity);
+            void velocity_command(float linear_velocity, float angular_velocity, float maximum_lin_vel = 1000);
 
             /**
              * @brief Conversion function from distance to motor position (in degrees)
