@@ -219,6 +219,9 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
       # use the kinematic equations to calculate the instantaneous desired position
       curr_dist = acceleration_distance + cruise_distance + max_velocity * deceleration_curr_time - max_acceleration * (deceleration_curr_time ** 2) / 2
       curr_velocity = max_velocity - max_acceleration * (deceleration_curr_time)
+
+    if curr_dist > acceleration_distance + cruise_distance + deceleration_distance:
+       break
         
     # Angular Calculations
     x,y = path.position(elapsed_time / total_time)
@@ -238,20 +241,23 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
 
       curr_velocity = max_speed
 
-      total_time += added_distance /curr_velocity
+      total_time += added_distance / curr_velocity
 
-    #   if (total_time > 2):
-    #      break
-    # END
+      # need to factor in the other times here, not just total, as this makes velocity inaccurate
+
+      if (elapsed_time > total_time):
+        break;
+      # accelerating
+      elif (elapsed_time < acceleration_time):
+        acceleration_time += added_distance / curr_velocity
+      # cruising
+      elif (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)):
+        cruise_time += added_distance / curr_velocity
 
     # Re calculate Angular Calculations with new total time
     new_x,new_y = path.position(elapsed_time / total_time)
     dx,dy = path.derivatives(elapsed_time / total_time)
     dx2,dy2 = path.second_derivatives(elapsed_time / total_time)
-
-    # if (new_x != x):
-    #    print(new_x, x)
-    #    print(new_y, y)
     
     x = new_x
     y = new_y
