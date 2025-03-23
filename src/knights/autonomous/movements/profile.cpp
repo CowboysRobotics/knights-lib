@@ -129,7 +129,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     // std::vector<float> t = knights::linspace(0, total_time, points_per_sec * total_time);
 
-    std::fstream write_file("/usd/generatin_output.txt", std::ios_base::out);
+    std::fstream write_file("/usd/generation_output.txt", std::ios_base::out);
 
     std::vector<ProfileTimestamp> timestamps;
     float x = 0, y = 0;

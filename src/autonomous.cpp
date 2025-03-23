@@ -58,7 +58,7 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	// write_file << "Profile Generation Start at t: " << pros::millis() << "\n";
 	
 	knights::ProfileGenerator generator(drivetrain, 70);
-	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-12, 60, 90_deg), 100, 30, true);
+	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(36, 36, 0_deg), 80, 30, true);
 	
 	// write_file << "Profile Generation End at t: " << pros::millis() << "\n";
 

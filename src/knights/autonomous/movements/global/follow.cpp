@@ -431,7 +431,7 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float curr_ang_vel = ang_vel + gain * error_theta + this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y / error_theta;
 
         // Send to drivetrain
-        this->chassis->drivetrain->velocity_command(to_inches(curr_lin_vel), curr_ang_vel);
+        this->chassis->drivetrain->velocity_command(to_inches(curr_lin_vel), curr_ang_vel, profile.max_velocity);
 
         // debugging velocities
         float linear_rpm = (to_inches(curr_lin_vel) / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
@@ -441,7 +441,11 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float r_speed = linear_rpm + angular_rpm;
         float l_speed = linear_rpm - angular_rpm;
     
-        float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / (chassis->drivetrain->rpm / chassis->drivetrain->gear_ratio); 
+        float ratio_maximum_lin_vel = (profile.max_velocity / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
+
+        std::cout << "ratio_maximum_lin_vel: " << ratio_maximum_lin_vel << "\n";
+    
+        float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / (ratio_maximum_lin_vel); 
         if (ratio_curr_speed > 1) {
             r_speed /= ratio_curr_speed;
             l_speed /= ratio_curr_speed;
@@ -502,6 +506,8 @@ void knights::RobotController::follow_profile_simple(const knights::MotionProfil
         float lin_vel = selected.linear_velocity;
         float ang_vel = selected.angular_velocity;
 
+        std::cout << "path max velo: " << profile.max_velocity << "\n";
+
         // Send to drivetrain
         this->chassis->drivetrain->velocity_command(lin_vel, ang_vel, profile.max_velocity);
 
@@ -513,7 +519,9 @@ void knights::RobotController::follow_profile_simple(const knights::MotionProfil
         float r_speed = linear_rpm + angular_rpm;
         float l_speed = linear_rpm - angular_rpm;
 
-        float ratio_maximum_lin_vel = profile.max_velocity / (chassis->drivetrain->wheel_diameter * M_PI) * ((1/chassis->drivetrain->gear_ratio)) * 60.0;
+        float ratio_maximum_lin_vel = (profile.max_velocity / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
+
+        std::cout << "ratio_maximum_lin_vel: " << ratio_maximum_lin_vel << "\n";
     
         float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / (ratio_maximum_lin_vel); 
         if (ratio_curr_speed > 1) {
