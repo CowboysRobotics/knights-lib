@@ -304,13 +304,13 @@ for val in t:
     total_dist += dist_between(curr_pos[0], curr_pos[1], x, y)
     curr_pos = [x, y]
 
-DESIRED_VOLTAGE = 70
+DESIRED_VOLTAGE = 80
 MAX_VOLTAGE = 127
 WHEEL_DIAMETER = 3.25
 RPM = 450
 TRACK_WIDTH = 15
 
-max_acceleration = 100 # arbitrary constant
+max_acceleration = 70 # arbitrary constant
 max_velocity = (DESIRED_VOLTAGE/MAX_VOLTAGE) * np.pi * WHEEL_DIAMETER * (RPM / 60.0)
 
 t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr = generate_motion_profile(max_acceleration, max_velocity, total_dist, TRACK_WIDTH, path)
