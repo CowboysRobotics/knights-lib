@@ -2,6 +2,7 @@
 #include "knights/autonomous/profile.hpp"
 #include "knights/util/calculation.hpp"
 #include "knights/util/position.hpp"
+#include "pros/rtos.hpp"
 #include <cmath>
 #include <vector>
 
@@ -149,13 +150,13 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
             curr_velocity = path_max_velocity - this->max_acceleration * deceleration_curr_time;
         }
 
-        write_file << "stage 1 " << pros::millis() << "\n";
+        write_file << "stage 1 " << pros::micros() << "\n";
 
-        Pos pt = path.position(elapsed_time / total_time);
+        // Pos pt = path.position(elapsed_time / total_time);
         Pos deriv = path.derivatives(elapsed_time / total_time);
         Pos deriv2 = path.second_derivatives(elapsed_time / total_time);
 
-        write_file << "stage 2 " << pros::millis() << "\n";
+        write_file << "stage 2 " << pros::micros() << "\n";
 
         // #### Curvature slowing
         float max_speed = std::hypot(deriv.x, deriv.y);
@@ -171,12 +172,21 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
             curr_velocity = max_speed;
     
             total_time += added_distance / curr_velocity;
+
+            if (elapsed_time > total_time) {
+                break;
+            } else if (elapsed_time < acceleration_time) {
+                acceleration_time += added_distance / curr_velocity;
+            } else if (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)) {
+                cruise_time += added_distance / curr_velocity;
+            }
         }
 
-        pt = path.position(elapsed_time / total_time);
+        Pos pt = path.position(elapsed_time / total_time);
         deriv = path.derivatives(elapsed_time / total_time);
+        deriv2 = path.second_derivatives(elapsed_time / total_time);
 
-        write_file << "stage 3 " << pros::millis() << "\n";
+        write_file << "stage 3 " << pros::micros() << "\n";
 
         // #### END
 
@@ -202,7 +212,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         timestamps.emplace_back(pt, curr_velocity, omega, elapsed_time, right_speed, left_speed);
 
-        write_file << "stage 4 " << pros::millis() << "\n";
+        write_file << "stage 4 " << pros::micros() << "\n";
     }
 
     write_file.close();

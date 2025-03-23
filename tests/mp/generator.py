@@ -218,10 +218,7 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
           
       # use the kinematic equations to calculate the instantaneous desired position
       curr_dist = acceleration_distance + cruise_distance + max_velocity * deceleration_curr_time - max_acceleration * (deceleration_curr_time ** 2) / 2
-      curr_velocity = max_velocity - max_acceleration * (deceleration_curr_time)
-
-    if curr_dist > acceleration_distance + cruise_distance + deceleration_distance:
-       break
+      curr_velocity = max_velocity - max_acceleration * (deceleration_curr_time) # inaccuracy here maybe
         
     # Angular Calculations
     x,y = path.position(elapsed_time / total_time)
@@ -255,16 +252,12 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
         cruise_time += added_distance / curr_velocity
 
     # Re calculate Angular Calculations with new total time
-    new_x,new_y = path.position(elapsed_time / total_time)
+    x,y = path.position(elapsed_time / total_time)
     dx,dy = path.derivatives(elapsed_time / total_time)
     dx2,dy2 = path.second_derivatives(elapsed_time / total_time)
-    
-    x = new_x
-    y = new_y
 
     theta = (np.arctan2(dy,dx))
     omega = ((dy2 * dx - dy * dx2) / (((dx) ** 2) * (1 + ((dy / dx)) ** 2)))
-
 
     dist_arr.append(curr_dist)
     vel_arr.append(curr_velocity)
@@ -344,8 +337,6 @@ axis[2][1].plot(t, right_vels, label="right")
 new_axis = plt.figure().add_subplot(projection='3d')
 
 real_x, real_y = zip(*position_arr)
-
-print(position_arr[-1])
 
 new_axis.plot(real_x, real_y, t, label="Actual Path")
 
