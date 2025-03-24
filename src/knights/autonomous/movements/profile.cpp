@@ -152,43 +152,43 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         write_file << "stage 1 " << pros::micros() << "\n";
 
-        // Pos pt = path.position(elapsed_time / total_time);
+        Pos pt = path.position(elapsed_time / total_time);
         Pos deriv = path.derivatives(elapsed_time / total_time);
         Pos deriv2 = path.second_derivatives(elapsed_time / total_time);
 
         write_file << "stage 2 " << pros::micros() << "\n";
 
-        // #### Curvature slowing
-        float max_speed = std::hypot(deriv.x, deriv.y);
-        float kappa = 0;
-        if (max_speed > 1e-6) {
-            kappa = std::fabs(deriv.x * deriv2.y - deriv.y * deriv2.x) / (pow(max_speed, 3));
-        };
+        // // #### Curvature slowing
+        // float max_speed = std::hypot(deriv.x, deriv.y);
+        // float kappa = 0;
+        // if (max_speed > 1e-6) {
+        //     kappa = std::fabs(deriv.x * deriv2.y - deriv.y * deriv2.x) / (pow(max_speed, 3));
+        // };
 
-        if (max_speed < curr_velocity) {
-            float added_distance = ((curr_velocity - max_speed) * 1.0/points_per_sec); // in inches
-            // curr_dist -= added_distance
+        // if (max_speed < curr_velocity) {
+        //     float added_distance = ((curr_velocity - max_speed) * 1.0/points_per_sec); // in inches
+        //     // curr_dist -= added_distance
     
-            curr_velocity = max_speed;
+        //     curr_velocity = max_speed;
     
-            total_time += added_distance / curr_velocity;
+        //     total_time += added_distance / curr_velocity;
 
-            if (elapsed_time > total_time) {
-                break;
-            } else if (elapsed_time < acceleration_time) {
-                acceleration_time += added_distance / curr_velocity;
-            } else if (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)) {
-                cruise_time += added_distance / curr_velocity;
-            }
-        }
+        //     if (elapsed_time > total_time) {
+        //         break;
+        //     } else if (elapsed_time < acceleration_time) {
+        //         acceleration_time += added_distance / curr_velocity;
+        //     } else if (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)) {
+        //         cruise_time += added_distance / curr_velocity;
+        //     }
+        // }
 
-        Pos pt = path.position(elapsed_time / total_time);
-        deriv = path.derivatives(elapsed_time / total_time);
-        deriv2 = path.second_derivatives(elapsed_time / total_time);
+        // pt = path.position(elapsed_time / total_time);
+        // deriv = path.derivatives(elapsed_time / total_time);
+        // deriv2 = path.second_derivatives(elapsed_time / total_time);
 
-        write_file << "stage 3 " << pros::micros() << "\n";
+        // write_file << "stage 3 " << pros::micros() << "\n";
 
-        // #### END
+        // // #### END
 
         float theta = std::atan2(deriv.y, deriv.x);
 
