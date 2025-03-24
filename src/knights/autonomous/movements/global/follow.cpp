@@ -390,9 +390,16 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
     while (distance_btwn(this->chassis->curr_position, profile.timestamps.back().position) > end_tolerance) {
         knights::Pos curr_position = this->chassis->curr_position;
 
+        // accurately calculate time
         float elapsed_time = (pros::millis() - start_time) / 1000.0;
 
+        // end conditions
         if (elapsed_time > profile.timestamps.back().time * 1.5 || curr_i >= profile.timestamps.size() - 1) break;
+        if (elapsed_time > profile.timestamps.back().time * 1 && 
+            distance_btwn(this->chassis->curr_position, profile.timestamps.back().position) < end_tolerance*3) 
+        {
+            break;
+        }
 
         // find closest timestamp to current
         while (curr_i < profile.timestamps.size() - 1 && profile.timestamps[curr_i+1].time < elapsed_time) {
@@ -507,7 +514,7 @@ void knights::RobotController::follow_profile_simple(const knights::MotionProfil
         std::cout << "path max velo: " << profile.max_velocity << "\n";
 
         // Send to drivetrain
-        this->chassis->drivetrain->velocity_command(lin_vel, ang_vel, profile.max_velocity);
+        this->chassis->drivetrain->velocity_command(lin_vel, ang_vel, 1000);
 
         // debugging velocities
         float linear_rpm = (lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;

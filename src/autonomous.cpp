@@ -86,7 +86,7 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	write_file.close();
 
-	robotControl.follow_profile_simple(profile);
+	robotControl.follow_profile_ramsete(profile);
 	
 }
 
