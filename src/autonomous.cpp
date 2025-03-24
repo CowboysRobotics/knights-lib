@@ -10,6 +10,8 @@
 #include "knights/util/position.hpp"
 #include "pros/rtos.hpp"
 
+#include "squiggles/squiggles.hpp"
+
 #include <cmath>
 #include <fstream>
 
@@ -59,8 +61,17 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	
 	knights::ProfileGenerator generator(drivetrain, 70);
 	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(36, 36, 0_deg), 80, 30, true);
+
+	// squiggles::SplineGenerator generator2 = squiggles::SplineGenerator(
+	// 	squiggles::Constraints(knights::to_meters(drivetrain.max_velocity()), knights::to_meters(100), 4),
+	// 	std::make_shared<squiggles::TankModel>(knights::to_meters(drivetrain.track_width), 
+	// 		squiggles::Constraints(knights::to_meters(drivetrain.max_velocity()), knights::to_meters(100), 4))
+	// );
+	// knights::MotionProfile profile2(generator2.generate({
+	// 		squiggles::Pose(knights::to_meters(12), knights::to_meters(12), M_PI/2),
+	// 		squiggles::Pose(knights::to_meters(36), knights::to_meters(36), 0)
+	// 	}), 70, drivetrain.max_velocity(), 80);
 	
-	// write_file << "Profile Generation End at t: " << pros::millis() << "\n";
 
 	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 	
@@ -75,7 +86,7 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	write_file.close();
 
-	robotControl.follow_profile_ramsete(profile);
+	robotControl.follow_profile_simple(profile);
 	
 }
 

@@ -8,18 +8,14 @@
 namespace knights {
 
     class Drivetrain {
-        private:
+        public:
             pros::MotorGroup *right_mtrs; // motors of right side of drivetrain
             pros::MotorGroup *left_mtrs;  // motors of left side of drivetrain
             float track_width; // width of the drivetrain
             float rpm; // max rpm of the drivetrain (ie 450rpm, 600 rpm, etc)
             float wheel_diameter; // diameters of the largest wheels on the drivetrain
             float gear_ratio; // gear ratio of the drivetrain
-
-            friend class RobotChassis;
-            friend class RobotController;
-            friend class ProfileGenerator;
-        public:
+            
             /**
              * @brief Construct a new differential drivetrain object
              * 

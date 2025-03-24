@@ -28,8 +28,24 @@ knights::QuinticPath::QuinticPath(knights::Pos curr, knights::Pos target, knight
     this->p13 = this->target_acceleration / 20 + 2 * this->p14 - this->p15;
 };
 
+knights::QuinticPath::QuinticPath() {};
+
 knights::MotionProfile::MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity, float desired_voltage) :
     timestamps(timestamps), path(path), max_accel(max_accel), max_velocity(max_velocity), desired_voltage(desired_voltage) {}
+
+knights::MotionProfile::MotionProfile(std::vector<squiggles::ProfilePoint> path, float max_accel, float max_velocity, float desired_voltage) :
+    max_accel(max_accel), max_velocity(max_velocity), desired_voltage(desired_voltage) 
+{
+    for (squiggles::ProfilePoint& timestamp : path) {
+        this->timestamps.emplace_back(
+            knights::Pos(knights::to_inches(timestamp.vector.pose.x), knights::to_inches(timestamp.vector.pose.y), timestamp.vector.pose.yaw),
+            knights::to_inches(timestamp.vector.vel),
+            timestamp.curvature * timestamp.vector.vel,
+            timestamp.time,
+            knights::to_inches(timestamp.wheel_velocities[0]), knights::to_inches(timestamp.wheel_velocities[1])
+        );
+    }
+}
 
 knights::ProfileTimestamp::ProfileTimestamp(knights::Pos position, float linear_velocity, float angular_velocity, 
     float time, float right_speed, float left_speed) : position(position), linear_velocity(linear_velocity), angular_velocity(angular_velocity),

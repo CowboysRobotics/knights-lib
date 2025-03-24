@@ -1,5 +1,6 @@
 #pragma once
 
+#include "squiggles/geometry/profilepoint.hpp"
 #include <vector>
 #ifndef _PROFILE_H
 #define _PROFILE_H
@@ -16,6 +17,8 @@ namespace knights {
         QuinticPath(knights::Pos curr, knights::Pos target,
             knights::Pos curr_tangent, knights::Pos target_tangent,
             float curr_acceleration, float target_acceleration);
+        
+        QuinticPath();
 
         float p00;
         float p01;
@@ -59,6 +62,8 @@ namespace knights {
         float desired_voltage;
 
         MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity, float desired_voltage);
+
+        MotionProfile(std::vector<squiggles::ProfilePoint> path, float max_accel, float max_velocity, float desired_voltage);
     };
 
     class ProfileGenerator {

@@ -431,7 +431,7 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float curr_ang_vel = ang_vel + gain * error_theta + this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y / error_theta;
 
         // Send to drivetrain
-        this->chassis->drivetrain->velocity_command(to_inches(curr_lin_vel), curr_ang_vel, 1000);// profile.max_velocity);
+        this->chassis->drivetrain->velocity_command(to_inches(curr_lin_vel), curr_ang_vel, profile.max_velocity);
 
         // debugging velocities
         float linear_rpm = (to_inches(curr_lin_vel) / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
