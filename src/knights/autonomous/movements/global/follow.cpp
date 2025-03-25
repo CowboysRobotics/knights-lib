@@ -406,8 +406,8 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
             curr_i++;
         }
 
-        const ProfileTimestamp& next = profile.timestamps[curr_i+1];
         const ProfileTimestamp& prev = profile.timestamps[curr_i];
+        const ProfileTimestamp& next = profile.timestamps[curr_i+1];
         knights::ProfileTimestamp selected = knights::lerp(prev, next, 
             knights::clamp((elapsed_time - prev.time) / (next.time - prev.time), 0.0, 1.0));
 

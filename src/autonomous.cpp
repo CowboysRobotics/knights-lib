@@ -59,18 +59,8 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	// write_file << "Profile Generation Start at t: " << pros::millis() << "\n";
 	
-	knights::ProfileGenerator generator(drivetrain, 80);
-	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(-12, 60, 90_deg), 100, 30, true);
-
-	// squiggles::SplineGenerator generator2 = squiggles::SplineGenerator(
-	// 	squiggles::Constraints(knights::to_meters(drivetrain.max_velocity()), knights::to_meters(100), 4),
-	// 	std::make_shared<squiggles::TankModel>(knights::to_meters(drivetrain.track_width), 
-	// 		squiggles::Constraints(knights::to_meters(drivetrain.max_velocity()), knights::to_meters(100), 4))
-	// );
-	// knights::MotionProfile profile2(generator2.generate({
-	// 		squiggles::Pose(knights::to_meters(12), knights::to_meters(12), M_PI/2),
-	// 		squiggles::Pose(knights::to_meters(36), knights::to_meters(36), 0)
-	// 	}), 70, drivetrain.max_velocity(), 80);
+	knights::ProfileGenerator generator(drivetrain, 70);
+	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(60, 36, 90_deg), 80, 30, true);
 
 	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
 	

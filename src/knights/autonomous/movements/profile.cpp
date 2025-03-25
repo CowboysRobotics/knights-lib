@@ -162,23 +162,22 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
         Pos pt = path.position(elapsed_time / total_time);
         Pos deriv = path.derivatives(elapsed_time / total_time);
         Pos deriv2 = path.second_derivatives(elapsed_time / total_time);
-
-        Pos next1_pt = path.position((elapsed_time + 1.0/points_per_sec)/ total_time);
-        Pos next2_pt = path.position((elapsed_time + 2*1.0/points_per_sec)/ total_time);
-
+        float curr_acceleratin = max_acceleration;
         float max_speed = 1e4;
 
-        // ### ACCELERATION CURVING
-        float curr_acceleratin = max_acceleration;
-        float curr_curvature = knights::curvature(pt, next1_pt, next2_pt);
-        if (curr_curvature > 1e-6) {
-            curr_acceleratin = std::fmin(curr_acceleratin, ACCELERATION_CURVATURE_CONSTANT/curr_curvature);
-        }
-        write_file << curr_acceleratin << " " << curr_curvature << "\n";
-        write_file << pt.x << " curr pt " << pt.y << "\n";
-        write_file << next1_pt.x << " next pt " << next1_pt.y << "\n";
-        write_file << next2_pt.x << " next2 pt " << next2_pt.y << "\n";
-        // ### END
+        // // ### ACCELERATION CURVING
+        // Pos next1_pt = path.position((elapsed_time + 1.0/points_per_sec)/ total_time);
+        // Pos next2_pt = path.position((elapsed_time + 2*1.0/points_per_sec)/ total_time);
+        
+        // float curr_curvature = knights::curvature(pt, next1_pt, next2_pt);
+        // if (curr_curvature > 1e-6) {
+        //     curr_acceleratin = std::fmin(curr_acceleratin, ACCELERATION_CURVATURE_CONSTANT/curr_curvature);
+        // }
+        // write_file << curr_acceleratin << " " << curr_curvature << "\n";
+        // write_file << pt.x << " curr pt " << pt.y << "\n";
+        // write_file << next1_pt.x << " next pt " << next1_pt.y << "\n";
+        // write_file << next2_pt.x << " next2 pt " << next2_pt.y << "\n";
+        // // ### END
 
         if (elapsed_time > total_time) {
             curr_velocity = 0;
@@ -197,28 +196,29 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         write_file << "stage 2 " << pros::micros() << "\n";
 
-        // #### Curvature slowing
-        curr_velocity = std::fmin(curr_velocity, VELOCITY_CURVATURE_CONSTANT/curr_curvature);
+        // // #### Curvature slowing
+        // curr_velocity = std::fmin(curr_velocity, VELOCITY_CURVATURE_CONSTANT/curr_curvature);
 
-        if (curr_velocity < max_speed) {
-            float added_distance = ((max_speed - curr_velocity) * 1.0/points_per_sec); // in inches
-            // curr_dist -= added_distance
+        // if (curr_velocity < max_speed) {
+        //     float added_distance = ((max_speed - curr_velocity) * 1.0/points_per_sec); // in inches
+        //     // curr_dist -= added_distance
         
-            total_time += added_distance / max_speed;
+        //     total_time += added_distance / max_speed;
 
-            if (elapsed_time > total_time) {
-                break;
-            } else if (elapsed_time < acceleration_time) {
-                acceleration_time += added_distance / max_speed;
-            } else if (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)) {
-                cruise_time += added_distance / max_speed;
-            }
-        }
-        // #### END
+        //     if (elapsed_time > total_time) {
+        //         break;
+        //     } else if (elapsed_time < acceleration_time) {
+        //         acceleration_time += added_distance / max_speed;
+        //     } else if (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)) {
+        //         cruise_time += added_distance / max_speed;
+        //     }
+        // }
 
-        pt = path.position(elapsed_time / total_time);
-        deriv = path.derivatives(elapsed_time / total_time);
-        deriv2 = path.second_derivatives(elapsed_time / total_time);
+        // pt = path.position(elapsed_time / total_time);
+        // deriv = path.derivatives(elapsed_time / total_time);
+        // deriv2 = path.second_derivatives(elapsed_time / total_time);
+        // // #### END
+
 
         write_file << "stage 3 " << pros::micros() << "\n";
 
