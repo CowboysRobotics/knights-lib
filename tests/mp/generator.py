@@ -1,6 +1,44 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+def curvature(pt1, pt2, pt3):
+    # Calculate midpoints of segments between points
+    mx1 = (pt1[0] + pt2[0]) / 2.0
+    my1 = (pt1[1] + pt2[1]) / 2.0
+    mx2 = (pt2[0] + pt3[0]) / 2.0
+    my2 = (pt2[1] + pt3[1]) / 2.0
+    
+    # Calculate slopes of segments between points
+    try:
+        slope1 = (pt2[1] - pt1[1]) / (pt2[0] - pt1[0])
+        slope2 = (pt3[1] - pt2[1]) / (pt3[0] - pt2[0])
+    except ZeroDivisionError:
+        return 0.0
+    
+    # Calculate slopes of perpendicular bisectors
+    if slope1 == 0 or slope2 == 0:
+        return 0.0
+    
+    perp_slope1 = -1 / slope1
+    perp_slope2 = -1 / slope2
+    
+    # Check if slopes are parallel (i.e., points are collinear)
+    if abs(perp_slope1 - perp_slope2) < 1e-6:
+        return 0.0
+    
+    # Calculate y-intercepts of perpendicular bisectors
+    b1 = my1 - perp_slope1 * mx1
+    b2 = my2 - perp_slope2 * mx2
+    
+    # Calculate center coordinates
+    center_x = (b2 - b1) / (perp_slope1 - perp_slope2)
+    center_y = perp_slope1 * center_x + b1
+    
+    # Calculate radius
+    radius = np.sqrt((pt1[0] - center_x) ** 2 + (pt1[1] - center_y) ** 2)
+    
+    return 1.0 / radius
+
 class QuinticPath:
     def __init__(self, curr, target, curr_tangent, target_tangent, curr_acceleration, target_acceleration):
         """
@@ -193,52 +231,90 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
 
     curr_dist = 0
 
+    max_speed = 0
+
+    curr_acceleration = max_acceleration
+
+    curvature_at = curvature(path.position((elapsed_time-time_step) / total_time), path.position((elapsed_time) / total_time), path.position((elapsed_time+time_step) / total_time))
+    if curvature_at > 1e-6:
+      curr_acceleration = min(2/curvature_at, curr_acceleration)
+    else:
+       curr_acceleration = min(1e4, curr_acceleration)
+    
+    print(curr_acceleration, curvature_at)
+    
+
     # Distance Calculations
     if (elapsed_time > total_time):
       curr_dist = distance
       curr_velocity = 0
+      max_speed = 0
     # if we're accelerating
     elif (elapsed_time < acceleration_time):
       # use the kinematic equation for acceleration
-      curr_dist = 0.5 * max_acceleration * elapsed_time ** 2
-      curr_velocity = max_acceleration * elapsed_time
+      curr_dist = 0.5 * curr_acceleration * elapsed_time ** 2
+      curr_velocity = curr_acceleration * elapsed_time
+      max_speed = max_acceleration * elapsed_time
     # if we're cruising
     elif (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)):
-      acceleration_distance = 0.5 * max_acceleration * acceleration_time ** 2
+      acceleration_distance = 0.5 * curr_acceleration * acceleration_time ** 2
       cruise_current_time = elapsed_time - acceleration_time
 
       # use the kinematic equation for constant velocity
       curr_dist = acceleration_distance + max_velocity * cruise_current_time
       curr_velocity = max_velocity
+      max_speed = max_velocity
     # if we're decelerating
     else:
-      acceleration_distance = 0.5 * max_acceleration * acceleration_time ** 2
+      acceleration_distance = 0.5 * curr_acceleration * acceleration_time ** 2
       cruise_distance = max_velocity * cruise_time
       deceleration_curr_time = (elapsed_time - acceleration_time - cruise_time)
           
       # use the kinematic equations to calculate the instantaneous desired position
-      curr_dist = acceleration_distance + cruise_distance + max_velocity * deceleration_curr_time - max_acceleration * (deceleration_curr_time ** 2) / 2
-      curr_velocity = max_velocity - max_acceleration * (deceleration_curr_time) # inaccuracy here maybe
+      curr_dist = acceleration_distance + cruise_distance + max_velocity * deceleration_curr_time - curr_acceleration * (deceleration_curr_time ** 2) / 2
+      curr_velocity = max_velocity - curr_acceleration * (deceleration_curr_time) # inaccuracy here maybe
+      max_speed = max_velocity - max_acceleration * (deceleration_curr_time) # inaccuracy here maybe
         
     # Angular Calculations
     x,y = path.position(elapsed_time / total_time)
     dx,dy = path.derivatives(elapsed_time / total_time)
     dx2,dy2 = path.second_derivatives(elapsed_time / total_time)
 
-    # VELOCITY CURVING
-    max_speed = np.hypot(dx, dy)
-    if max_speed > 1e-6:
-        kappa = abs(dx * dy2 - dy * dx2) / (max_speed ** 3)
-    else:
-        kappa = 0
+    # # VELOCITY CURVING
+    # curvature_at = curvature(path.position((elapsed_time-time_step) / total_time), [x,y], path.position((elapsed_time+time_step) / total_time))
+    # if curvature_at > 1e-6:
+    #   max_speed = 1.5/curvature_at
+    # else:
+    #    max_speed = 1e4
     
-    if (max_speed < curr_velocity):
-      added_distance = ((curr_velocity - max_speed) * time_step) # in inches
+    # print(max_speed, curvature_at)
+    
+    # if (max_speed < curr_velocity):
+    #   added_distance = ((curr_velocity - max_speed) * time_step) # in inches
+    #   curr_dist -= added_distance
+
+    #   curr_velocity = max_speed
+
+    #   total_time += added_distance / curr_velocity
+
+    #   # need to factor in the other times here, not just total, as this makes velocity inaccurate
+
+    #   if (elapsed_time > total_time):
+    #     break;
+    #   # accelerating
+    #   elif (elapsed_time < acceleration_time):
+    #     acceleration_time += added_distance / curr_velocity
+    #   # cruising
+    #   elif (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)):
+    #     cruise_time += added_distance / curr_velocity
+    # # END
+
+    # ACCEL CURVING 
+    if (curr_velocity < max_speed):
+      added_distance = ((max_speed - curr_velocity) * time_step) # in inches
       curr_dist -= added_distance
 
-      curr_velocity = max_speed
-
-      total_time += added_distance / curr_velocity
+      total_time += added_distance / max_speed
 
       # need to factor in the other times here, not just total, as this makes velocity inaccurate
 
@@ -246,10 +322,11 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
         break;
       # accelerating
       elif (elapsed_time < acceleration_time):
-        acceleration_time += added_distance / curr_velocity
+        acceleration_time += added_distance / max_speed
       # cruising
       elif (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)):
-        cruise_time += added_distance / curr_velocity
+        cruise_time += added_distance / max_speed
+    # END
 
     # Re calculate Angular Calculations with new total time
     x,y = path.position(elapsed_time / total_time)
@@ -257,7 +334,7 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     dx2,dy2 = path.second_derivatives(elapsed_time / total_time)
 
     theta = (np.arctan2(dy,dx))
-    omega = ((dy2 * dx - dy * dx2) / (((dx) ** 2) * (1 + ((dy / dx)) ** 2)))
+    omega = ((dy2 * dx - dy * dx2) / (((dx) ** 2) * (1 + ((dy / dx)) ** 2) + 1e-6))
 
     dist_arr.append(curr_dist)
     vel_arr.append(curr_velocity)
@@ -275,8 +352,10 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
 
   return [times, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
 
-curr = [0, 0, np.radians(90), 0]
-target = [24, 24, np.radians(0), 0]
+curr = [12, 12, np.radians(90), 0]
+
+
+target = [-12, 60, np.radians(90), 0]
 
 dist = np.sqrt(((target[0]-curr[0]) ** 2) + ((target[1]-curr[1]) ** 2))
 

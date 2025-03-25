@@ -153,14 +153,14 @@ float knights::curvature(const Point &pt1, const Point &pt2, const Point &pt3) {
     float slope1 = (pt2.y - pt1.y) / (pt2.x - pt1.x);
     float slope2 = (pt3.y - pt2.y) / (pt3.x - pt2.x);
 
-    // calculate slopes of perpendicular bisectors
-    float perp_slope1 = -1 / slope1;
-    float perp_slope2 = -1 / slope2;
-
     // check if slopes are infinite (means vertical line) - if they are return 0 for no curvature
     if (std::isinf(slope1) || std::isinf(slope2)) {
         return 0.0;
     }
+
+    // calculate slopes of perpendicular bisectors
+    float perp_slope1 = -1 / slope1;
+    float perp_slope2 = -1 / slope2;
 
     // check if slopes are parallel (means points are in a straight line) - if they are return 0 for no curvature
     if (std::fabs(perp_slope1 - perp_slope2) < 1e-6) {

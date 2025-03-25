@@ -99,6 +99,9 @@ knights::Pos knights::QuinticPath::second_derivatives(float t) {
     return Pos(dx2, dy2, 0);
 }
 
+#define ACCELERATION_CURVATURE_CONSTANT 3.5
+#define VELOCITY_CURVATURE_CONSTANT 1.5
+
 knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, knights::Pos end, float desired_voltage, int points_per_sec, bool forwards, float curr_accel, float target_accel) {
 
     if (!forwards) {
@@ -154,57 +157,72 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
     for (double elapsed_time = 0; elapsed_time <= total_time; elapsed_time += 1.0/points_per_sec) {
         float curr_velocity = 0;
 
-        if (elapsed_time > total_time) {
-            curr_velocity = 0;
-        } else if (elapsed_time < acceleration_time) {
-            curr_velocity = this->max_acceleration * elapsed_time;
-        } else if (cruise_time > 0 && elapsed_time < (acceleration_time + cruise_time)) {
-            float cruise_current_time = elapsed_time - acceleration_time;
-            curr_velocity = path_max_velocity;
-        } else {
-            float deceleration_curr_time = (elapsed_time - acceleration_time - cruise_time);
-            curr_velocity = path_max_velocity - this->max_acceleration * deceleration_curr_time;
-        }
-
         write_file << "stage 1 " << pros::micros() << "\n";
 
         Pos pt = path.position(elapsed_time / total_time);
         Pos deriv = path.derivatives(elapsed_time / total_time);
         Pos deriv2 = path.second_derivatives(elapsed_time / total_time);
 
+        Pos next1_pt = path.position((elapsed_time + 1.0/points_per_sec)/ total_time);
+        Pos next2_pt = path.position((elapsed_time + 2*1.0/points_per_sec)/ total_time);
+
+        float max_speed = 1e4;
+
+        // ### ACCELERATION CURVING
+        float curr_acceleratin = max_acceleration;
+        float curr_curvature = knights::curvature(pt, next1_pt, next2_pt);
+        if (curr_curvature > 1e-6) {
+            curr_acceleratin = std::fmin(curr_acceleratin, ACCELERATION_CURVATURE_CONSTANT/curr_curvature);
+        }
+        write_file << curr_acceleratin << " " << curr_curvature << "\n";
+        write_file << pt.x << " curr pt " << pt.y << "\n";
+        write_file << next1_pt.x << " next pt " << next1_pt.y << "\n";
+        write_file << next2_pt.x << " next2 pt " << next2_pt.y << "\n";
+        // ### END
+
+        if (elapsed_time > total_time) {
+            curr_velocity = 0;
+        } else if (elapsed_time < acceleration_time) {
+            curr_velocity = curr_acceleratin * elapsed_time;
+            max_speed = this->max_acceleration * elapsed_time;
+        } else if (cruise_time > 0 && elapsed_time < (acceleration_time + cruise_time)) {
+            float cruise_current_time = elapsed_time - acceleration_time;
+            curr_velocity = path_max_velocity;
+            max_speed = path_max_velocity;
+        } else {
+            float deceleration_curr_time = (elapsed_time - acceleration_time - cruise_time);
+            curr_velocity = path_max_velocity - curr_acceleratin * deceleration_curr_time;
+            max_speed = path_max_velocity - this->max_acceleration * deceleration_curr_time;
+        }
+
         write_file << "stage 2 " << pros::micros() << "\n";
 
-        // // #### Curvature slowing
-        // float max_speed = std::hypot(deriv.x, deriv.y);
-        // float kappa = 0;
-        // if (max_speed > 1e-6) {
-        //     kappa = std::fabs(deriv.x * deriv2.y - deriv.y * deriv2.x) / (pow(max_speed, 3));
-        // };
+        // #### Curvature slowing
+        curr_velocity = std::fmin(curr_velocity, VELOCITY_CURVATURE_CONSTANT/curr_curvature);
 
-        // if (max_speed < curr_velocity) {
-        //     float added_distance = ((curr_velocity - max_speed) * 1.0/points_per_sec); // in inches
-        //     // curr_dist -= added_distance
-    
-        //     curr_velocity = max_speed;
-    
-        //     total_time += added_distance / curr_velocity;
+        if (curr_velocity < max_speed) {
+            float added_distance = ((max_speed - curr_velocity) * 1.0/points_per_sec); // in inches
+            // curr_dist -= added_distance
+        
+            total_time += added_distance / max_speed;
 
-        //     if (elapsed_time > total_time) {
-        //         break;
-        //     } else if (elapsed_time < acceleration_time) {
-        //         acceleration_time += added_distance / curr_velocity;
-        //     } else if (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)) {
-        //         cruise_time += added_distance / curr_velocity;
-        //     }
-        // }
+            if (elapsed_time > total_time) {
+                break;
+            } else if (elapsed_time < acceleration_time) {
+                acceleration_time += added_distance / max_speed;
+            } else if (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)) {
+                cruise_time += added_distance / max_speed;
+            }
+        }
+        // #### END
 
-        // pt = path.position(elapsed_time / total_time);
-        // deriv = path.derivatives(elapsed_time / total_time);
-        // deriv2 = path.second_derivatives(elapsed_time / total_time);
+        pt = path.position(elapsed_time / total_time);
+        deriv = path.derivatives(elapsed_time / total_time);
+        deriv2 = path.second_derivatives(elapsed_time / total_time);
 
-        // write_file << "stage 3 " << pros::micros() << "\n";
+        write_file << "stage 3 " << pros::micros() << "\n";
 
-        // // #### END
+        // #### END
 
         float theta = std::atan2(deriv.y, deriv.x);
 
