@@ -371,6 +371,9 @@ void knights::RobotController::follow_profile_pursuit(const knights::MotionProfi
     
 }
 
+#define ANGULAR_SPEED_FACTOR 1
+#define LINEAR_CURVATURE_COEFFICIENT 2
+
 void knights::RobotController::follow_profile_ramsete(const knights::MotionProfile &profile, float end_tolerance, bool forwards) {
     // make sure this is only movement running and route is valid
     if (this->in_motion || profile.timestamps.size() < 2) return;
@@ -396,7 +399,7 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         // end conditions
         if (elapsed_time > profile.timestamps.back().time * 1.5 || curr_i >= profile.timestamps.size() - 1) break;
         if (elapsed_time > profile.timestamps.back().time * 1 && 
-            distance_btwn(this->chassis->curr_position, profile.timestamps.back().position) < end_tolerance*3) 
+            distance_btwn(this->chassis->curr_position, profile.timestamps.back().position) < end_tolerance*2) 
         {
             break;
         }
@@ -437,12 +440,27 @@ void knights::RobotController::follow_profile_ramsete(const knights::MotionProfi
         float curr_lin_vel = lin_vel * cos(error_theta) + gain * local_error_x; // still in m/s
         float curr_ang_vel = ang_vel + gain * error_theta + this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y / error_theta;
 
+        float curvature_speed = 1e4;
+        
+        if (curr_i < profile.timestamps.size() - 2) {
+            curvature_speed = LINEAR_CURVATURE_COEFFICIENT/knights::curvature(selected.position, profile.timestamps[curr_i+1].position, profile.timestamps[curr_i+2].position);
+        }
+
+        write_file << "curvature speed: " << curvature_speed << "\n";
+
+        float output_lin_vel = std::fmin(
+            fabs(to_inches(curr_lin_vel)),
+            fabs(curvature_speed)
+        ) * knights::signum(curr_lin_vel);
+
+        float output_ang_vel = curr_ang_vel * ANGULAR_SPEED_FACTOR * (output_lin_vel / to_inches(curr_lin_vel));
+
         // Send to drivetrain
-        this->chassis->drivetrain->velocity_command(to_inches(curr_lin_vel), curr_ang_vel, profile.max_velocity);
+        this->chassis->drivetrain->velocity_command(output_lin_vel, output_ang_vel, profile.max_velocity);
 
         // debugging velocities
-        float linear_rpm = (to_inches(curr_lin_vel) / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
-        float angular_lin_vel = (curr_ang_vel * chassis->drivetrain->track_width/2.0);
+        float linear_rpm = (output_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
+        float angular_lin_vel = (output_ang_vel * chassis->drivetrain->track_width/2.0);
         float angular_rpm = (angular_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
 
         float r_speed = linear_rpm + angular_rpm;
