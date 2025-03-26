@@ -235,13 +235,13 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
 
     curr_acceleration = max_acceleration
 
-    curvature_at = curvature(path.position((elapsed_time-time_step) / total_time), path.position((elapsed_time) / total_time), path.position((elapsed_time+time_step) / total_time))
-    if curvature_at > 1e-6:
-      curr_acceleration = min(2/curvature_at, curr_acceleration)
-    else:
-       curr_acceleration = min(1e4, curr_acceleration)
+    # curvature_at = curvature(path.position((elapsed_time-time_step) / total_time), path.position((elapsed_time) / total_time), path.position((elapsed_time+time_step) / total_time))
+    # if curvature_at > 1e-6:
+    #   curr_acceleration = min(2/curvature_at, curr_acceleration)
+    # else:
+    #    curr_acceleration = min(1e4, curr_acceleration)
     
-    print(curr_acceleration, curvature_at)
+    # print(curr_acceleration, curvature_at)
     
 
     # Distance Calculations
@@ -309,24 +309,24 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     #     cruise_time += added_distance / curr_velocity
     # # END
 
-    # ACCEL CURVING 
-    if (curr_velocity < max_speed):
-      added_distance = ((max_speed - curr_velocity) * time_step) # in inches
-      curr_dist -= added_distance
+    # # ACCEL CURVING 
+    # if (curr_velocity < max_speed):
+    #   added_distance = ((max_speed - curr_velocity) * time_step) # in inches
+    #   curr_dist -= added_distance
 
-      total_time += added_distance / max_speed
+    #   total_time += added_distance / max_speed
 
-      # need to factor in the other times here, not just total, as this makes velocity inaccurate
+    #   # need to factor in the other times here, not just total, as this makes velocity inaccurate
 
-      if (elapsed_time > total_time):
-        break;
-      # accelerating
-      elif (elapsed_time < acceleration_time):
-        acceleration_time += added_distance / max_speed
-      # cruising
-      elif (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)):
-        cruise_time += added_distance / max_speed
-    # END
+    #   if (elapsed_time > total_time):
+    #     break;
+    #   # accelerating
+    #   elif (elapsed_time < acceleration_time):
+    #     acceleration_time += added_distance / max_speed
+    #   # cruising
+    #   elif (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)):
+    #     cruise_time += added_distance / max_speed
+    # # END
 
     # Re calculate Angular Calculations with new total time
     x,y = path.position(elapsed_time / total_time)
@@ -353,9 +353,7 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
   return [times, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
 
 curr = [12, 12, np.radians(90), 0]
-
-
-target = [-12, 60, np.radians(90), 0]
+target = [60, 36, np.radians(90), 0]
 
 dist = np.sqrt(((target[0]-curr[0]) ** 2) + ((target[1]-curr[1]) ** 2))
 

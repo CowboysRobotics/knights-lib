@@ -82,8 +82,8 @@ void knights::PIDController::reset() {
     this->prev_error = 1e2;
 }
 
-knights::RamseteConstants::RamseteConstants(const float &damping, const float &proportional)
-    : damping(damping), proportional(proportional) {
+knights::RamseteConstants::RamseteConstants(const float &damping, const float &proportional, const float &curvature_coefficient)
+    : damping(damping), proportional(proportional), curvature_coefficient(curvature_coefficient) {
 }
 
 knights::RobotController::RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, RamseteConstants *ramsete_constants, bool use_motor_encoders)

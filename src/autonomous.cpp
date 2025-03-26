@@ -43,7 +43,7 @@
 STATIC_FILE(testpp3_txt)
 
 void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
-    knights::RamseteConstants ramsete_constants(0.7, 2.0);
+    knights::RamseteConstants ramsete_constants(0.7, 2.0, 2.0);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
 	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
@@ -90,7 +90,7 @@ void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	// 	}
 	// }
 
-    knights::RamseteConstants ramsete_constants(1, 0.5);
+    knights::RamseteConstants ramsete_constants;
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
 	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
@@ -125,7 +125,7 @@ void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
-    knights::RamseteConstants ramsete_constants(1, 0.5);
+    knights::RamseteConstants ramsete_constants;
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 110.0);
 	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
