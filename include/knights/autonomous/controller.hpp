@@ -1,13 +1,13 @@
 #pragma once
 
-#include "knights/util/position.hpp"
-#include "profile.hpp"
 #ifndef _CONTROLLER_H
 #define _CONTROLLER_H
 
+#include "knights/util/position.hpp"
 #include "knights/autonomous/pid.hpp"
 #include "knights/autonomous/ramsete.hpp"
 #include "knights/autonomous/path.hpp"
+#include "knights/autonomous/profile.hpp"
 
 #include "knights/robot/chassis.hpp"
 

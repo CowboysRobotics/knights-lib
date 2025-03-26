@@ -10,8 +10,6 @@
 #include "knights/util/position.hpp"
 #include "pros/rtos.hpp"
 
-#include "squiggles/squiggles.hpp"
-
 #include <cmath>
 #include <fstream>
 
@@ -54,10 +52,6 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	knights::PIDController angularPID(50, 0, 10, -25.0, 25.0);
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
-
-	// std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
-
-	// write_file << "Profile Generation Start at t: " << pros::millis() << "\n";
 	
 	knights::ProfileGenerator generator(drivetrain, 70);
 	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(60, 36, 90_deg), 80, 30, true);

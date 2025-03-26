@@ -1,10 +1,9 @@
 #pragma once
 
-#include "squiggles/geometry/profilepoint.hpp"
-#include <vector>
 #ifndef _PROFILE_H
 #define _PROFILE_H
 
+#include <vector>
 #include "knights/robot/drivetrain.hpp"
 #include "knights/util/position.hpp"
 
@@ -62,8 +61,6 @@ namespace knights {
         float desired_voltage;
 
         MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity, float desired_voltage);
-
-        MotionProfile(std::vector<squiggles::ProfilePoint> path, float max_accel, float max_velocity, float desired_voltage);
     };
 
     class ProfileGenerator {
