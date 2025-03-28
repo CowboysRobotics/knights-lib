@@ -8,18 +8,14 @@
 namespace knights {
 
     class Drivetrain {
-        private:
+        public:
             pros::MotorGroup *right_mtrs; // motors of right side of drivetrain
             pros::MotorGroup *left_mtrs;  // motors of left side of drivetrain
             float track_width; // width of the drivetrain
             float rpm; // max rpm of the drivetrain (ie 450rpm, 600 rpm, etc)
             float wheel_diameter; // diameters of the largest wheels on the drivetrain
             float gear_ratio; // gear ratio of the drivetrain
-
-            friend class RobotChassis;
-            friend class RobotController;
-            friend class ProfileGenerator;
-        public:
+            
             /**
              * @brief Construct a new differential drivetrain object
              * 
@@ -46,7 +42,7 @@ namespace knights {
              * @param linear_velocity Linear movement velocity (in/s)
              * @param angular_velocity Angular velocity (rad/s)
              */
-            void velocity_command(float linear_velocity, float angular_velocity);
+            void velocity_command(float linear_velocity, float angular_velocity, float maximum_lin_vel = 1000);
 
             /**
              * @brief Conversion function from distance to motor position (in degrees)

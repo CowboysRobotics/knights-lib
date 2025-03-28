@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
 #ifndef _PROFILE_H
 #define _PROFILE_H
 
+#include <vector>
 #include "knights/robot/drivetrain.hpp"
 #include "knights/util/position.hpp"
 
@@ -16,6 +16,8 @@ namespace knights {
         QuinticPath(knights::Pos curr, knights::Pos target,
             knights::Pos curr_tangent, knights::Pos target_tangent,
             float curr_acceleration, float target_acceleration);
+        
+        QuinticPath();
 
         float p00;
         float p01;

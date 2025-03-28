@@ -2,6 +2,7 @@
 #include "knights/autonomous/profile.hpp"
 #include "knights/util/calculation.hpp"
 #include "knights/util/position.hpp"
+#include "pros/rtos.hpp"
 #include <cmath>
 #include <vector>
 
@@ -27,6 +28,8 @@ knights::QuinticPath::QuinticPath(knights::Pos curr, knights::Pos target, knight
     this->p13 = this->target_acceleration / 20 + 2 * this->p14 - this->p15;
 };
 
+knights::QuinticPath::QuinticPath() {};
+
 knights::MotionProfile::MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity, float desired_voltage) :
     timestamps(timestamps), path(path), max_accel(max_accel), max_velocity(max_velocity), desired_voltage(desired_voltage) {}
 
@@ -39,20 +42,6 @@ knights::ProfileGenerator::ProfileGenerator(knights::Drivetrain drivetrain, floa
 
 knights::ProfileGenerator::ProfileGenerator(float max_velocity, float track_width, float max_acceleration) :
     max_velocity(max_velocity), max_acceleration(max_acceleration), track_width(track_width) {}
-
-// constexpr float knights::QuinticPath::p00() { return this->curr.x; }
-// constexpr float knights::QuinticPath::p01() { return this->p00() + this->curr_tangent.x / 5; }
-// constexpr float knights::QuinticPath::p02() { return this->curr_acceleration / 20 + 2 * this->p01() - this->p00(); }
-// constexpr float knights::QuinticPath::p03() { return this->target_acceleration / 20 + 2 * this->p04() - this->p05(); }
-// constexpr float knights::QuinticPath::p04() { return this->p05() - this->target_tangent.x / 5; }
-// constexpr float knights::QuinticPath::p05() { return this->target.x; }
-
-// constexpr float knights::QuinticPath::p10() { return this->curr.y; }
-// constexpr float knights::QuinticPath::p11() { return this->p10() + this->curr_tangent.y / 5; }
-// constexpr float knights::QuinticPath::p12() { return this->curr_acceleration / 20 + 2 * this->p11() - this->p10(); }
-// constexpr float knights::QuinticPath::p13() { return this->target_acceleration / 20 + 2 * this->p14() - this->p15(); }
-// constexpr float knights::QuinticPath::p14() { return this->p15() - this->target_tangent.y / 5; }
-// constexpr float knights::QuinticPath::p15() { return this->target.y; }
 
 knights::Pos knights::QuinticPath::position(float t) {
     float x = p00 * pow((1 - t), 5) + p01 * 5 * pow((1 - t), 4) * t +
@@ -96,6 +85,9 @@ knights::Pos knights::QuinticPath::second_derivatives(float t) {
     return Pos(dx2, dy2, 0);
 }
 
+#define ACCELERATION_CURVATURE_CONSTANT 3.5
+#define VELOCITY_CURVATURE_CONSTANT 1.5
+
 knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, knights::Pos end, float desired_voltage, int points_per_sec, bool forwards, float curr_accel, float target_accel) {
 
     if (!forwards) {
@@ -117,7 +109,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
         curr = p;
     }
 
-    float path_max_velocity = (this->max_velocity) * (desired_voltage / PROS_MAX_VOLTAGE);
+    float path_max_velocity = (this->max_velocity) * (fabs(desired_voltage) / PROS_MAX_VOLTAGE);
 
     // Calculate the time it takes to accelerate to max velocity
     float acceleration_time = path_max_velocity / this->max_acceleration;
@@ -143,40 +135,53 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     // std::vector<float> t = knights::linspace(0, total_time, points_per_sec * total_time);
 
+    std::fstream write_file("/usd/generation_output.txt", std::ios_base::out);
+
     std::vector<ProfileTimestamp> timestamps;
     float x = 0, y = 0;
 
     for (double elapsed_time = 0; elapsed_time <= total_time; elapsed_time += 1.0/points_per_sec) {
         float curr_velocity = 0;
 
-        if (elapsed_time > total_time) {
-            curr_velocity = 0;
-        } else if (elapsed_time < acceleration_time) {
-            curr_velocity = this->max_acceleration * elapsed_time;
-        } else if (cruise_time > 0 && elapsed_time < (acceleration_time + cruise_time)) {
-            float cruise_current_time = elapsed_time - acceleration_time;
-            curr_velocity = path_max_velocity;
-        } else {
-            float deceleration_curr_time = (elapsed_time - acceleration_time - cruise_time);
-            curr_velocity = path_max_velocity - this->max_acceleration * deceleration_curr_time;
-        }
+        write_file << "stage 1 " << pros::micros() << "\n";
 
         Pos pt = path.position(elapsed_time / total_time);
         Pos deriv = path.derivatives(elapsed_time / total_time);
         Pos deriv2 = path.second_derivatives(elapsed_time / total_time);
+        float curr_acceleratin = max_acceleration;
+        float max_speed = 1e4;
+
+        if (elapsed_time > total_time) {
+            curr_velocity = 0;
+        } else if (elapsed_time < acceleration_time) {
+            curr_velocity = curr_acceleratin * elapsed_time;
+            max_speed = this->max_acceleration * elapsed_time;
+        } else if (cruise_time > 0 && elapsed_time < (acceleration_time + cruise_time)) {
+            float cruise_current_time = elapsed_time - acceleration_time;
+            curr_velocity = path_max_velocity;
+            max_speed = path_max_velocity;
+        } else {
+            float deceleration_curr_time = (elapsed_time - acceleration_time - cruise_time);
+            curr_velocity = path_max_velocity - curr_acceleratin * deceleration_curr_time;
+            max_speed = path_max_velocity - this->max_acceleration * deceleration_curr_time;
+        }
+
+        write_file << "stage 3 " << pros::micros() << "\n";
+
+        // #### END
 
         float theta = std::atan2(deriv.y, deriv.x);
 
         pt.heading = theta;
 
-        float omega = ((deriv2.y * deriv.x - deriv.y * deriv2.x) / ((deriv.x * deriv.x) * (1 + (deriv.y / deriv.x) * (deriv.y / deriv.x))));
+        float curvature = (deriv2.y * deriv.x - deriv.y * deriv2.x) /((deriv.x * deriv.x + deriv.y * deriv.y) * std::hypot(deriv.x, deriv.y));
 
-        float right_speed = curr_velocity + (omega * track_width / 2);
-        float left_speed = curr_velocity - (omega * track_width / 2);
+        float right_speed = curr_velocity * (2 - curvature * track_width) / 2;
+        float left_speed = curr_velocity * (2 + curvature * track_width) / 2;
 
         if (!forwards) {
             curr_velocity *= -1;
-            omega *= -1;
+            curvature *= -1;
 
             float tmp = right_speed;
             right_speed = left_speed;
@@ -185,8 +190,12 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
             pt.heading = knights::normalize_angle(pt.heading + M_PI);
         }
 
-        timestamps.emplace_back(pt, curr_velocity, omega, elapsed_time, right_speed, left_speed);
+        timestamps.emplace_back(pt, curr_velocity, curr_velocity * curvature, elapsed_time, right_speed, left_speed);
+
+        write_file << "stage 4 " << pros::micros() << "\n";
     }
+
+    write_file.close();
 
     return MotionProfile(timestamps, path, this->max_acceleration, path_max_velocity, desired_voltage);
 }
