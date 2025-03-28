@@ -5,8 +5,6 @@ import numpy as np
 # Initialize Pygame
 pygame.init()
 
-
-
 # Constants
 WIDTH, HEIGHT = 600, 600
 BOX_SIZE = 400
@@ -44,6 +42,12 @@ square_coord = [0,0]
 # Slider properties
 slider_rect = pygame.Rect(100, HEIGHT - 50, 400, 10)
 slider_knob = pygame.Rect(100, HEIGHT - 60, 20, 30)
+
+# Distance sensors
+front_sensor = [0, 4, 0]
+left_sensor = [-4, 0, -90]
+right_sensor = [4, 0, 90]
+back_sensor = [0, -4, 180]
 
 def draw_box():
     pygame.draw.rect(screen, BOX_COLOR, (box_x, box_y, BOX_SIZE, BOX_SIZE), 2)
