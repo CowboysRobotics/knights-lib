@@ -38,7 +38,8 @@
 
 #define PROS_MAX_VOLTAGE 127
 
-STATIC_FILE(testpp3_txt)
+ASSET(testroute_txt)
+ASSET(testroute_vaw)
 
 void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
     knights::RamseteConstants ramsete_constants(0.7, 2.0, 2.0);
@@ -54,22 +55,24 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
 	
 	knights::ProfileGenerator generator(drivetrain, 70);
-	knights::MotionProfile profile = generator.generate(chassis->get_position(), knights::Pos(60, 36, 90_deg), 80, 30, true);
 
-	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
-	
-	for (knights::ProfileTimestamp timestamp : profile.timestamps) {
-		write_file << "time: " << timestamp.time << " ";
-		write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
-		write_file << "lin vel: " << timestamp.linear_velocity << " ";
-		write_file << "angular vel: " << timestamp.angular_velocity << " ";
-		write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
-		write_file << "\n";
-	}
+	knights::Pos initial = chassis->get_position();
 
-	write_file.close();
+	AssetStream vawpath(testroute_vaw);
+	auto first_path_vaw = advanced_route_from_asset(vawpath);
 
-	robotControl.follow_profile_ramsete(profile);
+	first_path_vaw.execute(chassis, &robotControl, nullptr);
+
+	// AssetStream first(testroute_txt);
+	// auto first_route = knights::init_route_from_asset(first);
+
+	// robotControl.follow_route(first_route, 15.0, 90);
+
+	// pros::delay(500);
+
+	// knights::MotionProfile profile = generator.generate(chassis->get_position(), initial, 80, 30, false);
+
+	// robotControl.follow_profile(profile);
 	
 }
 

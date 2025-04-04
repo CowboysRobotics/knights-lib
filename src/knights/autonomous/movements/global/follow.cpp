@@ -50,7 +50,7 @@ float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights:
         return -1;
 }
 
-void knights::RobotController::follow_route_pursuit(const knights::Route &route, float lookahead_distance, const float max_speed, bool forwards, 
+void knights::RobotController::follow_route(const knights::Route &route, float lookahead_distance, const float max_speed, bool forwards, 
     float end_tolerance, float timeout, bool use_pid) {
     // make sure this is only movement running and route is valid
     if (this->in_motion || route.positions.size() < 2) return;
@@ -228,7 +228,7 @@ void knights::RobotController::follow_route_pursuit(const knights::Route &route,
     
 }
 
-void knights::RobotController::follow_profile_ramsete(const knights::MotionProfile &profile, float end_tolerance, bool forwards) {
+void knights::RobotController::follow_profile(const knights::MotionProfile &profile, float end_tolerance, bool forwards) {
     // make sure this is only movement running and route is valid
     if (this->in_motion || profile.timestamps.size() < 2) return;
     this->in_motion = true;

@@ -17,6 +17,13 @@ typedef struct __attribute__((__packed__)) _asset {
     size_t size;
 } asset;
 
+// Define the macro for embedding static assets
+#define ASSET(x)                                                                                                       \
+    extern "C" {                                                                                                       \
+    extern uint8_t _binary_static_##x##_start[], _binary_static_##x##_size[];                                          \
+    static asset x = {_binary_static_##x##_start, (size_t)_binary_static_##x##_size};                                  \
+    }
+
 // Custom streambuf to read from asset data
 class AssetStreambuf : public std::streambuf {
 public:
@@ -53,15 +60,6 @@ public:
 private:
     AssetStreambuf buf;
 };
-
-// Define the macro for embedding static assets
-#define STATIC_FILE(x)                                                                                                 \
-    extern "C" {                                                                                                       \
-    extern uint8_t _binary_static_##x##_start[], _binary_static_##x##_size[];                                          \
-    static asset x##_asset = {_binary_static_##x##_start, (size_t)_binary_static_##x##_size};                          \
-    static AssetStream x(x##_asset);                                                                                   \
-    }
-
 
 } // extern "C"
 
