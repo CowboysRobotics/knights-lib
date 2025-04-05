@@ -329,13 +329,14 @@ void knights::AdvancedRoute::execute(knights::RobotChassis *chassis, knights::Ro
             knights::logger::green(knights::logger::string_format("turn %lf", curr_action.specific));
         }
         else if (curr_action.type == knights::action_type::FOLLOW && this->routes.contains(curr_action.route_name)) {
-            robotControl->follow_route_pursuit(
+            robotControl->follow_route(
                 this->routes[curr_action.route_name], 
                 curr_action.lookahead, 
                 robotControl->lateral_pid->get_max_speed(), 
                 true,
                 curr_action.end_tolerance, 
-                curr_action.timeout
+                curr_action.timeout,
+                true
             );
             knights::logger::cyan(knights::logger::string_format("follow: %s , pos: %lf %lf %lf , error: %lf", curr_action.route_name.c_str(), 
                 chassis->get_position().x, chassis->get_position().y, chassis->get_position().heading, 
