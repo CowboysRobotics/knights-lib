@@ -56,23 +56,21 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	
 	knights::ProfileGenerator generator(drivetrain, 70);
 
+	// AssetStream vawpath(testroute_vaw);
+	// auto first_path_vaw = advanced_route_from_asset(vawpath);
+	// first_path_vaw.execute(chassis, &robotControl, nullptr);
+	
 	knights::Pos initial = chassis->get_position();
+	AssetStream first(testroute_txt);
+	auto first_route = knights::init_route_from_asset(first);
 
-	AssetStream vawpath(testroute_vaw);
-	auto first_path_vaw = advanced_route_from_asset(vawpath);
+	robotControl.follow_route(first_route, 15.0, 90);
 
-	first_path_vaw.execute(chassis, &robotControl, nullptr);
+	pros::delay(500);
 
-	// AssetStream first(testroute_txt);
-	// auto first_route = knights::init_route_from_asset(first);
+	knights::MotionProfile profile = generator.generate(chassis->get_position(), initial, 80, 30, false);
 
-	// robotControl.follow_route(first_route, 15.0, 90);
-
-	// pros::delay(500);
-
-	// knights::MotionProfile profile = generator.generate(chassis->get_position(), initial, 80, 30, false);
-
-	// robotControl.follow_profile(profile);
+	robotControl.follow_profile(profile);
 	
 }
 

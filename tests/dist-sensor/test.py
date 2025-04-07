@@ -36,7 +36,7 @@ font = pygame.font.Font(None, 24)
 
 # Initial square position and angle
 square_pos = [ORIGIN_X, ORIGIN_Y]
-angle = 0
+angle = 90
 
 square_coord = [0,0]
 
@@ -45,10 +45,12 @@ slider_rect = pygame.Rect(100, HEIGHT - 50, 400, 10)
 slider_knob = pygame.Rect(100, HEIGHT - 60, 20, 30)
 
 # Distance sensors
-front_sensor = [0, 4, 0]
-left_sensor = [4, 0, 90]
-right_sensor = [-4, 0, -90]
-back_sensor = [0, -4, 180]
+front_sensor = [0, 0, 0]
+left_sensor = [0, 0, 90]
+right_sensor = [0, 0, -90]
+back_sensor = [0, 0, 180]
+
+sensors = [front_sensor, left_sensor, right_sensor, back_sensor]
 
 WALL_DIST = 72
 
@@ -120,16 +122,60 @@ def draw_slider():
 def draw_position_label():
     position_text = font.render(f"Position: {square_coord[0]:.2f}, {square_coord[1]:.2f} | Angle: {angle}", True, TEXT_COLOR)
     screen.blit(position_text, (10, 10))
- 
-    right_dist = ray_cast(right_sensor) + right_sensor[0] * np.cos(np.radians(right_sensor[2] - angle))
-    front_dist = ray_cast(front_sensor) - front_sensor[1] * np.cos(np.radians(front_sensor[2] - angle))
-    left_dist = ray_cast(left_sensor) - left_sensor[0] * np.cos(np.radians(left_sensor[2] - angle))
-    back_dist = ray_cast(back_sensor) + back_sensor[1] * np.cos(np.radians(back_sensor[2] - angle))
+   
+    x_estimates = np.array([])
+    y_estimates = np.array([])
+   
+    for sensor in sensors:
+      s_dist = ray_cast(sensor)
+
+      sensor_angle = np.radians(np.remainder(angle + sensor[2], 360))
+
+      hit_pos = [s_dist * np.cos(sensor_angle), s_dist * np.sin(sensor_angle)] # wrong sometimes
+
+      # issue happens when both sensors are not on the same wall
+
+      # have to process sensor data here, what does this sensor say about the center of the bot
+
+      # first, determine which wall the sensor is hitting
+      # next, find distance of the
+
+      if (np.abs(hit_pos[0]) > np.abs(hit_pos[1])): # hit right / left wall
+          
+        if hit_pos[0] > 0: # right wall
+          x_estimates = np.append(
+             x_estimates,
+             s_dist * np.cos(sensor_angle) - (WALL_DIST)
+          )
+        else: # left wall
+          x_estimates = np.append(
+             x_estimates,
+             s_dist * np.cos(sensor_angle) - (-WALL_DIST)
+          )
+
+      else: # hit top / bottom wall
+        
+        if hit_pos[0] > 0: # top wall
+          y_estimates = np.append(
+             y_estimates,
+             s_dist * np.sin(sensor_angle) - (WALL_DIST)
+          )
+        else: # bottom wall
+          y_estimates = np.append(
+             y_estimates,
+             s_dist * np.sin(sensor_angle) - (-WALL_DIST)
+          )
+
+        print(hit_pos)
+        print(s_dist)
+
+    print(x_estimates, y_estimates)
    
     estimated_pos = [
-      (right_dist - left_dist),
-      (front_dist - back_dist)
+      -np.average(x_estimates),
+      -np.average(y_estimates)
     ]
+    # cant do this bc if only one sensor is tracking x, then no balancing opposing sensor
    
     position_text = font.render(f"Estimation: {estimated_pos[0]:.2f}, {estimated_pos[1]:.2f}", True, TEXT_COLOR)
     screen.blit(position_text, (410, 10))
