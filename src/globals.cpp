@@ -21,14 +21,14 @@ pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 // Competition Robot
 //front of bot is intake side
 //assign ports to right side drive-train
-pros::MotorGroup left_mtrs({2,3,-4}, pros::MotorGears::blue); // no reverse
+pros::MotorGroup left_mtrs({-1,12,13}, pros::MotorGears::blue); // no reverse
 //assign ports to left side drive-train
-pros::MotorGroup right_mtrs({-14,-12,13}, pros::MotorGears::blue); // no reverse
+pros::MotorGroup right_mtrs({-17,18,-19}, pros::MotorGears::blue); // no reverse
 //assign ports to odom pods for position tracking
-pros::Rotation mid_odom(8); // parallel tracking
-pros::Rotation back_odom(	11); // perpendicular tracking
+pros::Rotation mid_odom(15); // parallel tracking
+pros::Rotation back_odom(	16); // perpendicular tracking
 //assign port for imu tracker
-pros::IMU imu(6);
+pros::IMU imu(11);
 //dimensions and positions of odom pods for calculations for position tracking
 knights::PositionTracker midOdom(&mid_odom, 2, 1, 0.9315, -1);
 knights::PositionTracker backOdom(&back_odom, 2, 1, 1.6550, -1); // 1.875
@@ -48,29 +48,29 @@ knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.9375, 600.0, 2.75, 1)
 // #### END
 
 //assign ports to Lady Brown arm mech
-pros::Motor lady_brown(21, pros::MotorGears::green);
+pros::Motor lady_brown(5, pros::MotorGears::green);
 pros::Rotation lady_brown_rotation(7);
 
 //assign ports to intake, leftside first, rightside second
-pros::MotorGroup intake({20, 5}, pros::MotorGears::blue);
+pros::MotorGroup intake({2, -20}, pros::MotorGears::blue);
 
-pros::Motor intake_bottom(5, pros::v5::MotorGears::blue);
+pros::Motor intake_bottom(2, pros::v5::MotorGears::blue);
 
 pros::Motor intake_top(20,pros::v5::MotorGears::blue);
 
 //assign port to distance sensor for redirect
-pros::Optical colors(15);
+pros::Optical colors(21);
 
 //assign ports for pneumatics
-pros::adi::Pneumatics clamp(1, false); //clamp solenoid
-pros::adi::Pneumatics doinker(3, false); //doinker solenoid
+pros::adi::Pneumatics clamp(2, false); //clamp solenoid
+pros::adi::Pneumatics doinker(1, false); //doinker solenoid
 pros::adi::Pneumatics doinker2(2, false); //rush mech solenoid
 
 // distance sensors
-pros::Distance left_sensor(1);
-pros::Distance back_sensor(10);
-pros::Distance right_sensor(18);
-pros::Distance front_sensor(19);
+pros::Distance left_sensor(8);
+pros::Distance back_sensor(9);
+pros::Distance right_sensor(4);
+pros::Distance front_sensor(3);
 
 knights::DistanceTracker back(&back_sensor, 7, 3.0625, M_PI);
 knights::DistanceTracker left(&left_sensor, -7, 4.75, M_PI/2);
@@ -142,7 +142,7 @@ void unjam_intake_check() {
 	}
 }
 
-bool color_sorting = true;
+bool color_sorting = false;
 bool auton_color_sorting = false;
 bool red_alliance = true;
 
@@ -197,17 +197,17 @@ void blue_color_auton_sort(){
 
 
 #define LADY_BROWN_VELOCITY 127.0
-#define LADY_BROWN_kP 1.1 // 1.75
+#define LADY_BROWN_kP 1.75 // 1.75
 #define LADY_BROWN_kI 0.000
 #define LADY_BROWN_kD 0.5
 
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
 #define LADY_BROWN_DOWN 0
-#define LADY_BROWN_LOAD1 337
-#define LADY_BROWN_LOAD2 135
-#define LADY_BROWN_SCORE 206 // 213
-#define LADY_BROWN_ALLIANCE 160
+#define LADY_BROWN_LOAD1 26
+#define LADY_BROWN_LOAD2 165
+#define LADY_BROWN_SCORE 180 // 213
+#define LADY_BROWN_ALLIANCE 203
 #define LADY_BROWN_END_TOLERANCE 1.0
 
 bool lady_brown_spinning = false;
@@ -243,14 +243,14 @@ float get_lady_brown_command() {
 	float speed = lady_brown_PID.update(error, false);
 	// printf("error: %lf speed: %lf\n", error, speed);
 
-	if (lady_brown_target < 180 && lady_brown_target > 0 && (lady_brown_rotation.get_angle()/100.0 > lady_brown_target || lady_brown_rotation.get_angle()/100.0 < 20)) {
-		speed = -1 * fabs(speed);
+	if (lady_brown_target > 190 && (lady_brown_rotation.get_angle()/100.0 < lady_brown_target)) {
+		speed = fabs(speed);
 	}
 	else if (lady_brown_target == LADY_BROWN_DOWN) {
-		speed = fabs(speed);
+		speed = -1 * fabs(speed);
 	}
-	else if (lady_brown_rotation.get_angle()/100.0 < 180 && lady_brown_target == LADY_BROWN_LOAD1 && lady_brown_rotation.get_angle()/100.0 > 30) {
-		speed = fabs(speed);
+	else if (lady_brown_rotation.get_angle()/100.0 > 50 && lady_brown_target == LADY_BROWN_LOAD1) {
+		speed = -1 * fabs(speed);
 	}
 
 	return speed;

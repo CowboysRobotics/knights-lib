@@ -38,7 +38,7 @@
 
 #define PROS_MAX_VOLTAGE 127
 
-ASSET(testroute_txt)
+ASSET(testroute2_txt)
 ASSET(testroute_vaw)
 
 void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
@@ -58,15 +58,18 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	knights::Pos initial = chassis->get_position();
 
-	AssetStream vawpath(testroute_vaw);
-	auto first_path_vaw = advanced_route_from_asset(vawpath);
+	// AssetStream vawpath(testroute2_txt);
+	// auto first_path_vaw = advanced_route_from_asset(vawpath);
 
-	first_path_vaw.execute(chassis, &robotControl, nullptr);
+	// first_path_vaw.execute(chassis, &robotControl, nullptr);
 
-	// AssetStream first(testroute_txt);
-	// auto first_route = knights::init_route_from_asset(first);
+	AssetStream first(testroute2_txt);
+	auto first_route = knights::init_route_from_asset(first);
 
-	// robotControl.follow_route(first_route, 15.0, 90);
+	robotControl.follow_route(first_route, 15.0, 90, true, 4.0, 3000, true);
+
+	robotControl.lateral_move(-24);
+	robotControl.turn_to_angle(90);
 
 	// pros::delay(500);
 

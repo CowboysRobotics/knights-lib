@@ -30,7 +30,7 @@ void initialize() {
 	//make sure that the imu sensor is accurate before the start of a match
 	knights::logger::blue("Initialization Begin");
 
-	auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(-48, -60, 90_deg));
+	auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(-48, -60, 90));
 
 	lv_display();
 
