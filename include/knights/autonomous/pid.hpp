@@ -34,6 +34,10 @@ namespace knights {
             // values to clamp the PID to
             float max_velocity = 127.0; float min_velocity = 0.0;
 
+            float slew_max = -1.0;
+
+            float prev_speed;
+
             // PID use values
             float prev_error; float total_error;
 
@@ -65,7 +69,7 @@ namespace knights {
              * @param min_velocity minimum value that the system will return
              * @param max_velocity maximum value that the system will return
              */
-            PIDController(PIDConstants constants, float min_velocity, float max_velocity);
+            PIDController(PIDConstants constants, float min_velocity, float max_velocity, float slew = -1.0);
 
             /**
              * @brief Construct a new PID controller object
@@ -76,7 +80,7 @@ namespace knights {
              * @param min_velocity minimum value that the system will return
              * @param max_velocity maximum value that the system will return
              */
-            PIDController(float kP, float kI, float kD, float min_velocity, float max_velocity);
+            PIDController(float kP, float kI, float kD, float min_velocity, float max_velocity, float slew = -1.0);
 
             /**
              * @brief Construct a new pid controller object with 0.0 for each tuning value

@@ -18,16 +18,16 @@ knights::PIDController::PIDController(PIDConstants constants)
     : kP(constants.kP), kI(constants.kI), kD(constants.kD), min_velocity(-127.0), max_velocity(127.0) {
 }
 
-knights::PIDController::PIDController(PIDConstants constants, float min_velocity, float max_velocity) 
-    : kP(constants.kP), kI(constants.kI), kD(constants.kD), min_velocity(min_velocity), max_velocity(max_velocity) {
+knights::PIDController::PIDController(PIDConstants constants, float min_velocity, float max_velocity, float slew_max) 
+    : kP(constants.kP), kI(constants.kI), kD(constants.kD), min_velocity(min_velocity), max_velocity(max_velocity), slew_max(slew_max) {
 }
 
 knights::PIDController::PIDController(float kP, float kI, float kD) 
     : kP(kP), kI(kI), kD(kD), min_velocity(-127.0), max_velocity(127.0) {
 }
 
-knights::PIDController::PIDController(float kP, float kI, float kD, float min_velocity, float max_velocity) 
-    : kP(kP), kI(kI), kD(kD), min_velocity(min_velocity), max_velocity(max_velocity) {
+knights::PIDController::PIDController(float kP, float kI, float kD, float min_velocity, float max_velocity, float slew_max) 
+    : kP(kP), kI(kI), kD(kD), min_velocity(min_velocity), max_velocity(max_velocity), slew_max(slew_max) {
 }
 
 knights::PIDController::PIDController() 

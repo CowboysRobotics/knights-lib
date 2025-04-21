@@ -26,13 +26,13 @@ pros::MotorGroup left_mtrs({-1,12,13}, pros::MotorGears::blue); // no reverse
 pros::MotorGroup right_mtrs({-17,18,-19}, pros::MotorGears::blue); // no reverse
 //assign ports to odom pods for position tracking
 pros::Rotation mid_odom(15); // parallel tracking
-pros::Rotation back_odom(	16); // perpendicular tracking
+pros::Rotation back_odom(16); // perpendicular tracking
 //assign port for imu tracker
 pros::IMU imu(11);
 //dimensions and positions of odom pods for calculations for position tracking
-knights::PositionTracker midOdom(&mid_odom, 2, 1, 0.9315, -1);
-knights::PositionTracker backOdom(&back_odom, 2, 1, 1.6550, -1); // 1.875
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 10.9375, 600.0, 2.75, 1);
+knights::PositionTracker midOdom(&mid_odom, 2, 1, 0.34475, -1);
+knights::PositionTracker backOdom(&back_odom, 2, 1, 1.6, -1); // 1.875
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 13, 600.0, 2.75, 1); // actual 11
 // #### END
 
 // #### Test Robot
@@ -125,7 +125,7 @@ int jam_times = 0;
 bool jam_enabled = false;
 
 void unjam_intake_check() {
-	if (intake_spinning && std::abs(intake.get_actual_velocity()) < 1) {
+	if (intake_spinning && std::abs(intake.get_actual_velocity()) < 1 && jam_enabled) {
 		jam_times++;
 
 		if (jam_times > 20) {
@@ -203,10 +203,11 @@ void blue_color_auton_sort(){
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
 #define LADY_BROWN_DOWN 0
-#define LADY_BROWN_LOAD1 26
-#define LADY_BROWN_LOAD2 165
-#define LADY_BROWN_SCORE 180 // 213
-#define LADY_BROWN_ALLIANCE 203
+#define LADY_BROWN_LOAD1 22
+#define LADY_BROWN_DESCORE 140
+#define LADY_BROWN_SCORE 165 // 213
+#define LADY_BROWN_ALLIANCE 195
+#define LADY_BROWN_TIP 240
 #define LADY_BROWN_END_TOLERANCE 1.0
 
 bool lady_brown_spinning = false;
@@ -239,17 +240,16 @@ float lady_brown_target = LADY_BROWN_DOWN;
 float get_lady_brown_command() {
 	float error = knights::angular_error(lady_brown_rotation.get_angle()/100.0, lady_brown_target, 0, false);
 	// float error = lady_brown_target - (lady_brown_rotation.get_angle()/100.0);
+
 	float speed = lady_brown_PID.update(error, false);
 	// printf("error: %lf speed: %lf\n", error, speed);
 
-	if (lady_brown_target > 190 && (lady_brown_rotation.get_angle()/100.0 < lady_brown_target)) {
-		speed = fabs(speed);
+
+	if (lady_brown_target > 180 && (lady_brown_rotation.get_angle()/100.0 < lady_brown_target || lady_brown_rotation.get_angle()/100.0 > 320)) {
+		speed = std::fabs(speed);
 	}
-	else if (lady_brown_target == LADY_BROWN_DOWN) {
-		speed = -1 * fabs(speed);
-	}
-	else if (lady_brown_rotation.get_angle()/100.0 > 50 && lady_brown_target == LADY_BROWN_LOAD1) {
-		speed = -1 * fabs(speed);
+	else if (lady_brown_target < lady_brown_rotation.get_angle()/100.0 && !(lady_brown_rotation.get_angle()/100.0 > 300)) {
+		speed = -std::fabs(speed);
 	}
 
 	return speed;
@@ -259,6 +259,11 @@ float get_lady_brown_command() {
 void lady_brown_down() {
     // lady_brown_to_angle(LADY_BROWN_DOWN, 1500, true, -1);
 	lady_brown_target = LADY_BROWN_DOWN;
+}
+
+void lady_brown_tip() {
+    // lady_brown_to_angle(LADY_BROWN_DOWN, 1500, true, -1);
+	lady_brown_target = LADY_BROWN_TIP;
 }
 
 void lady_brown_load1() {
@@ -275,7 +280,7 @@ void lady_brown_load1() {
 void lady_brown_load2() {
 	// lady_brown_to_angle(LADY_BROWN_LOAD2, 1500, true, 1);
 
-	lady_brown_target = LADY_BROWN_LOAD2;
+	lady_brown_target = LADY_BROWN_DESCORE;
 }
 
 void lady_brown_score() {

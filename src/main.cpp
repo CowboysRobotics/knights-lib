@@ -30,7 +30,9 @@ void initialize() {
 	//make sure that the imu sensor is accurate before the start of a match
 	knights::logger::blue("Initialization Begin");
 
-	auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(-48, -60, 90));
+	// auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(0, 0, 0));
+
+	auton_map["None0"] = knights::Auton(&red_left_wp, knights::Pos(-55, 7, 220.0_deg));
 
 	lv_display();
 
@@ -255,7 +257,7 @@ void opcontrol() {
 
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_toggle, false); //assign clamp toggle to controller button R2
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doinker_toggle, false); //assign doinker toggle to controller button R1
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, doinker_toggle2, false); //assign doinker toggle to controller button R1
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, lady_brown_tip, false); //assign doinker toggle to controller button R1
 
 	auton_color_sorting = false;
 

@@ -1,3 +1,4 @@
+#include "knights/util/calculation.hpp"
 #include "pros/imu.hpp"
 #include <cmath>
 #include "knights/robot/drivetrain.hpp"
@@ -15,7 +16,12 @@ void knights::Drivetrain::voltage_command(int rightMtrs, int leftMtrs) {
 }
 
 void knights::Drivetrain::velocity_command(float linear_velocity, float angular_velocity, float maximum_lin_vel) {
-    float linear_rpm = (linear_velocity / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0;
+
+    // // experimental power law regression
+    // float linear_rpm = (linear_velocity / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0;
+    float linear_rpm = 6.119517 * std::pow(std::fabs(linear_velocity), 1.023282) * knights::signum(linear_velocity);
+
+
     float angular_lin_vel = (angular_velocity * track_width/2.0);
     float angular_rpm = (angular_lin_vel / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0;
 

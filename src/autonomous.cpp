@@ -12,27 +12,30 @@
 
 #include <cmath>
 #include <fstream>
+#include <string>
 
 #define RIGHT 1
 #define LEFT -1
 
-#define LATERAL_kP 8.1
+#define kPos knights::Pos
+
+#define LATERAL_kP 10
 #define LATERAL_kI 0
-#define LATERAL_kD 50
+#define LATERAL_kD 60
 
-#define TURN_kP_45 98
+#define TURN_kP_45 120
 #define TURN_kI_45 0.0
-#define TURN_kD_45 675
+#define TURN_kD_45 600
 
-#define TURN_kP_90 78 // 75 - 45 // 48 - 90 // 38 - 135 // 34 - 180
+#define TURN_kP_90 90 // 75 - 45 // 48 - 90 // 38 - 135 // 34 - 180
 #define TURN_kI_90 0.0 // 0.017 - 45 // 0.017 - 90 // 0.017 - 135 // 0.017 - 180
-#define TURN_kD_90 525 // 0.08 - 45 // 0.24 - 90 // 0.24 - 135 // 0.24 - 180
+#define TURN_kD_90 400 // 0.08 - 45 // 0.24 - 90 // 0.24 - 135 // 0.24 - 180
 
-#define TURN_kP_135 78
+#define TURN_kP_135 98
 #define TURN_kI_135 0.0
 #define TURN_kD_135 610
 
-#define TURN_kP_180 78
+#define TURN_kP_180 105
 #define TURN_kI_180 0.0
 #define TURN_kD_180 700
 
@@ -42,9 +45,9 @@ ASSET(testroute2_txt)
 ASSET(testroute_vaw)
 
 void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
-    knights::RamseteConstants ramsete_constants(0.7, 2.0, 2.0);
+    knights::RamseteConstants ramsete_constants(0.7, 2, 1.3);
 
-	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0, 3.0);
 	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
 	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
 	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
@@ -52,31 +55,167 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
 	knights::PIDController angularPID(50, 0, 10, -25.0, 25.0);
 
-	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, false);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, &ramsete_constants, false);
 	
-	knights::ProfileGenerator generator(drivetrain, 70);
+	knights::ProfileGenerator generator(drivetrain, 60);
 
-	// AssetStream vawpath(testroute_vaw);
-	// auto first_path_vaw = advanced_route_from_asset(vawpath);
-	// first_path_vaw.execute(chassis, &robotControl, nullptr);
+	knights::MotionProfile profile = generator.generate(chassis->get_position(), 
+		knights::Pos(36.0, 0, 0_deg), 100, 15, true);
+
+	std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
+	for (knights::ProfileTimestamp timestamp : profile.timestamps) {
+		write_file << "time: " << timestamp.time << " ";
+		write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+		write_file << "lin vel: " << timestamp.linear_velocity << " ";
+		write_file << "angular vel: " << timestamp.angular_velocity << " ";
+		write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+		write_file << "\n";
+	}
+	write_file.close();
+
+	// robotControl.follow_profile(profile);
+
+	for (int test_rpm = 0; test_rpm < 600; test_rpm += 50) {
+
+		right_mtrs.move_velocity(test_rpm);
+		left_mtrs.move_velocity(test_rpm);
+
+		float prev_x; 
+		float prev_time;
+
+		std::fstream velo_write_file("/usd/velocity_" + std::to_string(test_rpm) + ".txt", std::ios_base::out);
+
+		for (int i = 0; i < 40; i++) {
+
+			float curr_x = chassis->get_position().x;
+
+			float instant_velocity = (curr_x - prev_x) / (pros::millis() - prev_time);
+
+			prev_x = curr_x;
+			prev_time = pros::millis();
+
+			velo_write_file << instant_velocity << "\n";
+
+			pros::delay(30);
+		}
+
+		velo_write_file.close();
+
+		right_mtrs.move_velocity(0);
+		left_mtrs.move_velocity(0);
+
+	}
 	
-	knights::Pos initial = chassis->get_position();
+}
 
-	// AssetStream vawpath(testroute2_txt);
-	// auto first_path_vaw = advanced_route_from_asset(vawpath);
+ASSET(red_left_1_txt)
 
-	// first_path_vaw.execute(chassis, &robotControl, nullptr);
+void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
+    knights::RamseteConstants ramsete_constants(0.7, 2, 1.3);
 
-	AssetStream first(testroute2_txt);
-	auto first_route = knights::init_route_from_asset(first);
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0, 3.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
+	knights::PIDController angularPID(50, 0, 10, -25.0, 25.0);
 
-	// robotControl.follow_route(first_route, 15.0, 90);
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, &ramsete_constants, false);
+	
+	knights::ProfileGenerator generator(drivetrain, 60);
 
-	pros::delay(500);
+	lady_brown_alliance();
 
-	knights::MotionProfile profile = generator.generate(chassis->get_position(), initial, 80, 30, false);
+	robotControl.lateral_move(4);
+
+	pros::delay(300);
+
+	robotControl.lateral_move(-6);
+
+	lady_brown_down();
+
+	robotControl.lateral_move(-27); // -25
+
+	// robotControl.lateral_move(-6);
+
+	pros::delay(200);
+
+	clamp_toggle();
+
+	pros::delay(400);
+
+	robotControl.turn_to_angle(30);
+
+	intake_in();
+
+	auto profile = generator.generate(
+		chassis->get_position(), knights::Pos(-15, 59, 90_deg), 80); // off
 
 	robotControl.follow_profile(profile);
+
+	// robotControl.lateral_move(-2);
+
+	// pros::delay(500);
+
+	intake_in();
+
+	robotControl.turn_to_angle(215);
+
+	pros::delay(100);
+
+	intake_in();
+
+	robotControl.lateral_move(20, 3.0, 1000, false);
+
+	lady_brown_load1();
+
+	// pros::delay(500);
+
+	robotControl.turn_to_angle(60);
+
+	pros::delay(200);
+
+	robotControl.lateral_move(28);
+
+	lady_brown_score();
+
+	pros::delay(800);
+
+	lady_brown_down();
+
+	robotControl.lateral_move(-6);
+
+	robotControl.turn_to_angle(225);
+
+	intake_in();
+
+	// ramsete_constants.curvature_coefficient = 2;
+
+	// auto profile2 = generator.generate(
+	// 	chassis->get_position(), knights::Pos(-82, 60, 135_deg), 110, 15, true); // off bc odom
+
+	// robotControl.follow_profile(profile2, 8.0);
+
+	auto assetstream1 = AssetStream(red_left_1_txt);
+
+	lady_brown_score(); intake_in();
+
+	robotControl.follow_route(knights::init_route_from_asset(assetstream1), 12.0, 80, true, 4.0, 1500);
+
+	pros::delay(400);
+
+	robotControl.lateral_move(-12);
+
+	lady_brown_down();
+
+	robotControl.turn_to_angle(145);
+
+	robotControl.lateral_move(-38);
+
+	intake_in();
+
+	robotControl.lateral_move(-6);
 	
 }
 

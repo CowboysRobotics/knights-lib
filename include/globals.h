@@ -87,6 +87,7 @@ void lady_brown_down();
 void lady_brown_load1();
 void lady_brown_load2();
 void lady_brown_score();
+void lady_brown_tip();
 void lady_brown_alliance();
 
 void score_wall_stake();
