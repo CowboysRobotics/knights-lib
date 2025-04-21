@@ -135,9 +135,9 @@ void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	lady_brown_down();
 
-	robotControl.lateral_move(-27); // -25
+	robotControl.lateral_move(-23); // -25
 
-	// robotControl.lateral_move(-6);
+	robotControl.lateral_move(-6);
 
 	pros::delay(200);
 
@@ -172,7 +172,7 @@ void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	// pros::delay(500);
 
-	robotControl.turn_to_angle(60);
+	robotControl.turn_to_angle(58);
 
 	pros::delay(200);
 
@@ -182,9 +182,9 @@ void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	pros::delay(800);
 
-	lady_brown_down();
-
 	robotControl.lateral_move(-6);
+
+	lady_brown_down();
 
 	robotControl.turn_to_angle(225);
 
@@ -201,7 +201,7 @@ void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	lady_brown_score(); intake_in();
 
-	robotControl.follow_route(knights::init_route_from_asset(assetstream1), 12.0, 80, true, 4.0, 1500);
+	robotControl.follow_route(knights::init_route_from_asset(assetstream1), 18.0, 80, true, 4.0, 1500);
 
 	pros::delay(400);
 
@@ -211,11 +211,11 @@ void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	robotControl.turn_to_angle(145);
 
-	robotControl.lateral_move(-38);
+	robotControl.lateral_move(-38, 3.0, 2000);
 
 	intake_in();
 
-	robotControl.lateral_move(-6);
+	robotControl.lateral_move(-18);
 	
 }
 
