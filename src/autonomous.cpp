@@ -109,6 +109,7 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 }
 
 ASSET(red_left_1_txt)
+ASSET(red_left_wallstake_txt)
 
 void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
     knights::RamseteConstants ramsete_constants(0.7, 2, 1.3);
@@ -129,7 +130,7 @@ void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	robotControl.lateral_move(4);
 
-	pros::delay(300);
+	pros::delay(200);
 
 	robotControl.lateral_move(-6);
 
@@ -139,50 +140,58 @@ void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	robotControl.lateral_move(-6);
 
-	pros::delay(200);
 
 	clamp_toggle();
 
-	pros::delay(400);
+	pros::delay(200);
 
-	robotControl.turn_to_angle(30);
+	robotControl.turn_to_angle(22);
 
 	intake_in();
 
 	auto profile = generator.generate(
-		chassis->get_position(), knights::Pos(-15, 59, 90_deg), 80); // off
+		chassis->get_position(), knights::Pos(-6, 50, 90_deg), 80); // off
 
 	robotControl.follow_profile(profile);
 
 	// robotControl.lateral_move(-2);
 
-	// pros::delay(500);
+	pros::delay(300);
 
-	intake_in();
+	// intake_in();
 
-	robotControl.turn_to_angle(215);
+	robotControl.turn_to_angle(200);
 
-	pros::delay(100);
+	pros::delay(300);
 
-	intake_in();
+	// intake_in();
 
-	robotControl.lateral_move(20, 3.0, 1000, false);
+	robotControl.lateral_move(24, 3.0, 1000, false);
 
 	lady_brown_load1();
 
-	// pros::delay(500);
-
-	robotControl.turn_to_angle(58);
-
 	pros::delay(200);
 
-	robotControl.lateral_move(28);
+	// // ## NEW METHOD
+	robotControl.turn_to_angle(70);
+	auto assetstream2 = AssetStream(red_left_wallstake_txt);
+
+	robotControl.follow_route(knights::init_route_from_asset(assetstream2), 7.0, 80, true, 4.0, 600);
+
+	robotControl.turn_to_angle(40, 0, 1.0, 600);
+
+	robotControl.lateral_move(12);
+
+	// // ## OLD METHOD
+	// robotControl.turn_to_angle(44);
+	// pros::delay(200);
+	// robotControl.lateral_move(25);
 
 	lady_brown_score();
 
 	pros::delay(800);
 
-	robotControl.lateral_move(-6);
+	robotControl.lateral_move(-7);
 
 	lady_brown_down();
 
@@ -201,7 +210,7 @@ void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	lady_brown_score(); intake_in();
 
-	robotControl.follow_route(knights::init_route_from_asset(assetstream1), 18.0, 80, true, 4.0, 1500);
+	robotControl.follow_route(knights::init_route_from_asset(assetstream1), 13.0, 80, true, 4.0, 1700);
 
 	pros::delay(400);
 
@@ -209,14 +218,139 @@ void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	lady_brown_down();
 
-	robotControl.turn_to_angle(145);
+	robotControl.lateral_to_point(kPos(-22, 22, 225));
 
-	robotControl.lateral_move(-38, 3.0, 2000);
+	lady_brown_tip();
+
+	// pros::delay(400);
+
+	// intake_in();
+
+	// robotControl.lateral_move(14, 4.0, 750);
+
+
+	
+	
+}
+
+ASSET(red_right_middle_ring_txt)
+
+void red_right_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
+    knights::RamseteConstants ramsete_constants(0.7, 2, 1.4);
+
+	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0, 3.0);
+	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
+	turnPID.add_constant(knights::to_rad(45), knights::PIDConstants(TURN_kP_45, TURN_kI_45, TURN_kD_45));
+	turnPID.add_constant(knights::to_rad(90), knights::PIDConstants(TURN_kP_90, TURN_kI_90, TURN_kD_90));
+	turnPID.add_constant(knights::to_rad(135), knights::PIDConstants(TURN_kP_135, TURN_kI_135, TURN_kD_135));
+	turnPID.add_constant(knights::to_rad(180), knights::PIDConstants(TURN_kP_180, TURN_kI_180, TURN_kD_180));
+	knights::PIDController angularPID(50, 0, 10, -25.0, 25.0);
+
+	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, &ramsete_constants, false);
+	
+	knights::ProfileGenerator generator(drivetrain, 80);
+
+	lady_brown_alliance();
+
+	pros::delay(700);
+
+	robotControl.lateral_move(-6, 2.0);
+
+	lady_brown_down();
+
+	intake_raise.toggle();
+
+	pros::delay(200);
+
+	robotControl.turn_to_point(kPos(-48, 0, 0)); 
+	
+	// intake_in();
+	intake_bottom.move(300);
+
+	robotControl.lateral_move(16);
+
+	robotControl.lateral_move(12);
+
+	intake_raise.toggle();
+
+	pros::delay(300);
+
+	// intake_bottom.move(0);
+
+	auto profile = generator.generate(
+		chassis->get_position(), knights::Pos(-30, -18, 135_deg), 70, 15, false); // off
+
+	profile.dump();
+
+	robotControl.follow_profile(profile);
+
+	clamp_toggle();
+
+	pros::delay(300);
 
 	intake_in();
 
-	robotControl.lateral_move(-18);
+	robotControl.turn_to_point(kPos(-26, -48, 0));
+
+	lady_brown_load1();
+
+	pros::delay(200);
+
+	robotControl.lateral_move(16);
+
+	pros::delay(200);
+
+	// robotControl.turn_to_angle();
+
+	robotControl.lateral_to_point(kPos(-9, -58, 305), true, 3.0, 750);
+
+	pros::delay(200);
+
+	// robotControl.lateral_move(22);
+
+	intake_in();
+
+	lady_brown_score();
+
+	pros::delay(800);
+
+	lady_brown_down();
+
+	intake_in();
+
+	robotControl.lateral_move(-35, 6.0, 2500);
+
+	lady_brown_score(); intake_in();
+
+	pros::delay(200);
+
+	robotControl.turn_to_point(kPos(-72, -72, 0), true, 0, 0.0, 1000);
+
+	pros::delay(200);
+
+	robotControl.lateral_move(30);
+
+	robotControl.lateral_move(30, 3.0, 900);
+
+	pros::delay(300);
+
+	robotControl.lateral_move(-12);
+
+	lady_brown_down();
+
+	robotControl.lateral_to_position(kPos(-16, -16, 45));
+
+	// robotControl.lateral_move(8);
+
+	lady_brown_tip();
+
 	
+
+	
+
+
+
+
 }
 
 void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {

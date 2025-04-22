@@ -17,6 +17,25 @@
 #include <cmath>
 #include <cstdio>
 
+
+#define LADY_BROWN_VELOCITY 127.0
+#define LADY_BROWN_kP 1.75 // 1.75
+#define LADY_BROWN_kI 0.000
+#define LADY_BROWN_kD 0.5
+
+knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
+
+#define LADY_BROWN_DOWN 0
+#define LADY_BROWN_LOAD1 23.5
+#define LADY_BROWN_DESCORE 145
+#define LADY_BROWN_SCORE 165 // 213
+#define LADY_BROWN_ALLIANCE 195
+#define LADY_BROWN_TIP 240
+#define LADY_BROWN_END_TOLERANCE 1.0
+
+bool lady_brown_spinning = false;
+bool lady_brown_forward = false;
+
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
 // Competition Robot
 //front of bot is intake side
@@ -28,11 +47,11 @@ pros::MotorGroup right_mtrs({-17,18,-19}, pros::MotorGears::blue); // no reverse
 pros::Rotation mid_odom(15); // parallel tracking
 pros::Rotation back_odom(16); // perpendicular tracking
 //assign port for imu tracker
-pros::IMU imu(11);
+pros::IMU imu(14);
 //dimensions and positions of odom pods for calculations for position tracking
-knights::PositionTracker midOdom(&mid_odom, 2, 1, 0.34475, -1);
-knights::PositionTracker backOdom(&back_odom, 2, 1, 1.6, -1); // 1.875
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 13, 600.0, 2.75, 1); // actual 11
+knights::PositionTracker midOdom(&mid_odom, 1.939, 1, 0.1475, -1);
+knights::PositionTracker backOdom(&back_odom, 1.939, 1, 1.576, -1); // 1.875
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 11, 600.0, 2.75, 1); // actual 11
 // #### END
 
 // #### Test Robot
@@ -64,6 +83,8 @@ pros::Optical colors(21);
 pros::adi::Pneumatics clamp(2, false); //clamp solenoid
 pros::adi::Pneumatics doinker(1, false); //doinker solenoid
 pros::adi::Pneumatics doinker2(2, false); //rush mech solenoid
+
+pros::adi::Pneumatics intake_raise(3, false); //rush mech solenoid
 
 // distance sensors
 pros::Distance left_sensor(8);
@@ -100,6 +121,7 @@ float intake_voltage = 0;
 void intake_in() {
 	if (intake_spinning == true && intake_forward == true) { // If intake is on or in wrong direction
 		intake.move(0); // stop intake
+		intake_voltage = 0;
 		intake_spinning = false;
 	} else {
 		intake.move(INTAKE_VELOCITY); // Spin intake forward
@@ -112,6 +134,7 @@ void intake_in() {
 void intake_out() {
 	if (intake_spinning == true && intake_forward == false) { // If intake is spinning or in the wrong direction
 		intake.move(0); // stop intake
+		intake_voltage = 0;
 		intake_spinning = false;
 	} else { 
 		intake.move(-INTAKE_VELOCITY); // Spin the intake in reverse
@@ -122,22 +145,24 @@ void intake_out() {
 }
 
 int jam_times = 0;
-bool jam_enabled = false;
+bool jam_enabled = true;
 
 void unjam_intake_check() {
-	if (intake_spinning && std::abs(intake.get_actual_velocity()) < 1 && jam_enabled) {
+	// std::cout << jam_times << " " << std::abs(intake_top.get_actual_velocity()) << " " << jam_enabled << "\n";
+	if (intake_spinning && std::abs(intake_top.get_actual_velocity()) < 1 && lady_brown_target != LADY_BROWN_LOAD1) {
 		jam_times++;
 
 		if (jam_times > 20) {
 
-			float original_intake_voltage = intake_voltage;
-
-			intake.move(-1 * intake_voltage);
+			intake_top.move(intake_voltage);
 			pros::delay(200);
-			intake.move(intake_voltage);
+			intake_top.move(-intake_voltage);
 
 			jam_times = 0;
 		}
+	}
+	else {
+		intake_top.move(-intake_voltage);
 	}
 }
 
@@ -194,24 +219,6 @@ void blue_color_auton_sort(){
 	}
 }
 
-
-#define LADY_BROWN_VELOCITY 127.0
-#define LADY_BROWN_kP 1.75 // 1.75
-#define LADY_BROWN_kI 0.000
-#define LADY_BROWN_kD 0.5
-
-knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
-
-#define LADY_BROWN_DOWN 0
-#define LADY_BROWN_LOAD1 22
-#define LADY_BROWN_DESCORE 140
-#define LADY_BROWN_SCORE 165 // 213
-#define LADY_BROWN_ALLIANCE 195
-#define LADY_BROWN_TIP 240
-#define LADY_BROWN_END_TOLERANCE 1.0
-
-bool lady_brown_spinning = false;
-bool lady_brown_forward = false;
 
 void lady_brown_fwd() {
 	if (lady_brown_spinning == true && lady_brown_forward == true) { // If intake is on or in wrong direction
@@ -287,6 +294,7 @@ void lady_brown_score() {
 	// color_sorting = true;
 	intake_spinning = false;
 	intake.move(0);
+	intake_voltage = 0;
     // lady_brown_to_angle(LADY_BROWN_SCORE, 1500, true);
 
 	lady_brown_target = LADY_BROWN_SCORE;

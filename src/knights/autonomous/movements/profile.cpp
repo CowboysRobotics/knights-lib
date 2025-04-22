@@ -200,6 +200,19 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
     return MotionProfile(timestamps, path, this->max_acceleration, path_max_velocity, desired_voltage);
 }
 
+void knights::MotionProfile::dump() {
+    std::fstream write_file("/usd/motion_output.txt", std::ios_base::out);
+	for (knights::ProfileTimestamp timestamp : this->timestamps) {
+		write_file << "time: " << timestamp.time << " ";
+		write_file << "pos: " << timestamp.position.x << " " << timestamp.position.y << " " << timestamp.position.heading << " ";
+		write_file << "lin vel: " << timestamp.linear_velocity << " ";
+		write_file << "angular vel: " << timestamp.angular_velocity << " ";
+		write_file << "side vels (r,l): " << timestamp.right_speed << " " << timestamp.left_speed << " ";
+		write_file << "\n";
+	}
+	write_file.close();
+}
+
 knights::ProfileTimestamp knights::lerp(const knights::ProfileTimestamp &t1, const knights::ProfileTimestamp &t2, float t) {
     return knights::ProfileTimestamp(
         knights::lerp(t1.position, t2.position, t),

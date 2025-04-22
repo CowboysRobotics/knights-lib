@@ -61,6 +61,8 @@ namespace knights {
         float desired_voltage;
 
         MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity, float desired_voltage);
+    
+        void dump();
     };
 
     class ProfileGenerator {

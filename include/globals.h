@@ -96,6 +96,8 @@ void score_wall_stake();
 extern pros::adi::Pneumatics clamp;
 extern pros::adi::Pneumatics doinker;
 extern pros::adi::Pneumatics doinker2;
+extern pros::adi::Pneumatics intake_raise; //rush mech solenoid
+
 
 extern bool clamp_down;
 extern bool doinker_activate;

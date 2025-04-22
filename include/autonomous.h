@@ -13,6 +13,8 @@ void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 
 void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
+void red_right_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
+
 
 
 #endif

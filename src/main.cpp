@@ -32,7 +32,9 @@ void initialize() {
 
 	// auton_map["None0"] = knights::Auton(&pid_tuning, knights::Pos(0, 0, 0));
 
-	auton_map["None0"] = knights::Auton(&red_left_wp, knights::Pos(-55, 7, 220.0_deg));
+	auton_map["Red1"] = knights::Auton(&red_left_wp, knights::Pos(-53.76, 7.48, 204.27_deg));
+
+	auton_map["None0"] = knights::Auton(&red_right_wp, knights::Pos(-61.86, -8.94, 124.68_deg)); // red2
 
 	lv_display();
 
@@ -238,6 +240,23 @@ void opcontrol() {
 
 		ladyBrownTask->set_priority(TASK_PRIORITY_DEFAULT);
 	}
+
+	// // TMP
+	// if (intakeJamTask == nullptr) {
+	// 	intakeJamTask = new pros::Task {[=] {
+	// 		while(true) {
+	// 			if (jam_enabled) {
+	// 				unjam_intake_check();
+
+	// 				pros::delay(20);
+	// 			} else {
+	// 				pros::delay(150);
+	// 			}
+	// 		}
+	// 	}};
+
+	// 	intakeJamTask->set_priority(TASK_PRIORITY_DEFAULT - 1);
+	// }
 
 	float right_velocity = 0; float left_velocity = 0; 
 
