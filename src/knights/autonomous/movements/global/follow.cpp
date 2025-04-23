@@ -307,7 +307,8 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
         this->chassis->drivetrain->velocity_command(output_lin_vel, output_ang_vel, profile.max_velocity);
 
         // debugging velocities
-        float linear_rpm = 6.119517 * std::pow(std::fabs(output_lin_vel), 1.023282) * knights::signum(output_lin_vel);
+        // float linear_rpm = 6.119517 * std::pow(std::fabs(output_lin_vel), 1.023282) * knights::signum(output_lin_vel);
+        float linear_rpm = (output_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
         float angular_lin_vel = (output_ang_vel * chassis->drivetrain->track_width/2.0);
         float angular_rpm = (angular_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
 
