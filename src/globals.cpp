@@ -149,7 +149,8 @@ bool jam_enabled = true;
 
 void unjam_intake_check() {
 	// std::cout << jam_times << " " << std::abs(intake_top.get_actual_velocity()) << " " << jam_enabled << "\n";
-	if (intake_spinning && std::abs(intake_top.get_actual_velocity()) < 1 && lady_brown_target != LADY_BROWN_LOAD1) {
+	if (intake_spinning && std::abs(intake_top.get_actual_velocity()) < 1 && 
+		(lady_brown_target == LADY_BROWN_DOWN || (lady_brown_rotation.get_angle()/100 < 30 || lady_brown_rotation.get_angle()/100 > 330))) {
 		jam_times++;
 
 		if (jam_times > 20) {

@@ -30,10 +30,10 @@ void initialize() {
 	//make sure that the imu sensor is accurate before the start of a match
 	knights::logger::blue("Initialization Begin");
 
-	auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(-48, 0, 90_deg));
+	auton_map["None0"] = knights::Auton(&skills, knights::Pos(-63, -10, 130_deg));
 
-	auton_map["Red1"] = knights::Auton(&red_left_wp, knights::Pos(-53.76, 7.48, 204.27_deg));
-	auton_map["Red2"] = knights::Auton(&red_right_wp, knights::Pos(-61.86, -8.94, 124.68_deg)); // red2
+	auton_map["Red1"] = knights::Auton(&red_left_wp_safe, knights::Pos(-53.76, 7.48, 204.27_deg));
+	auton_map["Red2"] = knights::Auton(&red_right_wp_safe, knights::Pos(-61.86, -8.94, 124.68_deg)); // red2
 
 	lv_display();
 

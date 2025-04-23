@@ -125,57 +125,74 @@ def draw_position_label():
    
     x_estimates = np.array([])
     y_estimates = np.array([])
+
+    TOLERANCE = 0.001
    
     for sensor in sensors:
-      s_dist = ray_cast(sensor)
+        s_dist = ray_cast(sensor) # Get distance reading
 
-      sensor_angle = np.radians(np.remainder(angle + sensor[2], 360))
+        # If distance is effectively zero, sensor might be outside or faulty, skip it
+        if s_dist < TOLERANCE:
+            continue
 
-      hit_pos = [s_dist * np.cos(sensor_angle), s_dist * np.sin(sensor_angle)] # wrong sometimes
+        # Calculate sensor's absolute angle (degrees and radians)
+        sensor_absolute_angle_deg = (angle + sensor[2]) % 360
+        sensor_absolute_angle_rad = np.radians(sensor_absolute_angle_deg)
 
-      # issue happens when both sensors are not on the same wall
+        cos_angle = np.cos(sensor_absolute_angle_rad)
+        sin_angle = np.sin(sensor_absolute_angle_rad)
 
-      # have to process sensor data here, what does this sensor say about the center of the bot
+        # Infer which wall was likely hit based on the absolute angle
+        # We need to determine the *expected* hit point based *only* on the angle
+        # This is an approximation, especially near corners.
 
-      # first, determine which wall the sensor is hitting
-      # next, find distance of the
+        # Simplified wall inference based on angle quadrants:
+        # Note: This assumes the robot is reasonably centered. Accuracy degrades near corners
+        # or if the robot is very close to a wall it's not pointing towards.
 
-      if (np.abs(hit_pos[0]) > np.abs(hit_pos[1])): # hit right / left wall
-          
-        if hit_pos[0] > 0: # right wall
-          x_estimates = np.append(
-             x_estimates,
-             s_dist * np.cos(sensor_angle) - (WALL_DIST)
-          )
-        else: # left wall
-          x_estimates = np.append(
-             x_estimates,
-             s_dist * np.cos(sensor_angle) - (-WALL_DIST)
-          )
+        estimated_hit_x = s_dist * cos_angle # Estimated displacement from sensor
+        estimated_hit_y = s_dist * sin_angle # Estimated displacement from sensor
 
-      else: # hit top / bottom wall
-        
-        if hit_pos[0] > 0: # top wall
-          y_estimates = np.append(
-             y_estimates,
-             s_dist * np.sin(sensor_angle) - (WALL_DIST)
-          )
-        else: # bottom wall
-          y_estimates = np.append(
-             y_estimates,
-             s_dist * np.sin(sensor_angle) - (-WALL_DIST)
-          )
+        # Determine likely wall based on largest component of displacement direction
+        # (More robust than pure angle quadrant check)
+        if abs(cos_angle) > abs(sin_angle): # Likely hit a vertical wall (Left or Right)
+            if cos_angle > 0: # Pointing right-ish
+                # Assumes hit Right wall (x = WALL_DIST)
+                # Sensor's x + s_dist * cos(angle) = WALL_DIST
+                # Estimated robot_x = WALL_DIST - s_dist * cos(angle)
+                # (Since sensor offset is 0, sensor's x is robot's x)
+                x_est = WALL_DIST - estimated_hit_x
+                x_estimates = np.append(x_estimates, x_est)
+            else: # Pointing left-ish
+                # Assumes hit Left wall (x = -WALL_DIST)
+                # Sensor's x + s_dist * cos(angle) = -WALL_DIST
+                # Estimated robot_x = -WALL_DIST - s_dist * cos(angle)
+                x_est = -WALL_DIST - estimated_hit_x
+                x_estimates = np.append(x_estimates, x_est)
+        else: # Likely hit a horizontal wall (Top or Bottom)
+             if sin_angle > 0: # Pointing up-ish
+                # Assumes hit Top wall (y = WALL_DIST)
+                # Sensor's y + s_dist * sin(angle) = WALL_DIST
+                # Estimated robot_y = WALL_DIST - s_dist * sin(angle)
+                y_est = WALL_DIST - estimated_hit_y
+                y_estimates = np.append(y_estimates, y_est)
+             else: # Pointing down-ish
+                # Assumes hit Bottom wall (y = -WALL_DIST)
+                # Sensor's y + s_dist * sin(angle) = -WALL_DIST
+                # Estimated robot_y = -WALL_DIST - s_dist * sin(angle)
+                y_est = -WALL_DIST - estimated_hit_y
+                y_estimates = np.append(y_estimates, y_est)
 
-        print(hit_pos)
-        print(s_dist)
+    # Calculate average estimates, ignoring NaN if a list is empty
+    # Use np.nanmean to handle cases where no sensors hit vertical or horizontal walls
+    avg_x = np.nanmean(x_estimates) if x_estimates.any() else square_coord[0] # Default to actual if no estimate
+    avg_y = np.nanmean(y_estimates) if y_estimates.any() else square_coord[1] # Default to actual if no estimate
 
-    print(x_estimates, y_estimates)
-   
+    # Handle cases where nanmean returns NaN (if input list was empty)
     estimated_pos = [
-      -np.average(x_estimates),
-      -np.average(y_estimates)
+        square_coord[0] if np.isnan(avg_x) else avg_x,
+        square_coord[1] if np.isnan(avg_y) else avg_y
     ]
-    # cant do this bc if only one sensor is tracking x, then no balancing opposing sensor
    
     position_text = font.render(f"Estimation: {estimated_pos[0]:.2f}, {estimated_pos[1]:.2f}", True, TEXT_COLOR)
     screen.blit(position_text, (410, 10))

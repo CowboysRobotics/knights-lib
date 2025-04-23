@@ -15,6 +15,9 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 void red_left_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 void red_right_wp(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 
+void red_left_wp_safe(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
+void red_right_wp_safe(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
+
 
 
 #endif
