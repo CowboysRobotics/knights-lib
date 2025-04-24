@@ -599,6 +599,8 @@ void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 #define GUIDE_TO_TRACKING_CENTER_DIST 9 // need to cange
 #define WALL_STAKE_POLE_DIST 1
 
+ASSET(skillsfirst_txt)
+
 void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
     knights::RamseteConstants ramsete_constants(0.7, 2, 1.4);
@@ -617,12 +619,16 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	lady_brown_alliance();
 
+	AssetStream first(skillsfirst_txt);
+	auto first_route = knights::init_route_from_asset(first);
+	first_route.add_action(kPos(-6, -36, 0), &lady_brown_load1);
+
 	pros::delay(600);
 
 	auto profile = generator.generate(
-		chassis->get_position(), knights::Pos(-48, -24, 135_deg), 80, 15, true); // off
+		chassis->get_position(), knights::Pos(-48, -24, 135_deg), 80, 15, false); // off
 
-	robotControl.follow_route(knights::Route(profile),6.0, 60.0, true);
+	robotControl.follow_route(knights::Route(profile),6.0, 70.0, false, 6.0, 2000);
 
 	clamp_toggle();
 
@@ -634,24 +640,16 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	robotControl.turn_to_angle(0);
 
-	profile = generator.generate(
-		chassis->get_position(), knights::Pos(-24, -24, 315_deg), 80, 15, true); // off
-
-	robotControl.follow_route(knights::Route(profile),10.0, 80.0, true);
-
-	lady_brown_load1();
-
-	profile = generator.generate(
-		chassis->get_position(), knights::Pos(24, -48, 350_deg), 80, 15, true); // off
-
-	robotControl.follow_route(knights::Route(profile),10.0, 80.0, true);
+	robotControl.follow_route(
+		first_route, 9.0, 70, true, 3.0, 4000
+	);
 
 	pros::delay(200);
 
 	profile = generator.generate(
-		chassis->get_position(), knights::Pos(-3, -40, 330_deg), 80, 15, false); // off
+		chassis->get_position(), knights::Pos(-1, -40, 0), 80, 15, false); // off
 
-	robotControl.follow_route(knights::Route(profile), 6.0, 70.0, false);
+	robotControl.follow_route(knights::Route(profile), 8.0, 70.0, false, 2.0, 1500);
 
 	pros::delay(200);
 
@@ -659,7 +657,71 @@ void skills(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	robotControl.lateral_move(23);
 
+	// score on wallstake 1
+
 	lady_brown_score();
+
+	pros::delay(200);
+
+	robotControl.lateral_move(-6);
+
+	lady_brown_load1();
+
+	pros::delay(200);
+
+	intake_in();
+
+	pros::delay(700);
+
+	lady_brown_score();
+
+	robotControl.lateral_move(10);
+
+	pros::delay(200);
+
+	lady_brown_down(); intake_in();
+
+	robotControl.lateral_move(-12);
+
+	robotControl.turn_to_angle(180);
+
+	pros::delay(200);
+
+	// three rings
+
+	profile = generator.generate(
+		chassis->get_position(), knights::Pos(-60, -48, 180_deg), 80, 15, true); // off
+
+	robotControl.follow_route(knights::Route(profile), 9.0, 85.0, true, 2.0, 3000);
+
+	pros::delay(200);
+
+	robotControl.turn_to_angle(315);
+
+	pros::delay(200);
+
+	robotControl.lateral_move(8, 3.0, 750);
+
+	robotControl.turn_to_angle(30);
+
+	// first mogo in corner
+
+	clamp_toggle();
+
+	robotControl.lateral_move(-12);
+
+	robotControl.lateral_move(16);
+
+	pros::delay(200);
+
+	robotControl.turn_to_angle(305);
+
+	profile = generator.generate(
+		chassis->get_position(), knights::Pos(-48, 24, 270_deg), 80, 15, false); // off
+
+	robotControl.follow_route(knights::Route(profile), 9.0, 70.0, false, 2.0, 3000);
+
+	clamp_toggle();
 
 
 
