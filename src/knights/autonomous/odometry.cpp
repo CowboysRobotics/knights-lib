@@ -5,13 +5,16 @@
 #include "knights/robot/position_tracker.hpp"
 
 #include "knights/util/calculation.hpp"
+#include "knights/util/position.hpp"
 
+#include <cmath>
 #include <fstream>
 
-// std::fstream write_file("/usd/odometry.log", std::ios_base::out);
+#define SENSOR_MAX_DIST 72 // around 1.8 meters
+#define SENSOR_MIN_DIST 1 // around 20 millimeters
+#define WALL_DIST 72 // vex distance from center of field to wall
 
-
-void knights::RobotChassis::update_position() {
+knights::Pos knights::RobotChassis::calc_tracking_wheel_position() {
 
     float deltaRight, deltaLeft, deltaFront, deltaBack;
 
@@ -65,8 +68,6 @@ void knights::RobotChassis::update_position() {
     deltaX = deltaBack;
     // deltaY = deltaRight; // using right wheel for the vertical tracking wheel
 
-    this->prev_position = curr_position;
-
     // check if moving straight or curved
     if (deltaHeading == 0) {
         // straight
@@ -80,12 +81,92 @@ void knights::RobotChassis::update_position() {
         localY = cnst * (deltaY / deltaHeading + deltaYOffset); // using right wheel for vertical tracking
     }
 
+    knights::Pos estimated_position;
+
     // calculate global x
-    curr_position.x += localX * -sin(averageHeading) + localY * cos(averageHeading);
+    estimated_position.x = curr_position.x + localX * -sin(averageHeading) + localY * cos(averageHeading);
     // calculate global y
-    curr_position.y += localX * cos(averageHeading) + localY * sin(averageHeading);
+    estimated_position.y = curr_position.y + localX * cos(averageHeading) + localY * sin(averageHeading);
 
-    this->curr_position.heading = newHeading;
+    estimated_position.heading = newHeading;
 
-    // write_file << curr_position.x << " " << curr_position.y << " " << curr_position.heading << "\n";
+    return estimated_position;
+
+}
+
+knights::Pos knights::RobotChassis::calc_distance_sensor_position() {
+    
+    std::vector<float> x_estimates;
+    std::vector<float> y_estimates;
+
+    for (auto sensor : this->pos_trackers->distance_trackers) {
+
+        float sensor_distance = knights::to_inches(sensor->distance_sensor->get_distance() / 1000.0);
+
+        if (sensor_distance > SENSOR_MAX_DIST || sensor_distance < SENSOR_MIN_DIST) 
+            continue;
+
+        float robot_theta;
+
+        if (this->pos_trackers->inertial != nullptr) {
+            robot_theta = (knights::to_rad(-this->pos_trackers->inertial->get_heading()));
+        } else {
+            robot_theta = this->curr_position.heading;
+        }
+
+        float sensor_angle_rad = knights::normalize_angle(sensor->angle_from_front + robot_theta, true);
+        
+        knights::Point hit_pos(
+            sensor_distance * std::cos(sensor_angle_rad) + this->curr_position.x
+              + (-sensor->x_displacement * -std::sin(robot_theta) + sensor->y_displacement * std::cos(robot_theta)),
+              sensor_distance * std::sin(sensor_angle_rad) + this->curr_position.y
+              + (-sensor->x_displacement * std::cos(robot_theta) + sensor->y_displacement * std::sin(robot_theta))
+        );
+
+        if (hit_pos.x > 0 and std::fabs(hit_pos.x) > std::fabs(hit_pos.y)) {
+            float x_dist = std::cos(sensor_angle_rad) * sensor_distance + (-sensor->x_displacement * -std::sin(robot_theta) + sensor->y_displacement * std::cos(robot_theta));
+            x_estimates.push_back(WALL_DIST - x_dist);
+
+        } else if (hit_pos.y > 0 and std::fabs(hit_pos.y) > std::fabs(hit_pos.x)) {
+            float y_dist = std::sin(sensor_angle_rad) * sensor_distance + (-sensor->x_displacement * std::cos(robot_theta) + sensor->y_displacement * std::sin(robot_theta));
+            y_estimates.push_back(WALL_DIST - y_dist);
+
+        } else if (hit_pos.x < 0 and std::fabs(hit_pos.x) > std::fabs(hit_pos.y)) {
+            float x_dist = std::cos(sensor_angle_rad) * sensor_distance + (-sensor->x_displacement * -std::sin(robot_theta) + sensor->y_displacement * std::cos(robot_theta));
+            x_estimates.push_back(-WALL_DIST - x_dist);
+
+        } else if (hit_pos.y < 0 and std::fabs(hit_pos.y) > std::fabs(hit_pos.x)) {
+            float y_dist = std::sin(sensor_angle_rad) * sensor_distance + (-sensor->x_displacement * std::cos(robot_theta) + sensor->y_displacement * std::sin(robot_theta));
+            y_estimates.push_back(-WALL_DIST - y_dist);
+        }
+
+    }
+
+    knights::Pos estimated_position(0.0, 0.0, 0.0);
+
+    if (x_estimates.size() > 0) {
+        estimated_position.x = knights::avg(x_estimates);
+    }
+    if (y_estimates.size() > 0) {
+        estimated_position.y = knights::avg(y_estimates);
+    } 
+
+    return estimated_position;
+
+}
+
+
+void knights::RobotChassis::update_position() {
+
+    // need new average of dist sensor and tracking wheel
+
+    knights::Pos tracking_wheel_estimate = calc_tracking_wheel_position();
+
+    knights::Pos dist_sensor_estimate = calc_distance_sensor_position();
+
+    
+
+
+    this->prev_position = curr_position;
+
 }

@@ -64,6 +64,20 @@ namespace knights {
             void set_position(Pos position);
 
             /**
+             * @brief Use tracking wheels to estimate the current robot position
+             * 
+             * @return knights::Pos 
+             */
+            knights::Pos calc_tracking_wheel_position();
+
+            /**
+             * @brief Use distance sensors to estimate current robot position
+             * 
+             * @return knights::Pos 
+             */
+             knights::Pos calc_distance_sensor_position();
+
+            /**
              * @brief Update the position of the chassis using its tracking method.
              *  
              *  Will not update it no tracking method is set up.

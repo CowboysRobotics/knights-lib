@@ -93,8 +93,6 @@ namespace knights {
         
             DistanceTracker(pros::Distance *distance, float x_displacement, float y_displacement, float angle_from_front);
 
-            float get_displacement();
-
     };
 
     class PositionTrackerGroup {

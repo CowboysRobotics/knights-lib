@@ -1,6 +1,9 @@
 #include "knights/robot/position_tracker.hpp"
 #include "knights/util/calculation.hpp"
 
+#define SENSOR_MAX_DIST 72 // around 1.8 meters
+#define SENSOR_MIN_DIST 1 // around 20 millimeters
+
 using namespace knights;
 
 PositionTracker::PositionTracker(pros::Rotation *rotation, float wheel_diameter, float gear_ratio, float offset, int direction) 
@@ -19,9 +22,6 @@ DistanceTracker::DistanceTracker(pros::Distance *distance, float x_displacement,
     : distance_sensor(distance), x_displacement(x_displacement), y_displacement(y_displacement), angle_from_front(angle_from_front) {
 }
 
-float DistanceTracker::get_displacement() {
-    // no idea
-}
 
 float PositionTracker::get_distance_travelled() {
     if (this->rotation != NULL) {
