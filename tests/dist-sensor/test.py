@@ -10,7 +10,7 @@ WIDTH, HEIGHT = 600, 600
 BOX_SIZE = 400
 SQUARE_SIZE = 50
 BG_COLOR = (30, 30, 30)
-BOX_COLOR = (200, 200, 200)
+BOX_COLOR = (150, 150, 150)
 SQUARE_COLOR = (100, 200, 255)
 SLIDER_COLOR = (255, 100, 100)
 ARROW_COLOR = (255, 255, 0)
@@ -36,7 +36,7 @@ font = pygame.font.Font(None, 24)
 
 # Initial square position and angle
 square_pos = [ORIGIN_X, ORIGIN_Y]
-angle = 90
+angle = 0
 
 square_coord = [0,0]
 
@@ -45,15 +45,15 @@ slider_rect = pygame.Rect(100, HEIGHT - 50, 400, 10)
 slider_knob = pygame.Rect(100, HEIGHT - 60, 20, 30)
 
 # Distance sensors
-front_sensor = [0, 0, 0]
-left_sensor = [0, 0, 90]
-right_sensor = [0, 0, -90]
-back_sensor = [0, 0, 180]
+front_sensor = [5, 1, 0]
+left_sensor = [-2, 2, 90]
+right_sensor = [6, 5, -90]
+back_sensor = [-3, -2, 180]
 
 sensors = [front_sensor, left_sensor, right_sensor, back_sensor]
 
 WALL_DIST = 72
-SENSOR_SAFE_DIST = 72 # 2 meters ish
+SENSOR_SAFE_DIST = 78 # 2 meters ish
 
 def pt_to_pixel(pt):
   return [
@@ -66,37 +66,6 @@ def closest_cardinal(angle):
     angle = angle % 360  # Normalize the angle
     closest = min(cardinals, key=lambda x: abs(x - angle))
     return closest
- 
-
-def ray_cast(sensor):
-  sensor_coord = [
-    square_coord[0] + sensor[0] * -np.sin(np.radians(angle)) + sensor[1] * np.cos(np.radians(angle)),
-    square_coord[1] + sensor[0] * np.cos(np.radians(angle)) + sensor[1] * np.sin(np.radians(angle))
-  ]
- 
-  dist = 0
-  dist_step = 0.2
- 
-  sensor_angle = np.remainder(angle + sensor[2], 360)
- 
-  ray_x = sensor_coord[0]
-  ray_y = sensor_coord[1]
- 
-  while (not (np.abs(ray_x) > WALL_DIST or np.abs(ray_y) > WALL_DIST)):
-    dist += dist_step
-   
-    ray_x += dist_step * np.cos(np.radians(sensor_angle))
-    ray_y += dist_step * np.sin(np.radians(sensor_angle))
- 
-  ray_end = [
-   ray_x, ray_y
-  ]
- 
-  pygame.draw.line(screen, SENSOR_COLOR, pt_to_pixel(sensor_coord), pt_to_pixel(ray_end), 2)
- 
-  return dist
- 
- 
 
 def draw_box():
     pygame.draw.rect(screen, BOX_COLOR, (box_x, box_y, BOX_SIZE, BOX_SIZE), 2)
@@ -126,12 +95,42 @@ def draw_slider():
     pygame.draw.rect(screen, SLIDER_COLOR, slider_rect)
     pygame.draw.rect(screen, (255, 255, 255), slider_knob)
 
+def ray_cast(sensor):
+  sensor_coord = [
+    square_coord[0] + -sensor[0] * -np.sin(np.radians(angle)) + sensor[1] * np.cos(np.radians(angle)),
+    square_coord[1] + -sensor[0] * np.cos(np.radians(angle)) + sensor[1] * np.sin(np.radians(angle))
+  ]
+ 
+  dist = 0
+  dist_step = 0.05
+ 
+  sensor_angle = np.remainder(angle + sensor[2], 360)
+ 
+  ray_x = sensor_coord[0]
+  ray_y = sensor_coord[1]
+ 
+  while (not (np.abs(ray_x) > WALL_DIST or np.abs(ray_y) > WALL_DIST)):
+    dist += dist_step
+   
+    ray_x += dist_step * np.cos(np.radians(sensor_angle))
+    ray_y += dist_step * np.sin(np.radians(sensor_angle))
+ 
+  ray_end = [
+   ray_x, ray_y
+  ]
+ 
+  pygame.draw.line(screen, SENSOR_COLOR, pt_to_pixel(sensor_coord), pt_to_pixel(ray_end), 2)
+ 
+  return dist
+
 def draw_position_label():
     position_text = font.render(f"Position: {square_coord[0]:.2f}, {square_coord[1]:.2f} | Angle: {angle}", True, TEXT_COLOR)
     screen.blit(position_text, (10, 10))
    
     x_estimates = np.array([])
     y_estimates = np.array([])
+   
+    hit_positions = []
 
     TOLERANCE = 0.001
    
@@ -143,28 +142,38 @@ def draw_position_label():
         sensor_absolute_angle_deg = (angle + sensor[2]) % 360
         sensor_absolute_angle_rad = np.radians(sensor_absolute_angle_deg)
 
+        cardinal_angle = closest_cardinal(sensor_absolute_angle_deg)
+       
+        s_theta = sensor_absolute_angle_rad
+        bot_theta = np.radians(angle)
+       
+        hit_pos = [
+          s_dist * np.cos(s_theta) + square_coord[0]
+            + (-sensor[0] * -np.sin(bot_theta) + sensor[1] * np.cos(bot_theta)),
+          s_dist * np.sin(s_theta) + square_coord[1]
+            + (-sensor[0] * np.cos(bot_theta) + sensor[1] * np.sin(bot_theta))
+          ]
+         
+        hit_positions.append(hit_pos)
+       
         if s_dist > SENSOR_SAFE_DIST:
             continue
 
-        cardinal_angle = closest_cardinal(sensor_absolute_angle_deg)
-
-        if (cardinal_angle == 0):
+        if (hit_pos[0] > 0 and np.abs(hit_pos[0]) > np.abs(hit_pos[1])):
             # use for x estimate
-            x_dist = np.cos(sensor_absolute_angle_rad) * s_dist
+            x_dist = np.cos(sensor_absolute_angle_rad) * s_dist + (-sensor[0] * -np.sin(bot_theta) + sensor[1] * np.cos(bot_theta))
             x_estimates = np.append(x_estimates, WALL_DIST - x_dist)
-        elif (cardinal_angle == 90):
-            y_dist = np.sin(sensor_absolute_angle_rad) * s_dist
+        elif (hit_pos[1] > 0 and np.abs(hit_pos[1]) > np.abs(hit_pos[0])):
+            y_dist = np.sin(sensor_absolute_angle_rad) * s_dist + (-sensor[0] * np.cos(bot_theta) + sensor[1] * np.sin(bot_theta))
             y_estimates = np.append(y_estimates, WALL_DIST - y_dist)
-        elif (cardinal_angle == 180):
+        elif (hit_pos[0] < 0 and np.abs(hit_pos[0]) > np.abs(hit_pos[1])):
             # use for x estimate
-            x_dist = np.cos(sensor_absolute_angle_rad) * s_dist
+            x_dist = np.cos(sensor_absolute_angle_rad) * s_dist + (-sensor[0] * -np.sin(bot_theta) + sensor[1] * np.cos(bot_theta))
             x_estimates = np.append(x_estimates,  -WALL_DIST - x_dist)
-        elif (cardinal_angle == 90):
-            y_dist = np.sin(sensor_absolute_angle_rad) * s_dist
+        elif (hit_pos[1] < 0 and np.abs(hit_pos[1]) > np.abs(hit_pos[0])):
+            y_dist = np.sin(sensor_absolute_angle_rad) * s_dist + (-sensor[0] * np.cos(bot_theta) + sensor[1] * np.sin(bot_theta))
             y_estimates = np.append(y_estimates,  -WALL_DIST - y_dist)
 
-
-        
 
     # Calculate average estimates, ignoring NaN if a list is empty
     # Use np.nanmean to handle cases where no sensors hit vertical or horizontal walls
@@ -181,7 +190,19 @@ def draw_position_label():
     screen.blit(position_text, (410, 10))
    
     position_text = font.render(f"Estimate Length: {len(x_estimates)}, {len(y_estimates)}", True, TEXT_COLOR)
-    screen.blit(position_text, (410, 40))
+    screen.blit(position_text, (410, 30))
+   
+    position_text = font.render(f"F Hit: {hit_positions[0][0]:.1f}, {hit_positions[0][1]:.1f}", True, TEXT_COLOR)
+    screen.blit(position_text, (200, 50))
+   
+    position_text = font.render(f"L Hit: {hit_positions[1][0]:.1f}, {hit_positions[1][1]:.1f}", True, TEXT_COLOR)
+    screen.blit(position_text, (10, 50))
+   
+    position_text = font.render(f"R Hit: {hit_positions[2][0]:.1f}, {hit_positions[2][1]:.1f}", True, TEXT_COLOR)
+    screen.blit(position_text, (10, 30))
+
+    position_text = font.render(f"B Hit: {hit_positions[3][0]:.1f}, {hit_positions[3][1]:.1f}", True, TEXT_COLOR)
+    screen.blit(position_text, (200, 30))
    
 
 def get_slider_value():
