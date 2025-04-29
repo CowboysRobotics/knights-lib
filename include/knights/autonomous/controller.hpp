@@ -118,8 +118,6 @@ namespace knights {
              * @param rad Whether the provided angle is in radians or not
              */
             void turn_for(const float angle, const float end_tolerance = 2.0, float timeout= 750, bool rad = false); // DEGREES
-
-
     };
 }
 

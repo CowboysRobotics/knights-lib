@@ -160,13 +160,47 @@ void knights::RobotChassis::update_position() {
 
     // need new average of dist sensor and tracking wheel
 
-    knights::Pos tracking_wheel_estimate = calc_tracking_wheel_position();
+    if (this->current_localization_method == knights::LocalizationMethod::NONE)
+        return;
+    else if (this->current_localization_method == knights::LocalizationMethod::DISTANCE_SENSOR) {
+        knights::Pos dist_sensor_estimate = calc_distance_sensor_position();
+        this->prev_position = curr_position;
+        this->curr_position = dist_sensor_estimate;
+    }
+    else if (this->current_localization_method == knights::LocalizationMethod::TRACKING_WHEEL) {
+        knights::Pos tracking_wheel_estimate = calc_tracking_wheel_position();
+        this->prev_position = curr_position;
+        this->curr_position = tracking_wheel_estimate;
+    }
+    else {
+        knights::Pos tracking_wheel_estimate = calc_tracking_wheel_position();
+        knights::Pos dist_sensor_estimate = calc_distance_sensor_position();
 
-    knights::Pos dist_sensor_estimate = calc_distance_sensor_position();
+        knights::Pos best_estimation;
 
-    
+        // calculations here
+
+        // check if one sensor is very off
+
+        bool tracking_wheel_valid = distance_btwn(tracking_wheel_estimate, prev_position) < this->drivetrain->max_velocity()/20;
+        bool distance_sensor_valid = distance_btwn(dist_sensor_estimate, prev_position) < this->drivetrain->max_velocity()/20;
+
+        if (!tracking_wheel_valid && !distance_sensor_valid) {
+            best_estimation = prev_position;
+        }
+        else if (!tracking_wheel_valid) {
+            best_estimation = dist_sensor_estimate;
+        }
+        else if (!distance_sensor_valid) {
+            best_estimation = tracking_wheel_estimate;
+        }
+        else { // both valid
+            
+        }
+
+        this->prev_position = curr_position;
+        this->curr_position = best_estimation;
 
 
-    this->prev_position = curr_position;
-
+    }
 }

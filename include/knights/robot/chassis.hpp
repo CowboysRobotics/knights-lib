@@ -13,6 +13,13 @@
 
 namespace knights {
 
+    enum LocalizationMethod {
+        NONE,
+        DISTANCE_SENSOR,
+        TRACKING_WHEEL,
+        BEST
+    };
+
     class RobotChassis {
         private:
             Drivetrain *drivetrain = nullptr; // the drivetrain to use for the chassis
@@ -36,7 +43,7 @@ namespace knights {
              * @param drivetrain a pointer to the drivetrain to use for the chassis
              * @param pos_trackers a pointer to the sensors to use for location tracking
              */
-            RobotChassis(Drivetrain *drivetrain, PositionTrackerGroup *pos_trackers);
+            RobotChassis(Drivetrain *drivetrain, PositionTrackerGroup *pos_trackers, LocalizationMethod localization_method = BEST);
 
 
             /**
@@ -45,7 +52,7 @@ namespace knights {
              * @param drivetrain a pointer to the drivetrain to use for the chassis
              * @param pos_trackers a pointer to the sensors to use for location tracking
              */
-            RobotChassis(Holonomic *drivetrain, PositionTrackerGroup *pos_trackers);
+            RobotChassis(Holonomic *drivetrain, PositionTrackerGroup *pos_trackers, LocalizationMethod localization_method = BEST);
 
             /**
              * @brief Set the position of the chassis
@@ -115,6 +122,9 @@ namespace knights {
              * @return Pos the previous position of the chassis
              */
             Pos get_prev_position();
+
+            enum LocalizationMethod current_localization_method;
+
 
     };
 }

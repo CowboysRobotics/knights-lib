@@ -100,7 +100,8 @@ knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
 
 knights::RobotChassis chassis(
 	&drivetrain,
-	&odomTrackers
+	&odomTrackers,
+	knights::LocalizationMethod::BEST
 );
 
 

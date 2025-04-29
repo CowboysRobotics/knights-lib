@@ -6,12 +6,12 @@
 
 #include "knights/util/calculation.hpp"
 
-knights::RobotChassis::RobotChassis(Drivetrain *drivetrain, PositionTrackerGroup *pos_trackers)
-    : drivetrain(drivetrain), pos_trackers(pos_trackers) {
+knights::RobotChassis::RobotChassis(Drivetrain *drivetrain, PositionTrackerGroup *pos_trackers, LocalizationMethod localization_method)
+    : drivetrain(drivetrain), pos_trackers(pos_trackers), current_localization_method(localization_method) {
 }
 
-knights::RobotChassis::RobotChassis(Holonomic *drivetrain, PositionTrackerGroup *pos_trackers)
-    : holonomic(drivetrain), pos_trackers(pos_trackers) {
+knights::RobotChassis::RobotChassis(Holonomic *drivetrain, PositionTrackerGroup *pos_trackers, LocalizationMethod localization_method)
+    : holonomic(drivetrain), pos_trackers(pos_trackers), current_localization_method(localization_method) {
 }
 
 void knights::RobotChassis::set_position(float x, float y, float heading) {
