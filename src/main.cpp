@@ -30,10 +30,16 @@ void initialize() {
 	//make sure that the imu sensor is accurate before the start of a match
 	knights::logger::blue("Initialization Begin");
 
-	auton_map["None0"] = knights::Auton(&skills, knights::Pos(-63, -10, 130_deg));
+	// auton_map["None0"] = knights::Auton(&skills, knights::Pos(-63, -10, 130_deg));
 
 	auton_map["Red1"] = knights::Auton(&red_left_wp_safe, knights::Pos(-53.76, 7.48, 204.27_deg));
 	auton_map["Red2"] = knights::Auton(&red_right_wp_safe, knights::Pos(-61.86, -8.94, 124.68_deg)); // red2
+	auton_map["Blue1"] = knights::Auton(&blue_right_wp_safe, knights::Pos(53.76, 7.48, -24.27_deg));
+	auton_map["Blue2"] = knights::Auton(&blue_left_wp_safe, knights::Pos(61.86, -8.94, 55.32_deg)); // red2
+
+	auton_map["None0"] = knights::Auton(&red_lb_first_wp_right, knights::Pos(-55, -57, 0_deg));
+
+
 
 	lv_display();
 
@@ -114,7 +120,7 @@ void autonomous() {
 
 	if (intakeJamTask == nullptr) {
 		intakeJamTask = new pros::Task {[=] {
-			while(true) {
+			while(true & !sort) {
 				if (jam_enabled) {
 					unjam_intake_check();
 
@@ -138,25 +144,26 @@ void autonomous() {
 	if (colorSortTask == nullptr) {
 		colorSortTask = new pros::Task {[=] {
 			while(true) {
-				if (color_sorting || auton_color_sorting) {
-					if (color_sorting) {
-						if (red_alliance) {
-							blue_color_sort();
-						}
-						else {				
-							red_color_sort();
-						}
-					} 
-				else if (auton_color_sorting) {
+				if (color_sorting) {
 					if (red_alliance) {
-						blue_color_auton_sort();
+						blue_color_sort();
 					}
 					else {				
-						red_color_auton_sort();
+						red_color_sort();
 					}
-				}
 					
-				pros::delay(20);
+					// while (sort) {
+					// 	if (ring_sense.get_value() < 1500) {
+					// 		pros::delay(75);
+					// 		intake_top.move(INTAKE_VELOCITY);
+					// 		pros::delay(200);
+					// 		intake_top.move(-INTAKE_VELOCITY);
+					// 		printf("10s season sorted \n");
+					// 		sort = false;
+					// 	}
+
+					// }
+					pros::delay(20);
 				}
 				else {
 					pros::delay(150);
@@ -166,7 +173,7 @@ void autonomous() {
 
 		colorSortTask->set_priority(TASK_PRIORITY_DEFAULT - 2);
 	}
-
+	
 	// Run the chosen auton
 	if (auton_map.contains(package.get_value())) {
 		auton_map[package.get_value()].function(
@@ -290,6 +297,17 @@ void opcontrol() {
 						red_color_sort();
 					}
 					
+					// while (sort) {
+					// 	if (ring_sense.get_value() < 1500) {
+					// 		pros::delay(75);
+					// 		intake_top.move(INTAKE_VELOCITY);
+					// 		pros::delay(200);
+					// 		intake_top.move(-INTAKE_VELOCITY);
+					// 		printf("10s season sorted \n");
+					// 		sort = false;
+					// 	}
+
+					// }
 					pros::delay(20);
 				}
 				else {
@@ -303,7 +321,7 @@ void opcontrol() {
 
 	if (intakeJamTask == nullptr) {
 		intakeJamTask = new pros::Task {[=] {
-			while(true) {
+			while(true & !sort) {
 				if (jam_enabled) {
 					unjam_intake_check();
 

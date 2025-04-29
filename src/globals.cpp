@@ -78,6 +78,7 @@ pros::Motor intake_top(20,pros::v5::MotorGears::blue);
 
 //assign port to distance sensor for redirect
 pros::Optical colors(21);
+pros::adi::LineSensor ring_sense(7);
 
 //assign ports for pneumatics
 pros::adi::Pneumatics clamp(2, false); //clamp solenoid
@@ -95,8 +96,11 @@ pros::Distance front_sensor(3);
 knights::DistanceTracker back(&back_sensor, 7, 3.0625, M_PI);
 knights::DistanceTracker left(&left_sensor, -7, 4.75, M_PI/2);
 knights::DistanceTracker right(&right_sensor, 6.75, 5, M_PI/2);
+knights::DistanceTracker front(&front_sensor, 6.75, 5, M_PI/2);
 
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu, 0.7, 0.5, 0.5);
+
+odomTrackers
 
 knights::RobotChassis chassis(
 	&drivetrain,
@@ -168,9 +172,10 @@ void unjam_intake_check() {
 	}
 }
 
-bool color_sorting = false;
+bool color_sorting = true;
 bool auton_color_sorting = false;
 bool red_alliance = true;
+bool sort = false;
 
 void toggle_color_sort(){
 	color_sorting = !color_sorting;
@@ -182,24 +187,30 @@ void change_color(){
 }
 
 void red_color_sort() {
-	if (colors.get_hue() < 40 && colors.get_proximity() > 100){
-		pros::delay(50);
-		// printf("red_color_sorting \n");
-		intake_top.move(-INTAKE_VELOCITY);
-		pros::delay(100);
+	if (colors.get_hue() < 40){
+		sort = true;
+		pros::delay(150);
 		intake_top.move(INTAKE_VELOCITY);
+		pros::delay(200);
+		intake_top.move(-INTAKE_VELOCITY);
+		sort = false;
+		printf("finna sort these 10s \n");
 	}
 }
 
 void blue_color_sort(){
-	if (colors.get_hue() > 140 && colors.get_proximity() > 100){
-		pros::delay(50);
-		// printf("blue_color_sorting \n");
-		intake_top.move(-INTAKE_VELOCITY);
-		pros::delay(100);
+	if (colors.get_hue() > 140){
+		sort = true;
+		pros::delay(150);
 		intake_top.move(INTAKE_VELOCITY);
+		pros::delay(200);
+		intake_top.move(-INTAKE_VELOCITY);		
+		sort = false;
+		printf("finna sort these 10s \n");
 	}
 }
+
+
 
 void red_color_auton_sort() {
 	if (colors.get_hue() < 40 && colors.get_proximity() > 100){
