@@ -10,6 +10,7 @@
 
 #include "knights/util/position.hpp"
 
+#include <tuple>
 
 namespace knights {
 
@@ -85,7 +86,7 @@ namespace knights {
              * 
              * @return knights::Pos 
              */
-             knights::Pos calc_distance_sensor_position();
+             std::tuple<knights::Pos, knights::Point> calc_distance_sensor_position();
 
             /**
              * @brief Update the position of the chassis using its tracking method.

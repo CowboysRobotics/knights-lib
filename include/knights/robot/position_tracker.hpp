@@ -90,8 +90,10 @@ namespace knights {
             float x_displacement = 0; float y_displacement = 0;
 
             pros::Distance *distance_sensor = nullptr;
+            
+            float max_effective_mm;
         
-            DistanceTracker(pros::Distance *distance, float x_displacement, float y_displacement, float angle_from_front);
+            DistanceTracker(pros::Distance *distance, float x_displacement, float y_displacement, float angle_from_front, float max_effective_mm = 1000);
 
     };
 

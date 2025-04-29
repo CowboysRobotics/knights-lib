@@ -30,14 +30,21 @@ void initialize() {
 	//make sure that the imu sensor is accurate before the start of a match
 	knights::logger::blue("Initialization Begin");
 
-	// auton_map["None0"] = knights::Auton(&skills, knights::Pos(-63, -10, 130_deg));
+	odomTrackers.add_dist(&front);
+	odomTrackers.add_dist(&back);
+	odomTrackers.add_dist(&left);
+	odomTrackers.add_dist(&right);
+
+
+
+	auton_map["None0"] = knights::Auton(&skills, knights::Pos(-63, -10, 130_deg));
 
 	auton_map["Red1"] = knights::Auton(&red_left_wp_safe, knights::Pos(-53.76, 7.48, 204.27_deg));
 	auton_map["Red2"] = knights::Auton(&red_right_wp_safe, knights::Pos(-61.86, -8.94, 124.68_deg)); // red2
 	auton_map["Blue1"] = knights::Auton(&blue_right_wp_safe, knights::Pos(53.76, 7.48, -24.27_deg));
 	auton_map["Blue2"] = knights::Auton(&blue_left_wp_safe, knights::Pos(61.86, -8.94, 55.32_deg)); // red2
 
-	auton_map["None0"] = knights::Auton(&red_lb_first_wp_right, knights::Pos(-55, -57, 0_deg));
+	// auton_map["None0"] = knights::Auton(&red_lb_first_wp_right, knights::Pos(-55, -57, 0_deg));
 
 
 
@@ -274,7 +281,7 @@ void opcontrol() {
 	
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_Y, lady_brown_score, false); //assign lady brown position score to controller button up
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B, lady_brown_down, false); //assign lady brown down position to controller button down
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_DOWN, lady_brown_load2,false); //assign lady brown position load 1 to controller button left
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, lady_brown_load2,false); //assign lady brown position load 1 to controller button left
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_RIGHT,lady_brown_load1,false); //assign lady brown position load 2 to controller button right
 
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X, change_color, false);
@@ -282,7 +289,7 @@ void opcontrol() {
 
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2, clamp_toggle, false); //assign clamp toggle to controller button R2
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doinker_toggle, false); //assign doinker toggle to controller button R1
-	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP, lady_brown_tip, false); //assign doinker toggle to controller button R1
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_DOWN, lady_brown_tip, false); //assign doinker toggle to controller button R1
 
 	auton_color_sorting = false;
 

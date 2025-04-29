@@ -26,9 +26,9 @@
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
 #define LADY_BROWN_DOWN 0
-#define LADY_BROWN_LOAD1 23.5
-#define LADY_BROWN_DESCORE 145
-#define LADY_BROWN_SCORE 165 // 213
+#define LADY_BROWN_LOAD1 21.75
+#define LADY_BROWN_DESCORE 149
+#define LADY_BROWN_SCORE 164 // 213
 #define LADY_BROWN_ALLIANCE 195
 #define LADY_BROWN_TIP 240
 #define LADY_BROWN_END_TOLERANCE 1.0
@@ -49,8 +49,9 @@ pros::Rotation back_odom(16); // perpendicular tracking
 //assign port for imu tracker
 pros::IMU imu(14);
 //dimensions and positions of odom pods for calculations for position tracking
-knights::PositionTracker midOdom(&mid_odom, 1.939, 1, 0.1475, -1);
-knights::PositionTracker backOdom(&back_odom, 1.939, 1, 1.576, -1); // 1.875
+// wheel diameter used to be 1.939
+knights::PositionTracker midOdom(&mid_odom, 2, 1, 0.1475, -1);
+knights::PositionTracker backOdom(&back_odom, 2, 1, 1.576, -1); // 1.875
 knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 11, 600.0, 2.75, 1); // actual 11
 // #### END
 
@@ -93,19 +94,17 @@ pros::Distance back_sensor(9);
 pros::Distance right_sensor(4);
 pros::Distance front_sensor(3);
 
-knights::DistanceTracker back(&back_sensor, 7, 3.0625, M_PI);
-knights::DistanceTracker left(&left_sensor, -7, 4.75, M_PI/2);
-knights::DistanceTracker right(&right_sensor, 6.75, 5, M_PI/2);
-knights::DistanceTracker front(&front_sensor, 6.75, 5, M_PI/2);
+knights::DistanceTracker back(&back_sensor, -5.5, 1.2, M_PI, 1800);
+knights::DistanceTracker left(&left_sensor, -5.5, 4, -M_PI/2, 1500);
+knights::DistanceTracker right(&right_sensor, 5.5, 1.6, M_PI/2, 900);
+knights::DistanceTracker front(&front_sensor, 5.5, 4.5, 0, 1400);
 
-knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu, 0.7, 0.5, 0.5);
-
-odomTrackers
+knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu, 0.8, 0.5, 0.5);
 
 knights::RobotChassis chassis(
 	&drivetrain,
 	&odomTrackers,
-	knights::LocalizationMethod::BEST
+	knights::LocalizationMethod::TRACKING_WHEEL
 );
 
 

@@ -43,6 +43,7 @@ extern pros::Distance front_sensor;
 extern knights::DistanceTracker back;
 extern knights::DistanceTracker left;
 extern knights::DistanceTracker right;
+extern knights::DistanceTracker front;
 
 // Intake system
 extern pros::MotorGroup intake;

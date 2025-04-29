@@ -18,8 +18,8 @@ PositionTracker::PositionTracker(pros::Motor *motor, float wheel_diameter, float
     : motor(motor), wheel_diameter(wheel_diameter), gear_ratio(gear_ratio), offset(offset), direction(direction) {
 };
 
-DistanceTracker::DistanceTracker(pros::Distance *distance, float x_displacement, float y_displacement, float angle_from_front)
-    : distance_sensor(distance), x_displacement(x_displacement), y_displacement(y_displacement), angle_from_front(angle_from_front) {
+DistanceTracker::DistanceTracker(pros::Distance *distance, float x_displacement, float y_displacement, float angle_from_front, float max_effective_mm)
+    : distance_sensor(distance), x_displacement(x_displacement), y_displacement(y_displacement), angle_from_front(angle_from_front), max_effective_mm(max_effective_mm) {
 }
 
 
