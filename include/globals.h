@@ -58,10 +58,12 @@ void unjam_intake_check();
 
 // Color Sorting
 extern pros::Optical colors;
+extern pros::adi::LineSensor ring_sense;
 extern bool color_sorting;
 extern bool auton_color_sorting;
 extern bool blue_alliance;
 extern bool red_alliance;
+extern bool sort;
 
 void toggle_color_sort();
 void change_color();
