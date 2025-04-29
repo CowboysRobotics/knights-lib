@@ -6,6 +6,7 @@
 
 #include "knights/util/calculation.hpp"
 #include "knights/util/position.hpp"
+#include "pros/rtos.hpp"
 
 #include <cmath>
 #include <fstream>
@@ -49,7 +50,7 @@ knights::Pos knights::RobotChassis::calc_tracking_wheel_position() {
     }
 
     if (std::isnan(newHeading) || std::isinf(newHeading)) 
-        return;
+        return prev_position;
 
     averageHeading = normalize_angle(newHeading - (deltaHeading / 2), true);
 
@@ -99,20 +100,21 @@ knights::Pos knights::RobotChassis::calc_distance_sensor_position() {
     std::vector<float> x_estimates;
     std::vector<float> y_estimates;
 
+    float robot_theta;
+
+    if (this->pos_trackers->inertial != nullptr) {
+        robot_theta = (knights::to_rad(-this->pos_trackers->inertial->get_heading()));
+    } else {
+        robot_theta = this->curr_position.heading;
+    }
+
     for (auto sensor : this->pos_trackers->distance_trackers) {
 
         float sensor_distance = knights::to_inches(sensor->distance_sensor->get_distance() / 1000.0);
 
         if (sensor_distance > SENSOR_MAX_DIST || sensor_distance < SENSOR_MIN_DIST) 
             continue;
-
-        float robot_theta;
-
-        if (this->pos_trackers->inertial != nullptr) {
-            robot_theta = (knights::to_rad(-this->pos_trackers->inertial->get_heading()));
-        } else {
-            robot_theta = this->curr_position.heading;
-        }
+    
 
         float sensor_angle_rad = knights::normalize_angle(sensor->angle_from_front + robot_theta, true);
         
@@ -142,7 +144,7 @@ knights::Pos knights::RobotChassis::calc_distance_sensor_position() {
 
     }
 
-    knights::Pos estimated_position(0.0, 0.0, 0.0);
+    knights::Pos estimated_position(0.0, 0.0, robot_theta);
 
     if (x_estimates.size() > 0) {
         estimated_position.x = knights::avg(x_estimates);
@@ -195,12 +197,33 @@ void knights::RobotChassis::update_position() {
             best_estimation = tracking_wheel_estimate;
         }
         else { // both valid
-            
+
+            // predict pos
+            knights::Pos predicted_pos;
+
+            float predicted_theta = (prev_position.heading + tracking_wheel_estimate.heading) / 2;
+            float delta_time = ((pros::millis() - last_estimate_time) / 1000);
+
+            predicted_pos.x = prev_position.x + curr_velocity * std::cos(predicted_theta) * delta_time;
+            predicted_pos.y = prev_position.y + curr_velocity * std::sin(predicted_theta) * delta_time;
+
+            // combine positions
+            knights::Pos combined_sensor_pos;
+            combined_sensor_pos.x = this->pos_trackers->tracking_wheel_weight * tracking_wheel_estimate.x + this->pos_trackers->distance_sensor_weight * dist_sensor_estimate.x;
+            combined_sensor_pos.y = this->pos_trackers->tracking_wheel_weight * tracking_wheel_estimate.y + this->pos_trackers->distance_sensor_weight * dist_sensor_estimate.y;
+
+            // Complementary Filter blending equation:
+            // New Best Estimate = (1 - alpha) * Predicted Position + alpha * Combined Sensor Position
+            best_estimation.x = (1.0 - this->pos_trackers->blend_trust) * predicted_pos.x + this->pos_trackers->blend_trust * combined_sensor_pos.x;
+            best_estimation.y = (1.0 - this->pos_trackers->blend_trust) * predicted_pos.y + this->pos_trackers->blend_trust * combined_sensor_pos.y;
+            best_estimation.heading = tracking_wheel_estimate.heading;
+
         }
 
         this->prev_position = curr_position;
         this->curr_position = best_estimation;
-
-
     }
+
+    curr_velocity = distance_btwn(curr_position, prev_position) / ((pros::millis() - last_estimate_time) / 1000); 
+    last_estimate_time = pros::millis();
 }

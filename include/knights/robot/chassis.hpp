@@ -34,6 +34,9 @@ namespace knights {
             float prevFront = 0;
             float prevBack = 0;
 
+            float last_estimate_time; // ms
+            float curr_velocity; // in per sec
+
             // declare the robot chassis class as a friend class, allows access into private objects
             friend class RobotController;
         public:

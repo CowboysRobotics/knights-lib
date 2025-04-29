@@ -96,7 +96,7 @@ knights::DistanceTracker back(&back_sensor, 7, 3.0625, M_PI);
 knights::DistanceTracker left(&left_sensor, -7, 4.75, M_PI/2);
 knights::DistanceTracker right(&right_sensor, 6.75, 5, M_PI/2);
 
-knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu);
+knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu, 0.7, 0.5, 0.5);
 
 knights::RobotChassis chassis(
 	&drivetrain,

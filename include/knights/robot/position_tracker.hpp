@@ -105,6 +105,10 @@ namespace knights {
 
             std::vector<knights::DistanceTracker *> distance_trackers; 
 
+            float blend_trust;
+            float tracking_wheel_weight;
+            float distance_sensor_weight;
+
             /**
              * @brief Construct a new Position Tracker Group object
              * 
@@ -113,7 +117,7 @@ namespace knights {
              * @param front front tracker, should be perpendicular to the drivetrain
              * @param back back tracker, should be perpendicular to the drivetrain
              */
-            PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, knights::PositionTracker *front, knights::PositionTracker *back);
+            PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, knights::PositionTracker *front, knights::PositionTracker *back, float blend_trust = 0.7, float tracking_wheel_weight = 0.5, float distance_sensor_weight = 0.5);
 
             /**
              * @brief Construct a new Position Tracker Group object
@@ -122,7 +126,7 @@ namespace knights {
              * @param left left tracker, should be parallel to the drivetrain
              * @param back back tracker, should be perpendicular to the drivetrain
              */
-            PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, knights::PositionTracker *back);
+            PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, knights::PositionTracker *back, float blend_trust = 0.7, float tracking_wheel_weight = 0.5, float distance_sensor_weight = 0.5);
 
             /**
              * @brief Construct a new Position Tracker Group object
@@ -130,7 +134,7 @@ namespace knights {
              * @param right right tracker, should be parallel to the drivetrain
              * @param left left tracker, should be parallel to the drivetrain
              */
-            PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left);
+            PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, float blend_trust = 0.7, float tracking_wheel_weight = 0.5, float distance_sensor_weight = 0.5);
 
             /**
              * @brief Construct a new Position Tracker Group object
@@ -139,7 +143,7 @@ namespace knights {
              * @param back back tracker, should be perpendicular to the drivetrain
              * @param inertial inertial sensor (IMU) to use for the heading
              */
-            PositionTrackerGroup(knights::PositionTracker *middle, knights::PositionTracker *back, pros::IMU *inertial);
+            PositionTrackerGroup(knights::PositionTracker *middle, knights::PositionTracker *back, pros::IMU *inertial, float blend_trust = 0.7, float tracking_wheel_weight = 0.5, float distance_sensor_weight = 0.5);
 
             void add_dist(knights::DistanceTracker *tracker);
     };

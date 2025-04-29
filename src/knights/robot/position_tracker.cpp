@@ -35,20 +35,25 @@ float PositionTracker::get_distance_travelled() {
     }
 }
 
-PositionTrackerGroup::PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, knights::PositionTracker *front, knights::PositionTracker *back)
-    : right_tracker(right), left_tracker(left), front_tracker(front), back_tracker(back) {
+PositionTrackerGroup::PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, knights::PositionTracker *front, knights::PositionTracker *back, 
+    float blend_trust, float tracking_wheel_weight, float distance_sensor_weight)
+    : right_tracker(right), left_tracker(left), front_tracker(front), back_tracker(back), blend_trust(blend_trust), 
+    tracking_wheel_weight(tracking_wheel_weight), distance_sensor_weight(distance_sensor_weight) {
 }
 
-PositionTrackerGroup::PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, knights::PositionTracker *back)
-    : right_tracker(right), left_tracker(left), back_tracker(back) {
+PositionTrackerGroup::PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, knights::PositionTracker *back, float blend_trust, float tracking_wheel_weight, float distance_sensor_weight)
+    : right_tracker(right), left_tracker(left), back_tracker(back), blend_trust(blend_trust), 
+    tracking_wheel_weight(tracking_wheel_weight), distance_sensor_weight(distance_sensor_weight) {
 }
 
-PositionTrackerGroup::PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left)
-    : right_tracker(right), left_tracker(left) {
+PositionTrackerGroup::PositionTrackerGroup(knights::PositionTracker *right, knights::PositionTracker *left, float blend_trust, float tracking_wheel_weight, float distance_sensor_weight)
+    : right_tracker(right), left_tracker(left), blend_trust(blend_trust), 
+    tracking_wheel_weight(tracking_wheel_weight), distance_sensor_weight(distance_sensor_weight) {
 }
 
-PositionTrackerGroup::PositionTrackerGroup(knights::PositionTracker *middle, knights::PositionTracker *back, pros::IMU *inertial)
-    : right_tracker(middle), back_tracker(back), inertial(inertial) {
+PositionTrackerGroup::PositionTrackerGroup(knights::PositionTracker *middle, knights::PositionTracker *back, pros::IMU *inertial, float blend_trust, float tracking_wheel_weight, float distance_sensor_weight)
+    : right_tracker(middle), back_tracker(back), inertial(inertial), blend_trust(blend_trust), 
+    tracking_wheel_weight(tracking_wheel_weight), distance_sensor_weight(distance_sensor_weight) {
 }
 
 void PositionTrackerGroup::add_dist(knights::DistanceTracker *tracker) {
