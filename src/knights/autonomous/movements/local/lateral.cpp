@@ -78,8 +78,10 @@ void knights::RobotController::lateral_move(const float distance, const float en
 
             while (knights::distance_btwn(this->chassis->curr_position, desired_position) > end_tolerance 
                 || knights::distance_btwn(this->chassis->prev_position, desired_position) < knights::distance_btwn(this->chassis->curr_position, desired_position)
-                || distance_btwn(start_pos, this->chassis->curr_position) > max_dist
                 ) {
+
+                if (distance_btwn(start_pos, this->chassis->curr_position) > max_dist)
+                    break;
                 
                 // decrease timeout and break if went over
                 timeout -= 10;

@@ -37,14 +37,19 @@ void initialize() {
 
 
 
-	auton_map["None0"] = knights::Auton(&skills, knights::Pos(-63, -10, 130_deg));
+	// auton_map["None0"] = knights::Auton(&skills, knights::Pos(-63, -10, 130_deg));
+	auton_map["None0"] = knights::Auton(&blue_mogo_rush_left, knights::Pos(53, -36, 184_deg));
+
 
 	auton_map["Red1"] = knights::Auton(&red_left_wp_safe, knights::Pos(-53.76, 7.48, 204.27_deg));
 	auton_map["Red2"] = knights::Auton(&red_right_wp_safe, knights::Pos(-61.86, -8.94, 124.68_deg)); // red2
+	auton_map["Red1"] = knights::Auton(&red_left_elim, knights::Pos(-53.76, 7.48, 204.27_deg));
+
 	auton_map["Blue1"] = knights::Auton(&blue_right_wp_safe, knights::Pos(53.76, 7.48, -24.27_deg));
 	auton_map["Blue2"] = knights::Auton(&blue_left_wp_safe, knights::Pos(61.86, -8.94, 55.32_deg)); // red2
+	auton_map["Blue3"] = knights::Auton(&blue_mogo_rush_left, knights::Pos(54, -38, 180_deg));
 
-	// auton_map["None0"] = knights::Auton(&red_lb_first_wp_right, knights::Pos(-55, -57, 0_deg));
+
 
 
 
