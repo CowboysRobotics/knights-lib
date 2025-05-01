@@ -91,7 +91,7 @@ knights::RobotController::RobotController(RobotChassis *chassis, PIDController *
 }
 
 knights::RobotController::RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, PIDController *angular_pid, RamseteConstants *ramsete_constants, bool use_motor_encoders)
-    : chassis(chassis), lateral_pid(lateral_pid), turn_pid(turn_pid), angular_pid(nullptr), ramsete_constants(ramsete_constants), use_motor_encoders(use_motor_encoders) {
+    : chassis(chassis), lateral_pid(lateral_pid), turn_pid(turn_pid), angular_pid(angular_pid), ramsete_constants(ramsete_constants), use_motor_encoders(use_motor_encoders) {
 }
 
 knights::RobotController::RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, bool use_motor_encoders)

@@ -4,6 +4,7 @@
 #include "knights/api.hpp"
 #include "knights/autonomous/profile.hpp"
 #include "knights/display.hpp"
+#include "knights/robot/chassis.hpp"
 #include "knights/util/calculation.hpp"
 #include "pros/misc.h"
 #include "pros/rtos.hpp"
@@ -37,8 +38,9 @@ void initialize() {
 
 
 
-	// auton_map["None0"] = knights::Auton(&skills, knights::Pos(-63, -10, 130_deg));
-	auton_map["None0"] = knights::Auton(&blue_mogo_rush_left, knights::Pos(53, -36, 184_deg));
+	// auton_map["None0"] = knights::Auton(&skills, knights::Pos(-61, -12, 128_deg));
+	// auton_map["None0"] = knights::Auton(&blue_mogo_rush_left, knights::Pos(53, -36, 184_deg));
+	auton_map["None0"] = knights::Auton(&skills_states, knights::Pos(-62.5, 0, 0));
 
 
 	auton_map["Red1"] = knights::Auton(&red_left_wp_safe, knights::Pos(-53.76, 7.48, 204.27_deg));
@@ -215,6 +217,8 @@ void opcontrol() {
 	// need to find a way to do this dynamically
 	chassis.set_position(knights::Pos(0, 0, knights::to_rad(0)));
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
+
+	chassis.current_localization_method = knights::LocalizationMethod::BEST;
 
 	midOdom.reset();
 	backOdom.reset();

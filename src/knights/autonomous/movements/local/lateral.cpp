@@ -74,7 +74,7 @@ void knights::RobotController::lateral_move(const float distance, const float en
             
             Pos start_pos(this->chassis->curr_position);
 
-            float max_dist = distance_btwn(start_pos, desired_position) + end_tolerance;
+            float max_dist = distance_btwn(start_pos, desired_position) + 1.0;
 
             while (knights::distance_btwn(this->chassis->curr_position, desired_position) > end_tolerance 
                 || knights::distance_btwn(this->chassis->prev_position, desired_position) < knights::distance_btwn(this->chassis->curr_position, desired_position)
@@ -92,24 +92,6 @@ void knights::RobotController::lateral_move(const float distance, const float en
 
                 // use pid formula to calculate speed
                 speed = this->lateral_pid->update(error) * knights::signum(distance);
-
-                // if (fabs(speed) <= this->pid_controller->min_velocity-10) {
-                //     break;
-                // }
-
-                // // --- EXPERIMENTAL
-                // float angular_curve = curvature(this->chassis->curr_position, desired_position);
-                
-                // // calculate right and left speed based on curvature
-                // float r_speed = speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;
-                // float l_speed = speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2;
-
-                // // calculate if one is over max alloted speed (might need to be 127.0 - max speed in pros)
-                // float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / this->pid_controller->max_velocity; 
-                // if (max_curr_speed > 1) {
-                //     r_speed /= max_curr_speed;
-                //     l_speed /= max_curr_speed;
-                // }
 
                 // send command to drivetrain
                 this->chassis->drivetrain->voltage_command(speed, speed);
@@ -156,7 +138,6 @@ void knights::RobotController::curve_move(const knights::Pos point, const bool f
 
     while (knights::distance_btwn(this->chassis->curr_position, point) > end_tolerance 
         || knights::distance_btwn(this->chassis->prev_position, point) < knights::distance_btwn(this->chassis->curr_position, point)
-        || distance_btwn(start_pos, this->chassis->curr_position) > max_dist
         ) {
         
         // decrease timeout and break if went over
@@ -174,27 +155,12 @@ void knights::RobotController::curve_move(const knights::Pos point, const bool f
         // use pid formula to calculate speed
         float speed = this->lateral_pid->update(error);
 
-        // if (fabs(speed) <= this->pid_controller->min_velocity-10) {
-        //     break;
-        // }
-
-        // // --- EXPERIMENTAL
-        // float angular_curve = curvature(curr_position, point);
+        float ang_error = angular_error(curr_position.heading, 
+            std::atan2(point.y - curr_position.y, point.x - curr_position.x), 0);
         
-        // // calculate right and left speed based on curvature
-        // float r_speed = speed * (2 - angular_curve * this->chassis->drivetrain->track_width) / 2;
-        // float l_speed = speed * (2 + angular_curve * this->chassis->drivetrain->track_width) / 2;
+        speed *= std::cos(ang_error);
 
-        // // calculate if one is over max alloted speed (might need to be 127.0 - max speed in pros)
-        // float max_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / this->lateral_pid->max_velocity; 
-        // if (max_curr_speed > 1) {
-        //     r_speed /= max_curr_speed;
-        //     l_speed /= max_curr_speed;
-        // }
-
-        float angular_velocity = this->angular_pid->update(angular_error(curr_position.heading, 
-            std::atan2(point.y - curr_position.y, point.x - curr_position.x), 
-        0), true);
+        float angular_velocity = this->angular_pid->update(ang_error, true);
 
         float r_speed = speed + angular_velocity;
         float l_speed = speed - angular_velocity;

@@ -26,12 +26,11 @@
 knights::PIDController lady_brown_PID(LADY_BROWN_kP, LADY_BROWN_kI, LADY_BROWN_kD, 10.0, 127.0);
 
 #define LADY_BROWN_DOWN 0
-#define LADY_BROWN_LOAD1 24
+#define LADY_BROWN_LOAD1 25
 #define LADY_BROWN_DESCORE 149
 #define LADY_BROWN_SCORE 164 // 213
 #define LADY_BROWN_ALLIANCE 195
 #define LADY_BROWN_TIP 240
-#define LADY_BROWN_END_TOLERANCE 1.0
 
 bool lady_brown_spinning = false;
 bool lady_brown_forward = false;
@@ -95,9 +94,9 @@ pros::Distance right_sensor(4);
 pros::Distance front_sensor(3);
 
 knights::DistanceTracker back(&back_sensor, -5.5, 1.2, M_PI, 1800);
-knights::DistanceTracker left(&left_sensor, -5.5, 4, -M_PI/2, 1500);
-knights::DistanceTracker right(&right_sensor, 5.5, 1.6, M_PI/2, 900);
-knights::DistanceTracker front(&front_sensor, 5.5, 4.5, 0, 1400);
+knights::DistanceTracker left(&left_sensor, -5.5, 4, M_PI/2, 1500);
+knights::DistanceTracker right(&right_sensor, 5.5, 1.6, -M_PI/2, 900);
+knights::DistanceTracker front(&front_sensor, 5.5, 4.5, 0, 400);
 
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu, 0.8, 0.5, 0.5);
 

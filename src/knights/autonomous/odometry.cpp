@@ -120,9 +120,6 @@ std::tuple<knights::Pos, knights::Point> knights::RobotChassis::calc_distance_se
     for (auto sensor : this->pos_trackers->distance_trackers) {
 
         float sensor_distance = knights::to_inches(sensor->distance_sensor->get_distance() / 1000.0);
-
-        if (sensor_distance > knights::to_inches(sensor->max_effective_mm/1000.0) || sensor_distance < SENSOR_MIN_DIST) 
-            continue;
     
 
         float sensor_angle_rad = knights::normalize_angle(sensor->angle_from_front + robot_theta, true);
@@ -134,7 +131,15 @@ std::tuple<knights::Pos, knights::Point> knights::RobotChassis::calc_distance_se
               + (-sensor->x_displacement * std::cos(robot_theta) + sensor->y_displacement * std::sin(robot_theta))
         );
 
-        if (std::fabs(hit_pos.x) < WALL_DIST - 4 && std::fabs(hit_pos.y) < WALL_DIST -4)
+        // std::cout << 
+        // knights::logger::string_format(
+        //     "s_dist: %lf hit pos: %lf %lf \n", sensor_distance, hit_pos.x, hit_pos.y
+        // );
+
+        if (sensor_distance > knights::to_inches(sensor->max_effective_mm/1000.0) || sensor_distance < SENSOR_MIN_DIST) 
+            continue;
+
+        if (std::fabs(hit_pos.x) < WALL_DIST - 10 && std::fabs(hit_pos.y) < WALL_DIST - 10)
             continue;
 
         if (hit_pos.x > 0 and std::fabs(hit_pos.x) > std::fabs(hit_pos.y)) {
@@ -154,19 +159,14 @@ std::tuple<knights::Pos, knights::Point> knights::RobotChassis::calc_distance_se
             y_estimates.push_back(-WALL_DIST - y_dist);
         }
 
-        write_file << 
-            knights::logger::string_format(
-                "s_dist: %lf hit pos: %lf %lf \n", sensor_distance, hit_pos.x, hit_pos.y
-            );
-
 
 
     }
 
-    write_file << 
-        knights::logger::string_format(
-            "x_est, size: %lf %d y_est, size: %lf %d \n", knights::avg(x_estimates), x_estimates.size(), knights::avg(y_estimates), y_estimates.size()
-        );
+    // std::cout << 
+    //     knights::logger::string_format(
+    //         "x_est, size: %lf %d y_est, size: %lf %d \n", knights::avg(x_estimates), x_estimates.size(), knights::avg(y_estimates), y_estimates.size()
+    //     );
 
     knights::Pos estimated_position(0.0, 0.0, robot_theta);
 
