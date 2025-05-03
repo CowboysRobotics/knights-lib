@@ -83,7 +83,7 @@ pros::adi::LineSensor ring_sense(7);
 //assign ports for pneumatics
 pros::adi::Pneumatics clamp(2, false); //clamp solenoid
 pros::adi::Pneumatics doinker(1, false); //doinker solenoid
-pros::adi::Pneumatics doinker2(2, false); //rush mech solenoid
+pros::adi::Pneumatics doinker2(8, false); //rush mech solenoid
 
 pros::adi::Pneumatics intake_raise(3, false); //rush mech solenoid
 
@@ -185,7 +185,7 @@ void change_color(){
 }
 
 void red_color_sort() {
-	if (colors.get_hue() < 40){
+	if (colors.get_hue() < 30 && colors.get_proximity() > 150){
 		sort = true;
 		pros::delay(150);
 		intake_top.move(INTAKE_VELOCITY);
@@ -197,7 +197,7 @@ void red_color_sort() {
 }
 
 void blue_color_sort(){
-	if (colors.get_hue() > 140){
+	if (colors.get_hue() > 185 && colors.get_proximity() > 150){
 		sort = true;
 		pros::delay(150);
 		intake_top.move(INTAKE_VELOCITY);

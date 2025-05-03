@@ -91,7 +91,7 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
         this->angular_pid->reset();
     }
 
-    std::fstream write_file("/usd/pure_pursuit.txt", std::ios_base::out);
+    // std::fstream write_file("/usd/pure_pursuit.txt", std::ios_base::out);
 
     // While the robot has not reached the desired point and is not at the end of the route
     while (error > end_tolerance && closest_i != route.positions.size() - 1) {
@@ -194,11 +194,11 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
         else
             this->chassis->drivetrain->voltage_command(-l_speed, -r_speed);
 
-        // log for debugging
-        write_file << logger::string_format("target: %lf %lf %lf, curr: %lf %lf %lf , target speed(curve/pid): %lf %lf, angular speed: %lf side speeds(r/l): %lf %lf curr lookahead: %lf , error: %lf\n",
-            target_point.x, target_point.y, route.positions[closest_i].heading, curr_position.x, curr_position.y, curr_position.heading, max_curr_speed, pid_speed, angular_velocity, r_speed, l_speed, curr_lookahead, error
+        // // log for debugging
+        // write_file << logger::string_format("target: %lf %lf %lf, curr: %lf %lf %lf , target speed(curve/pid): %lf %lf, angular speed: %lf side speeds(r/l): %lf %lf curr lookahead: %lf , error: %lf curvature: %lf\n",
+        //     target_point.x, target_point.y, route.positions[closest_i].heading, curr_position.x, curr_position.y, curr_position.heading, max_curr_speed, pid_speed, angular_velocity, r_speed, l_speed, curr_lookahead, error, angular_curve
             
-        ) << "\n";
+        // ) << "\n";
         
         // run all actions between previous closest point and current
         if (prev_closest_i != closest_i) {
@@ -241,9 +241,9 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
     float elapsed_time = 0;
     int curr_i = 1;
 
-    std::fstream write_file("/usd/ramsete_output.txt", std::ios_base::out);
+    // std::fstream write_file("/usd/ramsete_output.txt", std::ios_base::out);
 
-    printf("Ramsete started with state vars: max_vel %lf \n", profile.max_velocity);
+    // printf("Ramsete started with state vars: max_vel %lf \n", profile.max_velocity);
 
     while (distance_btwn(this->chassis->curr_position, profile.timestamps.back().position) > end_tolerance || elapsed_time < profile.timestamps.back().time) {
         knights::Pos curr_position = this->chassis->curr_position;
@@ -323,16 +323,16 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
             l_speed /= ratio_curr_speed;
         }
 
-        write_file << knights::logger::string_format(
-            "right/left vel %lf %lf final l/a vel %lf %lf curr l/a vel %lf %lf gain %lf curr pos %lf %lf %lf des pos %lf %lf %lf global error %lf %lf %lf local error %lf %lf time %lf \n\n",
-            r_speed, l_speed, linear_rpm, angular_rpm, output_lin_vel, output_ang_vel, gain, curr_position.x, curr_position.y, curr_position.heading,
-            selected.position.x, selected.position.y, selected.position.heading, error_x, error_y, error_theta, local_error_x, local_error_y, elapsed_time
-        );
+        // write_file << knights::logger::string_format(
+        //     "right/left vel %lf %lf final l/a vel %lf %lf curr l/a vel %lf %lf gain %lf curr pos %lf %lf %lf des pos %lf %lf %lf global error %lf %lf %lf local error %lf %lf time %lf \n\n",
+        //     r_speed, l_speed, linear_rpm, angular_rpm, output_lin_vel, output_ang_vel, gain, curr_position.x, curr_position.y, curr_position.heading,
+        //     selected.position.x, selected.position.y, selected.position.heading, error_x, error_y, error_theta, local_error_x, local_error_y, elapsed_time
+        // );
 
         pros::delay(10);
     }
 
-    write_file.close();
+    // write_file.close();
 
     // stop motors after route over
     this->chassis->drivetrain->voltage_command(0, 0);

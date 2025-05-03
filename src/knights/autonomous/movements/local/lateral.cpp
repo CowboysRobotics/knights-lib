@@ -134,7 +134,7 @@ void knights::RobotController::curve_move(const knights::Pos point, const bool f
 
     Pos start_pos(this->chassis->curr_position);
 
-    float max_dist = distance_btwn(start_pos, point) + end_tolerance;
+    float max_dist = distance_btwn(start_pos, point) + 1;
 
     while (knights::distance_btwn(this->chassis->curr_position, point) > end_tolerance 
         || knights::distance_btwn(this->chassis->prev_position, point) < knights::distance_btwn(this->chassis->curr_position, point)
@@ -158,7 +158,13 @@ void knights::RobotController::curve_move(const knights::Pos point, const bool f
         float ang_error = angular_error(curr_position.heading, 
             std::atan2(point.y - curr_position.y, point.x - curr_position.x), 0);
         
-        speed *= std::cos(ang_error);
+        speed *= std::cos(std::fabs(ang_error));
+
+        if (distance_btwn(start_pos, this->chassis->curr_position) > max_dist - end_tolerance) {
+            // prevent tipping instead of breaking
+            speed /= 2;
+        }
+            
 
         float angular_velocity = this->angular_pid->update(ang_error, true);
 
