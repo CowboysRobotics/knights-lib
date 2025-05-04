@@ -185,11 +185,11 @@ void change_color(){
 }
 
 void red_color_sort() {
-	if (colors.get_hue() < 30 && colors.get_proximity() > 150){
+	if (colors.get_hue() < 30 && colors.get_proximity() > 50){
 		sort = true;
-		pros::delay(150);
+		pros::delay(140);
 		intake_top.move(INTAKE_VELOCITY);
-		pros::delay(200);
+		pros::delay(230);
 		intake_top.move(-INTAKE_VELOCITY);
 		sort = false;
 		printf("finna sort these 10s \n");
@@ -197,11 +197,11 @@ void red_color_sort() {
 }
 
 void blue_color_sort(){
-	if (colors.get_hue() > 185 && colors.get_proximity() > 150){
+	if (colors.get_hue() > 185 && colors.get_proximity() > 50){
 		sort = true;
-		pros::delay(150);
+		pros::delay(140);
 		intake_top.move(INTAKE_VELOCITY);
-		pros::delay(200);
+		pros::delay(230);
 		intake_top.move(-INTAKE_VELOCITY);		
 		sort = false;
 		printf("finna sort these 10s \n");
@@ -311,7 +311,7 @@ void lady_brown_score() {
 void lady_brown_alliance() {
 	intake_spinning = false;
 	intake.move(0);
-    // lady_brown_to_angle(LADY_BROWN_ALLIANCE, 750, true, 5.0);
+	intake_voltage = 0;
 
 	lady_brown_target = LADY_BROWN_ALLIANCE;
 }
