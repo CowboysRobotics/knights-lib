@@ -180,6 +180,10 @@ void toggle_color_sort(){
 	colors.set_led_pwm(color_sorting * 100);
 }
 
+void toggle_intake_raise() {
+  intake_raise.toggle();
+}
+
 void change_color(){
 	red_alliance = !red_alliance;
 }

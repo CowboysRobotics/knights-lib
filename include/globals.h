@@ -56,6 +56,7 @@ extern bool jam_enabled;
 void intake_in();
 void intake_out();
 void unjam_intake_check();
+void toggle_intake_raise();
 
 // Color Sorting
 extern pros::Optical colors;

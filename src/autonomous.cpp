@@ -1747,13 +1747,13 @@ void red_mogo_rush_right(knights::RobotChassis *chassis, bool flip_x, bool flip_
 
 	doinker_toggle();
 
-	robotControl.turn_to_angle(135, 1, 3.0, 450);
+	robotControl.turn_to_angle(180-135, 1, 3.0, 450);
 
 	doinker_toggle(); 
 	
 	pros::delay(250);
 
-	robotControl.turn_to_angle(8, 1); pros::delay(250);
+	robotControl.turn_to_angle(180-8, 1); pros::delay(250);
 
 	robotControl.lateral_move(-16);
 	robotControl.lateral_move(-10);
@@ -1764,7 +1764,7 @@ void red_mogo_rush_right(knights::RobotChassis *chassis, bool flip_x, bool flip_
 
 	robotControl.lateral_move(36, 3.0, 2000); pros::delay(250);
 
-	robotControl.turn_to_angle(85);
+	robotControl.turn_to_angle(180-85);
 
 	intake_in();
 
@@ -1776,7 +1776,7 @@ void red_mogo_rush_right(knights::RobotChassis *chassis, bool flip_x, bool flip_
 
 	pros::delay(200);
 	
-	robotControl.turn_to_point(kPos(24, -28, 0), false, 0, 0, 750); 
+	robotControl.turn_to_point(kPos(-24, -28, 0), false, 0, 0, 750); 
 	
 	pros::delay(250);
 
@@ -1788,13 +1788,13 @@ void red_mogo_rush_right(knights::RobotChassis *chassis, bool flip_x, bool flip_
 
 	pros::delay(250);
 
-	robotControl.turn_to_angle(267); pros::delay(150);
+	robotControl.turn_to_angle(180-267); pros::delay(150);
 
 	intake_in();
 
 	robotControl.lateral_move(26);
 
-	robotControl.turn_to_angle(360);
+	robotControl.turn_to_angle(180-360);
 
 	pros::delay(150);
 
@@ -1802,7 +1802,7 @@ void red_mogo_rush_right(knights::RobotChassis *chassis, bool flip_x, bool flip_
 
 	pros::delay(150);
 
-	robotControl.turn_to_point(kPos(72, -72, 0), true, 0, 3.0, 600);
+	robotControl.turn_to_point(kPos(-72, -72, 0), true, 0, 3.0, 600);
 
 	lady_brown_load1();
 
@@ -1810,9 +1810,9 @@ void red_mogo_rush_right(knights::RobotChassis *chassis, bool flip_x, bool flip_
 
 	robotControl.lateral_move(-6); pros::delay(150);
 
-	robotControl.lateral_to_point(kPos(13, -65, 235), true, 6.0, 2000, 1000, 170);
+	robotControl.lateral_to_point(kPos(-13, -65, 235), true, 6.0, 2000, 1000, 170);
 
-	robotControl.turn_to_angle(233);
+	robotControl.turn_to_angle(180-233);
 	
 	pros::delay(150);
 

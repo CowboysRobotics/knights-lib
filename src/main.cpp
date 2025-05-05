@@ -301,6 +301,8 @@ void opcontrol() {
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1, doinker_toggle, false); //assign doinker toggle to controller button R1
 	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_DOWN, lady_brown_tip, false); //assign doinker toggle to controller button R1
 
+	input.bind_action(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_LEFT, toggle_intake_raise, false); 
+
 	auton_color_sorting = false;
 
 	if (colorSortTask == nullptr) {
