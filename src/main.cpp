@@ -45,11 +45,11 @@ void initialize() {
 
 	auton_map["Red1"] = knights::Auton(&red_left_wp_safe, knights::Pos(-53.76, 7.48, 204.27_deg)); // tested good
 	auton_map["Red2"] = knights::Auton(&red_right_wp_safe, knights::Pos(-61.86, -8.94, 124.68_deg)); // tested good
-	auton_map["Red3"] = knights::Auton(&red_left_elim, knights::Pos(-53.76, 7.48, 204.27_deg)); // tested good
+	auton_map["Red3"] = knights::Auton(&red_mogo_rush_right, knights::Pos(-53.76, 7.48, 204.27_deg)); // tested good
 
 	auton_map["Blue1"] = knights::Auton(&blue_right_wp_safe, knights::Pos(53.76, 7.48, -24.27_deg)); // tested good
 	auton_map["Blue2"] = knights::Auton(&blue_left_wp_safe, knights::Pos(61.86, -8.94, knights::to_rad(180 - 124.68))); // tested good
-	auton_map["Blue3"] = knights::Auton(&blue_mogo_rush_left, knights::Pos(54, -38, 180_deg)); 
+	auton_map["Blue3"] = knights::Auton(&blue_mogo_rush_left, knights::Pos(54, -38, 180_deg)); // tested good
 
 	auton_map["None0"] = knights::Auton(&empty, knights::Pos(0, 0, 0));
 

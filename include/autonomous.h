@@ -26,6 +26,8 @@ void blue_right_wp_safe(knights::RobotChassis *chassis, bool flip_x, bool flip_y
 void red_lb_first_wp_right(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 
 void blue_mogo_rush_left(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
+void red_mogo_rush_right(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
+
 
 void empty(knights::RobotChassis *chassis, bool flip_x, bool flip_y);
 
