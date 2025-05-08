@@ -19,7 +19,7 @@
 
 
 #define LADY_BROWN_VELOCITY 127.0
-#define LADY_BROWN_kP 1.75 // 1.75
+#define LADY_BROWN_kP 2.2 // 1.75
 #define LADY_BROWN_kI 0.000
 #define LADY_BROWN_kD 0.5
 
@@ -196,7 +196,6 @@ void red_color_sort() {
 		pros::delay(230);
 		intake_top.move(-INTAKE_VELOCITY);
 		sort = false;
-		printf("finna sort these 10s \n");
 	}
 }
 
@@ -208,7 +207,6 @@ void blue_color_sort(){
 		pros::delay(230);
 		intake_top.move(-INTAKE_VELOCITY);		
 		sort = false;
-		printf("finna sort these 10s \n");
 	}
 }
 

@@ -658,29 +658,17 @@ void red_right_wp_safe(knights::RobotChassis *chassis, bool flip_x, bool flip_y)
 
 	lady_brown_load1();
 
-	pros::delay(160);
+	pros::delay(1000);
 
 	intake_in();
 
-	pros::delay(240);
-
-	intake_in();
-
-	lady_brown_alliance();
-
-	// robotControl.lateral_move(5);
-
-	pros::delay(150);
-
-	intake_in();
-
-	pros::delay(200);
+	pros::delay(2000);
 
 	intake_in();
 
 	lady_brown_alliance();
 
-	pros::delay(700);
+	pros::delay(800);
 
 	robotControl.lateral_move(-6, 2.0);
 
@@ -928,11 +916,11 @@ void blue_left_wp_safe(knights::RobotChassis *chassis, bool flip_x, bool flip_y)
 
 	lady_brown_load1();
 
-	pros::delay(220);
+	pros::delay(1000);
 
 	intake_in();
 
-	pros::delay(240);
+	pros::delay(2000);
 
 	intake_in();
 

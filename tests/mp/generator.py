@@ -276,62 +276,13 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
       max_speed = max_velocity - max_acceleration * (deceleration_curr_time) # inaccuracy here maybe
         
     # Angular Calculations
-    x,y = path.position(elapsed_time / total_time)
-    dx,dy = path.derivatives(elapsed_time / total_time)
-    dx2,dy2 = path.second_derivatives(elapsed_time / total_time)
 
-    # # VELOCITY CURVING
-    # curvature_at = curvature(path.position((elapsed_time-time_step) / total_time), [x,y], path.position((elapsed_time+time_step) / total_time))
-    # if curvature_at > 1e-6:
-    #   max_speed = 1.5/curvature_at
-    # else:
-    #    max_speed = 1e4
-    
-    # print(max_speed, curvature_at)
-    
-    # if (max_speed < curr_velocity):
-    #   added_distance = ((curr_velocity - max_speed) * time_step) # in inches
-    #   curr_dist -= added_distance
+    path_pct = curr_dist / total_dist
+    # path_pct = elapsed_time / total_time
 
-    #   curr_velocity = max_speed
-
-    #   total_time += added_distance / curr_velocity
-
-    #   # need to factor in the other times here, not just total, as this makes velocity inaccurate
-
-    #   if (elapsed_time > total_time):
-    #     break;
-    #   # accelerating
-    #   elif (elapsed_time < acceleration_time):
-    #     acceleration_time += added_distance / curr_velocity
-    #   # cruising
-    #   elif (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)):
-    #     cruise_time += added_distance / curr_velocity
-    # # END
-
-    # # ACCEL CURVING 
-    # if (curr_velocity < max_speed):
-    #   added_distance = ((max_speed - curr_velocity) * time_step) # in inches
-    #   curr_dist -= added_distance
-
-    #   total_time += added_distance / max_speed
-
-    #   # need to factor in the other times here, not just total, as this makes velocity inaccurate
-
-    #   if (elapsed_time > total_time):
-    #     break;
-    #   # accelerating
-    #   elif (elapsed_time < acceleration_time):
-    #     acceleration_time += added_distance / max_speed
-    #   # cruising
-    #   elif (cruise_time > 0 and elapsed_time < (acceleration_time + cruise_time)):
-    #     cruise_time += added_distance / max_speed
-    # # END
-
-    # Re calculate Angular Calculations with new total time
-    x,y = path.position(elapsed_time / total_time)
-    dx,dy = path.derivatives(elapsed_time / total_time)
-    dx2,dy2 = path.second_derivatives(elapsed_time / total_time)
+    x,y = path.position(path_pct)
+    dx,dy = path.derivatives(path_pct)
+    dx2,dy2 = path.second_derivatives(path_pct)
 
     theta = (np.arctan2(dy,dx))
     omega = ((dy2 * dx - dy * dx2) / (((dx) ** 2) * (1 + ((dy / dx)) ** 2) + 1e-6))
@@ -349,6 +300,26 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
     side_vel_arr.append((left_vel, right_vel))
 
     elapsed_time += time_step
+
+
+  # add second pass to constrain time to velocity
+  constrained_time = 0
+  prev_velocity = 100000000
+  prev_pos = path.position(0)
+  for i in range(len(times)):
+     if prev_velocity <= 1:
+        prev_velocity = 1
+    
+     print(np.sqrt((position_arr[i][0]-prev_pos[0])**2 + (position_arr[i][1]-prev_pos[1])**2), prev_velocity)
+
+     constrained_time += np.sqrt((position_arr[i][0]-prev_pos[0])**2 + (position_arr[i][1]-prev_pos[1])**2) / (prev_velocity)
+
+     prev_velocity = vel_arr[i]
+     prev_pos = position_arr[i]
+
+     times[i] = constrained_time
+     
+  print(times)
 
   return [times, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
 
@@ -391,6 +362,17 @@ max_velocity = (DESIRED_VOLTAGE/MAX_VOLTAGE) * np.pi * WHEEL_DIAMETER * (RPM / 6
 
 t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr = generate_motion_profile(max_acceleration, max_velocity, total_dist, TRACK_WIDTH, path)
 
+exr_dist_arr = []
+prev_pos = curr
+current_distance = 0
+
+for position in position_arr:
+   current_distance += np.sqrt((position[0]-prev_pos[0])**2 + (position[1]-prev_pos[1])**2)
+   exr_dist_arr.append(
+      current_distance
+   )
+   prev_pos = position
+
 figure, axis = plt.subplots(3, 2)
 
 axis[0][1].plot(t, vel_arr)
@@ -410,6 +392,9 @@ left_vels, right_vels = zip(*side_vel_arr)
 axis[2][1].plot(t, left_vels, label="left")
 axis[2][1].set_title("Side Velocities")
 axis[2][1].plot(t, right_vels, label="right")
+
+axis[2][0].plot(t, np.gradient(exr_dist_arr, t))
+axis[2][0].set_title("Actual Velocity")
 
 new_axis = plt.figure().add_subplot(projection='3d')
 

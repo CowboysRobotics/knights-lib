@@ -135,8 +135,8 @@ void autonomous() {
 
 	if (intakeJamTask == nullptr) {
 		intakeJamTask = new pros::Task {[=] {
-			while(true & !sort) {
-				if (jam_enabled) {
+			while(true) {
+				if (jam_enabled && !sort) {
 					unjam_intake_check();
 
 					pros::delay(20);
@@ -336,12 +336,13 @@ void opcontrol() {
 		}};
 
 		colorSortTask->set_priority(TASK_PRIORITY_DEFAULT - 2);
+
 	}
 
 	if (intakeJamTask == nullptr) {
 		intakeJamTask = new pros::Task {[=] {
-			while(true & !sort) {
-				if (jam_enabled) {
+			while(true) {
+				if (jam_enabled && !sort) {
 					unjam_intake_check();
 
 					pros::delay(20);
