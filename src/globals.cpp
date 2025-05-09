@@ -90,12 +90,12 @@ pros::adi::Pneumatics intake_raise(3, false); //rush mech solenoid
 // distance sensors
 pros::Distance left_sensor(8);
 pros::Distance back_sensor(9);
-pros::Distance right_sensor(4);
+// pros::Distance right_sensor(4);
 pros::Distance front_sensor(3);
 
 knights::DistanceTracker back(&back_sensor, -5.5, 1.2, M_PI, 1800);
 knights::DistanceTracker left(&left_sensor, -5.5, 4, M_PI/2, 1500);
-knights::DistanceTracker right(&right_sensor, 5.5, 1.6, -M_PI/2, 900);
+// knights::DistanceTracker right(&right_sensor, 5.5, 1.6, -M_PI/2, 900);
 knights::DistanceTracker front(&front_sensor, 5.5, 4.5, 0, 400);
 
 knights::PositionTrackerGroup odomTrackers(&midOdom, &backOdom, &imu, 0.8, 0.5, 0.5);

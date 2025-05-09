@@ -195,6 +195,36 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
         write_file << "stage 4 " << pros::micros() << "\n";
     }
 
+    // add second pass here
+
+    // constrained_time = 0
+    // prev_velocity = 100000000
+    // prev_pos = path.position(0)
+    // for i in range(len(times)):
+    //    if prev_velocity <= 1:
+    //       prev_velocity = 1
+      
+    //    print(np.sqrt((position_arr[i][0]-prev_pos[0])**2 + (position_arr[i][1]-prev_pos[1])**2), prev_velocity)
+  
+    //    constrained_time += np.sqrt((position_arr[i][0]-prev_pos[0])**2 + (position_arr[i][1]-prev_pos[1])**2) / (prev_velocity)
+  
+    //    prev_velocity = vel_arr[i]
+    //    prev_pos = position_arr[i]
+  
+    //    times[i] = constrained_time
+
+    // float constrained_time = 0;
+    // float prev_vel = 10000000;
+    // knights::Pos prev_position = timestamps[0].position;
+
+    // for (int i = 0; i < timestamps.size(); i++) {
+    //     if (prev_vel < 1)
+    //         prev_vel = 1;
+
+    //     constrained_time += 
+    // }
+
+
     write_file.close();
 
     return MotionProfile(timestamps, path, this->max_acceleration, path_max_velocity, desired_voltage);

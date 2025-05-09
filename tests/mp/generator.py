@@ -360,7 +360,7 @@ TRACK_WIDTH = 15
 max_acceleration = 70 # arbitrary constant
 max_velocity = (DESIRED_VOLTAGE/MAX_VOLTAGE) * np.pi * WHEEL_DIAMETER * (RPM / 60.0)
 
-t, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr = generate_motion_profile(max_acceleration, max_velocity, total_dist, TRACK_WIDTH, path)
+times, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr = generate_motion_profile(max_acceleration, max_velocity, total_dist, TRACK_WIDTH, path)
 
 exr_dist_arr = []
 prev_pos = curr
@@ -373,34 +373,44 @@ for position in position_arr:
    )
    prev_pos = position
 
-figure, axis = plt.subplots(3, 2)
+figure, axis = plt.subplots(3, 3)
 
-axis[0][1].plot(t, vel_arr)
+axis[0][1].plot(times, vel_arr)
 axis[0][1].set_title("Velocity")
 
-axis[0][0].plot(t, dist_arr)
+axis[0][0].plot(times, dist_arr)
 axis[0][0].set_title("Distance Travelled")
 
 axis[1][0].plot(x_vals, y_vals)
 axis[1][0].set_title("Path")
 
-axis[1][1].plot(t, omega_arr)
+axis[1][1].plot(times, omega_arr)
 axis[1][1].set_title("Omega")
 
 left_vels, right_vels = zip(*side_vel_arr)
 
-axis[2][1].plot(t, left_vels, label="left")
+axis[2][1].plot(times, left_vels, label="left")
 axis[2][1].set_title("Side Velocities")
-axis[2][1].plot(t, right_vels, label="right")
+axis[2][1].plot(times, right_vels, label="right")
 
-axis[2][0].plot(t, np.gradient(exr_dist_arr, t))
+axis[2][0].plot(times, np.gradient(exr_dist_arr, times))
 axis[2][0].set_title("Actual Velocity")
+
+# find time scale
+time_btwn_pts = []
+prev_time = times[0]
+for time in times:
+    time_btwn_pts.append(time - prev_time)
+    prev_time = time
+
+axis[0][2].plot(times, time_btwn_pts)
+axis[0][2].set_title("Time Between Points")
 
 new_axis = plt.figure().add_subplot(projection='3d')
 
 real_x, real_y = zip(*position_arr)
 
-new_axis.plot(real_x, real_y, t, label="Actual Path")
+new_axis.plot(real_x, real_y, times, label="Actual Path")
 
 plt.legend()
 plt.show()

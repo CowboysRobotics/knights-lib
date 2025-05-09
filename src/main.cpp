@@ -34,7 +34,6 @@ void initialize() {
 	odomTrackers.add_dist(&front);
 	odomTrackers.add_dist(&back);
 	odomTrackers.add_dist(&left);
-	odomTrackers.add_dist(&right);
 
 
 
@@ -136,6 +135,7 @@ void autonomous() {
 	if (intakeJamTask == nullptr) {
 		intakeJamTask = new pros::Task {[=] {
 			while(true) {
+				break;
 				if (jam_enabled && !sort) {
 					unjam_intake_check();
 
@@ -219,7 +219,7 @@ void opcontrol() {
 	chassis.set_position(knights::Pos(0, 0, knights::to_rad(0)));
 	imu.set_heading(knights::normalize_angle(360-knights::to_deg(chassis.get_position().heading), false));
 
-	chassis.current_localization_method = knights::LocalizationMethod::BEST;
+	// chassis.current_localization_method = knights::LocalizationMethod::BEST;
 
 	midOdom.reset();
 	backOdom.reset();
