@@ -25,7 +25,7 @@ knights::QuinticPath::QuinticPath(knights::Pos curr, knights::Pos target, knight
     this->p12 = this->curr_acceleration / 20 + 2 * this->p11 - this->p10;
     this->p15 = this->target.y;
     this->p14 = this->p15 - this->target_tangent.y / 5;
-    this->p13 = this->target_acceleration / 20 + 2 * this->p14 - this->p15;
+    this->p__13 = this->target_acceleration / 20 + 2 * this->p14 - this->p15;
 };
 
 knights::QuinticPath::QuinticPath() {};
@@ -142,29 +142,33 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     for (double elapsed_time = 0; elapsed_time <= total_time; elapsed_time += 1.0/points_per_sec) {
         float curr_velocity = 0;
+        float curr_dist = 0;
 
         write_file << "stage 1 " << pros::micros() << "\n";
 
-        Pos pt = path.position(elapsed_time / total_time);
-        Pos deriv = path.derivatives(elapsed_time / total_time);
-        Pos deriv2 = path.second_derivatives(elapsed_time / total_time);
-        float curr_acceleratin = max_acceleration;
-        float max_speed = 1e4;
-
         if (elapsed_time > total_time) {
+            curr_dist = total_dist;
             curr_velocity = 0;
         } else if (elapsed_time < acceleration_time) {
-            curr_velocity = curr_acceleratin * elapsed_time;
-            max_speed = this->max_acceleration * elapsed_time;
+            curr_dist = 0.5 * this->max_acceleration * elapsed_time * elapsed_time;
+            curr_velocity = this->max_acceleration * elapsed_time;
         } else if (cruise_time > 0 && elapsed_time < (acceleration_time + cruise_time)) {
             float cruise_current_time = elapsed_time - acceleration_time;
+            curr_dist = acceleration_distance + path_max_velocity * cruise_current_time;
             curr_velocity = path_max_velocity;
-            max_speed = path_max_velocity;
         } else {
             float deceleration_curr_time = (elapsed_time - acceleration_time - cruise_time);
-            curr_velocity = path_max_velocity - curr_acceleratin * deceleration_curr_time;
-            max_speed = path_max_velocity - this->max_acceleration * deceleration_curr_time;
+            curr_dist = acceleration_distance + cruise_distance + path_max_velocity * deceleration_curr_time - this->max_acceleration * (deceleration_curr_time * deceleration_curr_time) / 2;
+            curr_velocity = path_max_velocity - this->max_acceleration * deceleration_curr_time;
         }
+
+        float path_pct = curr_dist / total_dist;
+
+        Pos pt = path.position(path_pct);
+        Pos deriv = path.derivatives(path_pct);
+        Pos deriv2 = path.second_derivatives(path_pct);
+        float curr_acceleratin = max_acceleration;
+        float max_speed = 1e4;
 
         write_file << "stage 3 " << pros::micros() << "\n";
 
@@ -195,34 +199,26 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
         write_file << "stage 4 " << pros::micros() << "\n";
     }
 
-    // add second pass here
+    // second pass to make times of each point more accurates
+    float constrained_time = 0;
+    float prev_vel = 1e10;
+    knights::Pos prev_position = timestamps[0].position;
 
-    // constrained_time = 0
-    // prev_velocity = 100000000
-    // prev_pos = path.position(0)
-    // for i in range(len(times)):
-    //    if prev_velocity <= 1:
-    //       prev_velocity = 1
-      
-    //    print(np.sqrt((position_arr[i][0]-prev_pos[0])**2 + (position_arr[i][1]-prev_pos[1])**2), prev_velocity)
-  
-    //    constrained_time += np.sqrt((position_arr[i][0]-prev_pos[0])**2 + (position_arr[i][1]-prev_pos[1])**2) / (prev_velocity)
-  
-    //    prev_velocity = vel_arr[i]
-    //    prev_pos = position_arr[i]
-  
-    //    times[i] = constrained_time
+    for (int i = 0; i < timestamps.size(); i++) {
+        if (prev_vel < 1)
+            prev_vel = 1;
 
-    // float constrained_time = 0;
-    // float prev_vel = 10000000;
-    // knights::Pos prev_position = timestamps[0].position;
+        constrained_time += 
+            std::sqrt(
+                std::pow(timestamps[i].position.x - prev_position.x, 2) +
+                std::pow(timestamps[i].position.y - prev_position.y, 2)
+            ) / (prev_vel);
+        
+        prev_vel = timestamps[i].linear_velocity;
+        prev_position = timestamps[i].position;
 
-    // for (int i = 0; i < timestamps.size(); i++) {
-    //     if (prev_vel < 1)
-    //         prev_vel = 1;
-
-    //     constrained_time += 
-    // }
+        timestamps[i].time = constrained_time;
+    }
 
 
     write_file.close();
