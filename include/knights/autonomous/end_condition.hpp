@@ -6,7 +6,6 @@
 #include "knights/util/position.hpp"
 
 namespace knights {
-
     struct LinearEndToleranceCondition {
         float distance;
 
