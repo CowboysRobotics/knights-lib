@@ -319,8 +319,8 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
      
   return [times, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
 
-curr = [12, 12, np.radians(90), 0]
-target = [60, 36, np.radians(90), 0]
+curr = [0, 0, np.radians(0), 0]
+target = [24, 24, np.radians(90), 0]
 
 dist = np.sqrt(((target[0]-curr[0]) ** 2) + ((target[1]-curr[1]) ** 2))
 
@@ -351,9 +351,9 @@ DESIRED_VOLTAGE = 80
 MAX_VOLTAGE = 127
 WHEEL_DIAMETER = 3.25
 RPM = 450
-TRACK_WIDTH = 15
+TRACK_WIDTH = 12.5970
 
-max_acceleration = 70 # arbitrary constant
+max_acceleration = 50 # arbitrary constant
 max_velocity = (DESIRED_VOLTAGE/MAX_VOLTAGE) * np.pi * WHEEL_DIAMETER * (RPM / 60.0)
 
 times, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr = generate_motion_profile(max_acceleration, max_velocity, total_dist, TRACK_WIDTH, path)
