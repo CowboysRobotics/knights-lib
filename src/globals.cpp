@@ -36,45 +36,46 @@ bool lady_brown_spinning = false;
 bool lady_brown_forward = false;
 
 pros::Controller master_controller(pros::E_CONTROLLER_MASTER);
-// Competition Robot
-//front of bot is intake side
-//assign ports to right side drive-train
-pros::MotorGroup left_mtrs({-1,12,13}, pros::MotorGears::blue); // no reverse
-//assign ports to left side drive-train
-pros::MotorGroup right_mtrs({-17,18,-19}, pros::MotorGears::blue); // no reverse
-//assign ports to odom pods for position tracking
-pros::Rotation mid_odom(15); // parallel tracking
-pros::Rotation back_odom(16); // perpendicular tracking
-//assign port for imu tracker
-pros::IMU imu(14);
-//dimensions and positions of odom pods for calculations for position tracking
-// wheel diameter used to be 1.939
-knights::PositionTracker midOdom(&mid_odom, 2, 1, 0.1475, -1);
-knights::PositionTracker backOdom(&back_odom, 2, 1, 1.576, -1); // 1.875
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 11, 600.0, 2.75, 1); // actual 11
-// #### END
+
+// // Competition Robot
+// //front of bot is intake side
+// //assign ports to right side drive-train
+// pros::MotorGroup left_mtrs({-1,12,13}, pros::MotorGears::blue); // no reverse
+// //assign ports to left side drive-train
+// pros::MotorGroup right_mtrs({-17,18,-19}, pros::MotorGears::blue); // no reverse
+// //assign ports to odom pods for position tracking
+// pros::Rotation mid_odom(15); // parallel tracking
+// pros::Rotation back_odom(16); // perpendicular tracking
+// //assign port for imu tracker
+// pros::IMU imu(14);
+// //dimensions and positions of odom pods for calculations for position tracking
+// // wheel diameter used to be 1.939
+// knights::PositionTracker midOdom(&mid_odom, 2, 1, 0.1475, -1);
+// knights::PositionTracker backOdom(&back_odom, 2, 1, 1.576, -1); // 1.875
+// knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 11, 600.0, 2.75, 1); // actual 11
+// // #### END
 
 // #### Test Robot
-// pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
-// pros::MotorGroup left_mtrs({-4,-5,-6}, pros::MotorGears::blue);
-// pros::Rotation mid_odom(18);
-// pros::Rotation back_odom(14);
-// pros::IMU imu(15);
-// knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
-// knights::PositionTracker backOdom(&back_odom, 2.75, 1, -2.8, -1);
-// knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 12.5970, 450.0, 3.25, 0.75);
+pros::MotorGroup right_mtrs({17,7,3}, pros::MotorGears::blue);
+pros::MotorGroup left_mtrs({-4,-5,-6}, pros::MotorGears::blue);
+pros::Rotation mid_odom(18);
+pros::Rotation back_odom(14);
+pros::IMU imu(15);
+knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
+knights::PositionTracker backOdom(&back_odom, 2.75, 1, -2.8, -1);
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 12.5970, 450.0, 3.25, 0.75);
 // #### END
 
 //assign ports to Lady Brown arm mech
-pros::Motor lady_brown(5, pros::MotorGears::green);
+pros::Motor lady_brown(21, pros::MotorGears::green);
 pros::Rotation lady_brown_rotation(7);
 
 //assign ports to intake, leftside first, rightside second
-pros::MotorGroup intake({2, -20}, pros::MotorGears::blue);
+pros::MotorGroup intake({21, -21}, pros::MotorGears::blue);
 
-pros::Motor intake_bottom(2, pros::v5::MotorGears::blue);
+pros::Motor intake_bottom(21, pros::v5::MotorGears::blue);
 
-pros::Motor intake_top(20,pros::v5::MotorGears::blue);
+pros::Motor intake_top(21,pros::v5::MotorGears::blue);
 
 //assign port to distance sensor for redirect
 pros::Optical colors(21);
@@ -112,7 +113,7 @@ pros::Task *ladyBrownTask = nullptr;
 pros::Task *colorSortTask = nullptr;
 pros::Task *intakeJamTask = nullptr;
 
-#define velocity_formula(x) 160*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20 // arbitrarily defined formula to translate joysticks to velocity
+#define velocity_formula(x) 20*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20 // arbitrarily defined formula to translate joysticks to velocity
 
 #define INTAKE_VELOCITY 200
 

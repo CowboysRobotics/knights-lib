@@ -241,7 +241,7 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
     float elapsed_time = 0;
     int curr_i = 1;
 
-    // std::fstream write_file("/usd/ramsete_output.txt", std::ios_base::out);
+    std::fstream write_file("/usd/ramsete_output.txt", std::ios_base::out);
 
     // printf("Ramsete started with state vars: max_vel %lf \n", profile.max_velocity);
 
@@ -290,16 +290,7 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
         float curr_lin_vel = lin_vel * cos(error_theta) + gain * local_error_x; // still in m/s
         float curr_ang_vel = ang_vel + gain * error_theta + this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y / error_theta;
 
-        float curvature_speed = 1e4;
-        
-        if (curr_i < profile.timestamps.size() - 2) {
-            curvature_speed = this->ramsete_constants->curvature_coefficient/knights::curvature(selected.position, profile.timestamps[curr_i+1].position, profile.timestamps[curr_i+2].position);
-        }
-
-        float output_lin_vel = std::fmin(
-            fabs(to_inches(curr_lin_vel)),
-            fabs(curvature_speed)
-        ) * knights::signum(curr_lin_vel);
+        float output_lin_vel = to_inches(curr_lin_vel);
 
         float output_ang_vel = curr_ang_vel * (output_lin_vel / to_inches(curr_lin_vel));
 
@@ -307,7 +298,6 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
         this->chassis->drivetrain->velocity_command(output_lin_vel, output_ang_vel, profile.max_velocity);
 
         // debugging velocities
-        // float linear_rpm = 6.119517 * std::pow(std::fabs(output_lin_vel), 1.023282) * knights::signum(output_lin_vel);
         float linear_rpm = (output_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
         float angular_lin_vel = (output_ang_vel * chassis->drivetrain->track_width/2.0);
         float angular_rpm = (angular_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
@@ -323,16 +313,16 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
             l_speed /= ratio_curr_speed;
         }
 
-        // write_file << knights::logger::string_format(
-        //     "right/left vel %lf %lf final l/a vel %lf %lf curr l/a vel %lf %lf gain %lf curr pos %lf %lf %lf des pos %lf %lf %lf global error %lf %lf %lf local error %lf %lf time %lf \n\n",
-        //     r_speed, l_speed, linear_rpm, angular_rpm, output_lin_vel, output_ang_vel, gain, curr_position.x, curr_position.y, curr_position.heading,
-        //     selected.position.x, selected.position.y, selected.position.heading, error_x, error_y, error_theta, local_error_x, local_error_y, elapsed_time
-        // );
+        write_file << knights::logger::string_format(
+            "right/left vel %lf %lf final l/a vel %lf %lf curr l/a vel %lf %lf gain %lf curr pos %lf %lf %lf des pos %lf %lf %lf global error %lf %lf %lf local error %lf %lf time %lf \n\n",
+            r_speed, l_speed, linear_rpm, angular_rpm, output_lin_vel, output_ang_vel, gain, curr_position.x, curr_position.y, curr_position.heading,
+            selected.position.x, selected.position.y, selected.position.heading, error_x, error_y, error_theta, local_error_x, local_error_y, elapsed_time
+        );
 
         pros::delay(10);
     }
 
-    // write_file.close();
+    write_file.close();
 
     // stop motors after route over
     this->chassis->drivetrain->voltage_command(0, 0);

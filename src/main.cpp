@@ -37,20 +37,9 @@ void initialize() {
 
 
 
-	// auton_map["None0"] = knights::Auton(&skills, knights::Pos(-61, -12, 128_deg));
-	// auton_map["None0"] = knights::Auton(&blue_mogo_rush_left, knights::Pos(53, -36, 184_deg));
-	auton_map["Skills0"] = knights::Auton(&skills_states, knights::Pos(-62.5, 0, 0));
 
 
-	auton_map["Red1"] = knights::Auton(&red_left_wp_safe, knights::Pos(-53.76, 7.48, 204.27_deg)); // tested good
-	auton_map["Red2"] = knights::Auton(&red_right_wp_safe, knights::Pos(-61.86, -8.94, 124.68_deg)); // tested good
-	auton_map["Red3"] = knights::Auton(&red_mogo_rush_right, knights::Pos(-53.76, 7.48, 204.27_deg)); // tested good
-
-	auton_map["Blue1"] = knights::Auton(&blue_right_wp_safe, knights::Pos(53.76, 7.48, -24.27_deg)); // tested good
-	auton_map["Blue2"] = knights::Auton(&blue_left_wp_safe, knights::Pos(61.86, -8.94, knights::to_rad(180 - 124.68))); // tested good
-	auton_map["Blue3"] = knights::Auton(&blue_mogo_rush_left, knights::Pos(54, -38, 180_deg)); // tested good
-
-	auton_map["None0"] = knights::Auton(&empty, knights::Pos(0, 0, 0));
+	auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(0, 0, 0));
 
 
 
@@ -357,14 +346,14 @@ void opcontrol() {
 
 	while (true) {
 		// If controller joystick not in deadzone, calculate the velocity
-		if (abs(master_controller.get_analog(ANALOG_RIGHT_Y)) > 2)
+		if (abs(master_controller.get_analog(ANALOG_RIGHT_Y)) > 14)
 			right_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_RIGHT_Y)));
 		// Otherwise, stop the right motors
 		else
 			right_velocity = 0;
 
 		// If controller joystick not in deadzone, calculate the velocity
-		if (abs(master_controller.get_analog(ANALOG_LEFT_Y)) > 2)
+		if (abs(master_controller.get_analog(ANALOG_LEFT_Y)) > 14)
 			left_velocity = velocity_formula(abs(master_controller.get_analog(ANALOG_LEFT_Y)));
 		// Otherwise, stop the left motors
 		else
@@ -374,8 +363,8 @@ void opcontrol() {
 		// Send the required velocities to the drivetrain
 		// Signum function detects if the controller analog value is postive or negative
 		drivetrain.voltage_command(
-			left_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y)),
-			right_velocity * -knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y))
+			right_velocity * knights::signum((int)master_controller.get_analog(ANALOG_RIGHT_Y)),
+			left_velocity * knights::signum((int)master_controller.get_analog(ANALOG_LEFT_Y))
 		);
 
 		// Delay to let other tasks run

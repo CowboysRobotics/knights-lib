@@ -310,8 +310,6 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
      if prev_velocity <= 1:
         prev_velocity = 1
     
-     print(np.sqrt((position_arr[i][0]-prev_pos[0])**2 + (position_arr[i][1]-prev_pos[1])**2), prev_velocity)
-
      constrained_time += np.sqrt((position_arr[i][0]-prev_pos[0])**2 + (position_arr[i][1]-prev_pos[1])**2) / (prev_velocity)
 
      prev_velocity = vel_arr[i]
@@ -319,8 +317,6 @@ def generate_motion_profile(max_acceleration, max_velocity, distance, track_widt
 
      times[i] = constrained_time
      
-  print(times)
-
   return [times, dist_arr, vel_arr, omega_arr, side_vel_arr, position_arr]
 
 curr = [12, 12, np.radians(90), 0]

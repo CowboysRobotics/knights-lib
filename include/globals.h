@@ -112,7 +112,7 @@ void doinker_toggle();
 void doinker_toggle2();
 
 // Constants
-#define velocity_formula(x) 160*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20
+#define velocity_formula(x) 20*(1/(1+std::pow(M_E, -0.1 * x + 5))) + 20 // arbitrarily defined formula to translate joysticks to velocity
 #define INTAKE_VELOCITY 200
 
 #endif // ROBOT_CONFIG_H
