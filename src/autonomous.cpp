@@ -74,10 +74,10 @@ void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, &ramsete_constants, false);
 	
-	knights::ProfileGenerator generator(drivetrain, 50);
+	knights::ProfileGenerator generator(drivetrain, 30);
 
 	auto profile = generator.generate(
-		chassis->get_position(), knights::Pos(24, 24, 90_deg), 80, 15, true); // off
+		chassis->get_position(), knights::Pos(24, 24, 90_deg), 80, 30, true); // off
 
 	profile.dump();
 

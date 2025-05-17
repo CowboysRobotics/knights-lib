@@ -25,7 +25,7 @@ knights::QuinticPath::QuinticPath(knights::Pos curr, knights::Pos target, knight
     this->p12 = this->curr_acceleration / 20 + 2 * this->p11 - this->p10;
     this->p15 = this->target.y;
     this->p14 = this->p15 - this->target_tangent.y / 5;
-    this->p__13 = this->target_acceleration / 20 + 2 * this->p14 - this->p15;
+    this->p13 = this->target_acceleration / 20 + 2 * this->p14 - this->p15;
 };
 
 knights::QuinticPath::QuinticPath() {};
@@ -85,6 +85,18 @@ knights::Pos knights::QuinticPath::second_derivatives(float t) {
     return Pos(dx2, dy2, 0);
 }
 
+float knights::QuinticPath::get_length(float samples) {
+    Pos curr;
+    float total_dist = 0;
+    for (float val = 0; val <= 1; val += 1/samples) {
+        Pos p = this->position(val);
+        total_dist += distance_btwn(curr, p);
+        curr = p;
+    }
+
+    return total_dist;
+}
+
 #define ACCELERATION_CURVATURE_CONSTANT 3.5
 #define VELOCITY_CURVATURE_CONSTANT 1.5
 
@@ -101,13 +113,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     QuinticPath path(start, end, curr_tangent, target_tangent, curr_accel, target_accel);
 
-    Pos curr;
-    float total_dist = 0;
-    for (float val = 0; val <= 1; val += 1.0/points_per_sec) {
-        Pos p = path.position(val);
-        total_dist += distance_btwn(curr, p);
-        curr = p;
-    }
+    float total_dist = path.get_length(200);
 
     float path_max_velocity = (this->max_velocity) * (fabs(desired_voltage) / PROS_MAX_VOLTAGE);
 
@@ -133,7 +139,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
     float deceleration_distance = 0.5 * this->max_acceleration * deceleration_time * deceleration_time;
     float cruise_distance = path_max_velocity * cruise_time;
 
-    // std::vector<float> t = knights::linspace(0, total_time, points_per_sec * total_time);
+    bool is_triangular_profile = (acceleration_distance > halfway_distance);
 
     std::fstream write_file("/usd/generation_output.txt", std::ios_base::out);
 
@@ -146,31 +152,71 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         write_file << "stage 1 " << pros::micros() << "\n";
 
+        // for SURE need static friction counter
+
         if (elapsed_time > total_time) {
             curr_dist = total_dist;
             curr_velocity = 0;
         } else if (elapsed_time < acceleration_time) {
+            // ACCELERATION PHASE
+            // This part is correct for both profile types, as 'acceleration_time'
+            // would be the (potentially recalculated) duration of the acceleration phase.
             curr_dist = 0.5 * this->max_acceleration * elapsed_time * elapsed_time;
             curr_velocity = this->max_acceleration * elapsed_time;
-        } else if (cruise_time > 0 && elapsed_time < (acceleration_time + cruise_time)) {
+        } else if (!is_triangular_profile && elapsed_time < (acceleration_time + cruise_time)) {
+            // CRUISE PHASE (Only if NOT triangular)
+            // 'acceleration_time' here is the original time to reach path_max_velocity.
+            // 'acceleration_distance' is the original distance to reach path_max_velocity.
             float cruise_current_time = elapsed_time - acceleration_time;
             curr_dist = acceleration_distance + path_max_velocity * cruise_current_time;
             curr_velocity = path_max_velocity;
         } else {
-            float deceleration_curr_time = (elapsed_time - acceleration_time - cruise_time);
-            curr_dist = acceleration_distance + cruise_distance + path_max_velocity * deceleration_curr_time - this->max_acceleration * (deceleration_curr_time * deceleration_curr_time) / 2;
-            curr_velocity = path_max_velocity - this->max_acceleration * deceleration_curr_time;
+            // DECELERATION PHASE
+            float distance_at_decel_start;
+            float velocity_at_decel_start;
+            float time_at_decel_start;
+
+            if (is_triangular_profile) {
+                // Profile is triangular:
+                // - Robot accelerated for the (recalculated) 'acceleration_time'.
+                // - It covered 'halfway_distance'.
+                // - Peak velocity was 'this->max_acceleration * acceleration_time' (recalculated).
+                distance_at_decel_start = halfway_distance; // Or more precisely: 0.5 * this->max_acceleration * acceleration_time * acceleration_time;
+                velocity_at_decel_start = this->max_acceleration * acceleration_time; // Using the recalculated acceleration_time
+                time_at_decel_start = acceleration_time; // End of acceleration phase
+            } else {
+                // Profile is trapezoidal:
+                // - Robot accelerated for 'acceleration_time' (original), covering 'acceleration_distance' (original).
+                // - Then cruised for 'cruise_time'.
+                // - Started decelerating from 'path_max_velocity'.
+                distance_at_decel_start = acceleration_distance + cruise_distance; // cruise_distance = path_max_velocity * cruise_time
+                velocity_at_decel_start = path_max_velocity;
+                time_at_decel_start = acceleration_time + cruise_time; // End of cruise phase
+            }
+
+            float deceleration_phase_elapsed_time = elapsed_time - time_at_decel_start;
+
+            // Standard kinematic equation for distance under constant deceleration:
+            // s = s0 + v0*t - 0.5*a*t^2
+            curr_dist = distance_at_decel_start +
+                        velocity_at_decel_start * deceleration_phase_elapsed_time -
+                        0.5 * this->max_acceleration * deceleration_phase_elapsed_time * deceleration_phase_elapsed_time;
+
+            // Standard kinematic equation for velocity under constant deceleration:
+            // v = v0 - a*t
+            curr_velocity = velocity_at_decel_start - this->max_acceleration * deceleration_phase_elapsed_time;
         }
 
         float path_pct = curr_dist / total_dist;
 
+        write_file << "stage 3 " << pros::micros() << " path pct: " << path_pct << "\n";
+
+        path_pct = knights::clampf(path_pct, 0, 1);
+
         Pos pt = path.position(path_pct);
         Pos deriv = path.derivatives(path_pct);
         Pos deriv2 = path.second_derivatives(path_pct);
-        float curr_acceleratin = max_acceleration;
-        float max_speed = 1e4;
 
-        write_file << "stage 3 " << pros::micros() << "\n";
 
         // #### END
 
@@ -178,7 +224,8 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         pt.heading = theta;
 
-        float curvature = (deriv2.y * deriv.x - deriv.y * deriv2.x) /((deriv.x * deriv.x + deriv.y * deriv.y) * std::hypot(deriv.x, deriv.y));
+        float curvature = (deriv2.y * deriv.x - deriv.y * deriv2.x) / std::pow(std::sqrt(deriv.x * deriv.x + deriv.y * deriv.y), 3);
+        // float curvature = (deriv2.y * deriv.x - deriv.y * deriv2.x) / ((deriv.x * deriv.x + deriv.y * deriv.y) * std::hypot(deriv.x, deriv.y));
 
         float right_speed = curr_velocity * (2 - curvature * track_width) / 2;
         float left_speed = curr_velocity * (2 + curvature * track_width) / 2;

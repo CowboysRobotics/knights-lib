@@ -38,6 +38,8 @@ namespace knights {
         knights::Pos derivatives(float t);
 
         knights::Pos second_derivatives(float t);
+
+        float get_length(float samples);
     };
 
     struct ProfileTimestamp {

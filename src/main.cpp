@@ -31,18 +31,7 @@ void initialize() {
 	//make sure that the imu sensor is accurate before the start of a match
 	knights::logger::blue("Initialization Begin");
 
-	odomTrackers.add_dist(&front);
-	odomTrackers.add_dist(&back);
-	odomTrackers.add_dist(&left);
-
-
-
-
-
 	auton_map["None0"] = knights::Auton(&pp_test, knights::Pos(0, 0, 0));
-
-
-
 
 	lv_display();
 

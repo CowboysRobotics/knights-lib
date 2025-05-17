@@ -292,7 +292,7 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
 
         float output_lin_vel = to_inches(curr_lin_vel);
 
-        float output_ang_vel = curr_ang_vel * (output_lin_vel / to_inches(curr_lin_vel));
+        float output_ang_vel = curr_ang_vel;
 
         // Send to drivetrain - disabled till we get best method
         this->chassis->drivetrain->velocity_command(output_lin_vel, output_ang_vel, profile.max_velocity);
@@ -317,6 +317,11 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
             "right/left vel %lf %lf final l/a vel %lf %lf curr l/a vel %lf %lf gain %lf curr pos %lf %lf %lf des pos %lf %lf %lf global error %lf %lf %lf local error %lf %lf time %lf \n\n",
             r_speed, l_speed, linear_rpm, angular_rpm, output_lin_vel, output_ang_vel, gain, curr_position.x, curr_position.y, curr_position.heading,
             selected.position.x, selected.position.y, selected.position.heading, error_x, error_y, error_theta, local_error_x, local_error_y, elapsed_time
+        );
+
+        write_file << knights::logger::string_format(
+            "current commanded velocity: %lf , current motor velocity %lf \n\n", linear_rpm, 
+            (this->chassis->drivetrain->right_mtrs->get_actual_velocity() + this->chassis->drivetrain->left_mtrs->get_actual_velocity()) / 2
         );
 
         pros::delay(10);
