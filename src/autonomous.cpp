@@ -62,7 +62,7 @@ void pid_tuning(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
-	knights::RamseteConstants ramsete_constants(0, 0, 1.3);
+	knights::RamseteConstants ramsete_constants(0, 0, 0);
 
 	knights::PIDController lateralPID(LATERAL_kP, LATERAL_kI, LATERAL_kD, 10.0, 127.0, 3.0);
 	knights::PIDController turnPID(TURN_kP_90, TURN_kI_90, TURN_kD_90, 10.0, 127.0);
@@ -74,10 +74,12 @@ void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 
 	knights::RobotController robotControl(chassis, &lateralPID, &turnPID, &angularPID, &ramsete_constants, false);
 	
-	knights::ProfileGenerator generator(drivetrain, 30);
+	knights::ProfileGenerator generator(drivetrain, 50);
+
+	pros::delay(300);
 
 	auto profile = generator.generate(
-		chassis->get_position(), knights::Pos(24, 24, 90_deg), 80, 30, true); // off
+		chassis->get_position(), knights::Pos(24, 24, 90_deg), 100, 30, true); // off
 
 	profile.dump();
 

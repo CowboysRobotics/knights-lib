@@ -319,10 +319,10 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
             selected.position.x, selected.position.y, selected.position.heading, error_x, error_y, error_theta, local_error_x, local_error_y, elapsed_time
         );
 
-        write_file << knights::logger::string_format(
-            "current commanded velocity: %lf , current motor velocity %lf \n\n", linear_rpm, 
-            (this->chassis->drivetrain->right_mtrs->get_actual_velocity() + this->chassis->drivetrain->left_mtrs->get_actual_velocity()) / 2
-        );
+        // write_file << knights::logger::string_format(
+        //     "current commanded velocity: %lf , current motor velocity %lf \n\n", linear_rpm, 
+        //     (this->chassis->drivetrain->right_mtrs->get_actual_velocity() + this->chassis->drivetrain->left_mtrs->get_actual_velocity()) / 2
+        // );
 
         pros::delay(10);
     }

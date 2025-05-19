@@ -408,5 +408,19 @@ real_x, real_y = zip(*position_arr)
 
 new_axis.plot(real_x, real_y, times, label="Actual Path")
 
+new_axis2 = plt.figure().add_subplot()
+
+prev_pos = path.position(0)
+distances_arr2 = []
+new_t_vals = np.linspace(0, 1, 300)
+for t_val in new_t_vals:
+   curr = path.position(t_val)
+   distances_arr2.append(
+      np.sqrt((curr[0] - prev_pos[0])**2 + (curr[1] - prev_pos[1])**2)
+   )
+   prev_pos = curr
+
+new_axis2.plot(new_t_vals, distances_arr2, label="Distance between t path")
+
 plt.legend()
 plt.show()

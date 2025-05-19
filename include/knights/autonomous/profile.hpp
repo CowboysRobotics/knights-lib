@@ -3,6 +3,7 @@
 #ifndef _PROFILE_H
 #define _PROFILE_H
 
+#include <map>
 #include <vector>
 #include "knights/robot/drivetrain.hpp"
 #include "knights/util/position.hpp"
@@ -18,6 +19,8 @@ namespace knights {
             float curr_acceleration, float target_acceleration);
         
         QuinticPath();
+
+        std::vector<std::pair<float, float>> length_map;
 
         float p00;
         float p01;
@@ -39,7 +42,11 @@ namespace knights {
 
         knights::Pos second_derivatives(float t);
 
-        float get_length(float samples);
+        float get_length();
+
+        void generate_length_map(float samples);
+        
+        float get_t_from_dist(float dist);
     };
 
     struct ProfileTimestamp {

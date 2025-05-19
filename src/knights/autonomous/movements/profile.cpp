@@ -4,6 +4,7 @@
 #include "knights/util/position.hpp"
 #include "pros/rtos.hpp"
 #include <cmath>
+#include <iostream>
 #include <vector>
 
 #define PROS_MAX_VOLTAGE 127
@@ -85,17 +86,62 @@ knights::Pos knights::QuinticPath::second_derivatives(float t) {
     return Pos(dx2, dy2, 0);
 }
 
-float knights::QuinticPath::get_length(float samples) {
+float knights::QuinticPath::get_length() {
+    if (!length_map.empty())
+        return length_map.back().first;
+    else {
+        std::cerr << "Length Map not generated \n"; 
+        return 0;
+    }
+}
+
+void knights::QuinticPath::generate_length_map(float samples) {
     Pos curr;
     float total_dist = 0;
-    for (float val = 0; val <= 1; val += 1/samples) {
-        Pos p = this->position(val);
+    for (float t = 0; t <= 1; t += 1/samples) {
+        Pos p = this->position(t);
         total_dist += distance_btwn(curr, p);
         curr = p;
+        this->length_map.push_back(std::make_pair(total_dist, t));
+    }
+    return;
+}
+
+float knights::QuinticPath::get_t_from_dist(float dist) {
+    int low = 0;
+    int high = this->length_map.size();
+
+    if (dist > this->length_map[high].first) {
+        return 1;
+    } else if (dist < low) {
+        return 0;
     }
 
-    return total_dist;
+    int possible_i = 0;
+
+    // binary search
+    while (low <= high) {
+        int mid = (high + low)/2;
+        if (this->length_map[mid].first < dist) {
+            possible_i = mid;
+            low = mid + 1;
+        }
+        else {
+            high = mid - 1;
+        }
+    }
+
+    if (possible_i >= this->length_map.size() - 2) {
+        return this->length_map.back().second;
+    }
+
+    return knights::lerp(
+        this->length_map[possible_i].second, this->length_map[possible_i + 1].second, 
+        knights::clampf((this->length_map[possible_i + 1].first - this->length_map[possible_i].first) / this->length_map[possible_i].first, 0, 1)
+    );
 }
+
+
 
 #define ACCELERATION_CURVATURE_CONSTANT 3.5
 #define VELOCITY_CURVATURE_CONSTANT 1.5
@@ -113,7 +159,9 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     QuinticPath path(start, end, curr_tangent, target_tangent, curr_accel, target_accel);
 
-    float total_dist = path.get_length(200);
+    path.generate_length_map(200);
+
+    float total_dist = path.get_length();
 
     float path_max_velocity = (this->max_velocity) * (fabs(desired_voltage) / PROS_MAX_VOLTAGE);
 
@@ -154,6 +202,8 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         // for SURE need static friction counter
 
+        float min_velocity = 8;
+
         if (elapsed_time > total_time) {
             curr_dist = total_dist;
             curr_velocity = 0;
@@ -162,7 +212,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
             // This part is correct for both profile types, as 'acceleration_time'
             // would be the (potentially recalculated) duration of the acceleration phase.
             curr_dist = 0.5 * this->max_acceleration * elapsed_time * elapsed_time;
-            curr_velocity = this->max_acceleration * elapsed_time;
+            curr_velocity = std::fmax(this->max_acceleration * elapsed_time, min_velocity);
         } else if (!is_triangular_profile && elapsed_time < (acceleration_time + cruise_time)) {
             // CRUISE PHASE (Only if NOT triangular)
             // 'acceleration_time' here is the original time to reach path_max_velocity.
@@ -209,7 +259,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         float path_pct = curr_dist / total_dist;
 
-        write_file << "stage 3 " << pros::micros() << " path pct: " << path_pct << "\n";
+        write_file << "stage 3 " << pros::micros() << " path pct: " << path_pct << " , new map gen " << path.get_t_from_dist(curr_dist) << " , total dist: " << path.get_length() << "\n";
 
         path_pct = knights::clampf(path_pct, 0, 1);
 
@@ -225,10 +275,11 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
         pt.heading = theta;
 
         float curvature = (deriv2.y * deriv.x - deriv.y * deriv2.x) / std::pow(std::sqrt(deriv.x * deriv.x + deriv.y * deriv.y), 3);
-        // float curvature = (deriv2.y * deriv.x - deriv.y * deriv2.x) / ((deriv.x * deriv.x + deriv.y * deriv.y) * std::hypot(deriv.x, deriv.y));
 
-        float right_speed = curr_velocity * (2 - curvature * track_width) / 2;
-        float left_speed = curr_velocity * (2 + curvature * track_width) / 2;
+        float angular_velocity = curr_velocity * curvature;
+
+        float right_speed = curr_velocity + angular_velocity;
+        float left_speed = curr_velocity - angular_velocity;
 
         if (!forwards) {
             curr_velocity *= -1;
@@ -241,7 +292,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
             pt.heading = knights::normalize_angle(pt.heading + M_PI);
         }
 
-        timestamps.emplace_back(pt, curr_velocity, curr_velocity * curvature, elapsed_time, right_speed, left_speed);
+        timestamps.emplace_back(pt, curr_velocity, angular_velocity, elapsed_time, right_speed, left_speed);
 
         write_file << "stage 4 " << pros::micros() << "\n";
     }
