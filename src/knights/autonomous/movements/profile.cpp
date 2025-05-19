@@ -259,13 +259,15 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         float path_pct = curr_dist / total_dist;
 
+        float new_path_pct = path.get_t_from_dist(curr_dist);
+
         write_file << "stage 3 " << pros::micros() << " path pct: " << path_pct << " , new map gen " << path.get_t_from_dist(curr_dist) << " , total dist: " << path.get_length() << "\n";
 
-        path_pct = knights::clampf(path_pct, 0, 1);
+        new_path_pct = knights::clampf(new_path_pct, 0, 1);
 
-        Pos pt = path.position(path_pct);
-        Pos deriv = path.derivatives(path_pct);
-        Pos deriv2 = path.second_derivatives(path_pct);
+        Pos pt = path.position(new_path_pct);
+        Pos deriv = path.derivatives(new_path_pct);
+        Pos deriv2 = path.second_derivatives(new_path_pct);
 
 
         // #### END
