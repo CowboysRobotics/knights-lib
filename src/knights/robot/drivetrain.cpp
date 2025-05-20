@@ -17,16 +17,39 @@ void knights::Drivetrain::voltage_command(int rightMtrs, int leftMtrs) {
 
 void knights::Drivetrain::velocity_command(float linear_velocity, float angular_velocity, float maximum_lin_vel) {
 
-    float linear_rpm = (linear_velocity / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0;
+    // NEW
 
-    float angular_lin_vel = (angular_velocity * track_width / 2.0);
-    
-    float angular_rpm = (angular_lin_vel / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0;
+    float r_speed = linear_velocity + (angular_velocity * track_width / 2.0);
+    float l_speed = linear_velocity - (angular_velocity * track_width / 2.0);
+
+    r_speed = (r_speed / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0;
+    l_speed = (l_speed / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0;
 
     float ratio_maximum_lin_vel = (maximum_lin_vel / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0;
 
-    float r_speed = linear_rpm + angular_rpm;
-    float l_speed = linear_rpm - angular_rpm;
+    // ratio may be causing the issue
+    float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / (ratio_maximum_lin_vel); 
+    if (ratio_curr_speed > 1) {
+        r_speed /= ratio_curr_speed;
+        l_speed /= ratio_curr_speed;
+    }
+
+    this->right_mtrs->move_velocity(r_speed);
+    this->left_mtrs->move_velocity(l_speed);
+}
+
+void knights::Drivetrain::ramsete_command(float linear_velocity, float angular_velocity, float acceleration, float tuner_velocity, float tuner_accel, float tuner_static, float drivetrain_max) {
+
+    float r_speed = linear_velocity + (angular_velocity * track_width / 2.0);
+    float l_speed = linear_velocity - (angular_velocity * track_width / 2.0);
+
+    r_speed = (r_speed / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0;
+    l_speed = (l_speed / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0;
+
+    r_speed = r_speed * tuner_velocity + acceleration * tuner_accel + knights::signum(r_speed) * tuner_static;
+    l_speed = l_speed * tuner_velocity + acceleration * tuner_accel + knights::signum(l_speed) * tuner_static;
+
+    float ratio_maximum_lin_vel = ((drivetrain_max / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0) * tuner_velocity + acceleration * tuner_accel + knights::signum(r_speed) * tuner_static;
 
     // ratio may be causing the issue
     float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / (ratio_maximum_lin_vel); 

@@ -44,6 +44,8 @@ namespace knights {
              */
             void velocity_command(float linear_velocity, float angular_velocity, float maximum_lin_vel = 1000);
 
+            void ramsete_command(float linear_velocity, float angular_velocity, float acceleration, float tuner_velocity, float tuner_accel, float tuner_static, float drivetrain_max = 1000);
+
             /**
              * @brief Conversion function from distance to motor position (in degrees)
              * 

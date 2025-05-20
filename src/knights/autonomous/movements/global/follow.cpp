@@ -230,7 +230,7 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
 
 void knights::RobotController::follow_profile(const knights::MotionProfile &profile, float end_tolerance, bool forwards) {
     // make sure this is only movement running and route is valid
-    if (this->in_motion || profile.timestamps.size() < 2) return;
+    if (this->in_motion || profile.timestamps.size() < 3) return;
     this->in_motion = true;
 
     // make sure motors are on brake - prevent drift at end
@@ -294,29 +294,57 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
 
         float output_ang_vel = curr_ang_vel;
 
-        // Send to drivetrain - disabled till we get best method
-        this->chassis->drivetrain->velocity_command(output_lin_vel, output_ang_vel, profile.max_velocity);
+        // // Send to drivetrain - OLD
+        // // this->chassis->drivetrain->velocity_command(output_lin_vel, output_ang_vel, profile.max_velocity);
 
-        // debugging velocities
-        float linear_rpm = (output_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
-        float angular_lin_vel = (output_ang_vel * chassis->drivetrain->track_width/2.0);
-        float angular_rpm = (angular_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
+        // // debugging velocities
+        // float linear_rpm = (output_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
+        // float angular_lin_vel = (output_ang_vel * chassis->drivetrain->track_width/2.0);
+        // float angular_rpm = (angular_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
 
-        float r_speed = linear_rpm + angular_rpm;
-        float l_speed = linear_rpm - angular_rpm;
+        // float r_speed = linear_rpm + angular_rpm;
+        // float l_speed = linear_rpm - angular_rpm;
     
-        float ratio_maximum_lin_vel = (profile.max_velocity / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
+        // float ratio_maximum_lin_vel = (profile.max_velocity / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
     
+        // float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / (ratio_maximum_lin_vel); 
+        // if (ratio_curr_speed > 1) {
+        //     r_speed /= ratio_curr_speed;
+        //     l_speed /= ratio_curr_speed;
+        // }
+
+        float tuner_v = 1;
+        float tuner_accel = 0;
+        float tuner_static = 0;
+
+        // Send to DT - new
+        this->chassis->drivetrain->ramsete_command(output_lin_vel, output_ang_vel, profile.max_accel, tuner_v, tuner_accel, tuner_static, profile.max_velocity);
+
+        float r_speed = output_lin_vel + (output_ang_vel * this->chassis->drivetrain->track_width / 2.0);
+        float l_speed = output_lin_vel - (output_ang_vel * this->chassis->drivetrain->track_width / 2.0);
+
+        r_speed = (r_speed / (this->chassis->drivetrain->wheel_diameter * M_PI) * (1/this->chassis->drivetrain->gear_ratio)) * 60.0;
+        l_speed = (l_speed / (this->chassis->drivetrain->wheel_diameter * M_PI) * (1/this->chassis->drivetrain->gear_ratio)) * 60.0;
+
+        r_speed = r_speed * tuner_v + profile.max_accel * tuner_accel + (knights::signum(r_speed) + 1e-4) * tuner_static;
+        l_speed = l_speed * tuner_v + profile.max_accel * tuner_accel + (knights::signum(l_speed) + 1e-4) * tuner_static;
+
+        float ratio_maximum_lin_vel = ((profile.max_velocity / (this->chassis->drivetrain->wheel_diameter * M_PI) * (1/this->chassis->drivetrain->gear_ratio)) * 60.0) * tuner_v + profile.max_accel * tuner_accel + (knights::signum(profile.max_velocity) + 1e-4) * tuner_static;
+
+        // ratio may be causing the issue
         float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / (ratio_maximum_lin_vel); 
         if (ratio_curr_speed > 1) {
             r_speed /= ratio_curr_speed;
             l_speed /= ratio_curr_speed;
         }
 
+        float linear_rpm = output_lin_vel * tuner_v + profile.max_accel * tuner_accel + knights::signum(output_lin_vel) * tuner_static;
+        float angular_rpm = (output_ang_vel * this->chassis->drivetrain->track_width / 2.0) * tuner_v + profile.max_accel * tuner_accel + knights::signum(output_ang_vel) * tuner_static;
+
         write_file << knights::logger::string_format(
-            "right/left vel %lf %lf final l/a vel %lf %lf curr l/a vel %lf %lf gain %lf curr pos %lf %lf %lf des pos %lf %lf %lf global error %lf %lf %lf local error %lf %lf time %lf \n\n",
-            r_speed, l_speed, linear_rpm, angular_rpm, output_lin_vel, output_ang_vel, gain, curr_position.x, curr_position.y, curr_position.heading,
-            selected.position.x, selected.position.y, selected.position.heading, error_x, error_y, error_theta, local_error_x, local_error_y, elapsed_time
+            "right/left vel %lf %lf final l/a vel (in rpm) %lf %lf curr l/a vel (in inches) %lf %lf gain %lf curr pos %lf %lf %lf des pos %lf %lf %lf global error %lf %lf %lf local error %lf %lf time %lf, terms: %lf %lf \n\n",
+            r_speed, l_speed, linear_rpm , angular_rpm, output_lin_vel, output_ang_vel, gain, curr_position.x, curr_position.y, curr_position.heading,
+            selected.position.x, selected.position.y, selected.position.heading, error_x, error_y, error_theta, local_error_x, local_error_y, elapsed_time, profile.max_accel * tuner_accel, (knights::signum(linear_rpm) + 1e-4) * tuner_static
         );
 
         // write_file << knights::logger::string_format(

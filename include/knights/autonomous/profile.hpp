@@ -56,8 +56,9 @@ namespace knights {
         float time;
         float right_speed;
         float left_speed;
+        float acceleration;
 
-        ProfileTimestamp(knights::Pos position, float linear_velocity, float angular_velocity, float time, float right_speed, float left_speed);
+        ProfileTimestamp(knights::Pos position, float linear_velocity, float angular_velocity, float time, float right_speed, float left_speed, float acceleration);
     };
 
     struct MotionProfile {
