@@ -156,6 +156,22 @@ inline constexpr long double operator"" _in(long double inches) {
 }
 
 /**
+ * @brief Declare value as tiles
+ * 
+ */
+inline constexpr long double operator"" _tiles(long double tiles) {
+    return static_cast<long double>(tiles*24.0);
+}
+
+/**
+ * @brief Declare value as degrees - therefore it will be converted to radians
+ * 
+ */
+inline constexpr long double operator"" _tiles(unsigned long long int tiles) {
+    return static_cast<long double>(tiles*24.0);
+}
+
+/**
  * @brief Declare value as meters
  * 
  */

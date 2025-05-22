@@ -110,7 +110,9 @@ void knights::QuinticPath::generate_length_map(float samples) {
 
 float knights::QuinticPath::get_t_from_dist(float dist) {
     int low = 0;
-    int high = this->length_map.size();
+    int high = this->length_map.size() - 1;
+
+    std::cout << high << " " << this->length_map[high].first << "\n";
 
     if (dist > this->length_map[high].first) {
         return 1;
@@ -258,7 +260,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         float path_pct = path.get_t_from_dist(curr_dist);
 
-        write_file << "path percent: " << path_pct << "\n";
+        write_file << "path percent: " << path_pct << " curr dist: " << curr_dist << " total dist: " << total_dist << "\n";
 
         path_pct = knights::clampf(path_pct, 0, 1);
 

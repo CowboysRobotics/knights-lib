@@ -61,9 +61,9 @@ pros::MotorGroup left_mtrs({-4,-5,-6}, pros::MotorGears::blue);
 pros::Rotation mid_odom(18);
 pros::Rotation back_odom(14);
 pros::IMU imu(15);
-knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0);
-knights::PositionTracker backOdom(&back_odom, 2.75, 1, -2.8, -1);
-knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 12.5970, 450.0, 3.25, 0.75);
+knights::PositionTracker midOdom(&mid_odom, 2.75, 1, 0.3020);
+knights::PositionTracker backOdom(&back_odom, 2.75, 1, -3.2795, -1);
+knights::Drivetrain drivetrain(&right_mtrs, &left_mtrs, 13, 450.0, 3.25, 0.75);
 // #### END
 
 //assign ports to Lady Brown arm mech
