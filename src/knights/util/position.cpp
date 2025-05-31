@@ -12,6 +12,12 @@ Pos::Pos(float x, float y, float heading, bool deg) {
         this->heading = to_rad(heading);
 }
 
+Pos::Pos(float x, float y) {
+    this->x = x;
+    this->y = y;
+    this->heading = 0;
+}
+
 Pos::Pos() {
     x = 0.0;
     y = 0.0;
@@ -29,11 +35,11 @@ Point::Point() {
 }
 
 Pos knights::operator+(const Pos &pt1, const Pos &pt2) {
-    return Pos(pt1.x+pt2.x, pt1.x+pt2.x, std::fmod(pt1.heading+pt2.heading + 8*M_PI, 2*M_PI));
+    return Pos(pt1.x + pt2.x, pt1.y + pt2.y, std::fmod(pt1.heading+pt2.heading + 8*M_PI, 2*M_PI));
 };
 
 Pos knights::operator-(const Pos &pt1, const Pos &pt2) {
-    return Pos(pt1.x-pt2.x, pt1.x-pt2.x, std::fmod(pt1.heading-pt2.heading + 8*M_PI, 2*M_PI));
+    return Pos(pt1.x-pt2.x, pt1.y-pt2.y, std::fmod(pt1.heading-pt2.heading + 8*M_PI, 2*M_PI));
 };
 
 // TODO: Make sure these four below are correct logic
@@ -62,12 +68,60 @@ float knights::operator*(const Point &pt1, const Point &pt2) {
     return (pt1.x * pt2.x + pt1.y * pt2.y);
 };
 
+knights::Point knights::operator*(const Point &pt1, float num) {
+    return knights::Point(pt1.x * num, pt1.y * num);
+}
+
+knights::Pos knights::operator*(float num, const Pos &pt1) {
+    return knights::Pos(pt1.x * num, pt1.y * num, pt1.heading);
+}
+
+knights::Point knights::operator*(float num, const Point &pt1) {
+    return knights::Point(pt1.x * num, pt1.y * num);
+}
+
+knights::Pos knights::operator*(const Pos &pt1, float num) {
+    return knights::Pos(pt1.x * num, pt1.y * num, pt1.heading);
+}
+
+knights::Point knights::operator+(const Point &pt1, float num) {
+    return knights::Point(pt1.x + num, pt1.y + num);
+}
+
+knights::Pos knights::operator+(float num, const Pos &pt1) {
+    return knights::Pos(pt1.x + num, pt1.y + num, pt1.heading);
+}
+
+knights::Point knights::operator+(float num, const Point &pt1) {
+    return knights::Point(pt1.x + num, pt1.y + num);
+}
+
+knights::Pos knights::operator+(const Pos &pt1, float num) {
+    return knights::Pos(pt1.x + num, pt1.y + num, pt1.heading);
+}
+
+knights::Point knights::operator-(const Point &pt1, float num) {
+    return knights::Point(pt1.x - num, pt1.y - num);
+}
+
+knights::Pos knights::operator-(float num, const Pos &pt1) {
+    return knights::Pos(pt1.x - num, pt1.y - num, pt1.heading);
+}
+
+knights::Point knights::operator-(float num, const Point &pt1) {
+    return knights::Point(pt1.x - num, pt1.y - num);
+}
+
+knights::Pos knights::operator-(const Pos &pt1, float num) {
+    return knights::Pos(pt1.x - num, pt1.y - num, pt1.heading);
+}
+
 Point knights::operator+(const Point &pt1, const Point &pt2) {
-    return Point(pt1.x+pt2.x, pt1.x+pt2.x);
+    return Point(pt1.x + pt2.x, pt1.y + pt2.y);
 };
 
 Point knights::operator-(const Point &pt1, const Point &pt2) {
-    return Point(pt1.x-pt2.x, pt1.x-pt2.x);
+    return Point(pt1.x - pt2.x, pt1.y - pt2.y);
 };
 
 float knights::distance_btwn(const Pos &pt1, const Pos &pt2) {

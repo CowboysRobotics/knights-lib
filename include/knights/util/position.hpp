@@ -20,6 +20,13 @@ namespace knights {
         Pos(float x, float y, float heading, bool deg = false);
 
         /**
+        @brief create a new position with provided values
+        @param x x value of the position
+        @param y y value of the position
+        */
+        Pos(float x, float y);
+
+        /**
         @brief create a new position with values (0.0, 0.0, 0.0)
         */
         Pos();
@@ -108,6 +115,31 @@ namespace knights {
      * @return Pos 
      */
     bool operator==(const Point &pt1, const Point &pt2);
+
+    knights::Point operator*(const Point &pt1, float num);
+
+    knights::Pos operator*(const Pos &pt1, float num);
+
+    knights::Point operator*(float num, const Point &pt1);
+
+    knights::Pos operator*(float num, const Pos &pt1);
+
+    knights::Point operator+(const Point &pt1, float num);
+
+    knights::Pos operator+(const Pos &pt1, float num);
+
+    knights::Point operator+(float num, const Point &pt1);
+
+    knights::Pos operator+(float num, const Pos &pt1);
+
+    knights::Point operator-(const Point &pt1, float num);
+
+    knights::Pos operator-(const Pos &pt1, float num);
+
+    knights::Point operator-(float num, const Point &pt1);
+
+    knights::Pos operator-(float num, const Pos &pt1);
+
 
     /**
      * @brief Dot product of two points

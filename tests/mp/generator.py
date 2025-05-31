@@ -392,6 +392,11 @@ axis[2][1].plot(times, right_vels, label="right")
 axis[2][0].plot(times, np.gradient(exr_dist_arr, times))
 axis[2][0].set_title("Actual Velocity")
 
+x_ctl_pts = [path.p00(), path.p01(), path.p02(), path.p03(), path.p04(), path.p05()]
+y_ctl_pts = [path.p10(), path.p11(), path.p12(), path.p13(), path.p14(), path.p15()]
+
+axis[1][0].plot(x_ctl_pts, y_ctl_pts)
+
 # find time scale
 time_btwn_pts = []
 prev_time = times[0]

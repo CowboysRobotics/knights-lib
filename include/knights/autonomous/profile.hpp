@@ -22,19 +22,7 @@ namespace knights {
 
         std::vector<std::pair<float, float>> length_map;
 
-        float p00;
-        float p01;
-        float p02;
-        float p03;
-        float p04;
-        float p05;
-
-        float p10;
-        float p11;
-        float p12;
-        float p13;
-        float p14;
-        float p15;
+        knights::Pos p0, p1, p2, p3, p4, p5;
 
         knights::Pos position(float t);
 

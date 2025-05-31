@@ -15,19 +15,13 @@ knights::QuinticPath::QuinticPath(knights::Pos curr, knights::Pos target, knight
     curr(curr), target(target), curr_tangent(curr_tangent), target_tangent(target_tangent), 
     curr_acceleration(curr_acceleration), target_acceleration(target_acceleration) 
 {
-    this->p00 = this->curr.x;
-    this->p01 = this->p00 + this->curr_tangent.x / 5;
-    this->p02 = this->curr_acceleration / 20 + 2 * this->p01 - this->p00;
-    this->p05 = this->target.x;
-    this->p04 = this->p05 - this->target_tangent.x / 5;
-    this->p03 = this->target_acceleration / 20 + 2 * this->p04 - this->p05;
 
-    this->p10 = this->curr.y;
-    this->p11 = this->p10 + this->curr_tangent.y / 5;
-    this->p12 = this->curr_acceleration / 20 + 2 * this->p11 - this->p10;
-    this->p15 = this->target.y;
-    this->p14 = this->p15 - this->target_tangent.y / 5;
-    this->p13 = this->target_acceleration / 20 + 2 * this->p14 - this->p15;
+    this->p0 = curr;
+    this->p5 = target;
+    this->p1 = p0 + (curr_tangent * (1.0/5.0));
+    this->p2 = (this->curr_acceleration / 20) + ((2 * p1) - p0);
+    this->p4 = p5 - target_tangent * (1.0/5);
+    this->p3 = this->target_acceleration / 20 + 2 * this->p4 - this->p5;
 };
 
 knights::QuinticPath::QuinticPath() {};
@@ -46,45 +40,60 @@ knights::ProfileGenerator::ProfileGenerator(float max_velocity, float track_widt
     max_velocity(max_velocity), max_acceleration(max_acceleration), track_width(track_width) {}
 
 knights::Pos knights::QuinticPath::position(float t) {
-    float x = p00 * pow((1 - t), 5) + p01 * 5 * pow((1 - t), 4) * t +
-               p02 * 10 * pow((1 - t), 3) * pow(t, 2) + p03 * 10 * pow((1 - t), 2) * pow(t, 3) +
-               p04 * 5 * (1 - t) * pow(t, 4) + p05 * pow(t, 5);
+    // float x = p00 * pow((1 - t), 5) + p01 * 5 * pow((1 - t), 4) * t +
+    //            p02 * 10 * pow((1 - t), 3) * pow(t, 2) + p03 * 10 * pow((1 - t), 2) * pow(t, 3) +
+    //            p04 * 5 * (1 - t) * pow(t, 4) + p05 * pow(t, 5);
 
-    float y = p10 * pow((1 - t), 5) + p11 * 5 * pow((1 - t), 4) * t +
-               p12 * 10 * pow((1 - t), 3) * pow(t, 2) + p13 * 10 * pow((1 - t), 2) * pow(t, 3) +
-               p14 * 5 * (1 - t) * pow(t, 4) + p15 * pow(t, 5);
+    // float y = p10 * pow((1 - t), 5) + p11 * 5 * pow((1 - t), 4) * t +
+    //            p12 * 10 * pow((1 - t), 3) * pow(t, 2) + p13 * 10 * pow((1 - t), 2) * pow(t, 3) +
+    //            p14 * 5 * (1 - t) * pow(t, 4) + p15 * pow(t, 5);
 
-    return Pos(x, y, 0);
+    knights::Pos output = p0 * pow((1 - t), 5) + p1 * 5 * pow((1 - t), 4) * t +
+               p2 * 10 * pow((1 - t), 3) * pow(t, 2) + p3 * 10 * pow((1 - t), 2) * pow(t, 3) +
+               p4 * 5 * (1 - t) * pow(t, 4) + p5 * pow(t, 5);
+
+    return output;
 }
 
 knights::Pos knights::QuinticPath::derivatives(float t) {
-    float dx = p01 * 5 * pow((1 - t), 4) - p00 * 5 * pow((1 - t), 4) +
-                p02 * 20 * pow((1 - t), 3) * t - p01 * 20 * pow((1 - t), 3) * t +
-                p03 * 30 * pow((1 - t), 2) * pow(t, 2) - p02 * 30 * pow((1 - t), 2) * pow(t, 2) +
-                p04 * 20 * (1 - t) * pow(t, 3) - p03 * 20 * (1 - t) * pow(t, 3) +
-                p05 * 5 * pow(t, 4) - p04 * 5 * pow(t, 4);
+    // float dx = p01 * 5 * pow((1 - t), 4) - p00 * 5 * pow((1 - t), 4) +
+    //             p02 * 20 * pow((1 - t), 3) * t - p01 * 20 * pow((1 - t), 3) * t +
+    //             p03 * 30 * pow((1 - t), 2) * pow(t, 2) - p02 * 30 * pow((1 - t), 2) * pow(t, 2) +
+    //             p04 * 20 * (1 - t) * pow(t, 3) - p03 * 20 * (1 - t) * pow(t, 3) +
+    //             p05 * 5 * pow(t, 4) - p04 * 5 * pow(t, 4);
 
-    float dy = p11 * 5 * pow((1 - t), 4) - p10 * 5 * pow((1 - t), 4) +
-                p12 * 20 * pow((1 - t), 3) * t - p11 * 20 * pow((1 - t), 3) * t +
-                p13 * 30 * pow((1 - t), 2) * pow(t, 2) - p12 * 30 * pow((1 - t), 2) * pow(t, 2) +
-                p14 * 20 * (1 - t) * pow(t, 3) - p13 * 20 * (1 - t) * pow(t, 3) +
-                p15 * 5 * pow(t, 4) - p14 * 5 * pow(t, 4);
+    // float dy = p11 * 5 * pow((1 - t), 4) - p10 * 5 * pow((1 - t), 4) +
+    //             p12 * 20 * pow((1 - t), 3) * t - p11 * 20 * pow((1 - t), 3) * t +
+    //             p13 * 30 * pow((1 - t), 2) * pow(t, 2) - p12 * 30 * pow((1 - t), 2) * pow(t, 2) +
+    //             p14 * 20 * (1 - t) * pow(t, 3) - p13 * 20 * (1 - t) * pow(t, 3) +
+    //             p15 * 5 * pow(t, 4) - p14 * 5 * pow(t, 4);
 
-    return Pos(dx, dy, 0);
+    knights::Pos output = p1 * 5 * pow((1 - t), 4) - p0 * 5 * pow((1 - t), 4) +
+            p2 * 20 * pow((1 - t), 3) * t - p1 * 20 * pow((1 - t), 3) * t +
+            p3 * 30 * pow((1 - t), 2) * pow(t, 2) - p2 * 30 * pow((1 - t), 2) * pow(t, 2) +
+            p4 * 20 * (1 - t) * pow(t, 3) - p3 * 20 * (1 - t) * pow(t, 3) +
+            p5 * 5 * pow(t, 4) - p4 * 5 * pow(t, 4);
+
+    return output;
 }
 
 knights::Pos knights::QuinticPath::second_derivatives(float t) {
-    float dx2 = 20 * (p02 - 2 * p01 + p00) * pow((1 - t), 3) +
-                 60 * (p03 - 2 * p02 + p01) * pow((1 - t), 2) * t +
-                 60 * (p04 - 2 * p03 + p02) * (1 - t) * pow(t, 2) +
-                 20 * (p05 - 2 * p04 + p03) * pow(t, 3);
+    // float dx2 = 20 * (p02 - 2 * p01 + p00) * pow((1 - t), 3) +
+    //              60 * (p03 - 2 * p02 + p01) * pow((1 - t), 2) * t +
+    //              60 * (p04 - 2 * p03 + p02) * (1 - t) * pow(t, 2) +
+    //              20 * (p05 - 2 * p04 + p03) * pow(t, 3);
 
-    float dy2 = 20 * (p12 - 2 * p11 + p10) * pow((1 - t), 3) +
-                 60 * (p13 - 2 * p12 + p11) * pow((1 - t), 2) * t +
-                 60 * (p14 - 2 * p13 + p12) * (1 - t) * pow(t, 2) +
-                 20 * (p15 - 2 * p14 + p13) * pow(t, 3);
+    // float dy2 = 20 * (p12 - 2 * p11 + p10) * pow((1 - t), 3) +
+    //              60 * (p13 - 2 * p12 + p11) * pow((1 - t), 2) * t +
+    //              60 * (p14 - 2 * p13 + p12) * (1 - t) * pow(t, 2) +
+    //              20 * (p15 - 2 * p14 + p13) * pow(t, 3);
 
-    return Pos(dx2, dy2, 0);
+    knights::Pos output = 20 * (p2 - 2 * p1 + p0) * pow((1 - t), 3) +
+                60 * (p3 - 2 * p2 + p1) * pow((1 - t), 2) * t +
+                60 * (p4 - 2 * p3 + p2) * (1 - t) * pow(t, 2) +
+                20 * (p5 - 2 * p4 + p3) * pow(t, 3);
+
+    return output;
 }
 
 float knights::QuinticPath::get_length() {
@@ -161,9 +170,8 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     float total_dist = path.get_length();
 
-    float path_max_velocity = (this->max_velocity) * (fabs(desired_voltage) / PROS_MAX_VOLTAGE);
+    float path_max_velocity = (this->max_velocity) * (fabs(desired_voltage) / PROS_MAX_VOLTAGE); // change to pct not voltage
 
-    // Calculate the time it takes to accelerate to max velocity
     float acceleration_time = path_max_velocity / this->max_acceleration;
 
     float halfway_distance = total_dist / 2;
@@ -206,21 +214,16 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
             curr_dist = total_dist;
             curr_velocity = 0;
         } else if (elapsed_time < acceleration_time) {
-            // ACCELERATION PHASE
-            // This part is correct for both profile types, as 'acceleration_time'
-            // would be the (potentially recalculated) duration of the acceleration phase.
+
             curr_dist = 0.5 * this->max_acceleration * elapsed_time * elapsed_time;
             curr_velocity = std::fmax(this->max_acceleration * elapsed_time, min_velocity);
             acceleration = this->max_acceleration;
         } else if (!is_triangular_profile && elapsed_time < (acceleration_time + cruise_time)) {
-            // CRUISE PHASE (Only if NOT triangular)
-            // 'acceleration_time' here is the original time to reach path_max_velocity.
-            // 'acceleration_distance' is the original distance to reach path_max_velocity.
+
             float cruise_current_time = elapsed_time - acceleration_time;
             curr_dist = acceleration_distance + path_max_velocity * cruise_current_time;
             curr_velocity = path_max_velocity;
         } else {
-            // DECELERATION PHASE
             float distance_at_decel_start;
             float velocity_at_decel_start;
             float time_at_decel_start;
@@ -228,34 +231,23 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
             acceleration = -this->max_acceleration;
 
             if (is_triangular_profile) {
-                // Profile is triangular:
-                // - Robot accelerated for the (recalculated) 'acceleration_time'.
-                // - It covered 'halfway_distance'.
-                // - Peak velocity was 'this->max_acceleration * acceleration_time' (recalculated).
-                distance_at_decel_start = halfway_distance; // Or more precisely: 0.5 * this->max_acceleration * acceleration_time * acceleration_time;
-                velocity_at_decel_start = this->max_acceleration * acceleration_time; // Using the recalculated acceleration_time
-                time_at_decel_start = acceleration_time; // End of acceleration phase
+                distance_at_decel_start = halfway_distance;
+                velocity_at_decel_start = this->max_acceleration * acceleration_time;
+                time_at_decel_start = acceleration_time;
             } else {
-                // Profile is trapezoidal:
-                // - Robot accelerated for 'acceleration_time' (original), covering 'acceleration_distance' (original).
-                // - Then cruised for 'cruise_time'.
-                // - Started decelerating from 'path_max_velocity'.
-                distance_at_decel_start = acceleration_distance + cruise_distance; // cruise_distance = path_max_velocity * cruise_time
+
+                distance_at_decel_start = acceleration_distance + cruise_distance; 
                 velocity_at_decel_start = path_max_velocity;
-                time_at_decel_start = acceleration_time + cruise_time; // End of cruise phase
+                time_at_decel_start = acceleration_time + cruise_time; 
             }
 
-            float deceleration_phase_elapsed_time = elapsed_time - time_at_decel_start;
+            float deceleration_elapsed_time = elapsed_time - time_at_decel_start;
 
-            // Standard kinematic equation for distance under constant deceleration:
-            // s = s0 + v0*t - 0.5*a*t^2
             curr_dist = distance_at_decel_start +
-                        velocity_at_decel_start * deceleration_phase_elapsed_time -
-                        0.5 * this->max_acceleration * deceleration_phase_elapsed_time * deceleration_phase_elapsed_time;
+                        velocity_at_decel_start * deceleration_elapsed_time -
+                        0.5 * this->max_acceleration * deceleration_elapsed_time * deceleration_elapsed_time;
 
-            // Standard kinematic equation for velocity under constant deceleration:
-            // v = v0 - a*t
-            curr_velocity = velocity_at_decel_start - this->max_acceleration * deceleration_phase_elapsed_time;
+            curr_velocity = velocity_at_decel_start - this->max_acceleration * deceleration_elapsed_time;
         }
 
         float path_pct = path.get_t_from_dist(curr_dist);
@@ -267,8 +259,6 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
         Pos pt = path.position(path_pct);
         Pos deriv = path.derivatives(path_pct);
         Pos deriv2 = path.second_derivatives(path_pct);
-
-        // #### END
 
         float theta = std::atan2(deriv.y, deriv.x); 
 
