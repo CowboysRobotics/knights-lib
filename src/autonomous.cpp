@@ -79,7 +79,7 @@ void pp_test(knights::RobotChassis *chassis, bool flip_x, bool flip_y) {
 	pros::delay(300);
 
 	auto profile = generator.generate(
-		chassis->get_position(), knights::Pos(1_tiles, 1_tiles, 90_deg), 80, 300, true); // off
+		chassis->get_position(), knights::Pos(1_tiles, -1_tiles, 270_deg), 80, 300, true); // off
 
 	profile.dump();
 

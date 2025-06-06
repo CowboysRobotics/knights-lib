@@ -228,11 +228,11 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         float curvature = (deriv2.y * deriv.x - deriv.y * deriv2.x) / std::pow(std::sqrt(deriv.x * deriv.x + deriv.y * deriv.y), 3);
 
+        float angular_velocity = curr_velocity * curvature;
+
         // velo curving
         float radius = std::fabs(1 / curvature);
         curr_velocity *= radius / (radius + this->track_width/2);
-
-        float angular_velocity = curr_velocity * curvature;
 
         float right_speed = curr_velocity + angular_velocity * track_width/2;
         float left_speed = curr_velocity - angular_velocity * track_width/2;
