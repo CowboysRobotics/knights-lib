@@ -56,9 +56,9 @@ namespace knights {
         // initial conditions
         float max_accel;
         float max_velocity;
-        float desired_voltage;
+        float cruise_pct;
 
-        MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity, float desired_voltage);
+        MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity, float cruise_pct);
     
         void dump();
     };
@@ -74,7 +74,7 @@ namespace knights {
 
             ProfileGenerator(float max_velocity, float track_width, float max_acceleration);
 
-            MotionProfile generate(knights::Pos start, knights::Pos end, float desired_voltage, int points_per_sec = 30, bool forwards = true, float curr_accel = 0, float target_accel = 0);
+            MotionProfile generate(knights::Pos start, knights::Pos end, float cruise_pct, int points_per_sec = 30, bool forwards = true, float curr_accel = 0, float target_accel = 0);
     };
 
     ProfileTimestamp lerp(const ProfileTimestamp &t1, const ProfileTimestamp &t2, float t);

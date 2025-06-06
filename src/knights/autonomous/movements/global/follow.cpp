@@ -320,7 +320,7 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
         // Send to DT - new
         this->chassis->drivetrain->ramsete_command(output_lin_vel, output_ang_vel, profile.max_accel, tuner_v, tuner_accel, tuner_static, profile.max_velocity);
 
-        float r_speed = output_lin_vel + (output_ang_vel * this->chassis->drivetrain->track_width / 2.0);
+        float r_speed = output_lin_vel + (output_ang_vel * this->chassis->drivetrain->track_width / 2.0); // maybe issue here
         float l_speed = output_lin_vel - (output_ang_vel * this->chassis->drivetrain->track_width / 2.0);
 
         r_speed = (r_speed / (this->chassis->drivetrain->wheel_diameter * M_PI) * (1/this->chassis->drivetrain->gear_ratio)) * 60.0;

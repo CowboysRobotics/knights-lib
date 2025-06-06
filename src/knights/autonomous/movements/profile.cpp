@@ -8,8 +8,6 @@
 #include <iostream>
 #include <vector>
 
-#define PROS_MAX_VOLTAGE 127
-
 knights::QuinticPath::QuinticPath(knights::Pos curr, knights::Pos target, knights::Pos curr_tangent, knights::Pos target_tangent, 
     float curr_acceleration, float target_acceleration) : 
     curr(curr), target(target), curr_tangent(curr_tangent), target_tangent(target_tangent), 
@@ -20,14 +18,14 @@ knights::QuinticPath::QuinticPath(knights::Pos curr, knights::Pos target, knight
     this->p5 = target;
     this->p1 = p0 + (curr_tangent * (1.0/5.0));
     this->p2 = (this->curr_acceleration / 20) + ((2 * p1) - p0);
-    this->p4 = p5 - target_tangent * (1.0/5);
+    this->p4 = p5 - target_tangent * (1.0/5.0);
     this->p3 = this->target_acceleration / 20 + 2 * this->p4 - this->p5;
 };
 
 knights::QuinticPath::QuinticPath() {};
 
-knights::MotionProfile::MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity, float desired_voltage) :
-    timestamps(timestamps), path(path), max_accel(max_accel), max_velocity(max_velocity), desired_voltage(desired_voltage) {}
+knights::MotionProfile::MotionProfile(std::vector<ProfileTimestamp> timestamps, QuinticPath path, float max_accel, float max_velocity, float cruise_pct) :
+    timestamps(timestamps), path(path), max_accel(max_accel), max_velocity(max_velocity), cruise_pct(cruise_pct) {}
 
 knights::ProfileTimestamp::ProfileTimestamp(knights::Pos position, float linear_velocity, float angular_velocity, 
     float time, float right_speed, float left_speed, float acceleration) : position(position), linear_velocity(linear_velocity), angular_velocity(angular_velocity),
@@ -40,60 +38,24 @@ knights::ProfileGenerator::ProfileGenerator(float max_velocity, float track_widt
     max_velocity(max_velocity), max_acceleration(max_acceleration), track_width(track_width) {}
 
 knights::Pos knights::QuinticPath::position(float t) {
-    // float x = p00 * pow((1 - t), 5) + p01 * 5 * pow((1 - t), 4) * t +
-    //            p02 * 10 * pow((1 - t), 3) * pow(t, 2) + p03 * 10 * pow((1 - t), 2) * pow(t, 3) +
-    //            p04 * 5 * (1 - t) * pow(t, 4) + p05 * pow(t, 5);
-
-    // float y = p10 * pow((1 - t), 5) + p11 * 5 * pow((1 - t), 4) * t +
-    //            p12 * 10 * pow((1 - t), 3) * pow(t, 2) + p13 * 10 * pow((1 - t), 2) * pow(t, 3) +
-    //            p14 * 5 * (1 - t) * pow(t, 4) + p15 * pow(t, 5);
-
-    knights::Pos output = p0 * pow((1 - t), 5) + p1 * 5 * pow((1 - t), 4) * t +
+    return p0 * pow((1 - t), 5) + p1 * 5 * pow((1 - t), 4) * t +
                p2 * 10 * pow((1 - t), 3) * pow(t, 2) + p3 * 10 * pow((1 - t), 2) * pow(t, 3) +
                p4 * 5 * (1 - t) * pow(t, 4) + p5 * pow(t, 5);
-
-    return output;
 }
 
 knights::Pos knights::QuinticPath::derivatives(float t) {
-    // float dx = p01 * 5 * pow((1 - t), 4) - p00 * 5 * pow((1 - t), 4) +
-    //             p02 * 20 * pow((1 - t), 3) * t - p01 * 20 * pow((1 - t), 3) * t +
-    //             p03 * 30 * pow((1 - t), 2) * pow(t, 2) - p02 * 30 * pow((1 - t), 2) * pow(t, 2) +
-    //             p04 * 20 * (1 - t) * pow(t, 3) - p03 * 20 * (1 - t) * pow(t, 3) +
-    //             p05 * 5 * pow(t, 4) - p04 * 5 * pow(t, 4);
-
-    // float dy = p11 * 5 * pow((1 - t), 4) - p10 * 5 * pow((1 - t), 4) +
-    //             p12 * 20 * pow((1 - t), 3) * t - p11 * 20 * pow((1 - t), 3) * t +
-    //             p13 * 30 * pow((1 - t), 2) * pow(t, 2) - p12 * 30 * pow((1 - t), 2) * pow(t, 2) +
-    //             p14 * 20 * (1 - t) * pow(t, 3) - p13 * 20 * (1 - t) * pow(t, 3) +
-    //             p15 * 5 * pow(t, 4) - p14 * 5 * pow(t, 4);
-
-    knights::Pos output = p1 * 5 * pow((1 - t), 4) - p0 * 5 * pow((1 - t), 4) +
+    return p1 * 5 * pow((1 - t), 4) - p0 * 5 * pow((1 - t), 4) +
             p2 * 20 * pow((1 - t), 3) * t - p1 * 20 * pow((1 - t), 3) * t +
             p3 * 30 * pow((1 - t), 2) * pow(t, 2) - p2 * 30 * pow((1 - t), 2) * pow(t, 2) +
             p4 * 20 * (1 - t) * pow(t, 3) - p3 * 20 * (1 - t) * pow(t, 3) +
             p5 * 5 * pow(t, 4) - p4 * 5 * pow(t, 4);
-
-    return output;
 }
 
 knights::Pos knights::QuinticPath::second_derivatives(float t) {
-    // float dx2 = 20 * (p02 - 2 * p01 + p00) * pow((1 - t), 3) +
-    //              60 * (p03 - 2 * p02 + p01) * pow((1 - t), 2) * t +
-    //              60 * (p04 - 2 * p03 + p02) * (1 - t) * pow(t, 2) +
-    //              20 * (p05 - 2 * p04 + p03) * pow(t, 3);
-
-    // float dy2 = 20 * (p12 - 2 * p11 + p10) * pow((1 - t), 3) +
-    //              60 * (p13 - 2 * p12 + p11) * pow((1 - t), 2) * t +
-    //              60 * (p14 - 2 * p13 + p12) * (1 - t) * pow(t, 2) +
-    //              20 * (p15 - 2 * p14 + p13) * pow(t, 3);
-
-    knights::Pos output = 20 * (p2 - 2 * p1 + p0) * pow((1 - t), 3) +
+    return 20 * (p2 - 2 * p1 + p0) * pow((1 - t), 3) +
                 60 * (p3 - 2 * p2 + p1) * pow((1 - t), 2) * t +
                 60 * (p4 - 2 * p3 + p2) * (1 - t) * pow(t, 2) +
                 20 * (p5 - 2 * p4 + p3) * pow(t, 3);
-
-    return output;
 }
 
 float knights::QuinticPath::get_length() {
@@ -153,7 +115,7 @@ float knights::QuinticPath::get_t_from_dist(float dist) {
     );
 }
 
-knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, knights::Pos end, float desired_voltage, int points_per_sec, bool forwards, float curr_accel, float target_accel) {
+knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, knights::Pos end, float cruise_pct, int points_per_sec, bool forwards, float curr_accel, float target_accel) {
 
     if (!forwards) {
         start.heading = knights::normalize_angle(start.heading + M_PI);
@@ -170,7 +132,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     float total_dist = path.get_length();
 
-    float path_max_velocity = (this->max_velocity) * (fabs(desired_voltage) / PROS_MAX_VOLTAGE); // change to pct not voltage
+    float path_max_velocity = (this->max_velocity) * (fabs(cruise_pct) / 100);
 
     float acceleration_time = path_max_velocity / this->max_acceleration;
 
@@ -316,7 +278,7 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     write_file.close();
 
-    return MotionProfile(timestamps, path, this->max_acceleration, path_max_velocity, desired_voltage);
+    return MotionProfile(timestamps, path, this->max_acceleration, path_max_velocity, cruise_pct);
 }
 
 void knights::MotionProfile::dump() {
