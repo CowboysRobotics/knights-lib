@@ -16,9 +16,6 @@ void knights::Drivetrain::voltage_command(int rightMtrs, int leftMtrs) {
 }
 
 void knights::Drivetrain::velocity_command(float linear_velocity, float angular_velocity, float maximum_lin_vel) {
-
-    // NEW
-
     float r_speed = linear_velocity + (angular_velocity * track_width / 2.0);
     float l_speed = linear_velocity - (angular_velocity * track_width / 2.0);
 
@@ -39,7 +36,6 @@ void knights::Drivetrain::velocity_command(float linear_velocity, float angular_
 }
 
 void knights::Drivetrain::ramsete_command(float linear_velocity, float angular_velocity, float acceleration, float tuner_velocity, float tuner_accel, float tuner_static, float drivetrain_max) {
-
     float r_speed = linear_velocity + (angular_velocity * track_width / 2.0);
     float l_speed = linear_velocity - (angular_velocity * track_width / 2.0);
 
@@ -99,6 +95,5 @@ void knights::Holonomic::velocity_command(int frontRight, int frontLeft, int bac
 }
 
 void knights::Holonomic::field_centric_drive(int vert_axis, int hori_axis, int rot_axis, pros::Imu* inertial) {
-    
     // NOT IMPLEMENTED YET
 }

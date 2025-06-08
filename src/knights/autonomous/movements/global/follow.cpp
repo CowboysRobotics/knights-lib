@@ -18,11 +18,6 @@
 #include <math.h>
 #include <fstream>
 
-#define PROS_MAX_VOLTAGE 127
-#define MOTOR_VOLTS 11.0f
-
-#define SCALE_OMEGA 2
-
 float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights::Pos curr, float lookahead_distance) {
     knights::Pos dir = nxt - prev;
     knights::Pos fro = prev - curr;
@@ -91,8 +86,6 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
         this->angular_pid->reset();
     }
 
-    // std::fstream write_file("/usd/pure_pursuit.txt", std::ios_base::out);
-
     // While the robot has not reached the desired point and is not at the end of the route
     while (error > end_tolerance && closest_i != route.positions.size() - 1) {
 
@@ -140,6 +133,7 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
             }
         }
 
+        // used for later calculations
         const float &effective_lookahead = distance_btwn(curr_position, target_point);
 
         // lookahead and speed scaling
@@ -163,11 +157,6 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
             ), max_speed
         );
         angular_curve = curvature(curr_position, target_point);
-
-        // write_file << knights::logger::string_format("tspeed & pts: %lf , %lf %lf , %lf %lf , %lf %lf\n", 
-        //     target_speed, route.positions[closest_i].x, route.positions[closest_i].y, route.positions[closest_i+1].x, route.positions[closest_i+1].y,
-        //     route.positions[closest_i+2].x, route.positions[closest_i+2].y
-        //     );
 
         float angular_velocity = 0;
         // curve to update angular velocity
@@ -194,12 +183,6 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
         else
             this->chassis->drivetrain->voltage_command(-l_speed, -r_speed);
 
-        // // log for debugging
-        // write_file << logger::string_format("target: %lf %lf %lf, curr: %lf %lf %lf , target speed(curve/pid): %lf %lf, angular speed: %lf side speeds(r/l): %lf %lf curr lookahead: %lf , error: %lf curvature: %lf\n",
-        //     target_point.x, target_point.y, route.positions[closest_i].heading, curr_position.x, curr_position.y, curr_position.heading, max_curr_speed, pid_speed, angular_velocity, r_speed, l_speed, curr_lookahead, error, angular_curve
-            
-        // ) << "\n";
-        
         // run all actions between previous closest point and current
         if (prev_closest_i != closest_i) {
             for (int i = prev_closest_i; i < closest_i; i++) {
@@ -241,10 +224,6 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
     float elapsed_time = 0;
     int curr_i = 1;
 
-    std::fstream write_file("/usd/ramsete_output.txt", std::ios_base::out);
-
-    // printf("Ramsete started with state vars: max_vel %lf \n", profile.max_velocity);
-
     while (distance_btwn(this->chassis->curr_position, profile.timestamps.back().position) > end_tolerance || elapsed_time < profile.timestamps.back().time) {
         knights::Pos curr_position = this->chassis->curr_position;
 
@@ -259,6 +238,7 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
             curr_i++;
         }
 
+        // lerp between current timestamp and next tiemstamp
         const ProfileTimestamp& prev = profile.timestamps[curr_i];
         const ProfileTimestamp& next = profile.timestamps[curr_i+1];
         knights::ProfileTimestamp selected = knights::lerp(prev, next, 
@@ -282,7 +262,7 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
         );
 
         // prevent divide by 0
-        if (error_theta < 1e-6) {
+        if (std::fabs(error_theta) < 1e-6) {
             error_theta += 1e-4;
         }
 
@@ -294,68 +274,13 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
 
         float output_ang_vel = curr_ang_vel;
 
-        // // Send to drivetrain - OLD
-        // // this->chassis->drivetrain->velocity_command(output_lin_vel, output_ang_vel, profile.max_velocity);
-
-        // // debugging velocities
-        // float linear_rpm = (output_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
-        // float angular_lin_vel = (output_ang_vel * chassis->drivetrain->track_width/2.0);
-        // float angular_rpm = (angular_lin_vel / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
-
-        // float r_speed = linear_rpm + angular_rpm;
-        // float l_speed = linear_rpm - angular_rpm;
-    
-        // float ratio_maximum_lin_vel = (profile.max_velocity / (chassis->drivetrain->wheel_diameter * M_PI) * (1/chassis->drivetrain->gear_ratio)) * 60.0;
-    
-        // float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / (ratio_maximum_lin_vel); 
-        // if (ratio_curr_speed > 1) {
-        //     r_speed /= ratio_curr_speed;
-        //     l_speed /= ratio_curr_speed;
-        // }
-
-        float tuner_v = 1;
-        float tuner_accel = 0;
-        float tuner_static = 0;
-
-        // Send to DT - new
-        this->chassis->drivetrain->ramsete_command(output_lin_vel, output_ang_vel, profile.max_accel, tuner_v, tuner_accel, tuner_static, profile.max_velocity);
-
-        float r_speed = output_lin_vel + (output_ang_vel * this->chassis->drivetrain->track_width / 2.0); // maybe issue here bc angular not properly scaling these
-        float l_speed = output_lin_vel - (output_ang_vel * this->chassis->drivetrain->track_width / 2.0);
-
-        r_speed = (r_speed / (this->chassis->drivetrain->wheel_diameter * M_PI) * (1/this->chassis->drivetrain->gear_ratio)) * 60.0;
-        l_speed = (l_speed / (this->chassis->drivetrain->wheel_diameter * M_PI) * (1/this->chassis->drivetrain->gear_ratio)) * 60.0;
-
-        r_speed = r_speed * tuner_v + profile.max_accel * tuner_accel + (knights::signum(r_speed) + 1e-4) * tuner_static;
-        l_speed = l_speed * tuner_v + profile.max_accel * tuner_accel + (knights::signum(l_speed) + 1e-4) * tuner_static;
-
-        float ratio_maximum_lin_vel = ((profile.max_velocity / (this->chassis->drivetrain->wheel_diameter * M_PI) * (1/this->chassis->drivetrain->gear_ratio)) * 60.0) * tuner_v + profile.max_accel * tuner_accel + (knights::signum(profile.max_velocity) + 1e-4) * tuner_static;
-
-        // ratio may be causing the issue
-        float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / (ratio_maximum_lin_vel); 
-        if (ratio_curr_speed > 1) {
-            r_speed /= ratio_curr_speed;
-            l_speed /= ratio_curr_speed;
-        }
-
-        float linear_rpm = output_lin_vel * tuner_v + profile.max_accel * tuner_accel + knights::signum(output_lin_vel) * tuner_static;
-        float angular_rpm = (output_ang_vel * this->chassis->drivetrain->track_width / 2.0) * tuner_v + profile.max_accel * tuner_accel + knights::signum(output_ang_vel) * tuner_static;
-
-        write_file << knights::logger::string_format(
-            "right/left vel %lf %lf final l/a vel (in rpm) %lf %lf curr l/a vel (in inches) %lf %lf gain %lf curr pos %lf %lf %lf des pos %lf %lf %lf global error %lf %lf %lf local error %lf %lf time %lf, terms: %lf %lf \n\n",
-            r_speed, l_speed, linear_rpm , angular_rpm, output_lin_vel, output_ang_vel, gain, curr_position.x, curr_position.y, curr_position.heading,
-            selected.position.x, selected.position.y, selected.position.heading, error_x, error_y, error_theta, local_error_x, local_error_y, elapsed_time, profile.max_accel * tuner_accel, (knights::signum(linear_rpm) + 1e-4) * tuner_static
-        );
-
-        // write_file << knights::logger::string_format(
-        //     "current commanded velocity: %lf , current motor velocity %lf \n\n", linear_rpm, 
-        //     (this->chassis->drivetrain->right_mtrs->get_actual_velocity() + this->chassis->drivetrain->left_mtrs->get_actual_velocity()) / 2
-        // );
+        // Send to DT
+        this->chassis->drivetrain->ramsete_command(output_lin_vel, output_ang_vel, 
+            profile.max_accel, ramsete_constants->tuner_v, ramsete_constants->tuner_accel, 
+            ramsete_constants->tuner_static, profile.max_velocity);
 
         pros::delay(10);
     }
-
-    write_file.close();
 
     // stop motors after route over
     this->chassis->drivetrain->voltage_command(0, 0);

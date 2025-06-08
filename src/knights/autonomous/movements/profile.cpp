@@ -157,16 +157,12 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
     bool is_triangular_profile = (acceleration_distance > halfway_distance);
 
-    std::fstream write_file("/usd/generation_output.txt", std::ios_base::out);
-
     std::vector<ProfileTimestamp> timestamps;
     float x = 0, y = 0;
 
     for (double elapsed_time = 0; elapsed_time <= total_time; elapsed_time += 1.0/points_per_sec) {
         float curr_velocity = 0;
         float curr_dist = 0;
-
-        write_file << "stage 1 " << pros::micros() << "\n";
 
         float min_velocity = 8; // for static friction
 
@@ -214,8 +210,6 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         float path_pct = path.get_t_from_dist(curr_dist);
 
-        write_file << "path percent: " << path_pct << " curr dist: " << curr_dist << " total dist: " << total_dist << "\n";
-
         path_pct = knights::clampf(path_pct, 0, 1);
 
         Pos pt = path.position(path_pct);
@@ -228,14 +222,12 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         float curvature = (deriv2.y * deriv.x - deriv.y * deriv2.x) / std::pow(std::sqrt(deriv.x * deriv.x + deriv.y * deriv.y), 3);
 
-        float angular_velocity = curr_velocity * curvature;
-
         // velo curving
         float radius = std::fabs(1 / curvature);
         curr_velocity *= radius / (radius + this->track_width/2);
 
-        float right_speed = curr_velocity + angular_velocity * track_width/2;
-        float left_speed = curr_velocity - angular_velocity * track_width/2;
+        float right_speed = curr_velocity + (curr_velocity * curvature) * track_width/2;
+        float left_speed = curr_velocity - (curr_velocity * curvature) * track_width/2;
 
 
         if (!forwards) {
@@ -249,9 +241,8 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
             pt.heading = knights::normalize_angle(pt.heading + M_PI);
         }
 
-        timestamps.emplace_back(pt, curr_velocity, angular_velocity, elapsed_time, right_speed, left_speed, acceleration);
+        timestamps.emplace_back(pt, curr_velocity, curr_velocity * curvature, elapsed_time, right_speed, left_speed, acceleration);
 
-        write_file << "stage 4 " << pros::micros() << "\n";
     }
 
     // second pass to make times of each point more accurates
@@ -274,9 +265,6 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         timestamps[i].time = constrained_time;
     }
-
-
-    write_file.close();
 
     return MotionProfile(timestamps, path, this->max_acceleration, path_max_velocity, cruise_pct);
 }
