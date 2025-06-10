@@ -63,6 +63,16 @@ namespace knights {
              */
             RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, RamseteConstants *ramsete_constants, bool use_motor_encoders = false);
 
+            /**
+             * @brief Construct a new Robot Controller object
+             * 
+             * @param chassis 
+             * @param lateral_pid 
+             * @param turn_pid 
+             * @param angular_pid 
+             * @param ramsete_constants 
+             * @param use_motor_encoders 
+             */
             RobotController(RobotChassis *chassis, PIDController *lateral_pid, PIDController *turn_pid, PIDController *angular_pid, RamseteConstants *ramsete_constants, bool use_motor_encoders = false);
 
             /**
@@ -95,8 +105,6 @@ namespace knights {
             void lateral_to_point(const Pos desired_position, const bool forwards = true, const float end_tolerance = 3.5, const int timeout = 1000, const int turn_timeout = 750, const int wait_time = 140);
 
             void curve_move(const knights::Pos point, const bool forwards = true, const float end_tolerance = 2.0, float timeout = 1250, bool async= false);
-
-            void move_to_position(const Pos desired_position, float lead = 0.5, float correction_dist = 8.0, const float &end_tolerance = 2.0, const bool forwards = true, float timeout = 1000);
 
             /**
              * @brief Turn the robot to a specific angle

@@ -54,6 +54,16 @@ namespace knights {
          */
        RouteAction(action_type type, float specific, float end_tolerance, int timeout);
 
+       /**
+        * @brief Construct a new Route Action object - presumed Lateral to Pos type
+        * 
+        * @param type action type for the route (lateral, turn, follow, command, lateral_to_pos)
+        * @param x Position X to move to
+        * @param y Position Y to move to
+        * @param theta Position theta to move to
+        * @param end_tolerance End tolerance for lateral and turn movement
+        * @param timeout Timeout for lateral and turn movement
+        */
        RouteAction(action_type type, float x, float y, float theta, float end_tolerance, int timeout);
 
         /**
@@ -101,6 +111,12 @@ namespace knights {
  */
 knights::AdvancedRoute advanced_route_from_file(std::string file_name);
 
+/**
+ * @brief Create an advanced route from an asset
+ * 
+ * @param buffer Name of the asset buffer to read from
+ * @return knights::AdvancedRoute 
+ */
 knights::AdvancedRoute advanced_route_from_asset(AssetStream &buffer);
 
 
