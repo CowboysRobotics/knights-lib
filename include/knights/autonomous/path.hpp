@@ -95,6 +95,12 @@ namespace knights {
      */
     Route init_route_from_sd(std::string route_name);
 
+    /**
+     * @brief Create a route from a pre-existing asset stream
+     * 
+     * @param buffer Asset Strea Object
+     * @return Route 
+     */
     Route init_route_from_asset(AssetStream &buffer);
 }
 

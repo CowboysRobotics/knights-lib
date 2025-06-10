@@ -44,6 +44,17 @@ namespace knights {
              */
             void velocity_command(float linear_velocity, float angular_velocity, float maximum_lin_vel = 1000);
 
+            /**
+             * @brief Use the feedforward equation to update the velocity of the drivetrain
+             * 
+             * @param linear_velocity Linear movement velocity (in/s)
+             * @param angular_velocity ngular velocity (rad/s)
+             * @param acceleration Acceleration of the robot
+             * @param tuner_velocity Tuner proportion to weight the velocity as (0-1)
+             * @param tuner_accel Tuner proportion to weight the acceleration as (0-1)
+             * @param tuner_static Tuner proportion to weight the static friction counter as (0-1)
+             * @param drivetrain_max Maximum speed that you want the drivetrain to run at
+             */
             void ramsete_command(float linear_velocity, float angular_velocity, float acceleration, float tuner_velocity, float tuner_accel, float tuner_static, float drivetrain_max = 1000);
 
             /**

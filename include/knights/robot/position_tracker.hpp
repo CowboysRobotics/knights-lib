@@ -147,6 +147,11 @@ namespace knights {
              */
             PositionTrackerGroup(knights::PositionTracker *middle, knights::PositionTracker *back, pros::IMU *inertial, float blend_trust = 0.7, float tracking_wheel_weight = 0.5, float distance_sensor_weight = 0.5);
 
+            /**
+             * @brief Add a distance tracker to the group
+             * 
+             * @param tracker Pointer of tracker to add
+             */
             void add_dist(knights::DistanceTracker *tracker);
     };
 

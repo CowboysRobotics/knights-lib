@@ -98,13 +98,49 @@ namespace knights {
              */
             void follow_route(const knights::Route &route, float lookahead_distance = 15.0, const float max_speed = 127.0, bool forwards = true, float end_tolerance = 4.0, float timeout = 5000, bool use_pid = true);
 
-            void follow_profile(const knights::MotionProfile &profile, float end_tolerance = 6.0, bool forwards = true);
+            /**
+             * @brief Follow a motion profile
+             * 
+             * @param profile Motion Profile to follow
+             * @param end_tolerance Distance from final position at which to stop (0 recommended)
+             * @param forwards Whether or not to follow it forwards
+             */
+            void follow_profile(const knights::MotionProfile &profile, float end_tolerance = 0.0, bool forwards = true);
 
+            /**
+             * @brief Move to a position using simple straight and turn movements
+             * 
+             * @param desired_position Position to move to
+             * @param forwards Whether or not the robot should face forwards
+             * @param end_tolerance Distance to end the loop at for all movements
+             * @param timeout Amount of time to wait before ending the movement for straight movements
+             * @param turn_timeout Amount of time to wait before ending the movement for turn movements
+             * @param wait_time Amount of time to wait between movements
+             */
             void lateral_to_position(const Pos desired_position, const bool forwards = true, const float end_tolerance = 3.5, const int timeout = 1000, const int turn_timeout = 750, const int wait_time = 140);
 
+            /**
+             * @brief Move to a point (meaning only X,Y, NOT heading) using simple straight and turn movements
+             * 
+             * @param desired_position Position to move to
+             * @param forwards Whether or not the robot should face forwards
+             * @param end_tolerance Distance to end the loop at for all movements
+             * @param timeout Amount of time to wait before ending the movement for straight movements
+             * @param turn_timeout Amount of time to wait before ending the movement for turn movements
+             * @param wait_time Amount of time to wait between movements
+             */
             void lateral_to_point(const Pos desired_position, const bool forwards = true, const float end_tolerance = 3.5, const int timeout = 1000, const int turn_timeout = 750, const int wait_time = 140);
 
-            void curve_move(const knights::Pos point, const bool forwards = true, const float end_tolerance = 2.0, float timeout = 1250, bool async= false);
+            /**
+             * @brief Move to a point while setting an angular velocity to face that point, NOT recommended for small movements
+             * 
+             * @param point Point to move towards
+             * @param forwards Whether to chase the point with the front or back of the robot
+             * @param end_tolerance Distance to end away from the point (recommended to be high)
+             * @param timeout Amount of time to stop following after
+             * @param async Whether or not the movement should be ran in its own task
+             */
+            void curve_move(const knights::Pos point, const bool forwards = true, const float end_tolerance = 12.0, float timeout = 1250, bool async= false);
 
             /**
              * @brief Turn the robot to a specific angle
@@ -118,8 +154,26 @@ namespace knights {
              */
             void turn_to_angle(const float angle, int direction = 0, float end_tolerance = 3.0, int timeout = 2000, bool rad = false); // DEGREES
 
+            /**
+             * @brief Turn the robot to an angle by moving only the right side of the drivetrain
+             * 
+             * @param angle Angle to turn to
+             * @param end_tolerance Angle that the bot will stop moving at (ie if this is 5, the bot will stop moving 5 degrees before the heading) 
+             *                      - this is used to account for the center of the bot not being the front
+             * @param timeout Amount of time to wait before exiting the movement
+             * @param rad Whether the provided angle is in radians or not
+             */
             void right_swing_to_angle(const float angle, float end_tolerance = 3.0, int timeout = 2000, bool rad = false); // DEGREES
 
+            /**
+             * @brief Turn the robot to an angle by moving only the left side of the drivetrain
+             * 
+             * @param angle Angle to turn to
+             * @param end_tolerance Angle that the bot will stop moving at (ie if this is 5, the bot will stop moving 5 degrees before the heading) 
+             *                      - this is used to account for the center of the bot not being the front
+             * @param timeout Amount of time to wait before exiting the movement
+             * @param
+             */
             void left_swing_to_angle(const float angle, float end_tolerance = 3.0, int timeout = 2000, bool rad = false); // DEGREES
 
             /**
