@@ -12,7 +12,6 @@
 
 void knights::RobotController::lateral_move(const float distance, const float end_tolerance, float timeout, bool async) {
     if (this->in_motion) return;
-    this->in_motion = true;
 
     if (async) {
         pros::Task lateral([=] {
@@ -21,6 +20,8 @@ void knights::RobotController::lateral_move(const float distance, const float en
         pros::delay(10);
         return;
     }
+
+    this->in_motion = true;
 
     this->chassis->drivetrain->right_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
     this->chassis->drivetrain->left_mtrs->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
@@ -115,15 +116,16 @@ void knights::RobotController::lateral_move(const float distance, const float en
 
 void knights::RobotController::curve_move(const knights::Pos point, const bool forwards, const float end_tolerance, float timeout, bool async) {
     if (this->in_motion) return;
-    this->in_motion = true;
 
     if (async) {
         pros::Task lateral([=] {
-            this->curve_move(point, end_tolerance, timeout, false);
+            this->curve_move(point, forwards, end_tolerance, timeout, false);
         });
         pros::delay(10);
         return;
     }
+
+    this->in_motion = true;
 
     int dir = (forwards) ? 1 : -1;
 

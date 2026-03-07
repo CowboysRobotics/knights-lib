@@ -45,7 +45,7 @@ void knights::Drivetrain::ramsete_command(float linear_velocity, float angular_v
     r_speed = r_speed * tuner_velocity + acceleration * tuner_accel + knights::signum(r_speed) * tuner_static;
     l_speed = l_speed * tuner_velocity + acceleration * tuner_accel + knights::signum(l_speed) * tuner_static;
 
-    float ratio_maximum_lin_vel = ((drivetrain_max / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0) * tuner_velocity + acceleration * tuner_accel + knights::signum(r_speed) * tuner_static;
+    float ratio_maximum_lin_vel = ((drivetrain_max / (wheel_diameter * M_PI) * (1/gear_ratio)) * 60.0) * tuner_velocity + acceleration * tuner_accel + knights::signum(linear_velocity) * tuner_static;
 
     // ratio may be causing the issue
     float ratio_curr_speed = std::fmax(fabs(r_speed), fabs(l_speed)) / (ratio_maximum_lin_vel); 
@@ -71,8 +71,8 @@ float knights::Drivetrain::max_acceleration(float mass, float motor_amt, float s
 }
 
 float knights::Drivetrain::max_velocity() {
-    // v = circumfrence * rotation rate
-    return M_PI * this->wheel_diameter * (this->rpm / 60.0);
+    // v = circumfrence * rotation rate (accounting for gear ratio)
+    return M_PI * this->wheel_diameter * (this->rpm * this->gear_ratio / 60.0);
 }
 
 float knights::Drivetrain::voltage_to_velocity(float voltage) {

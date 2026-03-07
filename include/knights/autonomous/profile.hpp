@@ -12,11 +12,11 @@ namespace knights {
 
     struct QuinticPath {
         knights::Pos curr, target, curr_tangent, target_tangent;
-        float curr_acceleration, target_acceleration;
+        knights::Pos curr_acceleration, target_acceleration;
 
         QuinticPath(knights::Pos curr, knights::Pos target,
             knights::Pos curr_tangent, knights::Pos target_tangent,
-            float curr_acceleration, float target_acceleration);
+            knights::Pos curr_acceleration, knights::Pos target_acceleration);
         
         QuinticPath();
 
@@ -144,7 +144,8 @@ namespace knights {
              * @param target_accel Target final acceleration of the robot, usually set to 0
              * @return MotionProfile 
              */
-            MotionProfile generate(knights::Pos start, knights::Pos end, float cruise_pct, int points_per_sec = 30, bool forwards = true, float curr_accel = 0, float target_accel = 0);
+            MotionProfile generate(knights::Pos start, knights::Pos end, float cruise_pct, int points_per_sec = 30, bool forwards = true, 
+                knights::Pos curr_accel = knights::Pos(0, 0, 0), knights::Pos target_accel = knights::Pos(0, 0, 0));
     };
 
     /**

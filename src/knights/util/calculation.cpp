@@ -23,7 +23,7 @@ float knights::ref_angle(float angle, bool rad) {
 
 float knights::min_angle(float start, float target, bool rad) {
     float max = rad ? M_PI*2 : 360.0;
-    float error = normalize_angle(normalize_angle(target, rad), rad) - start;
+    float error = normalize_angle(target, rad) - normalize_angle(start, rad);
     return std::remainder(error,max);
 };
 

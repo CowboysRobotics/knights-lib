@@ -28,20 +28,20 @@ float knights::circle_intersection(knights::Pos nxt, knights::Pos prev, knights:
     float c = (fro * fro) - lookahead_distance * lookahead_distance;
     float discrim = b * b - 4 * a * c;
 
-    // if there are valid solutions
-    if (discrim > 0) {
+    // if there are valid solutions (>= 0 to handle tangent case)
+    if (discrim >= 0) {
         // calculate solutions
         discrim = sqrt(discrim);
-        float s1 = (-b + discrim) / (2 * a);
+        float s1 = (-b + discrim) / (2 * a); // larger t (further along segment)
         float s2 = (-b - discrim) / (2 * a);
 
-        if (s1 >= 0 && s1 <= 1) // if solution 1 is valid, return it
+        if (s1 >= 0 && s1 <= 1) // prefer the further-along intersection
             return s1;
-        else if (s2 >= 0 && s2 <= 1) // if solution 2 is valid, return it
+        else if (s2 >= 0 && s2 <= 1)
             return s2;
         else
             return -1;
-    } else // no or one real solution
+    } else // no real solution
         return -1;
 }
 
@@ -79,6 +79,7 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
     float max_curr_speed = 127;
     float min_curr_speed = 0;
     float angular_curve;
+    float start_time = pros::millis();
 
     this->lateral_pid->reset();
 
@@ -90,7 +91,7 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
     while (error > end_tolerance && closest_i != route.positions.size() - 1) {
 
         knights::Pos curr_position = this->chassis->curr_position;
-        if (!forwards || lookahead_distance < 0) {
+        if (!forwards) {
             curr_position.heading = knights::normalize_angle(curr_position.heading + M_PI);
         }
 
@@ -99,8 +100,9 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
 
         closest_dist = 1e5;
 
-        // find nearest point
-        for (int i = closest_i; i < route.positions.size(); i++) {
+        // find nearest point — search backward a few points too for odometry drift recovery
+        int search_start = std::max(0, closest_i - 5);
+        for (int i = search_start; i < route.positions.size(); i++) {
             if (distance_btwn(curr_position,  route.positions[i]) < closest_dist) {
                 closest_dist = distance_btwn(curr_position,  route.positions[i]);
                 closest_i = i;
@@ -122,6 +124,7 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
 
                 if (t != -1) {
                     target_point = lerp(route.positions[target_i], extended, t);
+                    break;
                 }
             }
             else {
@@ -129,6 +132,7 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
 
                 if (t != -1) {
                     target_point = lerp(route.positions[target_i], route.positions[target_i+1], t);
+                    break;
                 }
             }
         }
@@ -139,13 +143,18 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
         // lookahead and speed scaling
         max_curr_speed= 127.0;
         if (target_point != route.positions[0] && (closest_i != 0 && closest_i != route.positions.size()-1)) { // make sure we have valid target_i variables, it won't be right if the robot is at the start of the route
-            curr_lookahead = clampf(
-                lookahead_distance * 
-            (0.15/curvature(route.positions[closest_i-1], route.positions[closest_i], route.positions[closest_i+1])), // tuned formula dependent on curvature
-            lookahead_distance, lookahead_distance*1.5); // limit lookahead from going too high or too low
+            float curv = curvature(route.positions[closest_i-1], route.positions[closest_i], route.positions[closest_i+1]);
+            if (curv > 1e-6) { // guard against zero curvature (straight line)
+                curr_lookahead = clampf(
+                    lookahead_distance * (0.15/curv), // tuned formula dependent on curvature
+                    lookahead_distance, lookahead_distance*1.5); // limit lookahead from going too high or too low
 
-            // also change target speed with this
-            max_curr_speed = 7.0/curvature(route.positions[closest_i-1], route.positions[closest_i], route.positions[closest_i+1]);
+                // also change target speed with this
+                max_curr_speed = 7.0/curv;
+            } else {
+                curr_lookahead = lookahead_distance;
+                max_curr_speed = 127.0;
+            }
         }
         
         // determine the speed and angular curvature to use for calculating ratio of motor velocities
@@ -198,9 +207,9 @@ void knights::RobotController::follow_route(const knights::Route &route, float l
 
         // wait for next iteration of loop
         pros::delay(10);
-        timeout -= 10;
 
-        if (timeout < 0) break;
+        // wall-clock timeout check
+        if ((pros::millis() - start_time) > timeout) break;
     }
 
     // stop motors after route over
@@ -242,7 +251,7 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
         const ProfileTimestamp& prev = profile.timestamps[curr_i];
         const ProfileTimestamp& next = profile.timestamps[curr_i+1];
         knights::ProfileTimestamp selected = knights::lerp(prev, next, 
-            knights::clamp((elapsed_time - prev.time) / (next.time - prev.time), 0.0, 1.0));
+            knights::clampf((elapsed_time - prev.time) / (next.time - prev.time), 0.0f, 1.0f));
 
         // obtain error values
         float error_x = knights::to_meters(selected.position.x - curr_position.x);
@@ -256,27 +265,26 @@ void knights::RobotController::follow_profile(const knights::MotionProfile &prof
         float lin_vel = knights::to_meters(selected.linear_velocity);
         float ang_vel = selected.angular_velocity;
 
-        // calculate gain
+        // calculate gain — use curvature_coefficient to scale curvature response
         float gain = 2 * this->ramsete_constants->damping * std::sqrt(
             ang_vel * ang_vel + this->ramsete_constants->proportional * lin_vel * lin_vel
         );
 
-        // prevent divide by 0
-        if (std::fabs(error_theta) < 1e-6) {
-            error_theta += 1e-4;
-        }
+        // proper sinc function: sinc(x) = sin(x)/x, with limit sinc(0) = 1
+        float sinc_theta = (std::fabs(error_theta) < 1e-6) ? 1.0f : std::sin(error_theta) / error_theta;
 
-        // calculate output velocities
+        // calculate output velocities (RAMSETE equations)
+        // curvature_coefficient scales the cross-track correction term
         float curr_lin_vel = lin_vel * cos(error_theta) + gain * local_error_x; // still in m/s
-        float curr_ang_vel = ang_vel + gain * error_theta + this->ramsete_constants->proportional * lin_vel * sin(error_theta) * local_error_y / error_theta;
+        float curr_ang_vel = ang_vel + gain * error_theta + this->ramsete_constants->proportional * this->ramsete_constants->curvature_coefficient * lin_vel * sinc_theta * local_error_y;
 
         float output_lin_vel = to_inches(curr_lin_vel);
 
         float output_ang_vel = curr_ang_vel;
 
-        // Send to DT
+        // Send to DT - use interpolated acceleration for proper feedforward
         this->chassis->drivetrain->ramsete_command(output_lin_vel, output_ang_vel, 
-            profile.max_accel, ramsete_constants->tuner_v, ramsete_constants->tuner_accel, 
+            selected.acceleration, ramsete_constants->tuner_v, ramsete_constants->tuner_accel, 
             ramsete_constants->tuner_static, profile.max_velocity);
 
         pros::delay(10);

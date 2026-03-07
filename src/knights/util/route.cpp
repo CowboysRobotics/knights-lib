@@ -89,7 +89,7 @@ knights::Route knights::Route::reverse() {
     
     int size = this->positions.size();
     for (auto const& [i, func] : this->actions) {
-        output.actions[size-i] = func;
+        output.actions[size - 1 - i] = func;
     }
 
     return output;

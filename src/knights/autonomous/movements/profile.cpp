@@ -9,7 +9,7 @@
 #include <vector>
 
 knights::QuinticPath::QuinticPath(knights::Pos curr, knights::Pos target, knights::Pos curr_tangent, knights::Pos target_tangent, 
-    float curr_acceleration, float target_acceleration) : 
+    knights::Pos curr_acceleration, knights::Pos target_acceleration) : 
     curr(curr), target(target), curr_tangent(curr_tangent), target_tangent(target_tangent), 
     curr_acceleration(curr_acceleration), target_acceleration(target_acceleration) 
 {
@@ -68,9 +68,10 @@ float knights::QuinticPath::get_length() {
 }
 
 void knights::QuinticPath::generate_length_map(float samples) {
-    Pos curr;
+    Pos curr = this->position(0);
     float total_dist = 0;
-    for (float t = 0; t <= 1; t += 1/samples) {
+    this->length_map.push_back(std::make_pair(0.0f, 0.0f));
+    for (float t = 1.0f/samples; t <= 1.0f; t += 1.0f/samples) {
         Pos p = this->position(t);
         total_dist += distance_btwn(curr, p);
         curr = p;
@@ -109,13 +110,18 @@ float knights::QuinticPath::get_t_from_dist(float dist) {
         return this->length_map.back().second;
     }
 
+    float dist_lo = this->length_map[possible_i].first;
+    float dist_hi = this->length_map[possible_i + 1].first;
+    float frac = (dist_hi > dist_lo) ? knights::clampf((dist - dist_lo) / (dist_hi - dist_lo), 0, 1) : 0;
+
     return knights::lerp(
         this->length_map[possible_i].second, this->length_map[possible_i + 1].second, 
-        knights::clampf((this->length_map[possible_i + 1].first - this->length_map[possible_i].first) / this->length_map[possible_i].first, 0, 1)
+        frac
     );
 }
 
-knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, knights::Pos end, float cruise_pct, int points_per_sec, bool forwards, float curr_accel, float target_accel) {
+knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, knights::Pos end, float cruise_pct, int points_per_sec, bool forwards, 
+    knights::Pos curr_accel, knights::Pos target_accel) {
 
     if (!forwards) {
         start.heading = knights::normalize_angle(start.heading + M_PI);
@@ -143,11 +149,14 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
         acceleration_time = std::sqrt(halfway_distance / (0.5 * this->max_acceleration));
     }
 
+    // Trapezoidal profile: accel phase, cruise phase, decel phase
     float cruise_time = 0;
     float total_time = 2 * acceleration_time;
 
     if (acceleration_distance <= halfway_distance) {
-        cruise_time = (total_dist / path_max_velocity) - acceleration_time;
+        // Standard trapezoidal: cruise phase covers remaining distance
+        float cruise_distance_remaining = total_dist - 2 * acceleration_distance;
+        cruise_time = cruise_distance_remaining / path_max_velocity;
         total_time = cruise_time + 2 * acceleration_time;
     }
 
@@ -222,9 +231,11 @@ knights::MotionProfile knights::ProfileGenerator::generate(knights::Pos start, k
 
         float curvature = (deriv2.y * deriv.x - deriv.y * deriv2.x) / std::pow(std::sqrt(deriv.x * deriv.x + deriv.y * deriv.y), 3);
 
-        // velo curving
-        float radius = std::fabs(1 / curvature);
-        curr_velocity *= radius / (radius + this->track_width/2);
+        // velo curving - guard against zero curvature (straight line)
+        if (std::fabs(curvature) > 1e-6) {
+            float radius = std::fabs(1 / curvature);
+            curr_velocity *= radius / (radius + this->track_width/2);
+        }
 
         float right_speed = curr_velocity + (curr_velocity * curvature) * track_width/2;
         float left_speed = curr_velocity - (curr_velocity * curvature) * track_width/2;

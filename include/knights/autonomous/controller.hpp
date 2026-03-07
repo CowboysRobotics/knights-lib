@@ -12,6 +12,7 @@
 #include "knights/robot/chassis.hpp"
 
 #include <queue>
+#include <atomic>
 
 namespace knights {
 
@@ -46,7 +47,7 @@ namespace knights {
             RobotChassis *chassis;
             bool use_motor_encoders = false;
 
-            bool in_motion = false;
+            std::atomic<bool> in_motion{false};
 
             std::queue<knights::Movement> actions;
 

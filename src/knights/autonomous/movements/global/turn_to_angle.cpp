@@ -165,7 +165,7 @@ void knights::RobotController::left_swing_to_angle(const float angle, float end_
         error = std::abs(min_angle(this->chassis->curr_position.heading, desired_angle, true));
         speed = this->turn_pid->update(error);
 
-        this->chassis->drivetrain->voltage_command(-sign * speed, 0);
+        this->chassis->drivetrain->voltage_command(0, sign * speed);
 
         pros::delay(10);
     }

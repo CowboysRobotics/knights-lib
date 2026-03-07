@@ -35,16 +35,36 @@ knights::PIDController::PIDController()
 }
 
 float knights::PIDController::update(float error, bool clamp) {
+    // integral windup protection: reset integral on sign change
+    if ((error > 0 && prev_error < 0) || (error < 0 && prev_error > 0)) {
+        total_error = 0;
+    }
+
     total_error += error;
+
+    // integral windup protection: clamp accumulated integral
+    if (integral_max >= 0) {
+        total_error = knights::clampf(total_error, -integral_max, integral_max);
+    }
+
+    // settled detection: track consecutive iterations with small error change
+    if (std::fabs(error - prev_error) < settled_threshold) {
+        settled_count++;
+    } else {
+        settled_count = 0;
+    }
+
+    float raw = this->kP * error + this->kI * total_error + this->kD * (error - prev_error);
     float result;
     if (clamp) {
         result = knights::clampf(
-            std::fabs(this->kP * error + this->kI * total_error + this->kD * (error - prev_error)), 
+            std::fabs(raw), 
             this->min_velocity, 
             this->max_velocity
-        ) * knights::signum(this->kP * error + this->kI * total_error + this->kD * (error - prev_error));
-    } else
-        result = this->kP * error + this->kI * total_error + this->kD * (error - prev_error);
+        ) * knights::signum(raw);
+    } else {
+        result = raw;
+    }
     prev_error = error;
     return result;
 }
@@ -79,7 +99,22 @@ float knights::PIDController::get_min_speed() {
 
 void knights::PIDController::reset() {
     this->total_error = 0;
-    this->prev_error = 1e2;
+    this->prev_error = 0;
+    this->prev_speed = 0;
+    this->settled_count = 0;
+}
+
+bool knights::PIDController::is_settled() {
+    return settled_count >= settled_target;
+}
+
+void knights::PIDController::set_integral_max(float max) {
+    this->integral_max = max;
+}
+
+void knights::PIDController::set_settled_params(float threshold, int count) {
+    this->settled_threshold = threshold;
+    this->settled_target = count;
 }
 
 knights::RamseteConstants::RamseteConstants(const float &damping, const float &proportional, const float &curvature_coefficient, const float &tuner_v, const float &tuner_accel, const float &tuner_static)

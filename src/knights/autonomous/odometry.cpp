@@ -17,11 +17,11 @@
 
 knights::Pos knights::RobotChassis::calc_tracking_wheel_position() {
 
-    float deltaRight, deltaLeft, deltaFront, deltaBack;
+    float deltaRight = 0, deltaLeft = 0, deltaFront = 0, deltaBack = 0;
 
-    float newHeading, averageHeading, deltaHeading, deltaYOffset;
+    float newHeading = 0, averageHeading = 0, deltaHeading = 0, deltaYOffset = 0;
 
-    float deltaX, deltaY, localX, localY;
+    float deltaX = 0, deltaY = 0, localX = 0, localY = 0;
 
     if (this->pos_trackers->right_tracker != nullptr) {
         // printf("found right\n");
@@ -101,7 +101,7 @@ knights::Pos knights::RobotChassis::calc_tracking_wheel_position() {
 
 }
 
-std::fstream write_file("/usd/sensor.txt", std::ios_base::out);
+// Removed unused global file stream that leaked a file handle
 
 
 std::tuple<knights::Pos, knights::Point> knights::RobotChassis::calc_distance_sensor_position() {
@@ -191,11 +191,13 @@ void knights::RobotChassis::update_position() {
         return;
     else if (this->current_localization_method == knights::LocalizationMethod::DISTANCE_SENSOR) {
         auto [dist_sensor_estimate, accuracy] = calc_distance_sensor_position();
+        std::lock_guard<pros::Mutex> lock(this->position_mutex);
         this->prev_position = curr_position;
         this->curr_position = dist_sensor_estimate;
     }
     else if (this->current_localization_method == knights::LocalizationMethod::TRACKING_WHEEL) {
         knights::Pos tracking_wheel_estimate = calc_tracking_wheel_position();
+        std::lock_guard<pros::Mutex> lock(this->position_mutex);
         this->prev_position = curr_position;
         this->curr_position = tracking_wheel_estimate;
     }
@@ -254,6 +256,7 @@ void knights::RobotChassis::update_position() {
 
         }
 
+        std::lock_guard<pros::Mutex> lock(this->position_mutex);
         this->prev_position = curr_position;
         this->curr_position = best_estimation;
     }

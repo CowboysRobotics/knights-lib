@@ -28,6 +28,7 @@ namespace knights {
             PositionTrackerGroup *pos_trackers = nullptr; // the sensors to use for location tracking
             Pos curr_position; // the current position of the robot
             Pos prev_position;
+            pros::Mutex position_mutex; // protects curr_position and prev_position
 
             // previous values of the sensors for odometry control
             float prevRight = 0;
@@ -102,6 +103,13 @@ namespace knights {
              * @return Pos The current position of the chassis
              */
             Pos get_position();
+
+            /**
+             * @brief Get the current position of the chassis while holding the position mutex (thread-safe)
+             * 
+             * @return Pos The current position of the chassis
+             */
+            Pos get_position_safe();
 
 
             /**

@@ -44,19 +44,19 @@ Pos knights::operator-(const Pos &pt1, const Pos &pt2) {
 
 // TODO: Make sure these four below are correct logic
 bool knights::operator!=(const Pos &pt1, const Pos &pt2) {
-    return (distance_btwn(pt1, pt2) != 0);
+    return (distance_btwn(pt1, pt2) > 1e-5);
 }
 
 bool knights::operator==(const Pos &pt1, const Pos &pt2) {
-    return (distance_btwn(pt1, pt2) == 0);
+    return (distance_btwn(pt1, pt2) <= 1e-5);
 }
 
 bool knights::operator!=(const Point &pt1, const Point &pt2) {
-    return (distance_btwn(pt1, pt2) != 0);
+    return (distance_btwn(pt1, pt2) > 1e-5);
 }
 
 bool knights::operator==(const Point &pt1, const Point &pt2) {
-    return (distance_btwn(pt1, pt2) == 0);
+    return (distance_btwn(pt1, pt2) <= 1e-5);
 }
 // ---- END TODO ----
 

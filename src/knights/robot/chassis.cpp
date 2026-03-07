@@ -15,6 +15,7 @@ knights::RobotChassis::RobotChassis(Holonomic *drivetrain, PositionTrackerGroup 
 }
 
 void knights::RobotChassis::set_position(float x, float y, float heading) {
+    std::lock_guard<pros::Mutex> lock(this->position_mutex);
     this->curr_position.x = x;
     this->curr_position.y = y;
     this->curr_position.heading = heading;
@@ -24,9 +25,15 @@ knights::Pos knights::RobotChassis::get_position() {
     return this->curr_position;
 }
 
+knights::Pos knights::RobotChassis::get_position_safe() {
+    std::lock_guard<pros::Mutex> lock(this->position_mutex);
+    return this->curr_position;
+}
+
 void knights::RobotChassis::set_position(knights::Pos position) {
+    std::lock_guard<pros::Mutex> lock(this->position_mutex);
     this->curr_position = position;
-    this->set_prev_position(position);
+    this->prev_position = position;
 };
 
 void knights::RobotChassis::set_prev_position(float x, float y, float heading) {
